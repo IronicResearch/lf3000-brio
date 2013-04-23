@@ -380,7 +380,7 @@ void* CEventModule::CartridgeTask( void* arg )
 		props.oflag = B_O_RDONLY;
 		err = pThis->kernel_.OpenMessageQueue(queue, props, NULL);
 		if (err != kNoErr) {
-			pThis->debug_.DebugOut(kDbgLvlCritical, "CartridgeTask: inbound message queue failed\n");
+			pThis->debug_.DebugOut(kDbgLvlCritical, "CartridgeTask: inbound message queue failed, error %d: %s\n", errno, strerror(errno));
 			goto server;
 		}
 

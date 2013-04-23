@@ -36642,3 +36642,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/23/13 2:40 PM
 6,250 ms. (Cumulative: 15,002,785 ms)
 
 ----------------
+Revision 10,211 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Extra logging for tracking opened message queues.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/23/13 4:43 PM
+1 changed, 0 added, 0 deleted.
+6,225 ms. (Cumulative: 15,009,089 ms)
+
+----------------
