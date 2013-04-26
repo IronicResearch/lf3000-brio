@@ -36651,3 +36651,19 @@ By Dave Milici (dmilici@leapfrog.com) on 4/23/13 4:43 PM
 6,225 ms. (Cumulative: 15,009,089 ms)
 
 ----------------
+Revision 10,212 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,213 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,214 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,215 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,216 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,217 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,218 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,219 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 5251.  InitOpenGL now memsets both screen buffers worth to 0.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/26/13 1:00 PM
+1 changed, 0 added, 0 deleted.
+6,407 ms. (Cumulative: 15,015,636 ms)
+
+----------------
