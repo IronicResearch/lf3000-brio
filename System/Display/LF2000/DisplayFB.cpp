@@ -1055,6 +1055,7 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	//hogl = CreateHandle(vyres, vxres, kPixelFormatRGB565, fbmem[n]);
 	//SetPixelFormat(n, vxres, vyres, 32, kPixelFormatRGB565, true); 	// swizzle RGB
 	tDisplayHandle hogl = CreateHandle(vyres, vxres, kPixelFormatARGB8888, fbmem[n]);
+	memset(fbmem[n], 0, 2 * vyres * vxres * 4);
 	tDisplayContext *dcogl = (tDisplayContext*)hogl;
 	dcogl->isOpenGL = true;
 	hogls.push_back(hogl);
