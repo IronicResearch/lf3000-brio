@@ -36667,3 +36667,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/26/13 1:00 PM
 6,407 ms. (Cumulative: 15,015,636 ms)
 
 ----------------
+Revision 10,220 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Enable signals on the cached WPA Interface object so that we receive signals we can forward to the Brio event system. Fixes TTPro Brio - Base #4368.
+
+By dlazzari (dlazzari@leapfrog.com) on 4/27/13 5:08 PM
+1 changed, 0 added, 0 deleted.
+6,555 ms. (Cumulative: 15,022,285 ms)
+
+----------------

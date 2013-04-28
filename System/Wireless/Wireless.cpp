@@ -100,6 +100,10 @@ CWirelessModule::CWirelessModule() :
 	mBrowser_ = new org::freedesktop::Avahi::ServiceBrowser(*mConnection_, service_browser_path, mServer_);
 	mBrowser_->EnableSignals();
 	mBrowser_->Start();
+	
+	wpa_supplicant1::Interface* tmp_interface = GetWPAInterface();
+	if(tmp_interface)
+		tmp_interface->EnableSignals();
 }
 
 //----------------------------------------------------------------------------
@@ -213,6 +217,9 @@ tErrType CWirelessModule::SetWirelessPower(Boolean power)
 			if_props["ConfigFile"] = conf_file;
 			
 			pWPASupplicant_->CreateInterface(if_props);
+			wpa_supplicant1::Interface* tmp_interface = GetWPAInterface();
+			if(tmp_interface)
+				tmp_interface->EnableSignals();
 		}
 		else
 		{
