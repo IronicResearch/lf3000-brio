@@ -36676,3 +36676,12 @@ By dlazzari (dlazzari@leapfrog.com) on 4/27/13 5:08 PM
 6,555 ms. (Cumulative: 15,022,285 ms)
 
 ----------------
+Revision 10,221 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 5268.  Disable copy of offscreen context onto the Overlay.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/29/13 7:23 PM
+1 changed, 0 added, 0 deleted.
+6,565 ms. (Cumulative: 15,028,944 ms)
+
+----------------

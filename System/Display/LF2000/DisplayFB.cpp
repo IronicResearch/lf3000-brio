@@ -636,7 +636,7 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 		eglSwapBuffers(dc->openGLScaler->eglDisplay, dc->openGLScaler->eglSurface);
 	}
 	// Copy offscreen context to primary display context
-	else if (dc->isAllocated && !dc->offset)
+	else if (dc->isAllocated && !dc->offset && dcdst->initialZOrder != kDisplayOnOverlay)
 	{
 		switch (dc->colorDepthFormat) 
 		{
