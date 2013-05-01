@@ -1054,12 +1054,20 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 #else
 	//hogl = CreateHandle(vyres, vxres, kPixelFormatRGB565, fbmem[n]);
 	//SetPixelFormat(n, vxres, vyres, 32, kPixelFormatRGB565, true); 	// swizzle RGB
-	tDisplayHandle hogl = CreateHandle(vyres, vxres, kPixelFormatARGB8888, fbmem[n]);
-	memset(fbmem[n], 0, 2 * vyres * vxres * 4);
+	bool use_32_bit_buffer = false;
+	FILE *opengl_flag = fopen("/flags/ogl_8888to8888", "r");
+	if(!opengl_flag)
+		opengl_flag = fopen("/tmp/ogl_8888to8888", "r");
+	if(opengl_flag) {
+		use_32_bit_buffer = true;
+		fclose(opengl_flag);
+	}
+	tDisplayHandle hogl = CreateHandle(vyres, vxres, use_32_bit_buffer ? kPixelFormatARGB8888 : kPixelFormatRGB565, fbmem[n]);
 	tDisplayContext *dcogl = (tDisplayContext*)hogl;
+	memset(fbmem[n], 0, 2 * vyres * vxres * dcogl->bpp/8);
 	dcogl->isOpenGL = true;
 	hogls.push_back(hogl);
-	SetPixelFormat(n, vxres, vyres, 32, kPixelFormatARGB8888, true); 	// swizzle RGB
+	SetPixelFormat(n, vxres, vyres, use_32_bit_buffer ? 32 : 16, use_32_bit_buffer ? kPixelFormatARGB8888 : kPixelFormatRGB565, true); 	// swizzle RGB
 #endif
 
 	// Pass back essential display context info for OpenGL bindings
