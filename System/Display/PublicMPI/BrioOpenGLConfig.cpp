@@ -364,15 +364,16 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 		Window surface, i.e. it will be visible on screen. The list
 		has to contain key/value pairs, terminated with EGL_NONE.
 	 */
+	bool using_32_bit = ((tDisplayContext*)ctx.hndlDisplay)->colorDepthFormat == kPixelFormatARGB8888;
 	const EGLint pi32ConfigAttribs[] =
 	{
-	    EGL_RED_SIZE,       8,
-	    EGL_GREEN_SIZE,     8,
-	    EGL_BLUE_SIZE,      8,
-	    EGL_ALPHA_SIZE,     EGL_DONT_CARE,
+	    EGL_RED_SIZE,       using_32_bit ? 8 : 5,
+	    EGL_GREEN_SIZE,     using_32_bit ? 8 : 6,
+	    EGL_BLUE_SIZE,      using_32_bit ? 8 : 5,
+	    EGL_ALPHA_SIZE,     using_32_bit ? 8 : 0,
 	    EGL_DEPTH_SIZE,     16,
 		#ifdef LF2000
-	    EGL_STENCIL_SIZE,   8,
+	    EGL_STENCIL_SIZE,   using_32_bit ? 8 : 0,
 		#endif
 	    EGL_SURFACE_TYPE,   EGL_WINDOW_BIT,
 	    EGL_NONE,           EGL_NONE

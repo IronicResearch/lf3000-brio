@@ -36696,3 +36696,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/1/13 2:21 PM
 6,563 ms. (Cumulative: 15,035,616 ms)
 
 ----------------
+Revision 10,225 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 5351.  Part 2 of 2.  When initializing OpenGL Brio will new default to set and ask for a 565 buffer instead of an 8888 buffer.  If /flags/ogl_8888to8888 or /tmp/ogl_8888to8888 exists then Brio will ask for a 8888 buffer.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/1/13 2:39 PM
+2 changed, 0 added, 0 deleted.
+6,845 ms. (Cumulative: 15,042,571 ms)
+
+----------------
