@@ -36705,3 +36705,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/1/13 2:39 PM
 6,845 ms. (Cumulative: 15,042,571 ms)
 
 ----------------
+Revision 10,226 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Option to test rotator for portrait-mode videos. (experimental, disabled)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/1/13 3:29 PM
+2 changed, 0 added, 0 deleted.
+6,657 ms. (Cumulative: 15,049,337 ms)
+
+----------------

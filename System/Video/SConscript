@@ -42,6 +42,7 @@ myenv.Append(CPPDEFINES = ['HAVE_CONFIG_H', 'G_THREADS_MANDATORY', 'G_DISABLE_CA
 myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
 myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
 						
+myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 myenv.Append(CPPPATH=['Include'])
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
