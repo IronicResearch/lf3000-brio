@@ -36685,3 +36685,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/29/13 7:23 PM
 6,565 ms. (Cumulative: 15,028,944 ms)
 
 ----------------
+Revision 10,222 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,223 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,224 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Option to test gstreamer videorate drop-frame filter. (experimental, disabled)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/1/13 2:21 PM
+1 changed, 0 added, 0 deleted.
+6,563 ms. (Cumulative: 15,035,616 ms)
+
+----------------

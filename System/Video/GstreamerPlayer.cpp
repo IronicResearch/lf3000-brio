@@ -405,9 +405,23 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     	return false;
     }
 
+#if 0
+    // Add videorate filter for FPS drop-frame adjustment
+    GstElement* m_videoRate = gst_element_factory_make("videorate", "videoRate");
+    if (m_videoRate) {
+        g_object_set(m_videoRate, "silent", TRUE , NULL);
+        g_object_set(m_videoRate, "drop-only", TRUE , NULL);
+        g_object_set(m_videoRate, "max-rate", 10 , NULL);
+        g_object_set(m_videoRate, "average-period", GST_TIME_AS_MSECONDS(100) , NULL);
+    }
+    // Link videorate filter into pipeline
+    gst_bin_add_many(GST_BIN(m_videoBin), m_queue, m_colorspace, m_videoRate, m_videoplug, m_videoSink, NULL);
+    gst_element_link_many(m_queue, m_colorspace, m_videoRate, m_videoplug, m_videoSink, NULL);
+#else
     // Link video pipeline elements as single bin element
     gst_bin_add_many(GST_BIN(m_videoBin), m_queue, m_colorspace, m_videoplug, m_videoSink, NULL);
     gst_element_link_many(m_queue, m_colorspace, m_videoplug, m_videoSink, NULL);
+#endif
 
     // Expose sink pad on video bin element
     GstPad *videopad = gst_element_get_pad(m_queue, "sink");
