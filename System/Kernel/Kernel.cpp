@@ -514,7 +514,7 @@ tErrType CKernelModule::CloseMessageQueue(tMessageQueueHndl hndl,
     	ASSERT_POSIX_CALL( errno );
     	
     	// Message queue readers are not supposed to remove link
-    	if (props.oflag & B_O_RDONLY)
+    	if ((props.oflag & B_O_CREAT) != B_O_CREAT)
     		return kNoErr;
 
     	errno = 0;
