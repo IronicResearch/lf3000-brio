@@ -36727,3 +36727,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/6/13 6:48 PM
 6,513 ms. (Cumulative: 15,055,960 ms)
 
 ----------------
+Revision 10,230 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,231 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,232 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Filter out non LeapFrog devices from avahi host name resolution.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/7/13 2:46 PM
+1 changed, 0 added, 0 deleted.
+6,156 ms. (Cumulative: 15,062,226 ms)
+
+----------------
