@@ -346,13 +346,13 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
 		colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
 		r = SetPixelFormat(n, width, height, depth, colorDepth, true);
-	else if (pBuffer == NULL)
+	else if (!scaling_2d && pBuffer == NULL)
 		r = SetPixelFormat(n, width, height, depth, colorDepth, false);
 
 	// Pitch depends on width for normal RGB modes, otherwise
 	// finfo[n].line_length may get updated after SetPixelFormat().
 	int line_length = width * depth/8;
-	//if (n == YUVFB || (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d))
+	if (n == YUVFB || (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d))
 		line_length = finfo[n].line_length;
 	int offset = 0;
 	int aligned = (n == YUVFB && colorDepth == kPixelFormatYUV420) ? ALIGN(height * line_length, k1Meg) : 0;
@@ -390,9 +390,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 			return kInvalidDisplayHandle;
 		}
 		// Clear the onscreen display buffer
-		printf("%s:%s:%d ctx->pBuffer=%p, ctx->pitch=%d, ctx->height=%d\n", __FILE__, __FUNCTION__, __LINE__, ctx->pBuffer, (int)ctx->pitch, (int)ctx->height);
 		memset(ctx->pBuffer, 0, ctx->pitch * ctx->height);
-		printf("%s:%s:%d\n", __FILE__, __FUNCTION__, __LINE__);
 
 		//For scaling up tutorials and other 2D content
 		//Check to make sure pBuffer is NULL (some things like OpenGL pass in a address, but it already does it's own scale
@@ -1069,6 +1067,10 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	memset(fbmem[n], 0, 2 * vyres * vxres * dcogl->bpp/8);
 	dcogl->isOpenGL = true;
 	hogls.push_back(hogl);
+	if (fbviz[n] && (dcogl->width != vinfo[n].xres || dcogl->height != vinfo[n].yres || dcogl->depth != vinfo[n].bits_per_pixel))
+	{
+		SetVisible(dcogl, false);
+	}
 	SetPixelFormat(n, vxres, vyres, use_32_bit_buffer ? 32 : 16, use_32_bit_buffer ? kPixelFormatARGB8888 : kPixelFormatRGB565, true); 	// swizzle RGB
 #endif
 
