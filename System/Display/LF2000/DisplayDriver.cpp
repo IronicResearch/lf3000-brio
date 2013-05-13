@@ -149,7 +149,10 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 			error = kNoErr;
 		}
 		kernel_.UnlockMutex(gListMutex);
-		Invalidate(0, NULL);
+		if(ctx->openGLScaler)
+			pDriver->Update(ctx, 0, 0, ctx->x, ctx->y, ctx->width, ctx->height);
+		else
+			Invalidate(0, NULL);
 		return error;
 	} else {
 		return pDriver->SwapBuffers(hndl, waitVSync);
