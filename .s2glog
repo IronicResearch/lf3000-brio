@@ -36759,3 +36759,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/10/13 4:18 PM
 6,563 ms. (Cumulative: 15,075,228 ms)
 
 ----------------
+Revision 10,238 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 5275.  Updated DisplayMPI's SwapBuffers.  In the case of swapping to an OpenGL scaled 2D buffer, it will now update that buffer directly instead of calling Invalidate (which updates all buffers).  The 2 OpenGL scaled buffers both being updated was causing flickering.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/13/13 4:50 PM
+1 changed, 0 added, 0 deleted.
+6,470 ms. (Cumulative: 15,081,808 ms)
+
+----------------
