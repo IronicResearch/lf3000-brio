@@ -36780,3 +36780,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/14/13 1:57 PM
 6,557 ms. (Cumulative: 15,088,474 ms)
 
 ----------------
+Revision 10,242 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 5644.  Disable SetPixelFormat for most cases during CreateHandle, prevents mangling of layer 1 during creation of overlay.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/14/13 3:48 PM
+1 changed, 0 added, 0 deleted.
+6,547 ms. (Cumulative: 15,095,115 ms)
+
+----------------
