@@ -36768,3 +36768,15 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/13/13 4:50 PM
 6,470 ms. (Cumulative: 15,081,808 ms)
 
 ----------------
+Revision 10,239 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,240 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,241 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Reverting svn -c10236, as blanking lower RGB layer does not work when returning to OGL app. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/14/13 1:57 PM
+1 changed, 0 added, 0 deleted.
+6,557 ms. (Cumulative: 15,088,474 ms)
+
+----------------
