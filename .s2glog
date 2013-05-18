@@ -36832,3 +36832,20 @@ By Dave Milici (dmilici@leapfrog.com) on 5/18/13 12:53 PM
 6,154 ms. (Cumulative: 15,121,237 ms)
 
 ----------------
+Revision 10,249 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added comments about deferring all graphics mode settings until RegisterLayer() calls.
+
+The special handling for YUV format should have been conditional on caller's video
+context (pBuffer == NULL), vs the duplicated double-buffered contexts (pBuffer != NULL).
+Really don't need mode setting at all since only YUV planar format use HW stride.
+
+Fixes TTP 5789, 5820.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/18/13 1:20 PM
+1 changed, 0 added, 0 deleted.
+6,219 ms. (Cumulative: 15,127,565 ms)
+
+----------------

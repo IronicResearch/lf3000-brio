@@ -341,21 +341,22 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	{
 		scaling_2d = true;
 	}
-	
+
+#if 0	// Defer all framebuffer mode settings to RegisterLayer() calls
 	// Block addressing mode needed for OGL framebuffer context?
 	/*if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
 		colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
 		r = SetPixelFormat(n, width, height, depth, colorDepth, true);
 	else if (!scaling_2d && pBuffer == NULL)
 		r = SetPixelFormat(n, width, height, depth, colorDepth, false);*/
+#endif
 
 	// Pitch depends on width for normal RGB modes, otherwise
 	// finfo[n].line_length may get updated after SetPixelFormat().
 	int line_length = width * depth/8;
-	if (n == YUVFB /*|| (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)*/) {
-		//r = SetPixelFormat(n, width, height, depth, colorDepth, false);
+	// Packed pitch also effective for kPixelFormatYUYV422 format.
+	if (n == YUVFB && colorDepth == kPixelFormatYUV420)
 		line_length = finfo[n].line_length;
-	}
 	int offset = 0;
 	int aligned = (n == YUVFB && colorDepth == kPixelFormatYUV420) ? ALIGN(height * line_length, k1Meg) : 0;
 	
