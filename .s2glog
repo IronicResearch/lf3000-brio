@@ -36822,3 +36822,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/18/13 11:13 AM
 6,174 ms. (Cumulative: 15,114,988 ms)
 
 ----------------
+Revision 10,248 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Avoid setting video mode for video formats too. (TTP 4872, 5789)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/18/13 12:53 PM
+1 changed, 0 added, 0 deleted.
+6,154 ms. (Cumulative: 15,121,237 ms)
+
+----------------

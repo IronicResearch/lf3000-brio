@@ -353,7 +353,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	// finfo[n].line_length may get updated after SetPixelFormat().
 	int line_length = width * depth/8;
 	if (n == YUVFB /*|| (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)*/) {
-		r = SetPixelFormat(n, width, height, depth, colorDepth, false);
+		//r = SetPixelFormat(n, width, height, depth, colorDepth, false);
 		line_length = finfo[n].line_length;
 	}
 	int offset = 0;
