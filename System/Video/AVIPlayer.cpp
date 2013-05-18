@@ -231,6 +231,15 @@ Boolean	CAVIPlayer::InitVideo(tVideoHndl hVideo)
 	pVidCtx->uFrameTimeNum	= 1000 * pCodecCtx->time_base.num;
 	pVidCtx->uFrameTimeDen	= pCodecCtx->time_base.den;
 	pVidCtx->bFrameTimeFract = (pVidCtx->uFrameTimeNum % pVidCtx->uFrameTimeDen) != 0;
+	dbg_.DebugOut(kDbgLvlImportant, "%dx%d, @%d fps (%d:%d)\n", (int)pVidCtx->info.width, (int)pVidCtx->info.height, (int)pVidCtx->info.fps, (int)pCodecCtx->time_base.den, (int)pCodecCtx->time_base.num);
+	if (pVidCtx->uFrameTime <= 1) {
+		pVidCtx->info.fps 		= 24;
+		pVidCtx->uFrameTime 	= 1000 / 24;
+		pVidCtx->uFrameTimeNum	= 1000;
+		pVidCtx->uFrameTimeDen	= 24;
+		pVidCtx->bFrameTimeFract = (pVidCtx->uFrameTimeNum % pVidCtx->uFrameTimeDen) != 0;
+	}
+	dbg_.DebugOut(kDbgLvlImportant, "%dx%d, @%d fps (%d:%d)\n", (int)pVidCtx->info.width, (int)pVidCtx->info.height, (int)pVidCtx->info.fps, (int)pVidCtx->uFrameTimeDen, (int)pVidCtx->uFrameTimeNum);
 	
 	pVidCtx->bCodecReady 	= true;
 	return true;

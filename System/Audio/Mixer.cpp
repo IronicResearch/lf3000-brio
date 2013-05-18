@@ -842,6 +842,8 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 		!strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") || 
 		!strcmp(sExt, "avi")  || !strcmp( sExt, "AVI") ||
 		!strcmp(sExt, "mp3")  || !strcmp( sExt, "MP3") ||
+		!strcmp(sExt, "flv")  ||
+		!strcmp(sExt, "webm") ||
 		!strcmp(sExt, "mp4")  || !strcmp( sExt, "MP4") )
 	{
 		if(CRawPlayer::GetNumPlayers() < CRawPlayer::GetMaxPlayers())
@@ -849,7 +851,8 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 			newID = GetNextAudioID();
 			//Newing player could take long, unlock the mutex
 			MIXER_UNLOCK;
-			if (!strcasecmp(sExt, "avi") || !strcasecmp(sExt, "mp3") || !strcasecmp(sExt, "mp4"))
+			// TODO: Simplify LibAV extension option
+			if (!strcasecmp(sExt, "avi") || !strcasecmp(sExt, "mp3") || !strcasecmp(sExt, "mp4") || !strcasecmp(sExt, "flv") || !strcasecmp(sExt, "webm"))
 				pPlayer = new CAVIPlayer( pInfo, newID );
 			else
 				pPlayer = new CRawPlayer( pInfo, newID );
@@ -993,10 +996,16 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 
 #ifdef USE_44KHZ
 	// External stream handling if 44KHz MP3 player
-	external = (pPlayer->GetSampleRate() == 44100) && sExt
+	external = ((pPlayer->GetSampleRate() == 44100
+				|| pPlayer->GetSampleRate() == 22050
+				|| pPlayer->GetSampleRate() == 11025
+				|| pPlayer->GetSampleRate() == 48000)
+			&& sExt
 			&& (!strcasecmp(sExt, "mp3")
 				|| !strcasecmp(sExt, "mp4")
-				|| (!strcasecmp(sExt, "ogg") && pInfo->path->find("/LF/Bulk/Music") != std::string::npos));
+				|| !strcasecmp(sExt, "flv")
+				|| !strcasecmp(sExt, "webm")
+				|| (!strcasecmp(sExt, "ogg") && pInfo->path->find("/LF/Bulk/Music") != std::string::npos)));
 #endif
 
 	if(external)
