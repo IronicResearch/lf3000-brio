@@ -232,6 +232,7 @@ Boolean	CAVIPlayer::InitVideo(tVideoHndl hVideo)
 	pVidCtx->uFrameTimeDen	= pCodecCtx->time_base.den;
 	pVidCtx->bFrameTimeFract = (pVidCtx->uFrameTimeNum % pVidCtx->uFrameTimeDen) != 0;
 	dbg_.DebugOut(kDbgLvlImportant, "%dx%d, @%d fps (%d:%d)\n", (int)pVidCtx->info.width, (int)pVidCtx->info.height, (int)pVidCtx->info.fps, (int)pCodecCtx->time_base.den, (int)pCodecCtx->time_base.num);
+	// FIXME: some MP4, FLV frame rates funky
 	if (pVidCtx->uFrameTime <= 1) {
 		pVidCtx->info.fps 		= 24;
 		pVidCtx->uFrameTime 	= 1000 / 24;
