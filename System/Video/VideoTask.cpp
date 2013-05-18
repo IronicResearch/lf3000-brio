@@ -19,6 +19,7 @@
 #include <DisplayMPI.h>
 #include <EventMPI.h>
 #include <VideoPriv.h>
+#include <DisplayPriv.h>
 
 #if USE_GSTREAMER
 #include <GStreamerPlayer.h>
@@ -113,9 +114,9 @@ inline void RotateBuffers(tVideoSurf* psrc, tVideoSurf* pdst)
 	U8* pydst = pdst->buffer;
 	U8* pudst = pydst + pdst->pitch/2;
 	U8* pvdst = pudst + pdst->pitch * pdst->height/2;
-	int ycmd[5] = {(int)pysrc, (int)pydst, psrc->width, psrc->height, (int)rotation};
-	int ucmd[5] = {(int)pusrc, (int)pudst, psrc->width/2, psrc->height/2, (int)rotation};
-	int vcmd[5] = {(int)pvsrc, (int)pvdst, psrc->width/2, psrc->height/2, (int)rotation};
+	int ycmd[5] = {(int)pysrc, (int)pydst, ALIGN(psrc->width, 8), ALIGN(psrc->height, 8), (int)rotation};
+	int ucmd[5] = {(int)pusrc, (int)pudst, ALIGN(psrc->width/2, 8), ALIGN(psrc->height/2, 8), (int)rotation};
+	int vcmd[5] = {(int)pvsrc, (int)pvdst, ALIGN(psrc->width/2, 8), ALIGN(psrc->height/2, 8), (int)rotation};
 	int r;
 	CKernelMPI kernel;
 
@@ -175,7 +176,6 @@ void* VideoTaskMain( void* arg )
 		aHndl[0] = dispmgr.CreateHandle(aSurf[0].height, aSurf[0].width, aSurf[0].format, aSurf[0].buffer);
 		aHndl[1] = dispmgr.CreateHandle(aSurf[1].height, aSurf[1].width, aSurf[1].format, aSurf[1].buffer);
 		bDoubleBuffered = true;
-		pSurf = &aSurf[ibuf = 0];
 #if USE_ROTATOR
 		if (rotation) {
 			aSurf[1].height = aSurf[0].width;
@@ -488,8 +488,13 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 #if USE_ROTATOR
 	// Setup rotator for potrait-mode videos
 	fdrot = open("/dev/lf2000-rotator", O_RDWR|O_SYNC);
-	if (fdrot > 0)
-		rotation = kOrientationPortrait;
+	if (fdrot > 0
+			&& pCtx->pSurfVideo->format == kPixelFormatYUV420
+			&& pCtx->pSurfVideo->height >= pCtx->pSurfVideo->width) {
+		CDisplayMPI dispmgr;
+		if (dispmgr.GetOrientation(dispmgr.GetCurrentDisplayHandle(kPixelFormatYUV420)) == kOrientationPortrait)
+			rotation = kOrientationPortrait;
+	}
 #endif
 	
 	// Setup task properties
@@ -542,6 +547,7 @@ tErrType DeInitVideoTask( tVideoContext* pCtx )
 	if (fdrot > 0) {
 		close(fdrot);
 		fdrot = -1;
+		rotation = kOrientationLandscape;
 	}
 #endif
 	

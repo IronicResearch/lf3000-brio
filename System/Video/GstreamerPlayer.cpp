@@ -18,6 +18,7 @@
 #include <VideoTypes.h>
 #include <VideoPlayer.h>
 #include <VideoPriv.h>
+#include <DisplayPriv.h>
 #include <GStreamerPlayer.h>
 
 #include <gst/gst.h>
@@ -120,22 +121,29 @@ GstFlowReturn VideoSink<FMT>::render(GstBaseSink* sink, GstBuffer* buf)
         VideoSink<FMT> *self = G_TYPE_CHECK_INSTANCE_CAST(sink, VideoSinkClass<FMT>::get_type(), VideoSink<FMT>);
         guchar* psrc = buf->data;
         guchar* pdst = self->buffer;
-        for (int y = 0; y < self->height; y++) {
-        	memcpy(pdst, psrc, self->width);
-        	psrc += self->width;
-        	pdst += self->pitch;
+        int width  = self->width;
+        int height = self->height;
+        int spitch = ALIGN(width, 4);
+        int dpitch = self->pitch;
+        for (int y = 0; y < height; y++) {
+        	memcpy(pdst, psrc, width);
+        	psrc += spitch;
+        	pdst += dpitch;
         }
+        width /= 2;
+        height /= 2;
+        spitch = ALIGN(spitch/2, 4);
         pdst = self->buffer + self->pitch/2;
-        for (int u = 0; u < self->height/2; u++) {
-        	memcpy(pdst, psrc, self->width/2);
-        	psrc += self->width/2;
-        	pdst += self->pitch;
+        for (int u = 0; u < height; u++) {
+        	memcpy(pdst, psrc, width);
+        	psrc += spitch;
+        	pdst += dpitch;
         }
         pdst = self->buffer + self->pitch/2 + self->pitch*self->height/2;
-        for (int v = 0; v < self->height/2; v++) {
-        	memcpy(pdst, psrc, self->width/2);
-        	psrc += self->width/2;
-        	pdst += self->pitch;
+        for (int v = 0; v < height; v++) {
+        	memcpy(pdst, psrc, width);
+        	psrc += spitch;
+        	pdst += dpitch;
         }
     }
     else
@@ -449,6 +457,7 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     // we add a message handler
     bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline));
 
+#if 0
     // Create audio bin element for audio output pipeline
     m_audioBin = gst_bin_new("audio-bin");
     if (!m_audioBin) {
@@ -483,6 +492,7 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // Connect audio pipeline bin as playbin sink
     g_object_set(G_OBJECT(pipeline), "audio-sink", m_audioBin, (const char*)NULL);
+#endif
 
     // Connect video pipeline bin as playbin sink
     g_object_set(G_OBJECT(pipeline), "video-sink", m_videoBin, (const char*)NULL);
@@ -511,6 +521,7 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // Cache video info
     GetVideoInfo(hVideo, &pVidCtx->info);
+	dbg_.DebugOut(kDbgLvlImportant, "%dx%d, @%d fps\n", (int)pVidCtx->info.width, (int)pVidCtx->info.height, (int)pVidCtx->info.fps);
 
     return true;
 }
@@ -577,6 +588,7 @@ Boolean CGStreamerPlayer::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 			pInfo->height = y;
 		if (gst_structure_get_fraction(data, "framerate", &x, &y))
 			pInfo->fps = x / y;
+		dbg_.DebugOut(kDbgLvlImportant, "%dx%d, @%d:%d fps\n", (int)pInfo->width, (int)pInfo->height, x, y);
 		gst_caps_unref(caps);
 		gst_object_unref(pad);
 		return true;

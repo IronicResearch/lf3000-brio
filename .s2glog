@@ -36789,3 +36789,16 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/14/13 3:48 PM
 6,547 ms. (Cumulative: 15,095,115 ms)
 
 ----------------
+Revision 10,243 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,244 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,245 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+AudioMPI and VideoMPI mods to test GStreamer and LibAV compatibility for MP4, FLV, WebM videos.
+LibAV timestamping in MPEG audio tracks for MP3, MP4, FLV is seriously messed up. (TTP 5676, 4853)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/17/13 8:43 PM
+6 changed, 0 added, 0 deleted.
+6,885 ms. (Cumulative: 15,102,110 ms)
+
+----------------

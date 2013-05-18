@@ -370,9 +370,11 @@ U32 CAVIPlayer::GetAudioTime_mSec( void )
 {
 	U64 milliSeconds; // = (1000 * totalFramesRead) / samplingFrequency_;
 	AVStream* pStream = pFormatCtx->streams[iAudioStream];
+#if 0
 	if (pStream->time_base.num && pStream->time_base.den)
 		milliSeconds = 1000 * pStream->cur_dts * pStream->time_base.num / pStream->time_base.den;
 	else
+#endif
 		milliSeconds = (1000 * totalFramesRead) / samplingFrequency_;
 	return (U32)(milliSeconds);
 }
