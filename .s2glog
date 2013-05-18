@@ -36802,3 +36802,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/17/13 8:43 PM
 6,885 ms. (Cumulative: 15,102,110 ms)
 
 ----------------
+Revision 10,246 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Define ALIGN macro for emulation target to fix build.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/18/13 11:09 AM
+1 changed, 0 added, 0 deleted.
+6,501 ms. (Cumulative: 15,108,720 ms)
+
+----------------

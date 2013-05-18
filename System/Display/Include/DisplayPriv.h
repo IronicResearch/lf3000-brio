@@ -28,6 +28,10 @@
 #include "DisplayHW.h"
 #endif
 
+#ifndef ALIGN
+#define ALIGN(x, y)		((x+(y-1)) & ~(y-1))
+#endif
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 class BrioOpenGLConfig;
