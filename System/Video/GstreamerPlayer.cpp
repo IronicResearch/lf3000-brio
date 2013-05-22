@@ -457,7 +457,6 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     // we add a message handler
     bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline));
 
-#if 0
     // Create audio bin element for audio output pipeline
     m_audioBin = gst_bin_new("audio-bin");
     if (!m_audioBin) {
@@ -476,6 +475,16 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     	return false;
     }
 
+    // We need to explicitly link MP3 decoder for FLV demuxer
+    GstElement* ffmp3 = NULL;
+    if (path->rfind(".flv") != std::string::npos) {
+        ffmp3 = gst_element_factory_make("ffdec_mp3", "audio-decoder");
+        if (ffmp3) {
+        	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: adding ffdec_mp3 element %p\n", ffmp3);
+    		gst_bin_add(GST_BIN(m_audioBin), ffmp3);
+        }
+    }
+
     // we add all elements into the pipeline
     // file-source | ogg-demuxer | vorbis-decoder | converter | alsa-output
     gst_bin_add_many(GST_BIN(m_audioBin),
@@ -483,7 +492,10 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // we link the elements together
     // file-source -> ogg-demuxer ~> vorbis-decoder -> converter -> alsa-output
-    gst_element_link_many(m_audioplug, m_audioconv, m_audiosink, NULL);
+    if (ffmp3)
+    	gst_element_link_many(m_audioplug, ffmp3, m_audioconv, m_audiosink, NULL);
+    else
+    	gst_element_link_many(m_audioplug, m_audioconv, m_audiosink, NULL);
 
     // Expose sink pad on audio bin element
     GstPad *audiopad = gst_element_get_pad(m_audioplug, "sink");
@@ -492,7 +504,6 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // Connect audio pipeline bin as playbin sink
     g_object_set(G_OBJECT(pipeline), "audio-sink", m_audioBin, (const char*)NULL);
-#endif
 
     // Connect video pipeline bin as playbin sink
     g_object_set(G_OBJECT(pipeline), "video-sink", m_videoBin, (const char*)NULL);
