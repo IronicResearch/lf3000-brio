@@ -484,6 +484,7 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 	{
 		dbg_.DebugOut(kDbgLvlImportant, "%s: 2D buffer offscreen upscale destroyed\n", __FUNCTION__);
 
+		eglMakeCurrent(ctx->openGLScaler->eglDisplay, ctx->openGLScaler->eglSurface, ctx->openGLScaler->eglSurface, ctx->openGLScaler->eglContext);
 		glDeleteTextures(1, (GLuint*)&ctx->eGLSourceTexture);
 		eglDestroyImageKHR(ctx->openGLScaler->eglDisplay, ctx->eGLSourceImage);
 		delete ctx->openGLScaler;

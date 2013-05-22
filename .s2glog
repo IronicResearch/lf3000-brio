@@ -36849,3 +36849,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/18/13 1:20 PM
 6,219 ms. (Cumulative: 15,127,565 ms)
 
 ----------------
+Revision 10,250 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,251 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,252 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No TTPro.  When destroying 2D OpenGL scaler, make it current first.  This should prevent it from accidentally deleting the texture of some other context.  This was showing as white textures when returning from Tutorials.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/22/13 12:10 PM
+1 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 15,133,816 ms)
+
+----------------
