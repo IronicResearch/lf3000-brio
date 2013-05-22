@@ -36860,3 +36860,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/22/13 12:10 PM
 6,141 ms. (Cumulative: 15,133,816 ms)
 
 ----------------
+Revision 10,253 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Need to explicitly link MP3 decoder for FLV audio demuxer. (TTP 5676)
+GStreamer flvdemux plugin auto-connection is failing for some reason.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/22/13 12:23 PM
+1 changed, 0 added, 0 deleted.
+6,328 ms. (Cumulative: 15,140,238 ms)
+
+----------------
