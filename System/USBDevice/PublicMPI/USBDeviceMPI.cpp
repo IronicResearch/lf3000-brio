@@ -28,6 +28,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 const CString	kMPIName = "USBDeviceMPI";
 
+static tUSBDeviceData gCachedUSBState = {0, 0, 0};
 
 //============================================================================
 // CUSBDeviceMessage
@@ -36,12 +37,14 @@ const CString	kMPIName = "USBDeviceMPI";
 CUSBDeviceMessage::CUSBDeviceMessage( const tUSBDeviceData& data ) 
 	: IEventMessage(kUSBDeviceStateChange), mData(data)
 {
+	gCachedUSBState = data;
 }
 
 //------------------------------------------------------------------------------
 CUSBDeviceMessage::CUSBDeviceMessage( const tUSBDeviceData& data, tEventType type )
 	: IEventMessage(type), mData(data)
 {
+	gCachedUSBState = data;
 }
 
 //------------------------------------------------------------------------------
@@ -119,7 +122,7 @@ tErrType CUSBDeviceMPI::UnregisterEventListener(const IEventListener *pListener)
 //----------------------------------------------------------------------------
 tUSBDeviceData CUSBDeviceMPI::GetUSBDeviceState() const
 {
-	return GetCurrentUSBDeviceState();
+	return gCachedUSBState; // GetCurrentUSBDeviceState();
 }
 
 //----------------------------------------------------------------------------

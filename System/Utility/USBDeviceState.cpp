@@ -62,7 +62,6 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 		}
 		
 		data.USBDeviceState = (usbState != 0) ? kUSBDeviceConnected : 0;
-		data.USBDeviceState |= (gUSBState.USBDeviceState & ~kUSBDeviceConnected);
 		return data;
 }
 
