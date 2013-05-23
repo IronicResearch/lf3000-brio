@@ -575,6 +575,7 @@ server:
 	else
 	{
 		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open socket %s\n", USB_SOCK);
+		pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::ButtonPowerUSBTask: socket %s, error %d: %s\n", USB_SOCK, errno, strerror(errno));
 	}
 	
 	// Determine if tslib is used or not
@@ -789,12 +790,13 @@ server:
 							CUSBDeviceMessage usb_priority_msg(usb_data, kUSBDevicePriorityStateChange);
 							pThis->PostEvent(usb_priority_msg, kUSBDeviceEventPriority, 0);
 							pThis->PostEvent(usb_msg, kUSBSocketEventPriority, 0);
-							SetCachedUSBDeviceState(usb_data);
 						}
 					}
 					while (r > 0);
 					close(fdsock);
 				}
+				else
+					pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: socket %s, error %d: %s\n", USB_SOCK, errno, strerror(errno));
 			}
 			
 			// Touch driver event ?

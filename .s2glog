@@ -36871,3 +36871,18 @@ By Dave Milici (dmilici@leapfrog.com) on 5/22/13 12:23 PM
 6,328 ms. (Cumulative: 15,140,238 ms)
 
 ----------------
+Revision 10,254 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,255 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,256 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added USB socket event logging to track errors. (TTP 5866)
+Relocated USB state caching into USBDeviceMessage() object so as
+to consistantly track state changes collected by USB VBUS event driver
+and USB DFTP socket listener inside the EventMPI thread.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/23/13 4:15 PM
+3 changed, 0 added, 0 deleted.
+6,547 ms. (Cumulative: 15,146,895 ms)
+
+----------------
