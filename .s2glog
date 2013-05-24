@@ -36886,3 +36886,17 @@ By Dave Milici (dmilici@leapfrog.com) on 5/23/13 4:15 PM
 6,547 ms. (Cumulative: 15,146,895 ms)
 
 ----------------
+Revision 10,257 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Register ffmpeg MP3 decoder for playbin2 auto-detection. (TTP 5676)
+
+GStreamer's playbin2 prefered MP3 decoders (libmad.so, etc) are not on Rio,
+so we have to add the ffmpeg codec to the registry to be auto-connected. 
+Plays FLV audio tracks without manual MP3 decoder fixup hack.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/24/13 4:54 PM
+1 changed, 0 added, 0 deleted.
+6,594 ms. (Cumulative: 15,153,599 ms)
+
+----------------

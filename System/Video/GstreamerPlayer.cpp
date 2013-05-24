@@ -373,6 +373,17 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 	CPath*			path = pVidCtx->pPathVideo;
 	tVideoSurf*		surf = pVidCtx->pSurfVideo;
 
+	// Register ffmpeg MP3 decoder for playbin2 auto-detection
+	GstRegistry *registry = gst_registry_get_default();
+	if (registry) {
+		GstElementFactory *factory = gst_element_factory_find("ffdec_mp3");
+		if (factory) {
+			gst_plugin_feature_set_rank(GST_PLUGIN_FEATURE(factory), GST_RANK_MARGINAL);
+			gst_registry_add_feature(registry, GST_PLUGIN_FEATURE(factory));
+			dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: registering ffdec_mp3 plugin %p\n", factory);
+		}
+	}
+
     // Create custom video sink for YUV rendering
     if (get_type_YUV() && (m_videoSink = GST_ELEMENT(g_object_new(get_type_YUV(), NULL)))) {
         gst_object_ref(GST_OBJECT(m_videoSink)); // Take ownership
@@ -475,16 +486,6 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     	return false;
     }
 
-    // We need to explicitly link MP3 decoder for FLV demuxer
-    GstElement* ffmp3 = NULL;
-    if (path->rfind(".flv") != std::string::npos) {
-        ffmp3 = gst_element_factory_make("ffdec_mp3", "audio-decoder");
-        if (ffmp3) {
-        	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: adding ffdec_mp3 element %p\n", ffmp3);
-    		gst_bin_add(GST_BIN(m_audioBin), ffmp3);
-        }
-    }
-
     // we add all elements into the pipeline
     // file-source | ogg-demuxer | vorbis-decoder | converter | alsa-output
     gst_bin_add_many(GST_BIN(m_audioBin),
@@ -492,10 +493,7 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // we link the elements together
     // file-source -> ogg-demuxer ~> vorbis-decoder -> converter -> alsa-output
-    if (ffmp3)
-    	gst_element_link_many(m_audioplug, ffmp3, m_audioconv, m_audiosink, NULL);
-    else
-    	gst_element_link_many(m_audioplug, m_audioconv, m_audiosink, NULL);
+   	gst_element_link_many(m_audioplug, m_audioconv, m_audiosink, NULL);
 
     // Expose sink pad on audio bin element
     GstPad *audiopad = gst_element_get_pad(m_audioplug, "sink");
@@ -599,6 +597,7 @@ Boolean CGStreamerPlayer::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 			pInfo->height = y;
 		if (gst_structure_get_fraction(data, "framerate", &x, &y))
 			pInfo->fps = x / y;
+		dbg_.DebugOut(kDbgLvlImportant, "%s\n", gst_structure_get_name(data));
 		dbg_.DebugOut(kDbgLvlImportant, "%dx%d, @%d:%d fps\n", (int)pInfo->width, (int)pInfo->height, x, y);
 		gst_caps_unref(caps);
 		gst_object_unref(pad);
