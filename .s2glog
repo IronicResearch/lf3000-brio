@@ -36900,3 +36900,19 @@ By Dave Milici (dmilici@leapfrog.com) on 5/24/13 4:54 PM
 6,594 ms. (Cumulative: 15,153,599 ms)
 
 ----------------
+Revision 10,258 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Pre-emptively test for an existing active USB socket before creating new one. (TTP 5866)
+
+This is similar problem seen by the Cart socket listener getting stomped on if another
+EventMPI process becomes active after BrioServer. Unlike the Cart socket scenario,
+the USB socket messages will not need to be propagated to subsequent Brio client apps
+since they have no interest in DFTP UI events. Only AppServer needs to see them.
+The USB VBUS input event is posted to all Brio apps regardless, separate from socket.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/24/13 7:14 PM
+1 changed, 0 added, 0 deleted.
+6,551 ms. (Cumulative: 15,160,228 ms)
+
+----------------

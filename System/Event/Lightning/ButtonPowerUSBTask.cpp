@@ -566,6 +566,17 @@ server:
 	
 	// init USB socket
 	int socket_index = -1;
+	struct stat stbuf;
+	if (stat(USB_SOCK, &stbuf) == 0) {
+		// Determine if socket listener is already active in another process
+		event_fd[last_fd].fd = CreateReportSocket(USB_SOCK);
+		if (event_fd[last_fd].fd >= 0) {
+			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: active socket at %s = %d\n", USB_SOCK, event_fd[last_fd].fd);
+			close(event_fd[last_fd].fd);
+			event_fd[last_fd].fd = -1;
+			goto skip_usb_socket;
+		}
+	}
 	event_fd[last_fd].fd = CreateListeningSocket(USB_SOCK);
 	event_fd[last_fd].events = POLLIN;
 	if(event_fd[last_fd].fd >= 0)
@@ -577,7 +588,8 @@ server:
 		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open socket %s\n", USB_SOCK);
 		pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::ButtonPowerUSBTask: socket %s, error %d: %s\n", USB_SOCK, errno, strerror(errno));
 	}
-	
+skip_usb_socket:
+
 	// Determine if tslib is used or not
 
 	use_tslib = false;
@@ -940,6 +952,8 @@ server:
 	
 	for(last_fd--; last_fd >=0; --last_fd)
 		close(event_fd[last_fd].fd);
+	if (socket_index >= 0)
+		remove(USB_SOCK);
 	g_threadRunning2_ = false;
 }
 
