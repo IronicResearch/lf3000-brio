@@ -8,7 +8,6 @@
 #include <sys/stat.h>
 
 using namespace std;
-LF_USING_BRIO_NAMESPACE()
 
 //============================================================================
 // EFdWrapper class
