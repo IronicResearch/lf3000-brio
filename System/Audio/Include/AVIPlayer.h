@@ -66,12 +66,14 @@ private:
 	AVCodec*			pCodec;				// audio codec
 	int16_t*			pFrame;				// audio frame buffer
     int					iAudioStream;		// index of audio stream
+	int64_t				cur_dts;			// current decoded timestamp
 
     // ReadBytesFromFile
 	U32 bytesRead;
 	U32 bytesCached;
 	U8* pCachedData;
 	U64 totalFramesRead;
+
 };
 
 LF_END_BRIO_NAMESPACE()
