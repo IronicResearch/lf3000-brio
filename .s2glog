@@ -36937,3 +36937,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/28/13 12:31 PM
 6,783 ms. (Cumulative: 15,173,824 ms)
 
 ----------------
+Revision 10,263 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Track decoded audio stream timestamp independently of LibAV codec context. (TTP 4853)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/28/13 4:04 PM
+2 changed, 0 added, 0 deleted.
+6,567 ms. (Cumulative: 15,180,501 ms)
+
+----------------

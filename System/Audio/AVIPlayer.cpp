@@ -41,7 +41,7 @@ static U32 maxNumAviPlayers = kAudioMaxRawStreams;
 // Local Functions
 //==============================================================================
 int GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, 
-    int iAudioStream, int16_t *pFrame, int size, int bytesExpected)
+    int iAudioStream, int16_t *pFrame, int size, int bytesExpected, int64_t& timestamp)
 {
     static AVPacket packet;
     static int      bytesRemaining = 0;
@@ -89,7 +89,7 @@ int GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
                 continue; // ffplay.c
 
             // Fixup audio stream timestamp
-            pStream->cur_dts = packet2.dts;
+            timestamp        = packet2.dts;
 
             // Audio frame buffer may contain more bytes than requested
           	return frameSize; // decompressed bytes
@@ -199,6 +199,7 @@ CAVIPlayer::CAVIPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	channels_			= pCodecCtx->channels;	 
 	totalBytesRead_ 	= 0;
 	totalFramesRead		= 0;
+	cur_dts             = 0;
 	id_					= id;
 }
 
@@ -275,7 +276,7 @@ U32 CAVIPlayer::ReadBytesFromFile( void *d, U32 bytesToRead)
 	}
 
 	// Decode audio frames from file packet(s)
-	bytesCached = GetNextFrame(pFormatCtx, pCodecCtx, iAudioStream, pFrame, AVCODEC_MAX_AUDIO_FRAME_SIZE, bytesToRead);
+	bytesCached = GetNextFrame(pFormatCtx, pCodecCtx, iAudioStream, pFrame, AVCODEC_MAX_AUDIO_FRAME_SIZE, bytesToRead, cur_dts);
 	pCachedData = (U8*)pFrame;
 	bytesRead = std::min(bytesToRead, bytesCached);
 	memcpy(d, pFrame, bytesRead);
@@ -365,6 +366,7 @@ void CAVIPlayer::RewindFile()
 	totalBytesRead_ = 0;
 	totalFramesRead = 0;
 	bytesCached = 0;
+	cur_dts     = 0;
 }
 
 // =============================================================================
@@ -375,7 +377,7 @@ U32 CAVIPlayer::GetAudioTime_mSec( void )
 	U64 milliSeconds; // = (1000 * totalFramesRead) / samplingFrequency_;
 	AVStream* pStream = pFormatCtx->streams[iAudioStream];
 	if (pStream->time_base.num && pStream->time_base.den)
-		milliSeconds = 1000 * pStream->cur_dts * pStream->time_base.num / pStream->time_base.den;
+		milliSeconds = 1000 * cur_dts * pStream->time_base.num / pStream->time_base.den;
 	else
 		milliSeconds = (1000 * totalFramesRead) / samplingFrequency_;
 	return (U32)(milliSeconds);
@@ -397,8 +399,8 @@ Boolean CAVIPlayer::SeekAudioTime(U32 timeMilliSeconds)
 	if (r < 0)
 		return false;
 	// Fixup audio stream timestamp
-	pStream->cur_dts = timestamp;
-	totalFramesRead = timestamp;
+	cur_dts = timestamp;
+	totalFramesRead = (int64_t)timeMilliSeconds * samplingFrequency_ / 1000;
 	bytesCached = 0;
 	bSeeked = true;
 	return true;
