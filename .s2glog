@@ -36927,3 +36927,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/28/13 11:31 AM
 6,595 ms. (Cumulative: 15,166,948 ms)
 
 ----------------
+Revision 10,262 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Update audio stream timestamp as soon as it's decoded. (TTP 4853)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/28/13 12:31 PM
+1 changed, 0 added, 0 deleted.
+6,783 ms. (Cumulative: 15,173,824 ms)
+
+----------------
