@@ -50,6 +50,7 @@ int GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
     int             bytesDecoded;
     int				bytesTotal = 0;
     int             frameSize = size;
+    AVStream* 		pStream = pFormatCtx->streams[iAudioStream];
 
     // First time we're called, set packet.data to NULL to indicate it
     // doesn't have to be freed
@@ -86,6 +87,9 @@ int GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
             
             if (frameSize <= 0)
                 continue; // ffplay.c
+
+            // Fixup audio stream timestamp
+            pStream->cur_dts = packet2.dts;
 
             // Audio frame buffer may contain more bytes than requested
           	return frameSize; // decompressed bytes
@@ -370,11 +374,9 @@ U32 CAVIPlayer::GetAudioTime_mSec( void )
 {
 	U64 milliSeconds; // = (1000 * totalFramesRead) / samplingFrequency_;
 	AVStream* pStream = pFormatCtx->streams[iAudioStream];
-#if 0	// FIXME: MPEG audio timestamps funky
 	if (pStream->time_base.num && pStream->time_base.den)
 		milliSeconds = 1000 * pStream->cur_dts * pStream->time_base.num / pStream->time_base.den;
 	else
-#endif
 		milliSeconds = (1000 * totalFramesRead) / samplingFrequency_;
 	return (U32)(milliSeconds);
 }
@@ -394,6 +396,8 @@ Boolean CAVIPlayer::SeekAudioTime(U32 timeMilliSeconds)
 	int r = av_seek_frame(pFormatCtx, iAudioStream, timestamp, flags);
 	if (r < 0)
 		return false;
+	// Fixup audio stream timestamp
+	pStream->cur_dts = timestamp;
 	totalFramesRead = timestamp;
 	bytesCached = 0;
 	bSeeked = true;
