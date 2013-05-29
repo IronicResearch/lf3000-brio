@@ -36947,3 +36947,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/28/13 4:04 PM
 6,567 ms. (Cumulative: 15,180,501 ms)
 
 ----------------
+Revision 10,264 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,265 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,266 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro 6037.  Fixed up CSystemData's GetLocaleCode, it now considers the entire remainder of the text instead of only the next 2 letters.  This way when "other" is chosen, the stated locale code "en-gbher" does not accidentally match "en-gb".  Why they would break the rule that the country code come from ISO 3166-1 alpha 2 (lowercase) is beyond me.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/29/13 12:38 PM
+1 changed, 0 added, 0 deleted.
+6,751 ms. (Cumulative: 15,187,361 ms)
+
+----------------
