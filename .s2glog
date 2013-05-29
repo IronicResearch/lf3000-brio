@@ -36967,3 +36967,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/29/13 12:57 PM
 7,102 ms. (Cumulative: 15,194,588 ms)
 
 ----------------
+Revision 10,268 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 5889.  Brio when doing 2D OpenGL Scaling, now waits for the pan to finish.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/29/13 2:55 PM
+1 changed, 0 added, 0 deleted.
+6,500 ms. (Cumulative: 15,201,182 ms)
+
+----------------
