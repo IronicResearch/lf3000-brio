@@ -638,6 +638,12 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 		glTexCoordPointer(2, GL_BYTE, 0, texcoords);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		eglSwapBuffers(dc->openGLScaler->eglDisplay, dc->openGLScaler->eglSurface);
+		int r = 0;
+		do {
+			r = ioctl(fbdev[dc->layer], FBIO_WAITFORVSYNC, 0);
+			if (r == 1)
+				kernel_.TaskSleep(1);
+		} while (r != 0);
 	}
 	// Copy offscreen context to primary display context
 	else if (dc->isAllocated && !dc->offset && dcdst->initialZOrder != kDisplayOnOverlay)
