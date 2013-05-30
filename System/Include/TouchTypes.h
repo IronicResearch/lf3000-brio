@@ -79,6 +79,12 @@ const U32	kTouchTableDrawing[] = {
 	1									// debounce stylus up (samples)
 };
 
+const U32	kTouchTableRio[] = {
+	50,									// sample rate (Hz)
+	0,									// debounce stylus down (samples)
+	0									// debounce stylus up (samples)
+};
+
 //==============================================================================	   
 // Touch types
 //==============================================================================

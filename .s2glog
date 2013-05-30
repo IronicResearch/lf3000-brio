@@ -36987,3 +36987,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/29/13 7:58 PM
 6,665 ms. (Cumulative: 15,207,957 ms)
 
 ----------------
+Revision 10,270 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Create touch table entry for Rio which clamps max rate at 50 Hz. (TTP 5628)
+Filtered by callers of either SetTouchParam() or SetTouchRate(). 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/30/13 11:18 AM
+2 changed, 0 added, 0 deleted.
+6,688 ms. (Cumulative: 15,214,738 ms)
+
+----------------
