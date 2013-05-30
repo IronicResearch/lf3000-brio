@@ -66,6 +66,7 @@ tUSBDeviceData CUSBDeviceMessage::GetUSBDeviceState() const
 //----------------------------------------------------------------------------
 CUSBDeviceMPI::CUSBDeviceMPI() : pModule_(NULL)
 {
+	gCachedUSBState = GetCurrentUSBDeviceState();
 }
 
 //----------------------------------------------------------------------------
