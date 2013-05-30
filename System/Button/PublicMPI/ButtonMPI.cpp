@@ -256,6 +256,8 @@ tErrType CButtonMPI::SetTouchRate(U32 rate)
 	}
 	fd = fopen(SYSFS_TOUCHSCREEN_PATH("scanning_frequency"), "w");
 	if (fd != NULL) {
+		if (rate > kTouchTableRio[kTouchParamSampleRate])
+			rate = kTouchTableRio[kTouchParamSampleRate];
 		fprintf(fd, "%u %u %u\n", 25, (unsigned int)rate, (unsigned int)rate);
 		fclose(fd);
 		return kNoErr;
@@ -296,6 +298,8 @@ tErrType CButtonMPI::SetTouchMode(tTouchMode mode)
 	gCachedTouchMode = mode;
 	switch (mode) {
 	case kTouchModeDrawing:
+		if (HasPlatformCapability(kCapsMultiTouch))
+			return SetTouchParam(kTouchParamSampleRate, kTouchTableRio[kTouchParamSampleRate]);
 		r = SetTouchParam(kTouchParamSampleRate, 	kTouchTableDrawing[kTouchParamSampleRate]);
 		r |= SetTouchParam(kTouchParamDebounceDown, kTouchTableDrawing[kTouchParamDebounceDown]);
 		r |= SetTouchParam(kTouchParamDebounceUp, 	kTouchTableDrawing[kTouchParamDebounceUp]);
@@ -304,6 +308,8 @@ tErrType CButtonMPI::SetTouchMode(tTouchMode mode)
 		gIsPressureMode = true;
 	case kTouchModeDefault:
 	default:
+		if (HasPlatformCapability(kCapsMultiTouch))
+			return SetTouchParam(kTouchParamSampleRate, kTouchTableRio[kTouchParamSampleRate]);
 		r = SetTouchParam(kTouchParamSampleRate, 	kTouchTableDefault[kTouchParamSampleRate]);
 		r |= SetTouchParam(kTouchParamDebounceDown, kTouchTableDefault[kTouchParamDebounceDown]);
 		r |= SetTouchParam(kTouchParamDebounceUp, 	kTouchTableDefault[kTouchParamDebounceUp]);
@@ -324,9 +330,13 @@ U32	CButtonMPI::GetTouchParam(tTouchParam param) const
 		sysfspath = SYSFS_TOUCHSCREEN_PATH("sample_rate_in_hz");
 		break;
 	case kTouchParamDebounceDown:
+		if (HasPlatformCapability(kCapsMultiTouch))
+			return 0;
 		sysfspath = SYSFS_TOUCHSCREEN_PATH("debounce_in_samples_down");
 		break;
 	case kTouchParamDebounceUp:
+		if (HasPlatformCapability(kCapsMultiTouch))
+			return 0;
 		sysfspath = SYSFS_TOUCHSCREEN_PATH("debounce_in_samples_up");
 		break;
 	default:
@@ -351,9 +361,13 @@ tErrType CButtonMPI::SetTouchParam(tTouchParam param, U32 value)
 		sysfspath = SYSFS_TOUCHSCREEN_PATH("sample_rate_in_hz");
 		break;
 	case kTouchParamDebounceDown:
+		if (HasPlatformCapability(kCapsMultiTouch))
+			return 0;
 		sysfspath = SYSFS_TOUCHSCREEN_PATH("debounce_in_samples_down");
 		break;
 	case kTouchParamDebounceUp:
+		if (HasPlatformCapability(kCapsMultiTouch))
+			return 0;
 		sysfspath = SYSFS_TOUCHSCREEN_PATH("debounce_in_samples_up");
 		break;
 	default:
