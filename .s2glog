@@ -36976,3 +36976,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/29/13 2:55 PM
 6,500 ms. (Cumulative: 15,201,182 ms)
 
 ----------------
+Revision 10,269 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Cache initial USB physical connect state on any new MPI instance.
+Should help close window on missing USB states when AppServer starts up. (TTP 5302)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/29/13 7:58 PM
+1 changed, 0 added, 0 deleted.
+6,665 ms. (Cumulative: 15,207,957 ms)
+
+----------------
