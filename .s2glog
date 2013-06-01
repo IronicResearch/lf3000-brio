@@ -36998,3 +36998,15 @@ By Dave Milici (dmilici@leapfrog.com) on 5/30/13 11:18 AM
 6,688 ms. (Cumulative: 15,214,738 ms)
 
 ----------------
+Revision 10,271 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,272 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,273 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added VideoMPI unit tests for GStreamer player and rotator.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/31/13 5:43 PM
+3 changed, 0 added, 0 deleted.
+7,255 ms. (Cumulative: 15,222,134 ms)
+
+----------------

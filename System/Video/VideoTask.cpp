@@ -178,8 +178,8 @@ void* VideoTaskMain( void* arg )
 		bDoubleBuffered = true;
 #if USE_ROTATOR
 		if (rotation) {
-			aSurf[1].height = aSurf[0].width;
-			aSurf[1].width  = aSurf[0].height;
+			aSurf[1].height = aSurf[0].width  = pctx->info.width;
+			aSurf[1].width  = aSurf[0].height = pctx->info.height;
 			dispmgr.DestroyHandle(aHndl[1], true);
 			aHndl[1] = dispmgr.CreateHandle(aSurf[1].height, aSurf[1].width, aSurf[1].format, aSurf[1].buffer);
 			dispmgr.SetWindowPosition(aHndl[1], 0, 0, aSurf[1].width, aSurf[1].height, false);

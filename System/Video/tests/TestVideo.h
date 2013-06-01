@@ -9,6 +9,7 @@
 #include <EventMPI.h>
 #include <EventListener.h>
 #include <AudioTypes.h>
+#include <DisplayTypes.h>
 #include <UnitTestUtils.h>
 
 LF_USING_BRIO_NAMESPACE()
@@ -482,7 +483,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void XXXXtestVideoAudio()
+	void testVideoAudio()
 	{
 		PRINT_TEST_NAME();
 
@@ -665,6 +666,98 @@ public:
 		printf("est. length of 5 sec. video (.avi) = %f\n", lengthSec);
 		TS_ASSERT( lengthSec < 6 && lengthSec > 4);
 	}
+
+#if USE_GSTREAMER
+	//------------------------------------------------------------------------
+	void testVideoGStreamer()
+	{
+		PRINT_TEST_NAME();
+
+		tVideoHndl	video;
+		tVideoSurf	surf;
+		tVideoInfo	info;
+		tVideoTime	time;
+		tDisplayHandle disp;
+//		CURI		uri = "file:///LF/Bulk/ProgramFiles/WebBrowser/videos/LIVEACTION-2997fps-480x272_h264.mp4";
+//		CURI		uri = "http://docs.gstreamer.com/media/sintel_trailer-480p.webm";
+//		CURI		uri = "http://s7.leapfrog.com/is/content/LeapFrog/TEST/VIDEOS/360x270-And-Device-Halfrate-Test/360x270-Trailer-TestFile-device.mp4";
+//		CURI		uri = "http://s7.leapfrog.com/e2/LeapFrog/Videos/LeapReader/2013-LeapReader-Sizzle/2013-LeapReader-Sizzle-MAUD-2398fps-1920x1080_h264-device.mp4";
+//		CURI		uri = "http://192.168.199.19/video/videos/2013-LeapReader-Sizzle-MAUD-2398fps-1920x1080_h264-device.mp4";
+		CURI		uri = "http://192.168.199.19/video/videos/LF-AskExpert.flv";
+
+		pDisplayMPI_ = new CDisplayMPI;
+		surf.width  = pDisplayMPI_->GetScreenStats(0)->width;
+		surf.height = pDisplayMPI_->GetScreenStats(0)->height;
+		surf.format = kPixelFormatYUV420;
+		disp = pDisplayMPI_->CreateHandle(surf.height, surf.width, surf.format);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		surf.pitch  = pDisplayMPI_->GetPitch(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnOverlay);
+
+		video = pVideoMPI_->StartVideo(uri, uri, &surf);
+		if (video != kInvalidVideoHndl)
+		{
+			CKernelMPI kernel;
+			while (pVideoMPI_->IsVideoPlaying(video))
+				kernel.TaskSleep(1000);
+		}
+		pVideoMPI_->StopVideo(video);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		delete pDisplayMPI_;
+	}
+#endif
+
+
+#if USE_ROTATOR
+	//------------------------------------------------------------------------
+	void testVideoRotator()
+	{
+		PRINT_TEST_NAME();
+
+		tVideoHndl	video;
+		tVideoSurf	surf;
+		tVideoInfo	info;
+		tDisplayHandle disp;
+//		CPath		path = "Theora10Vorbis0_mono16kHz.ogg";
+//		CPath		path = "testYUV.avi";
+		CPath		path = "7sec.ogg";
+
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo(path);
+		TS_ASSERT( video != kInvalidVideoHndl );
+		pVideoMPI_->GetVideoInfo(video, &info);
+		pVideoMPI_->StopVideo(video);
+
+		pDisplayMPI_ = new CDisplayMPI;
+		surf.width  = std::max(info.width, info.height);
+		surf.height = std::max(info.width, info.height);
+		surf.format = kPixelFormatYUV420;
+		disp = pDisplayMPI_->CreateHandle(surf.height, surf.width, surf.format);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		surf.pitch  = pDisplayMPI_->GetPitch(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnOverlay);
+		pDisplayMPI_->SetOrientation(disp, kOrientationPortrait);
+
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo(path, &surf);
+		if (video != kInvalidVideoHndl)
+		{
+			CKernelMPI kernel;
+			while (pVideoMPI_->IsVideoPlaying(video))
+				kernel.TaskSleep(1000);
+		}
+		pVideoMPI_->StopVideo(video);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		delete pDisplayMPI_;
+	}
+#endif
+
 };
 
 // EOF
