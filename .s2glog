@@ -37010,3 +37010,18 @@ By Dave Milici (dmilici@leapfrog.com) on 5/31/13 5:43 PM
 7,255 ms. (Cumulative: 15,222,134 ms)
 
 ----------------
+Revision 10,274 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,275 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,276 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,277 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,278 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,279 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,280 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Wireless: Remove MAC address from host name before doing lookup when an avahi ItemRemove event occurs. Because we do this when adding to the map, we couldn't find the host names in the map when doing remove and so no CRemotePlayer remove messages were being posted to listeners. Fixes TTPro Brio - Base #6013.
+
+By dlazzari (dlazzari@leapfrog.com) on 6/6/13 5:39 PM
+1 changed, 0 added, 0 deleted.
+6,428 ms. (Cumulative: 15,228,694 ms)
+
+----------------

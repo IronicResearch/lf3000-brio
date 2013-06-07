@@ -95,12 +95,20 @@ void ServiceBrowser::ItemRemove(const int32_t& interface,
 		                const std::string& domain,
 		                const uint32_t& flags)
 {
+	//If the name ends with a closing square bracket, it is most
+	//likely a mac address, so strip it off.
+	std::string hostname = name;
+	int name_len = hostname.size();
+	if( hostname[name_len - 1] == ']' )
+		hostname = hostname.substr(0, name_len - 20);
+
 	//Make sure we recognize the hostname
+	mDebug.DebugOut(LeapFrog::Brio::kDbgLvlValuable, "Lost connection to host %s\n", hostname.c_str());
 	pthread_mutex_lock( &mMapLock );
-	if( mServiceLookup.count( name ) )
+	if( mServiceLookup.count( hostname ) )
 	{		
 		//Fill out a player message
-		LeapFrog::Brio::tRemotePlayer player(name, mServiceLookup[name]);
+		LeapFrog::Brio::tRemotePlayer player(hostname, mServiceLookup[hostname]);
 		LeapFrog::Brio::CRemotePlayerMessage msg(player, false);
 		
 		//Don't hold the lock during a PostEvent in case a message
@@ -112,7 +120,7 @@ void ServiceBrowser::ItemRemove(const int32_t& interface,
 		
 		//Remove the address from our lookup table
 		pthread_mutex_lock( &mMapLock );
-		mServiceLookup.erase(name);
+		mServiceLookup.erase(hostname);
 	}
 	pthread_mutex_unlock( &mMapLock );
 }
