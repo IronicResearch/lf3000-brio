@@ -37025,3 +37025,12 @@ By dlazzari (dlazzari@leapfrog.com) on 6/6/13 5:39 PM
 6,428 ms. (Cumulative: 15,228,694 ms)
 
 ----------------
+Revision 10,281 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add a warning message to CWirelessMPI::JoinAdhocNetwork() documentation that using encrypted networks is not currently supported. Fixes TTPro Brio - Base #5187.
+
+By dlazzari (dlazzari@leapfrog.com) on 6/6/13 6:08 PM
+1 changed, 0 added, 0 deleted.
+6,235 ms. (Cumulative: 15,235,030 ms)
+
+----------------

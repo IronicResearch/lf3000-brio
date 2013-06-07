@@ -66,6 +66,9 @@ public:
 	/// \param ssid The SSID of the AdHoc network to join.
 	/// \param encrypted Whether the AdHoc network uses encryption or not.
 	/// \param password If the network is encrypted, the passphrase to use, ignored when encrypted is false.
+	/// \warning Encrypted Ad-Hoc networks are not working properly in LeapPad Ultra GM firmware. Using one
+	///          can cause massive packet loss and routing problems. Please do not set encrypted to true
+	///          when calling this function unless cleared specifically with DevStudio.
 	tErrType	JoinAdhocNetwork( CString ssid, Boolean encrypted, CString password );
 	
 	/// Disconnect from Ad-Hoc network. If connected to an Ad-Hoc network, disconnects
