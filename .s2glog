@@ -37046,3 +37046,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/10/13 6:59 PM
 8,014 ms. (Cumulative: 15,243,136 ms)
 
 ----------------
+Revision 10,283 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+More exclusive logic needed for LibAV external dmix player case.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/10/13 7:13 PM
+1 changed, 0 added, 0 deleted.
+6,378 ms. (Cumulative: 15,249,626 ms)
+
+----------------
