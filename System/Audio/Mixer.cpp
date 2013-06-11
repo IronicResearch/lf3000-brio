@@ -101,6 +101,18 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define MIXER_UNLOCK pDebugMPI_->Assert((kNoErr == pKernelMPI_->UnlockMutex(mixerMutex_)),\
 										"Couldn't unlock  mixer mutex.\n")
 
+// For compatibility sake, simplify distinction between Ogg and PCM types.
+// Any other extension will be candidate for LibAV Swiss-army-knife player.
+inline bool IS_OGG(char* sExt)
+{
+	return (sExt && (!strcasecmp(sExt, "ogg") || !strcasecmp(sExt, "aogg")));
+}
+
+inline bool IS_PCM(char* sExt)
+{
+	return (sExt && (!strcasecmp(sExt, "wav") || !strcasecmp(sExt, "raw") || !strcasecmp(sExt, "brio")));
+}
+
 //==============================================================================
 // Global variables
 //==============================================================================
@@ -821,6 +833,8 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 	CAudioPlayer *pPlayer = NULL;
 	tAudioID newID;
 
+	// For compatibility sake, simplify distinction between Ogg and PCM types.
+	// Any other extension will be candidate for LibAV Swiss-army-knife player.
 	if (sExt == NULL)
 	{
 		if (CMemPlayer::GetNumPlayers() < CMemPlayer::GetMaxPlayers())
@@ -837,22 +851,15 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 				"%s: Max number of mem players exceeded.\n", __FUNCTION__);
 		}
 	}
-	else if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")	||
-		!strcmp(sExt, "brio") || !strcmp( sExt, "BRIO") ||
-		!strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") || 
-		!strcmp(sExt, "avi")  || !strcmp( sExt, "AVI") ||
-		!strcmp(sExt, "mp3")  || !strcmp( sExt, "MP3") ||
-		!strcmp(sExt, "flv")  ||
-		!strcmp(sExt, "webm") ||
-		!strcmp(sExt, "mp4")  || !strcmp( sExt, "MP4") )
+	else if (!IS_OGG(sExt))
 	{
 		if(CRawPlayer::GetNumPlayers() < CRawPlayer::GetMaxPlayers())
 		{
 			newID = GetNextAudioID();
 			//Newing player could take long, unlock the mutex
 			MIXER_UNLOCK;
-			// TODO: Simplify LibAV extension option
-			if (!strcasecmp(sExt, "avi") || !strcasecmp(sExt, "mp3") || !strcasecmp(sExt, "mp4") || !strcasecmp(sExt, "flv") || !strcasecmp(sExt, "webm"))
+			// Simplify LibAV extension option as any non-PCM type
+			if (!IS_PCM(sExt))
 				pPlayer = new CAVIPlayer( pInfo, newID );
 			else
 				pPlayer = new CRawPlayer( pInfo, newID );
@@ -879,8 +886,7 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 			}
 		}
 	}
-	else if (!strcmp( sExt, "ogg" ) || !strcmp( sExt, "OGG") ||
-			 !strcmp( sExt, "aogg") || !strcmp( sExt, "AOGG"))
+	else
 	{
 		if(CVorbisPlayer::GetNumPlayers() < CVorbisPlayer::GetMaxPlayers())
 		{
@@ -1001,11 +1007,8 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 				|| pPlayer->GetSampleRate() == 11025
 				|| pPlayer->GetSampleRate() == 48000)
 			&& sExt
-			&& (!strcasecmp(sExt, "mp3")
-				|| !strcasecmp(sExt, "mp4")
-				|| !strcasecmp(sExt, "flv")
-				|| !strcasecmp(sExt, "webm")
-				|| (!strcasecmp(sExt, "ogg") && pInfo->path->find("/LF/Bulk/Music") != std::string::npos)));
+			&& (!IS_PCM(sExt)
+				|| (IS_OGG(sExt) && pInfo->path->find("/LF/Bulk/Music") != std::string::npos)));
 #endif
 
 	if(external)

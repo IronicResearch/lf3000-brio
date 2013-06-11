@@ -37034,3 +37034,15 @@ By dlazzari (dlazzari@leapfrog.com) on 6/6/13 6:08 PM
 6,235 ms. (Cumulative: 15,235,030 ms)
 
 ----------------
+Revision 10,282 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Migrated AudioMPI player extension checks into inline routines for Ogg and PCM types.
+
+Simplifies logic for distinguishing original Brio Ogg and PCM player types from other
+audio player codecs supported by LibAV, which may not necessarily use file extensions.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/10/13 6:59 PM
+1 changed, 0 added, 0 deleted.
+8,014 ms. (Cumulative: 15,243,136 ms)
+
+----------------
