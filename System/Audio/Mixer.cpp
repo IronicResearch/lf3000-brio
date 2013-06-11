@@ -1007,7 +1007,7 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 				|| pPlayer->GetSampleRate() == 11025
 				|| pPlayer->GetSampleRate() == 48000)
 			&& sExt
-			&& (!IS_PCM(sExt)
+			&& ((!IS_PCM(sExt) && !IS_OGG(sExt))
 				|| (IS_OGG(sExt) && pInfo->path->find("/LF/Bulk/Music") != std::string::npos)));
 #endif
 
