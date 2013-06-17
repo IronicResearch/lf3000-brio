@@ -37055,3 +37055,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/10/13 7:13 PM
 6,378 ms. (Cumulative: 15,249,626 ms)
 
 ----------------
+Revision 10,284 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add x86 version of libboost_system.so for sdk emulation builds.
+
+By dlazzari (dlazzari@leapfrog.com) on 6/17/13 12:06 PM
+0 changed, 2 added, 0 deleted.
+6,614 ms. (Cumulative: 15,256,334 ms)
+
+----------------
