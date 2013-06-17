@@ -58,8 +58,6 @@ if env['hdr_deploy_dir']:
 		dest_dir = dest_dir.Dir(env['cpu']).abspath
 	if env['platform'] == 'Lightning':
 		ExportHeaders( dest_dir, Dir('MagicEyes').Dir('Include').abspath, '.h' )
-	elif env['platform'] == 'LF2000':
-		targets += CopyTree.CopyTree(env, Dir('Nexell').Dir('Include').abspath, dest_dir)
 	
 #Install Libraries
 if env['install_dir']:
@@ -74,11 +72,7 @@ if env['install_dir']:
 	elif env['platform'] == 'Lightning':
 		libs = glob.glob(os.path.join('MagicEyes', 'Libs', env['cpu'], '*.so*'))
 	elif env['platform'] == 'LF2000':
-		#Only deploy Nexell OpenGL libraries to SDK, never to an embedded setup
-		if env['is_sdk']:
-			libs = glob.glob(os.path.join('Nexell', 'Libs', env['cpu'], '*.so'))
-		else:
-			libs = []
+		libs = []
 	targets += env.Install(opengl_lib_dir, libs)
 	
 	#In the SDK, Third Party libs get their own directory, in deployment, everything goes together in lib
