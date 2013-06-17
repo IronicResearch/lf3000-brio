@@ -37064,3 +37064,12 @@ By dlazzari (dlazzari@leapfrog.com) on 6/17/13 12:06 PM
 6,614 ms. (Cumulative: 15,256,334 ms)
 
 ----------------
+Revision 10,285 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix broken symlink for libboost_system.so
+
+By dlazzari (dlazzari@leapfrog.com) on 6/17/13 1:33 PM
+1 changed, 0 added, 0 deleted.
+6,672 ms. (Cumulative: 15,263,100 ms)
+
+----------------
