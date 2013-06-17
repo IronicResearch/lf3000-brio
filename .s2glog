@@ -37073,3 +37073,12 @@ By dlazzari (dlazzari@leapfrog.com) on 6/17/13 1:33 PM
 6,672 ms. (Cumulative: 15,263,100 ms)
 
 ----------------
+Revision 10,286 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove LF2000 OpenGL headers and libraries from Brio. These are now included in the Angstrom-denzil toolchain (for internal developers) and will be added separately to official SDK builds by Angstrom, where they will be built from source.
+
+By dlazzari (dlazzari@leapfrog.com) on 6/17/13 4:38 PM
+1 changed, 0 added, 40 deleted.
+7,522 ms. (Cumulative: 15,270,715 ms)
+
+----------------
