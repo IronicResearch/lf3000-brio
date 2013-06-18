@@ -37082,3 +37082,12 @@ By dlazzari (dlazzari@leapfrog.com) on 6/17/13 4:38 PM
 7,522 ms. (Cumulative: 15,270,715 ms)
 
 ----------------
+Revision 10,287 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding ifdef for emulation to always use 32 bit textures and render buffer.
+
+By Minh Saelock (msaelock@leapfrog.com) on 6/17/13 5:50 PM
+1 changed, 0 added, 0 deleted.
+6,098 ms. (Cumulative: 15,276,907 ms)
+
+----------------
