@@ -118,6 +118,9 @@ public:
 	/// After calling this function, all audio output is paused.  IsAudioPlaying
 	/// for any audio that was paused will still return true for legacy reasons.
 	///
+	/// Note: Normally called for system suspend/resume purposes.
+	/// External developers should use \ref PauseAllAudio() and \ref ResumeAllAudio().
+	///
 	/// \return This function always returns kNoErr
 	tErrType	PauseAudioSystem( void );
 
@@ -125,6 +128,9 @@ public:
 	///
 	/// The streams that were playing before the call to PauseAudioSystem are
 	/// resumed.
+	///
+	/// Note: Normally called for system suspend/resume purposes.
+	/// External developers should use \ref PauseAllAudio() and \ref ResumeAllAudio().
 	///
 	/// \return This function always returns kNoErr
 	tErrType	ResumeAudioSystem( void );

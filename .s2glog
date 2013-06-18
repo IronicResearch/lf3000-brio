@@ -37091,3 +37091,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 6/17/13 5:50 PM
 6,098 ms. (Cumulative: 15,276,907 ms)
 
 ----------------
+Revision 10,288 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added AudioMPI Doxygen comments to refer external developers to PauseAllAudio() and ResumeAllAudio() 
+instead of PauseAudioSystem() and ResumeAudioSystem(). (TTP 6008)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/17/13 6:34 PM
+1 changed, 0 added, 0 deleted.
+6,032 ms. (Cumulative: 15,283,032 ms)
+
+----------------
