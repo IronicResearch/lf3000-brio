@@ -37101,3 +37101,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/17/13 6:34 PM
 6,032 ms. (Cumulative: 15,283,032 ms)
 
 ----------------
+Revision 10,289 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added AccelerometerMPI Doxygen comments for external developers using SetAccelerometerBias(). (TTP 4068)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/17/13 6:55 PM
+1 changed, 0 added, 0 deleted.
+6,047 ms. (Cumulative: 15,289,173 ms)
+
+----------------

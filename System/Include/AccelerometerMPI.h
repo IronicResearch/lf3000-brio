@@ -79,6 +79,15 @@ public:
 	
 	/// Set the bias
 	/// that is subtracted from each sample in the driver for calibration purposes
+	///
+	/// Note: The accelerometer bias is normally set by the driver based on
+	/// manufacturing calibration data.
+	///
+	/// If a developer wishes to use their own calibration routine, they should
+	/// zero these bias values before collecting calibration data in order to avoid
+	/// cummulative errors when setting new bias values.
+	///
+	/// \return Returns kNoErr on success.
 	tErrType				SetAccelerometerBias(S32 xoffset, S32 yoffset, S32 zoffset);
 	
 private:
