@@ -32,6 +32,8 @@ static tKeypadData	 	gCachedKeypadData 	= {0, 0, {0, 0}};
 static tTouchData		gCachedTouchData	= {0, 0, 0, {0, 0}};
 static tTouchMode		gCachedTouchMode	= kTouchModeDefault;
 static bool				gIsPressureMode		= false;
+static tDpadOrientation gDpadOrientation 	= kDpadPortrait;
+static tMutex 			gButtonDataMutex	= PTHREAD_MUTEX_INITIALIZER;
 
 const CString	SYSFS_TOUCHSCREEN_LF1000	= "/sys/devices/platform/lf1000-touchscreen/";
 const CString	SYSFS_TOUCHSCREEN_LF2000	= "/sys/devices/platform/lf2000-touchscreen/";
@@ -40,6 +42,147 @@ static CString	SYSFS_TOUCHSCREEN_ROOT		= SYSFS_TOUCHSCREEN_LF2000;
 inline const char* SYSFS_TOUCHSCREEN_PATH(const char* path)
 {
 	return CString(SYSFS_TOUCHSCREEN_ROOT + path).c_str();
+}
+
+//============================================================================
+// C function support
+//============================================================================
+
+//------------------------------------------------------------------------------
+tDpadOrientation GetDpadOrientationState()
+{
+	return gDpadOrientation;
+}
+
+//------------------------------------------------------------------------------
+void RotateDpad(int rotation, tButtonData2& gButtonData)
+{
+	U32 button_mask = kButtonUp | kButtonDown | kButtonRight | kButtonLeft;
+	tButtonData2 old_dpad = gButtonData;
+	gButtonData.buttonState &= ~button_mask;
+	gButtonData.buttonTransition = 0;
+
+	switch(rotation)
+	{
+	case 0:
+		gButtonData.buttonState = old_dpad.buttonState;
+		break;
+	case 1:
+		if(old_dpad.buttonState & kButtonUp)
+			gButtonData.buttonState |= kButtonLeft;
+		if(old_dpad.buttonState & kButtonDown)
+			gButtonData.buttonState |= kButtonRight;
+		if(old_dpad.buttonState & kButtonRight)
+			gButtonData.buttonState |= kButtonUp;
+		if(old_dpad.buttonState & kButtonLeft)
+			gButtonData.buttonState |= kButtonDown;
+		break;
+	case 2:
+		if(old_dpad.buttonState & kButtonUp)
+			gButtonData.buttonState |= kButtonDown;
+		if(old_dpad.buttonState & kButtonDown)
+			gButtonData.buttonState |= kButtonUp;
+		if(old_dpad.buttonState & kButtonRight)
+			gButtonData.buttonState |= kButtonLeft;
+		if(old_dpad.buttonState & kButtonLeft)
+			gButtonData.buttonState |= kButtonRight;
+		break;
+	case 3:
+		if(old_dpad.buttonState & kButtonUp)
+			gButtonData.buttonState |= kButtonRight;
+		if(old_dpad.buttonState & kButtonDown)
+			gButtonData.buttonState |= kButtonLeft;
+		if(old_dpad.buttonState & kButtonRight)
+			gButtonData.buttonState |= kButtonDown;
+		if(old_dpad.buttonState & kButtonLeft)
+			gButtonData.buttonState |= kButtonUp;
+		break;
+	}
+	gButtonData.buttonTransition = (old_dpad.buttonState ^ gButtonData.buttonState) & button_mask;
+}
+
+//------------------------------------------------------------------------------
+tErrType SetDpadOrientationState(tDpadOrientation dpad_orientation)
+{
+	if(gDpadOrientation == dpad_orientation)
+		return kNoErr;
+
+	CKernelMPI kernel_mpi;
+	kernel_mpi.LockMutex(gButtonDataMutex);
+	int rotations = 0;
+	switch(gDpadOrientation)
+	{
+	case kDpadLandscape:
+		switch(dpad_orientation)
+		{
+		case kDpadPortrait:
+			rotations = 1;
+			break;
+		case kDpadLandscapeUpsideDown:
+			rotations = 2;
+			break;
+		case kDpadPortraitUpsideDown:
+			rotations = 3;
+			break;
+		}
+		break;
+	case kDpadPortrait:
+		switch(dpad_orientation)
+		{
+		case kDpadLandscape:
+			rotations = 3;
+			break;
+		case kDpadLandscapeUpsideDown:
+			rotations = 1;
+			break;
+		case kDpadPortraitUpsideDown:
+			rotations = 2;
+			break;
+		}
+		break;
+	case kDpadLandscapeUpsideDown:
+		switch(dpad_orientation)
+		{
+		case kDpadLandscape:
+			rotations = 2;
+			break;
+		case kDpadPortrait:
+			rotations = 3;
+			break;
+		case kDpadPortraitUpsideDown:
+			rotations = 1;
+			break;
+		}
+		break;
+	case kDpadPortraitUpsideDown:
+		switch(dpad_orientation)
+		{
+		case kDpadLandscape:
+			rotations = 1;
+			break;
+		case kDpadPortrait:
+			rotations = 2;
+			break;
+		case kDpadLandscapeUpsideDown:
+			rotations = 3;
+			break;
+		}
+		break;
+	}
+	RotateDpad(rotations, gCachedButtonData);
+	gDpadOrientation = dpad_orientation;
+	if (gCachedButtonData.buttonTransition != 0) {
+		U64 usec = kernel_mpi.GetElapsedTimeAsUSecs();
+		U64 sec = usec / 1000000;
+		usec %= 1000000;
+		gCachedButtonData.time.seconds      = sec;
+		gCachedButtonData.time.microSeconds = usec;
+		CButtonMessage button_msg(gCachedButtonData);
+		CEventMPI event_mpi;
+		event_mpi.PostEvent(button_msg, 0, 0);
+	}
+	kernel_mpi.UnlockMutex(gButtonDataMutex);
+	return kNoErr;
 }
 
 //============================================================================
@@ -64,6 +207,8 @@ tButtonData CButtonMessage::GetButtonState() const
 	tButtonData data = {mData.buttonState, mData.buttonTransition};
 	return data;
 }
+
+//------------------------------------------------------------------------------
 tButtonData2 CButtonMessage::GetButtonState2() const
 {
 	return mData;
@@ -147,6 +292,7 @@ CButtonMPI::CButtonMPI() : pModule_(NULL)
 #ifdef LF1000
 	SYSFS_TOUCHSCREEN_ROOT = (HasPlatformCapability(kCapsLF1000)) ? SYSFS_TOUCHSCREEN_LF1000 : SYSFS_TOUCHSCREEN_LF2000;
 #endif
+	gDpadOrientation = (GetPlatformFamily() == "LEX") ? kDpadLandscape : kDpadPortrait;
 	pModule_ = new CButtonModule();
 }
 
@@ -389,8 +535,9 @@ tDpadOrientation CButtonMPI::GetDpadOrientation()
 //----------------------------------------------------------------------------
 tErrType CButtonMPI::SetDpadOrientation(tDpadOrientation dpad_orientation)
 {
-	SetDpadOrientationState(dpad_orientation);
-	return kNoErr;
+	return SetDpadOrientationState(dpad_orientation);
 }
+//----------------------------------------------------------------------------
+
 LF_END_BRIO_NAMESPACE()
 // EOF
