@@ -37110,3 +37110,18 @@ By Dave Milici (dmilici@leapfrog.com) on 6/17/13 6:55 PM
 6,047 ms. (Cumulative: 15,289,173 ms)
 
 ----------------
+Revision 10,290 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Migrate Dpad orientation functions out of Utility library into ButtonMPI. (TTP 4084 1:2)
+
+This removes the EventMPI and ButtonMPI object dependencies from the Utility library.
+The EventMPI button handler thread still has dependency on Dpad orientation for swizzling
+button states, which were previously managed as shared vars between C and C++ modules(!).
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/18/13 7:15 PM
+4 changed, 0 added, 0 deleted.
+6,075 ms. (Cumulative: 15,295,342 ms)
+
+----------------
