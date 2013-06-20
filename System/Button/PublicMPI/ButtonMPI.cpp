@@ -179,10 +179,37 @@ tErrType SetDpadOrientationState(tDpadOrientation dpad_orientation)
 		gCachedButtonData.time.microSeconds = usec;
 		CButtonMessage button_msg(gCachedButtonData);
 		CEventMPI event_mpi;
-		event_mpi.PostEvent(button_msg, 0, 0);
+		event_mpi.PostEvent(button_msg, 128, 0); // async
 	}
 	kernel_mpi.UnlockMutex(gButtonDataMutex);
 	return kNoErr;
+}
+
+//------------------------------------------------------------------------------
+tButtonData2 SwizzleDpad(tButtonData2 data)
+{
+	tButtonData2 swizzle = data;
+	U32 mask = ~(kButtonUp | kButtonDown | kButtonRight | kButtonLeft);
+
+	// FIXME: presumes native Dpad is portrait LPAD
+	switch (gDpadOrientation)
+	{
+	case kDpadLandscape:
+		RotateDpad(3, swizzle);
+		break;
+	case kDpadPortrait:
+		RotateDpad(0, swizzle);
+		break;
+	case kDpadLandscapeUpsideDown:
+		RotateDpad(1, swizzle);
+		break;
+	case kDpadPortraitUpsideDown:
+		RotateDpad(2, swizzle);
+		break;
+	}
+
+	swizzle.buttonTransition |= (data.buttonTransition & mask);
+	return swizzle;
 }
 
 //============================================================================
@@ -192,7 +219,17 @@ tErrType SetDpadOrientationState(tDpadOrientation dpad_orientation)
 CButtonMessage::CButtonMessage( const tButtonData2& data ) 
 	: IEventMessage(kButtonStateChanged), mData(data)
 {
-	gCachedButtonData = data;
+#if 0
+	if (data.buttonTransition & (kButtonUp | kButtonDown | kButtonRight | kButtonLeft))
+	{
+		CKernelMPI kernel;
+		kernel.LockMutex(gButtonDataMutex);
+		gCachedButtonData = mData = SwizzleDpad(data);
+		kernel.UnlockMutex(gButtonDataMutex);
+	}
+	else
+#endif
+		gCachedButtonData = mData;
 }
 
 //------------------------------------------------------------------------------
@@ -292,7 +329,8 @@ CButtonMPI::CButtonMPI() : pModule_(NULL)
 #ifdef LF1000
 	SYSFS_TOUCHSCREEN_ROOT = (HasPlatformCapability(kCapsLF1000)) ? SYSFS_TOUCHSCREEN_LF1000 : SYSFS_TOUCHSCREEN_LF2000;
 #endif
-	gDpadOrientation = (GetPlatformFamily() == "LEX") ? kDpadLandscape : kDpadPortrait;
+	// FIXME: no singleton instance for persistent state
+//	gDpadOrientation = (GetPlatformFamily() == "LEX") ? kDpadLandscape : kDpadPortrait;
 	pModule_ = new CButtonModule();
 }
 

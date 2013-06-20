@@ -63,10 +63,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //Maximum number of input drivers to discover
 #define NUM_INPUTS	6
 
-//extern tButtonData2 gButtonData;
-//extern tMutex gButtonDataMutex;
-//extern tDpadOrientation gDpadOrientation;
-
+extern tButtonData2 SwizzleDpad(tButtonData2 data); // FIXME
 
 namespace
 {
@@ -124,90 +121,13 @@ namespace
 	//----------------------------------------------------------------------------
 	// Linux keyboard to Brio button mapping
 	//----------------------------------------------------------------------------
-	U32 LinuxKeyToBrioEmerald(U16 code)
+	U32 LinuxKeyToBrio(U16 code)
 	{
 		switch(code) {
-			case KEY_UP:
-				switch(GetDpadOrientationState()){
-					case kDpadLandscape: return kButtonUp;
-					case kDpadPortrait: return kButtonLeft;
-					case kDpadLandscapeUpsideDown: return kButtonDown;
-					case kDpadPortraitUpsideDown: return kButtonRight;
-				}
-				break;
-			case KEY_DOWN:
-				switch(GetDpadOrientationState()){
-					case kDpadLandscape: return kButtonDown;
-					case kDpadPortrait: return kButtonRight;
-					case kDpadLandscapeUpsideDown: return kButtonUp;
-					case kDpadPortraitUpsideDown: return kButtonLeft;
-				}
-				break;
-			case KEY_RIGHT:
-				switch(GetDpadOrientationState()){
-					case kDpadLandscape: return kButtonRight;
-					case kDpadPortrait: return kButtonUp;
-					case kDpadLandscapeUpsideDown: return kButtonLeft;
-					case kDpadPortraitUpsideDown: return kButtonDown;
-				}
-				break;
-			case KEY_LEFT:
-				switch(GetDpadOrientationState()){
-					case kDpadLandscape: return kButtonLeft;
-					case kDpadPortrait: return kButtonDown;
-					case kDpadLandscapeUpsideDown: return kButtonRight;
-					case kDpadPortraitUpsideDown: return kButtonUp;
-				}
-				break;
-			case KEY_A:			return kButtonA;
-			case KEY_B:			return kButtonB;
-			case KEY_L:			return kButtonLeftShoulder;
-			case KEY_R:			return kButtonRightShoulder;
-			case KEY_M:			return kButtonMenu;
-			case KEY_H:			return kButtonHint;
-			case KEY_P:			return kButtonPause;
-			case KEY_X:			return kButtonBrightness;
-			case KEY_VOLUMEDOWN: return kButtonVolumeDown;
-			case KEY_VOLUMEUP:	return kButtonVolumeUp;
-			case KEY_ESC:		return kButtonEscape;
-		}
-		return 0;
-	}
-	U32 LinuxKeyToBrioMadrid(U16 code)
-	{
-		switch(code) {
-			case KEY_UP:
-				switch(GetDpadOrientationState()){
-					case kDpadPortrait: return kButtonUp;
-					case kDpadLandscape: return kButtonRight;
-					case kDpadPortraitUpsideDown: return kButtonDown;
-					case kDpadLandscapeUpsideDown: return kButtonLeft;
-				}
-				break;
-			case KEY_DOWN:
-				switch(GetDpadOrientationState()){
-					case kDpadPortrait: return kButtonDown;
-					case kDpadLandscape: return kButtonLeft;
-					case kDpadPortraitUpsideDown: return kButtonUp;
-					case kDpadLandscapeUpsideDown: return kButtonRight;
-				}
-				break;
-			case KEY_RIGHT:
-				switch(GetDpadOrientationState()){
-					case kDpadPortrait: return kButtonRight;
-					case kDpadLandscape: return kButtonDown;
-					case kDpadPortraitUpsideDown: return kButtonLeft;
-					case kDpadLandscapeUpsideDown: return kButtonUp;
-				}
-				break;
-			case KEY_LEFT:
-				switch(GetDpadOrientationState()){
-					case kDpadPortrait: return kButtonLeft;
-					case kDpadLandscape: return kButtonUp;
-					case kDpadPortraitUpsideDown: return kButtonRight;
-					case kDpadLandscapeUpsideDown: return kButtonDown;
-				}
-				break;
+			case KEY_UP:		return kButtonUp;
+			case KEY_DOWN:		return kButtonDown;
+			case KEY_RIGHT:		return kButtonRight;
+			case KEY_LEFT:		return kButtonLeft;
 			case KEY_A:			return kButtonA;
 			case KEY_B:			return kButtonB;
 			case KEY_L:			return kButtonLeftShoulder;
@@ -484,14 +404,6 @@ server:
 	int button_index = -1;
 
 	// init button driver and state
-	U32 (*LinuxKeyToBrio)(U16 code) = 0;
-	CString platform_name = GetPlatformFamily();
-	if(platform_name == "LPAD" || platform_name == "RIO") {
-		LinuxKeyToBrio = LinuxKeyToBrioMadrid;
-	} else {
-		LinuxKeyToBrio = LinuxKeyToBrioEmerald;
-	}
-
 	tButtonData2 gButtonData;
 	gButtonData.buttonState = 0;
 	gButtonData.buttonTransition = 0;
@@ -697,7 +609,7 @@ skip_usb_socket:
 				if(gButtonData.buttonTransition != 0) {
 					gButtonData.time.seconds      = ev.time.tv_sec;
 					gButtonData.time.microSeconds = ev.time.tv_usec;
-					CButtonMessage button_msg(gButtonData);
+					CButtonMessage button_msg(SwizzleDpad(gButtonData));
 					pThis->PostEvent(button_msg, kButtonEventPriority, 0);
 				}
 			}
