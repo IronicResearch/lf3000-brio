@@ -37158,3 +37158,16 @@ By Dave Milici (dmilici@leapfrog.com) on 6/19/13 6:27 PM
 6,326 ms. (Cumulative: 15,308,005 ms)
 
 ----------------
+Revision 10,293 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added cases for native landscape Dpad. (TTP 4084 4:4)
+
+Needs testing on multiple platforms -- LPAD, LEX.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/19/13 7:32 PM
+1 changed, 0 added, 0 deleted.
+6,330 ms. (Cumulative: 15,314,444 ms)
+
+----------------

@@ -32,7 +32,8 @@ static tKeypadData	 	gCachedKeypadData 	= {0, 0, {0, 0}};
 static tTouchData		gCachedTouchData	= {0, 0, 0, {0, 0}};
 static tTouchMode		gCachedTouchMode	= kTouchModeDefault;
 static bool				gIsPressureMode		= false;
-static tDpadOrientation gDpadOrientation 	= kDpadPortrait;
+static tDpadOrientation gDpadOrientation 	= (GetPlatformFamily() == "LEX") ? kDpadLandscape : kDpadPortrait;
+static tDpadOrientation gNativeOrientation 	= (GetPlatformFamily() == "LEX") ? kDpadLandscape : kDpadPortrait;
 static tMutex 			gButtonDataMutex	= PTHREAD_MUTEX_INITIALIZER;
 
 const CString	SYSFS_TOUCHSCREEN_LF1000	= "/sys/devices/platform/lf1000-touchscreen/";
@@ -191,23 +192,45 @@ tButtonData2 SwizzleDpad(tButtonData2 data)
 	tButtonData2 swizzle = data;
 	U32 mask = ~(kButtonUp | kButtonDown | kButtonRight | kButtonLeft);
 
-	// FIXME: presumes native Dpad is portrait LPAD
-	switch (gDpadOrientation)
-	{
-	case kDpadLandscape:
-		RotateDpad(3, swizzle);
-		break;
-	case kDpadPortrait:
-		RotateDpad(0, swizzle);
-		break;
-	case kDpadLandscapeUpsideDown:
-		RotateDpad(1, swizzle);
-		break;
-	case kDpadPortraitUpsideDown:
-		RotateDpad(2, swizzle);
-		break;
+	// Native Dpad orientation is either Portrait (LPAD) or Landscape (LEX)
+	if (gNativeOrientation == kDpadPortrait) {
+		switch (gDpadOrientation)
+		{
+		case kDpadLandscape:
+			RotateDpad(3, swizzle);
+			break;
+		case kDpadPortrait:
+			RotateDpad(0, swizzle);
+			break;
+		case kDpadLandscapeUpsideDown:
+			RotateDpad(1, swizzle);
+			break;
+		case kDpadPortraitUpsideDown:
+			RotateDpad(2, swizzle);
+			break;
+		}
+	}
+	else {
+		switch (gDpadOrientation)
+		{
+		case kDpadLandscape:
+			RotateDpad(0, swizzle);
+			break;
+		case kDpadPortrait:
+			RotateDpad(1, swizzle);
+			break;
+		case kDpadLandscapeUpsideDown:
+			RotateDpad(2, swizzle);
+			break;
+		case kDpadPortraitUpsideDown:
+			RotateDpad(3, swizzle);
+			break;
+		}
 	}
 
+	// Account for unswizzled states
+	if (swizzle.buttonTransition == 0)
+		swizzle.buttonTransition |= (data.buttonTransition);
 	swizzle.buttonTransition |= (data.buttonTransition & mask);
 	return swizzle;
 }
@@ -334,8 +357,6 @@ CButtonMPI::CButtonMPI() : pModule_(NULL)
 #ifdef LF1000
 	SYSFS_TOUCHSCREEN_ROOT = (HasPlatformCapability(kCapsLF1000)) ? SYSFS_TOUCHSCREEN_LF1000 : SYSFS_TOUCHSCREEN_LF2000;
 #endif
-	// FIXME: no singleton instance for persistent state
-//	gDpadOrientation = (GetPlatformFamily() == "LEX") ? kDpadLandscape : kDpadPortrait;
 	pModule_ = new CButtonModule();
 }
 
