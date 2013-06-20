@@ -63,8 +63,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 //Maximum number of input drivers to discover
 #define NUM_INPUTS	6
 
-extern tButtonData2 SwizzleDpad(tButtonData2 data); // FIXME
-
 namespace
 {
 	//============================================================================
@@ -609,7 +607,7 @@ skip_usb_socket:
 				if(gButtonData.buttonTransition != 0) {
 					gButtonData.time.seconds      = ev.time.tv_sec;
 					gButtonData.time.microSeconds = ev.time.tv_usec;
-					CButtonMessage button_msg(SwizzleDpad(gButtonData));
+					CButtonMessage button_msg(gButtonData, true);
 					pThis->PostEvent(button_msg, kButtonEventPriority, 0);
 				}
 			}

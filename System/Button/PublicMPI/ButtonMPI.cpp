@@ -219,8 +219,14 @@ tButtonData2 SwizzleDpad(tButtonData2 data)
 CButtonMessage::CButtonMessage( const tButtonData2& data ) 
 	: IEventMessage(kButtonStateChanged), mData(data)
 {
-#if 0
-	if (data.buttonTransition & (kButtonUp | kButtonDown | kButtonRight | kButtonLeft))
+	gCachedButtonData = mData;
+}
+
+//------------------------------------------------------------------------------
+CButtonMessage::CButtonMessage( const tButtonData2& data, bool transform )
+	: IEventMessage(kButtonStateChanged), mData(data)
+{
+	if (transform && data.buttonTransition & (kButtonUp | kButtonDown | kButtonRight | kButtonLeft))
 	{
 		CKernelMPI kernel;
 		kernel.LockMutex(gButtonDataMutex);
@@ -228,7 +234,6 @@ CButtonMessage::CButtonMessage( const tButtonData2& data )
 		kernel.UnlockMutex(gButtonDataMutex);
 	}
 	else
-#endif
 		gCachedButtonData = mData;
 }
 

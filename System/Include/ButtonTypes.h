@@ -87,6 +87,7 @@ enum tDpadOrientation {
 class CButtonMessage : public IEventMessage {
 public:
 	CButtonMessage( const tButtonData2& data );
+	CButtonMessage( const tButtonData2& data, bool transform );
 	virtual U16	GetSizeInBytes() const;
 	tButtonData GetButtonState() const;
 	tButtonData2 GetButtonState2() const;
