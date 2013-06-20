@@ -37143,3 +37143,18 @@ By Dave Milici (dmilici@leapfrog.com) on 6/19/13 6:07 PM
 6,118 ms. (Cumulative: 15,301,569 ms)
 
 ----------------
+Revision 10,292 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Additional ButtonMessage constructor with transform option. (TTP 4084 3:4)
+
+Distinguishes ButtonMessages posted by EventMPI button handler which need
+swizzing from original ButtonMessage types. Overloaded message constructor
+yields same size message objects for existing listeners, but conditionally
+transforms incoming button data.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/19/13 6:27 PM
+3 changed, 0 added, 0 deleted.
+6,326 ms. (Cumulative: 15,308,005 ms)
+
+----------------
