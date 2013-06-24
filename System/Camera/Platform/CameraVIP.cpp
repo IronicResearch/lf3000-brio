@@ -98,7 +98,7 @@ void CVIPCameraModule::AllocVMem(tCameraContext& camCtx_)
 	{
 		// Request vmem driver 8Meg memory block for video capture use
 		memset(&vm, 0, sizeof(vm));
-		vm.Flags = VMEM_BLOCK_BUFFER;
+		vm.Flags = VMEM_LINEAR_BUFFER; // 1D heap
 		vm.MemWidth  = 4096;
 		vm.MemHeight = 2048;
 		vm.HorAlign  = 64;

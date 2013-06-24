@@ -37171,3 +37171,14 @@ By Dave Milici (dmilici@leapfrog.com) on 6/19/13 7:32 PM
 6,330 ms. (Cumulative: 15,314,444 ms)
 
 ----------------
+Revision 10,294 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,295 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change CameraMPI allocations to use 1D heap instead of 2D heap to conserve memory. (TTP 5844, 6321 1:2)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/24/13 10:45 AM
+1 changed, 0 added, 0 deleted.
+6,394 ms. (Cumulative: 15,320,963 ms)
+
+----------------
