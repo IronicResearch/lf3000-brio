@@ -37182,3 +37182,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/24/13 10:45 AM
 6,394 ms. (Cumulative: 15,320,963 ms)
 
 ----------------
+Revision 10,296 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Utility lib unit test needs to link DebugMPI.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/25/13 11:07 AM
+1 changed, 0 added, 0 deleted.
+6,485 ms. (Cumulative: 15,327,557 ms)
+
+----------------
