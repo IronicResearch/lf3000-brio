@@ -15,8 +15,9 @@ modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['AudioMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI', 
 					 'DebugMPI', 'ogg', 'theora', 
-					 'avformat', 'avcodec', 'avutil', 
-					 'gstreamer-0.10', 'glib-2.0', 'gobject-2.0', 'gstvideo-0.10']
+					 'avformat', 'avcodec', 'avutil'] 
+if env['platform'] == 'LF2000' and env['cpu_bare']:
+	modlibs	+= ['gstreamer-0.10', 'glib-2.0', 'gobject-2.0', 'gstvideo-0.10']
 mpilibs		= ['ModuleMPI']
 						
 #-----------------------------------------------------------------------------
@@ -36,8 +37,9 @@ myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'glib-2.0')])
 myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'gstreamer-0.10')])
 myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'libxml2')])
 myenv.Append(LIBPATH = [os.path.join(nfsroot, 'usr', 'lib')])
-myenv.Append(CPPDEFINES = ['USE_GSTREAMER=1'])
-myenv.Append(CPPDEFINES = ['HAVE_CONFIG_H', 'G_THREADS_MANDATORY', 'G_DISABLE_CAST_CHECKS', 'G_DISABLE_ASSERT'])
+if env['platform'] == 'LF2000' and env['cpu_bare']:
+	myenv.Append(CPPDEFINES = ['USE_GSTREAMER=1'])
+	myenv.Append(CPPDEFINES = ['HAVE_CONFIG_H', 'G_THREADS_MANDATORY', 'G_DISABLE_CAST_CHECKS', 'G_DISABLE_ASSERT'])
 
 myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
 myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
