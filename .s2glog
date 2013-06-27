@@ -37192,3 +37192,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/25/13 11:07 AM
 6,485 ms. (Cumulative: 15,327,557 ms)
 
 ----------------
+Revision 10,297 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally compile VideoMPI gstreamer support only for LF2000.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/26/13 6:35 PM
+1 changed, 0 added, 0 deleted.
+6,349 ms. (Cumulative: 15,334,000 ms)
+
+----------------
