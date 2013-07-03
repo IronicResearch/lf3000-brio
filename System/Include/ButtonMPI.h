@@ -59,9 +59,9 @@ public:
 	U32				GetTouchRate() const;
 
 	/// Set touch sample rate (Hz)
-	/// Values are set to the nearest value of 100Hz/1, 100Hz/2, 100Hz/3, etc.
+	/// Values are set to the nearest value of 50Hz/1, 50Hz/2, 50Hz/3, etc.
 	/// The values that possible are:
-	/// [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 20, 25, 33, 50, 100]
+	/// [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 20, 25, 33, 50]
 	tErrType		SetTouchRate(U32 rate);
 
 	/// Get touch mode (enum tTouchMode)

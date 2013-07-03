@@ -37202,3 +37202,14 @@ By Dave Milici (dmilici@leapfrog.com) on 6/26/13 6:35 PM
 6,349 ms. (Cumulative: 15,334,000 ms)
 
 ----------------
+Revision 10,298 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,299 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,300 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro 6127: Changed doxygen markup for Max touch rate in ButtonMPI.
+
+By spalav (spalav@leapfrog.com) on 7/3/13 1:11 PM
+1 changed, 0 added, 0 deleted.
+6,766 ms. (Cumulative: 15,340,891 ms)
+
+----------------
