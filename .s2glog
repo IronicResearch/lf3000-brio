@@ -37213,3 +37213,12 @@ By spalav (spalav@leapfrog.com) on 7/3/13 1:11 PM
 6,766 ms. (Cumulative: 15,340,891 ms)
 
 ----------------
+Revision 10,301 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Alternate BrioOpenGL constructor (the one that is passed which version of OpenGL to use) now also defaults to 16 bit render buffer, and uses 32 bit only if proper flags are set.  This prevents issues with VideoTextureDemo, which used this constructor.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/9/13 4:09 PM
+1 changed, 0 added, 0 deleted.
+8,454 ms. (Cumulative: 15,349,455 ms)
+
+----------------
