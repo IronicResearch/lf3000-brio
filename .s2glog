@@ -37222,3 +37222,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/9/13 4:09 PM
 8,454 ms. (Cumulative: 15,349,455 ms)
 
 ----------------
+Revision 10,302 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Forgotten unit test and small optimization for dpad swizzle conditional.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/15/13 7:10 PM
+2 changed, 0 added, 0 deleted.
+6,111 ms. (Cumulative: 15,355,659 ms)
+
+----------------
