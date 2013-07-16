@@ -249,7 +249,9 @@ CButtonMessage::CButtonMessage( const tButtonData2& data )
 CButtonMessage::CButtonMessage( const tButtonData2& data, bool transform )
 	: IEventMessage(kButtonStateChanged), mData(data)
 {
-	if (transform && data.buttonTransition & (kButtonUp | kButtonDown | kButtonRight | kButtonLeft))
+	if (transform
+			&& gDpadOrientation != gNativeOrientation
+			&& data.buttonTransition & (kButtonUp | kButtonDown | kButtonRight | kButtonLeft))
 	{
 		CKernelMPI kernel;
 		kernel.LockMutex(gButtonDataMutex);

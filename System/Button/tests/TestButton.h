@@ -45,6 +45,7 @@ public:
 			const CButtonMessage& btnmsg = reinterpret_cast<const CButtonMessage&>(msg);
 			tButtonData state = btnmsg.GetButtonState();
 			memcpy(&data_, &state, sizeof(data_));
+			printf("%04x, %04x\n", (int)state.buttonTransition, (int)state.buttonState);
 			return kEventStatusOKConsumed;
 		}
 		if (type_ == kTouchStateChanged)
@@ -249,6 +250,50 @@ public:
 			CKeypadMessage keymsg(keyrec);
 			eventmgr->PostEvent(keymsg, 255, &handler_);
 			usleep(random() % 100000);
+		}
+	}
+
+	//------------------------------------------------------------------------
+	void testDpadOrientation( )
+	{
+		PRINT_TEST_NAME();
+
+		tDpadOrientation orient = btnmgr_->GetDpadOrientation();
+		if (HasPlatformCapability(kCapsButtonEscape)) {
+			TS_ASSERT_EQUALS( kDpadPortrait, orient );
+		}
+		else {
+			TS_ASSERT_EQUALS( kDpadLandscape, orient );
+		}
+
+		boost::scoped_ptr<CEventMPI> eventmgr(new CEventMPI());
+		TS_ASSERT_EQUALS( kNoErr, eventmgr->RegisterEventListener(&handler_) );
+		handler_.data_.buttonTransition = 0;
+		printf("**** press Dpad button closest to screen *****\n");
+		sleep(1);
+
+		btnmgr_->SetDpadOrientation(kDpadLandscape);
+		TS_ASSERT_EQUALS( kDpadLandscape, btnmgr_->GetDpadOrientation() );
+		if (handler_.data_.buttonTransition) {
+			TS_ASSERT_EQUALS( kButtonRight, handler_.data_.buttonTransition & kButtonRight );
+		}
+
+		btnmgr_->SetDpadOrientation(kDpadPortrait);
+		TS_ASSERT_EQUALS( kDpadPortrait, btnmgr_->GetDpadOrientation() );
+		if (handler_.data_.buttonTransition) {
+			TS_ASSERT_EQUALS( kButtonUp, handler_.data_.buttonTransition & kButtonUp );
+		}
+
+		btnmgr_->SetDpadOrientation(kDpadLandscapeUpsideDown);
+		TS_ASSERT_EQUALS( kDpadLandscapeUpsideDown, btnmgr_->GetDpadOrientation() );
+		if (handler_.data_.buttonTransition) {
+			TS_ASSERT_EQUALS( kButtonLeft, handler_.data_.buttonTransition & kButtonLeft );
+		}
+
+		btnmgr_->SetDpadOrientation(kDpadPortraitUpsideDown);
+		TS_ASSERT_EQUALS( kDpadPortraitUpsideDown, btnmgr_->GetDpadOrientation() );
+		if (handler_.data_.buttonTransition) {
+			TS_ASSERT_EQUALS( kButtonDown, handler_.data_.buttonTransition & kButtonDown );
 		}
 	}
 };
