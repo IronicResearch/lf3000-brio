@@ -37232,3 +37232,15 @@ By Dave Milici (dmilici@leapfrog.com) on 7/15/13 7:10 PM
 6,111 ms. (Cumulative: 15,355,659 ms)
 
 ----------------
+Revision 10,303 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Request mapped physical address in linear block access region,
+compatible with YUV planar modes.
+Does not yet fix conflict seen with DYN-HD OGL textures. (TTP 6367 1:2)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/16/13 5:59 PM
+1 changed, 0 added, 0 deleted.
+6,095 ms. (Cumulative: 15,361,848 ms)
+
+----------------
