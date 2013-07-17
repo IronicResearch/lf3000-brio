@@ -37244,3 +37244,17 @@ By Dave Milici (dmilici@leapfrog.com) on 7/16/13 5:59 PM
 6,095 ms. (Cumulative: 15,361,848 ms)
 
 ----------------
+Revision 10,304 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Reduce max 1D heap allocation to 4MB to avoid contention problems. (TTP 6367 2:2)
+High-res snapshots exceeding YUV planar mode max height (1600x1200) are grabbed
+in YUYV packed format instead.
+Interim workaround until VIP flip/rotate support is needed again.
+ 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/16/13 7:25 PM
+1 changed, 0 added, 0 deleted.
+5,977 ms. (Cumulative: 15,367,935 ms)
+
+----------------

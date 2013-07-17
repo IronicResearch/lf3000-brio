@@ -100,7 +100,7 @@ void CVIPCameraModule::AllocVMem(tCameraContext& camCtx_)
 		memset(&vm, 0, sizeof(vm));
 		vm.Flags = VMEM_LINEAR_BUFFER; // 1D heap
 		vm.MemWidth  = 4096;
-		vm.MemHeight = 2048;
+		vm.MemHeight = 1024; //2048;
 		vm.HorAlign  = 64;
 		vm.VerAlign  = 32;
 		do {
@@ -530,7 +530,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	}
 
 	// Switch to YUYV packed format for high-res capture modes
-	if (pSurf->format == kPixelFormatYUYV422)
+	if (pSurf->format == kPixelFormatYUYV422 || pSurf->height > vm.MemHeight)
 	{
 		newMode.pixelformat = frame.pixelformat = kCaptureFormatRAWYUYV;
 	}
