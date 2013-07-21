@@ -98,9 +98,9 @@ void CVIPCameraModule::AllocVMem(tCameraContext& camCtx_)
 	{
 		// Request vmem driver 8Meg memory block for video capture use
 		memset(&vm, 0, sizeof(vm));
-		vm.Flags = VMEM_LINEAR_BUFFER; // 1D heap
+		vm.Flags = VMEM_BLOCK_BUFFER;
 		vm.MemWidth  = 4096;
-		vm.MemHeight = 1024; //2048;
+		vm.MemHeight = 2048;
 		vm.HorAlign  = 64;
 		vm.VerAlign  = 32;
 		do {
@@ -115,7 +115,7 @@ void CVIPCameraModule::AllocVMem(tCameraContext& camCtx_)
 		fd = open("/dev/mem", O_RDWR | O_SYNC);
 		dbg_.Assert((fd > 0), "CCameraModule::ctor: open /dev/mem failed\n");
 		fi.smem_len = vm.MemWidth * vm.MemHeight;
-		vi.reserved[0] = (unsigned int)mmap((void*)(vm.Address | 0x20000000UL), fi.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, vm.Address);
+		vi.reserved[0] = (unsigned int)mmap((void*)0, fi.smem_len, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_POPULATE, fd, vm.Address);
 		dbg_.Assert((vi.reserved[0] != (unsigned int)MAP_FAILED), "CCameraModule::ctor: mmap /dev/mem failed\n");
 		dbg_.DebugOut(kDbgLvlImportant, "%s: mmap %08x: %08x, len %08x\n", __FUNCTION__, vm.Address, vi.reserved[0], fi.smem_len);
 	}
@@ -530,7 +530,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	}
 
 	// Switch to YUYV packed format for high-res capture modes
-	if (pSurf->format == kPixelFormatYUYV422 || pSurf->height > vm.MemHeight)
+	if (pSurf->format == kPixelFormatYUYV422)
 	{
 		newMode.pixelformat = frame.pixelformat = kCaptureFormatRAWYUYV;
 	}

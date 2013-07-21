@@ -37258,3 +37258,18 @@ By Dave Milici (dmilici@leapfrog.com) on 7/16/13 7:25 PM
 5,977 ms. (Cumulative: 15,367,935 ms)
 
 ----------------
+Revision 10,305 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,306 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,307 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,308 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert CameraVIP pre svn -r10295 to use 2D allocations.
+Avoids contentions with OGL 1D allocations seen to date.
+Fallback method for YUV framebuffer with kernel svn -r2279 24MB 2D heap.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/21/13 3:55 PM
+1 changed, 0 added, 0 deleted.
+6,188 ms. (Cumulative: 15,374,232 ms)
+
+----------------
