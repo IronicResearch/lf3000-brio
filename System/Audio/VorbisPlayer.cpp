@@ -226,7 +226,8 @@ CVorbisPlayer::~CVorbisPlayer()
 	if (pDebugMPI_)
 		delete (pDebugMPI_);
 
-	numVorbisPlayers--;
+	if (id_ != kNoAudioID)
+		numVorbisPlayers--;
 }
 
 U32 CVorbisPlayer::GetNumPlayers(void)

@@ -514,10 +514,10 @@ CStream *CAudioMixer::FindFreeStream( tAudioPriority /* priority */)
 	for (long i = 0; i < numInStreams_; i++)
 	{
 		pStream = &pStreams_[i];
-		if (!pStream->GetPlayer())
-			return pStream;
 		// Stream may contain player which is yet to be destroyed
 		if (pStream->IsDone())
+			return pStream;
+		if (!pStream->GetPlayer())
 			return pStream;
 	}
 	
@@ -796,6 +796,16 @@ CStream *CAudioMixer::FindKillableStream(ConditionFunction *cond,
 			}
 		}
 	}
+	else {
+		// Return dead player to free up mixer stream slot
+		for (U32 i=0; i<numInStreams_; i++) {
+			pStream = &pStreams_[i];
+			CAudioPlayer *pPlayer = pStream->GetPlayer();
+			if (pPlayer && pPlayer->IsDone() && !pPlayer->IsSeeked())
+				return pStream;
+		}
+		pStream = NULL;
+	}
 	return pStream;
 }
 
@@ -912,8 +922,8 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 				MIXER_LOCK;
 			} else {
 				pDebugMPI_->DebugOut(kDbgLvlImportant,
-									 "%s: Max number of vorbis players exceeded.\n",
-									 __FUNCTION__);
+									 "%s: Max number of vorbis players exceeded = %u.\n",
+									 __FUNCTION__, (unsigned int)CVorbisPlayer::GetNumPlayers());
 			}
 		}
 	}

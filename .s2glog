@@ -37273,3 +37273,17 @@ By Dave Milici (dmilici@leapfrog.com) on 7/21/13 3:55 PM
 6,188 ms. (Cumulative: 15,374,232 ms)
 
 ----------------
+Revision 10,309 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Pre-emptively check for dead audio players to free up mixer stream slots, in order
+to close potential loophole between FindFreeStream() and FindKillableStream() calls.
+
+Fix tracking the number of active Vorbis players in destructor, since constructor 
+can conditionally error out on non-Vorbis types (video-only Ogg). (TTP 4565)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/29/13 12:15 PM
+2 changed, 0 added, 0 deleted.
+6,096 ms. (Cumulative: 15,380,432 ms)
+
+----------------
