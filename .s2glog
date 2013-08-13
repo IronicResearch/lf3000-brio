@@ -37302,3 +37302,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/12/13 5:13 PM
 5,903 ms. (Cumulative: 15,392,538 ms)
 
 ----------------
+Revision 10,312 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Removing previous workaround, LF3000 OpenGL now works on fb1 as well as fb0.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/13/13 1:59 PM
+1 changed, 0 added, 0 deleted.
+6,111 ms. (Cumulative: 15,398,758 ms)
+
+----------------
