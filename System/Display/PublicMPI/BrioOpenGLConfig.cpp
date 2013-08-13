@@ -325,9 +325,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 		with, we let EGL pick the default display.
 		Querying other displays is platform specific.
 	*/
-	//Fixme: LF3000 eglGetDisplay(1) no longer works
-	//eglDisplay = eglGetDisplay(ctx.eglDisplay);
-	eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+	eglDisplay = eglGetDisplay(ctx.eglDisplay);
 
 	/*
 		Step 2 - Initialize EGL.
