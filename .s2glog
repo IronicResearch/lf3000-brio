@@ -37287,3 +37287,18 @@ By Dave Milici (dmilici@leapfrog.com) on 7/29/13 12:15 PM
 6,096 ms. (Cumulative: 15,380,432 ms)
 
 ----------------
+Revision 10,310 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+6,095 ms. (Cumulative: 15,386,620 ms)
+
+----------------
+Revision 10,311 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Changing to eglGetDisplay(EGL_DEFAULT_DISPLAY) because LF3000 doesn't work on fb1.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/12/13 5:13 PM
+1 changed, 0 added, 0 deleted.
+5,903 ms. (Cumulative: 15,392,538 ms)
+
+----------------
