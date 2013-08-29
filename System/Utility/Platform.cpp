@@ -90,6 +90,8 @@ CString GetPlatformName()
 		case 0xC: 					// Madrid POP TV out
 		case 0xD:					// Madrid LFP100
 			return "Madrid";
+		case 0x32B:
+			return "RIO";
 	}
 	return "Unknown";
 }
