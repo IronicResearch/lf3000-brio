@@ -47,6 +47,9 @@ enum eGroupEnum {
 	// Brio v4.4
 	kGroupWireless,
 	kGroupKeypad,
+	// Brio v5.1
+	kGroupPrototype,
+	kGroupMotionTracker,
 
 	// WARNING: After GM, values can only be APPENDED to this enumeration!!!
 	// WARNING: Inserting values will break backwards compatability!!!

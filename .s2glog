@@ -37320,3 +37320,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/29/13 10:23 AM
 6,000 ms. (Cumulative: 15,404,852 ms)
 
 ----------------
+Revision 10,314 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added placeholder group enums for prototyping MPIs by external developer.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/4/13 12:50 PM
+1 changed, 0 added, 0 deleted.
+6,001 ms. (Cumulative: 15,410,947 ms)
+
+----------------
