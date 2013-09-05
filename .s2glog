@@ -37330,3 +37330,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/4/13 12:50 PM
 6,001 ms. (Cumulative: 15,410,947 ms)
 
 ----------------
+Revision 10,315 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Patch for requested viewport width and height on LF3000 EGL, lacking upscaling option added to LF2000 EGL.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/5/13 1:28 PM
+1 changed, 0 added, 0 deleted.
+6,032 ms. (Cumulative: 15,417,072 ms)
+
+----------------
