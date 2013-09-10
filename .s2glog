@@ -37340,3 +37340,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/5/13 1:28 PM
 6,032 ms. (Cumulative: 15,417,072 ms)
 
 ----------------
+Revision 10,316 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove LF2000 vr5 lib dependency from unit test.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/10/13 3:17 PM
+1 changed, 0 added, 0 deleted.
+6,111 ms. (Cumulative: 15,423,277 ms)
+
+----------------
