@@ -37350,3 +37350,17 @@ By Dave Milici (dmilici@leapfrog.com) on 9/10/13 3:17 PM
 6,111 ms. (Cumulative: 15,423,277 ms)
 
 ----------------
+Revision 10,317 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added CameraMPI support for posting kCaptureFrameEvent type CameraEventMessage. (TTP 6532)
+
+Posting events is conditional on listener passed to StartVideoCapture() without
+save file path passed in, ie, streaming in viewfinder mode.
+ 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/10/13 4:27 PM
+5 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 15,429,511 ms)
+
+----------------

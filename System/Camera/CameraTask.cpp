@@ -152,6 +152,7 @@ void* CameraTaskMain(void* arg)
 	
 	bool				bFirst = false;
 	struct timeval		tv0, tvn, tvt = {0, 0};
+	int					framecount = 0;
 
 	bool				bQueued = false;
 	int					viewframe = 0;
@@ -335,6 +336,18 @@ void* CameraTaskMain(void* arg)
 			if (!bRet)
 				kernel.TaskSleep(10);
 			continue;
+		}
+
+		// Post event message to listener if streaming without saving to file
+		if(pCtx->pListener && !bFile)
+		{
+			tCaptureFrameMsg    		data;
+			data.vhndl          		= pCtx->hndl;
+			data.frame          		= framecount++;
+			data.timestamp.seconds		= frame.timestamp.tv_sec;
+			data.timestamp.microSeconds	= frame.timestamp.tv_usec;
+			CCameraEventMessage 		msg(data);
+			pCtx->module->event_.PostEvent(msg, 128, pCtx->pListener);
 		}
 
 		if(bScreen && !pCtx->bVPaused

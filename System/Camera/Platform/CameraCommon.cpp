@@ -1911,7 +1911,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	//hndl must be set before thread starts.  It is used in thread initialization.
 	camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
 
-	if (fpath.empty() && V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR)
+	if (fpath.empty() && V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR && !pListener)
 	{
 		hndl = camCtx_.hndl = STREAMING_HANDLE(FRAME_HANDLE(1));
 	}

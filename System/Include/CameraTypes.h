@@ -48,6 +48,7 @@ enum tControlType {
 	kControlTypeHorizontalFlip,
 	kControlTypeVerticalFlip,
 	kControlTypeRotate,
+	kControlTypeAutoWhiteBalance,
 };
 
 enum tColorOrder {
@@ -104,7 +105,8 @@ enum tCameraDevice {
 	(kCaptureQuotaHitEvent)				\
 	(kCaptureStoppedEvent)				\
 	(kCameraRemovedEvent)				\
-	(kAudioTriggeredEvent)
+	(kAudioTriggeredEvent)				\
+	(kCaptureFrameEvent)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupCamera), CAMERA_EVENTS)
 
@@ -154,12 +156,22 @@ struct tAudioTriggeredMsg {
 	U32			timestamp;
 };
 
+struct tCaptureFrameMsg {
+	tVidCapHndl	vhndl;
+	U32			frame;
+	struct timeVal {
+		S32	seconds;
+		S32	microSeconds;
+	} timestamp;
+};
+
 union tCaptureMsg {
 	tCaptureTimeoutMsg		timeOut;
 	tCaptureQuotaHitMsg		quotaHit;
 	tCaptureStoppedMsg		stopped;
 	tCameraRemovedMsg		removed;
 	tAudioTriggeredMsg		triggered;
+	tCaptureFrameMsg		framed;
 };
 
 //------------------------------------------------------------------------------
@@ -170,6 +182,7 @@ public:
 	CCameraEventMessage( const tCaptureStoppedMsg& data );
 	CCameraEventMessage( const tCameraRemovedMsg& data );
 	CCameraEventMessage( const tAudioTriggeredMsg& data );
+	CCameraEventMessage( const tCaptureFrameMsg& data );
 	virtual U16	GetSizeInBytes() const;
 
 	tCaptureMsg	data;
