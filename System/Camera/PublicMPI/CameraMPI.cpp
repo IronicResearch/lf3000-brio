@@ -70,6 +70,12 @@ CCameraEventMessage::CCameraEventMessage( const tAudioTriggeredMsg& data )
 	this->data.triggered = data;
 }
 
+CCameraEventMessage::CCameraEventMessage( const tCaptureFrameMsg& data )
+	: IEventMessage(kCaptureFrameEvent)
+{
+	this->data.framed = data;
+}
+
 //------------------------------------------------------------------------------
 U16	CCameraEventMessage::GetSizeInBytes() const
 {

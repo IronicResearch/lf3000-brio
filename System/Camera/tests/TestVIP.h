@@ -59,6 +59,11 @@ private:
 
 			reason = Imsg.GetEventType();
 
+			if (reason == kCaptureFrameEvent)
+			{
+				printf(".");
+				return kEventStatusOKConsumed;
+			}
 			if(reason == kCaptureTimeOutEvent)
 			{
 				length = msg.data.timeOut.length;
@@ -160,7 +165,7 @@ public:
 
 		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
-		pVideoMPI_ = new CVideoMPI;
+		CameraListener* pListener = new CameraListener;
 
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -175,7 +180,7 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
-			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "", 0, false);
+			capture = pCameraMPI_->StartVideoCapture(&surf, pListener, "", 0, false);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
 			pKernelMPI_->TaskSleep(5000);
@@ -188,7 +193,7 @@ public:
 
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, true);
-		delete pVideoMPI_;
+		delete pListener;
 		delete pDisplayMPI_;
 		delete pKernelMPI_;
 	}
