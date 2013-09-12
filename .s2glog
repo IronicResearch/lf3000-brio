@@ -37364,3 +37364,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/10/13 4:27 PM
 6,141 ms. (Cumulative: 15,429,511 ms)
 
 ----------------
+Revision 10,318 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally disable LF1000 defaults for controls impacting LF2000 sensors.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/11/13 6:26 PM
+2 changed, 0 added, 0 deleted.
+6,330 ms. (Cumulative: 15,435,935 ms)
+
+----------------
