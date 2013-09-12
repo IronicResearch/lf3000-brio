@@ -322,6 +322,52 @@ public:
 		delete pKernelMPI_;
 	}
 
+	//------------------------------------------------------------------------
+	void testOverlayEvents()
+	{
+		PRINT_TEST_NAME();
+
+		tVidCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+		tVideoSurf					surf;
+		tDisplayHandle				disp;
+
+		pKernelMPI_ = new CKernelMPI;
+		pDisplayMPI_ = new CDisplayMPI;
+		CameraListener* pListener = new CameraListener;
+
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			capture = pCameraMPI_->StartVideoCapture(&surf, pListener, "", 0, false);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			pKernelMPI_->TaskSleep(5000);
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+		}
+		else
+			TS_FAIL("MPI was deemed invalid");
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, true);
+		delete pListener;
+		delete pDisplayMPI_;
+		delete pKernelMPI_;
+	}
+
 };
 
 // EOF

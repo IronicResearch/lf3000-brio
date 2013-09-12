@@ -37385,3 +37385,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/11/13 7:56 PM
 6,560 ms. (Cumulative: 15,442,589 ms)
 
 ----------------
+Revision 10,320 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Ported copy of unit test for logging frame events while in viewfinder mode.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/12/13 10:26 AM
+1 changed, 0 added, 0 deleted.
+6,502 ms. (Cumulative: 15,449,200 ms)
+
+----------------
