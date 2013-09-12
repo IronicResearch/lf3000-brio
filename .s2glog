@@ -37374,3 +37374,14 @@ By Dave Milici (dmilici@leapfrog.com) on 9/11/13 6:26 PM
 6,330 ms. (Cumulative: 15,435,935 ms)
 
 ----------------
+Revision 10,319 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added auto-white-balance control, and separate unit tests for LF2000 controls. 
+Fixed enumeration of controls to remain persistent across V4L driver instances.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/11/13 7:56 PM
+2 changed, 1 added, 0 deleted.
+6,560 ms. (Cumulative: 15,442,589 ms)
+
+----------------

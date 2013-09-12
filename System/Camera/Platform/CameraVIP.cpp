@@ -177,7 +177,7 @@ CVIPCameraModule::CVIPCameraModule()
 	memset(&vm, 0, sizeof(vm));
 	
 	// Release camera device for this process instance
-	DeinitCameraInt();
+	DeinitCameraInt(true);
 }
 
 //----------------------------------------------------------------------------
