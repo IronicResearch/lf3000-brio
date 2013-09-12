@@ -757,6 +757,9 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 			control->type = kControlTypeRotate;
 			break;
 #endif
+		case V4L2_CID_AUTO_WHITE_BALANCE:
+			control->type = kControlTypeAutoWhiteBalance;
+			break;
 		default:
 			control->type = kControlTypeError;
 			delete control;
@@ -1162,6 +1165,9 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 		ctrl.id = V4L2_CID_ROTATE;
 		break;
 #endif
+	case kControlTypeAutoWhiteBalance:
+		ctrl.id = V4L2_CID_AUTO_WHITE_BALANCE;
+		break;
 	default:
 		bRet = false;
 	}
