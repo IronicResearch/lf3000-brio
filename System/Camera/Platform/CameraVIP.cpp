@@ -93,7 +93,7 @@ void CVIPCameraModule::AllocVMem(tCameraContext& camCtx_)
 		return;
 
 	// Map memory for use by VIP driver
-	fdvmem = open("/dev/vmem", O_RDWR);
+	fdvmem = -1; // FIXME //open("/dev/vmem", O_RDWR);
 	if (fdvmem > 0)
 	{
 		// Request vmem driver 8Meg memory block for video capture use

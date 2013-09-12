@@ -678,11 +678,13 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 	memset(&query, 0, sizeof (v4l2_queryctrl));
 	memset(&ctrl, 0, sizeof(v4l2_control));
 
+#ifdef LF1000 // LF1000 defaults
 	/* override defaults - see L3B TTPro 2697 for value origins */
 	for(idx = 0; idx < sizeof(overrides) / sizeof(overrides[0]); idx++)
 	{
 		SetControlInt(pCamCtx->fd, &overrides[idx]);
 	}
+#endif
 
 	for(query.id = V4L2_CID_BASE; query.id < V4L2_CID_LASTP1; query.id++)
 	{
