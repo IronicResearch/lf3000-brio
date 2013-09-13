@@ -37405,3 +37405,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/12/13 6:52 PM
 6,500 ms. (Cumulative: 15,455,794 ms)
 
 ----------------
+Revision 10,322 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified unit test with frame counter for measuring FPS.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/12/13 7:36 PM
+1 changed, 0 added, 0 deleted.
+6,610 ms. (Cumulative: 15,462,513 ms)
+
+----------------

@@ -28,6 +28,10 @@ const tEventType LocalCameraEvents[] = {kAllCameraEvents};
 
 const char* capture_path = "/LF/Bulk/Data/Local/All/";
 
+#define WIDTH 	400
+#define HEIGHT	300
+#define DELAY	20
+
 //============================================================================
 // TestCameraMPI functions
 //============================================================================
@@ -62,6 +66,7 @@ private:
 			if (reason == kCaptureFrameEvent)
 			{
 				printf(".");
+				length = msg.data.framed.frame; // overloaded meaning as frame count
 				return kEventStatusOKConsumed;
 			}
 			if(reason == kCaptureTimeOutEvent)
@@ -207,12 +212,13 @@ public:
 		tDisplayHandle				disp;
 		tControlInfo				ctrl;
 		tControlType				types[3] = { kControlTypeBrightness, kControlTypeContrast, kControlTypeSaturation };
+		tCaptureMode*				mode;
 
 		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
 		CameraListener* pListener = new CameraListener;
 
-		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420);
+		disp = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatYUV420);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop);
 
@@ -222,6 +228,12 @@ public:
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		mode = pCameraMPI_->GetCurrentFormat();
+		mode->width  = WIDTH;
+		mode->height = HEIGHT;
+		err = pCameraMPI_->SetCurrentFormat(mode);
+		TS_ASSERT_EQUALS( err, kNoErr );
 
 		if ( pCameraMPI_->IsValid() )
 		{
@@ -235,19 +247,19 @@ public:
 				{
 					bRet = pCameraMPI_->SetCameraControl(&ctrl, i);
 					TS_ASSERT_EQUALS( bRet, true );
-					pKernelMPI_->TaskSleep(50);
+					pKernelMPI_->TaskSleep(DELAY);
 				}
 				for (int i = 255; i >= 0; i--)
 				{
 					bRet = pCameraMPI_->SetCameraControl(&ctrl, i);
 					TS_ASSERT_EQUALS( bRet, true );
-					pKernelMPI_->TaskSleep(50);
+					pKernelMPI_->TaskSleep(DELAY);
 				}
 				for (int i = 0; i <= 128; i++)
 				{
 					bRet = pCameraMPI_->SetCameraControl(&ctrl, i);
 					TS_ASSERT_EQUALS( bRet, true );
-					pKernelMPI_->TaskSleep(50);
+					pKernelMPI_->TaskSleep(DELAY);
 				}
 			}
 
@@ -275,12 +287,13 @@ public:
 		tVideoSurf					surf;
 		tDisplayHandle				disp;
 		tControlInfo				ctrl;
+		tCaptureMode*				mode;
 
 		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
 		CameraListener* pListener = new CameraListener;
 
-		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420);
+		disp = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatYUV420);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop);
 
@@ -290,6 +303,12 @@ public:
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		mode = pCameraMPI_->GetCurrentFormat();
+		mode->width  = WIDTH;
+		mode->height = HEIGHT;
+		err = pCameraMPI_->SetCurrentFormat(mode);
+		TS_ASSERT_EQUALS( err, kNoErr );
 
 		if ( pCameraMPI_->IsValid() )
 		{
@@ -332,12 +351,15 @@ public:
 		tErrType					err;
 		tVideoSurf					surf;
 		tDisplayHandle				disp;
+		tCaptureMode*				mode;
+		U32							marktime;
+		U32							framecount;
 
 		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
 		CameraListener* pListener = new CameraListener;
 
-		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
+		disp = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatYUV420);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
@@ -348,12 +370,24 @@ public:
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		TS_ASSERT( surf.format == kPixelFormatYUV420 );
 
+		mode = pCameraMPI_->GetCurrentFormat();
+		mode->width  = WIDTH;
+		mode->height = HEIGHT;
+		mode->fps_denominator = 30;
+		err = pCameraMPI_->SetCurrentFormat(mode);
+		TS_ASSERT_EQUALS( err, kNoErr );
+
 		if ( pCameraMPI_->IsValid() )
 		{
 			capture = pCameraMPI_->StartVideoCapture(&surf, pListener, "", 0, false);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
+			marktime = pKernelMPI_->GetElapsedTimeAsMSecs();
 			pKernelMPI_->TaskSleep(5000);
+			marktime = pKernelMPI_->GetElapsedTimeAsMSecs() - marktime;
+
+			framecount = pListener->GetLength();
+			printf("\nframe count = %d, frames per sec = %d.%d\n", (int)framecount, (int)(1000 * framecount / marktime), (int)(1000 * framecount % marktime));
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
