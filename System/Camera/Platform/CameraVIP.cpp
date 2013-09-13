@@ -21,14 +21,15 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define CAMERA_LOCK 	kernel_.LockMutex(mutex_)
 #define CAMERA_UNLOCK	kernel_.UnlockMutex(mutex_)
 
-tCaptureMode VGA  = {kCaptureFormatYUV420, 640, 480, 1, 30};
-tCaptureMode QVGA = {kCaptureFormatYUV420, 320, 240, 1, 30};
-tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 10};
-tCaptureMode QSVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
-tCaptureMode WXGA  = {kCaptureFormatYUV420, 1280, 800, 1, 10};
-tCaptureMode SXGA  = {kCaptureFormatYUV420, 1280, 960, 1, 10};
-tCaptureMode HD16  = {kCaptureFormatYUV420, 1600, 900, 1, 10};
-tCaptureMode UXGA  = {kCaptureFormatYUV420, 1600, 1200, 1, 10};
+tCaptureMode VGA  = {kCaptureFormatYUV420, 640, 480, 1, 15};
+tCaptureMode QVGA = {kCaptureFormatYUV420, 320, 240, 1, 15};
+tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 15};
+tCaptureMode QSVGA = {kCaptureFormatYUV420, 400, 300, 1, 15};
+tCaptureMode QSVGA30 = {kCaptureFormatYUV420, 400, 300, 1, 30};
+tCaptureMode WXGA  = {kCaptureFormatYUV420, 1280, 800, 1, 8};
+tCaptureMode SXGA  = {kCaptureFormatYUV420, 1280, 960, 1, 8};
+tCaptureMode HD16  = {kCaptureFormatYUV420, 1600, 900, 1, 8};
+tCaptureMode UXGA  = {kCaptureFormatYUV420, 1600, 1200, 1, 8};
 
 namespace
 {
@@ -66,6 +67,7 @@ tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 	if (camCtx_.modes->empty())
 	{
 		camCtx_.modes->push_back(new tCaptureMode(QSVGA));
+		camCtx_.modes->push_back(new tCaptureMode(QSVGA30));
 		camCtx_.modes->push_back(new tCaptureMode(SVGA));
 		camCtx_.modes->push_back(new tCaptureMode(QVGA));
 		camCtx_.modes->push_back(new tCaptureMode(VGA));
