@@ -32,6 +32,17 @@ const char* capture_path = "/LF/Bulk/Data/Local/All/";
 #define HEIGHT	300
 #define DELAY	20
 
+inline U32 GetFrameCount()
+{
+	unsigned int framecount = 0;
+	FILE* fp = fopen("/sys/devices/platform/vip.0/frame_count", "r");
+	if (fp) {
+		fscanf(fp, "%u", &framecount);
+		fclose(fp);
+	}
+	return framecount;
+}
+
 //============================================================================
 // TestCameraMPI functions
 //============================================================================
@@ -382,11 +393,26 @@ public:
 			capture = pCameraMPI_->StartVideoCapture(&surf, pListener, "", 0, false);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
+			framecount = GetFrameCount();
 			marktime = pKernelMPI_->GetElapsedTimeAsMSecs();
 			pKernelMPI_->TaskSleep(5000);
 			marktime = pKernelMPI_->GetElapsedTimeAsMSecs() - marktime;
 
-			framecount = pListener->GetLength();
+			framecount = GetFrameCount() - framecount;
+			printf("\nframe count = %d, frames per sec = %d.%d\n", (int)framecount, (int)(1000 * framecount / marktime), (int)(1000 * framecount % marktime));
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "", 0, false);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			framecount = GetFrameCount();
+			marktime = pKernelMPI_->GetElapsedTimeAsMSecs();
+			pKernelMPI_->TaskSleep(5000);
+			marktime = pKernelMPI_->GetElapsedTimeAsMSecs() - marktime;
+
+			framecount = GetFrameCount() - framecount;
 			printf("\nframe count = %d, frames per sec = %d.%d\n", (int)framecount, (int)(1000 * framecount / marktime), (int)(1000 * framecount % marktime));
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);

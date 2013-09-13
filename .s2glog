@@ -37415,3 +37415,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/12/13 7:36 PM
 6,610 ms. (Cumulative: 15,462,513 ms)
 
 ----------------
+Revision 10,323 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified unit test to measure frame rate via sysfs frame counter.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/13/13 10:24 AM
+1 changed, 0 added, 0 deleted.
+6,640 ms. (Cumulative: 15,469,247 ms)
+
+----------------
