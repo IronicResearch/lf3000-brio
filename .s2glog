@@ -37395,3 +37395,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/12/13 10:26 AM
 6,502 ms. (Cumulative: 15,449,200 ms)
 
 ----------------
+Revision 10,321 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added QSVGA 30 FPS mode to CameraMPI mode list, and corrected other modes' FPS rates. (TTP 6531)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/12/13 6:52 PM
+1 changed, 0 added, 0 deleted.
+6,500 ms. (Cumulative: 15,455,794 ms)
+
+----------------
