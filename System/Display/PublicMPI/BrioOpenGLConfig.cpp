@@ -306,8 +306,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	ctx.eglWindow = hwnd; // something non-NULL
 #ifdef 	LF2000
 	disp_.InitOpenGL(&ctx);
-	hwnd->width = ctx.width;	// LF3000 Mali
-	hwnd->height = ctx.height;	// LF3000 Mali
+	hwnd->width = ctx.owidth;
+	hwnd->height = ctx.oheight;
 	hwnd->pctx = ctx.hndlDisplay;
 #endif
 #else
