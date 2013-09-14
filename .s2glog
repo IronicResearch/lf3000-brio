@@ -37425,3 +37425,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/13/13 10:24 AM
 6,640 ms. (Cumulative: 15,469,247 ms)
 
 ----------------
+Revision 10,324 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Reverting svn -r10315 for LF2000 EGL. Need another option to distinguish LF3000 EGL.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/13/13 5:05 PM
+1 changed, 0 added, 0 deleted.
+6,079 ms. (Cumulative: 15,475,420 ms)
+
+----------------
