@@ -124,7 +124,7 @@ public:
 	/// or NULL for an onscreen buffer to be created by the driver.
 	///
 	/// \return 		Returns valid display context handle on success, 
-	/// or kInvalidDisplayHndl on failure.
+	/// or kInvalidDisplayHandle on failure.
 	tDisplayHandle      CreateHandle(U16 height, U16 width, tPixelFormat colorDepth, 
 									U8 *pBuffer = NULL);
 
