@@ -96,7 +96,7 @@ struct tDisplayScreenStats {
 	const char *description; // i.e. "Tv", "LCD" based on platform
 };
 
-// tDisplayHandle is what is returned from a DisplayMgr->CreateContext
+/// tDisplayHandle is what is returned from \ref CDisplayMPI::CreateHandle()
 typedef	void*	tDisplayHandle;
 const tDisplayHandle kInvalidDisplayHandle = static_cast<tDisplayHandle>(0);
 

@@ -37435,3 +37435,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/13/13 5:05 PM
 6,079 ms. (Cumulative: 15,475,420 ms)
 
 ----------------
+Revision 10,325 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixed Doxygen typos regarding tDisplayHandle info. (TTP 6603)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/20/13 2:53 PM
+2 changed, 0 added, 0 deleted.
+5,986 ms. (Cumulative: 15,481,515 ms)
+
+----------------
