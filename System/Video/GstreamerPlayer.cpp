@@ -532,6 +532,31 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     GetVideoInfo(hVideo, &pVidCtx->info);
 	dbg_.DebugOut(kDbgLvlImportant, "%dx%d, @%d fps\n", (int)pVidCtx->info.width, (int)pVidCtx->info.height, (int)pVidCtx->info.fps);
 
+	// Iterate through pipeline elements
+	GstIterator* it = gst_bin_iterate_recurse((GstBin*)(pipeline));
+	bool done = false;
+	while (!done) {
+		gpointer item;
+		switch (gst_iterator_next(it, &item)) {
+		case GST_ITERATOR_OK: {
+			GstElement* element = GST_ELEMENT_CAST(item);
+			char* name = gst_element_get_name(element);
+			dbg_.DebugOut(kDbgLvlNoteable, "%p: %s\n", item, name ? name : "");
+			g_free(name);
+			gst_object_unref(element);
+			break;
+			}
+		case GST_ITERATOR_RESYNC:
+			gst_iterator_resync(it);
+			break;
+		case GST_ITERATOR_ERROR:
+		case GST_ITERATOR_DONE:
+			done = true;
+			break;
+		}
+	}
+	gst_iterator_free(it);
+
     return true;
 }
 
