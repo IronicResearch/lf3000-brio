@@ -37445,3 +37445,16 @@ By Dave Milici (dmilici@leapfrog.com) on 9/20/13 2:53 PM
 5,986 ms. (Cumulative: 15,481,515 ms)
 
 ----------------
+Revision 10,326 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,327 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,328 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,329 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added debug info for iterating through gstreamer player's pipeline elements. (FWSCRUM-262
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/4/13 4:40 PM
+1 changed, 0 added, 0 deleted.
+6,080 ms. (Cumulative: 15,487,720 ms)
+
+----------------
