@@ -37471,3 +37471,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/17/13 11:40 AM
 6,095 ms. (Cumulative: 15,493,908 ms)
 
 ----------------
+Revision 10,332 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,333 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Early out vmem 2d allocation requests if cannot satisfy camera sensor size (less spam).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/17/13 12:36 PM
+1 changed, 0 added, 0 deleted.
+5,985 ms. (Cumulative: 15,500,002 ms)
+
+----------------

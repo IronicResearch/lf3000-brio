@@ -107,9 +107,7 @@ void CVIPCameraModule::AllocVMem(tCameraContext& camCtx_)
 		vm.VerAlign  = 32;
 		do {
 			r = ioctl(fdvmem, IOCTL_VMEM_ALLOC, &vm);
-			if (r != 0)
-				vm.MemHeight -= 256;
-		} while (r != 0 && vm.MemHeight > 256);
+		} while (r != 0 && (vm.MemHeight -= 256) > UXGA.height);
 	}
 	if (fdvmem > 0 && r == 0)
 	{
