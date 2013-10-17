@@ -37458,3 +37458,16 @@ By Dave Milici (dmilici@leapfrog.com) on 10/4/13 4:40 PM
 6,080 ms. (Cumulative: 15,487,720 ms)
 
 ----------------
+Revision 10,330 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,331 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Selectively revert svn -r10381 meant to skip CameraMPI vmem 2d heap allocation.
+Compatible with Rio 5.0.x GM kernel 2d heaps, though will spam vmem errors on 5.1.x kernel.
+ 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/17/13 11:40 AM
+1 changed, 0 added, 0 deleted.
+6,095 ms. (Cumulative: 15,493,908 ms)
+
+----------------
