@@ -151,9 +151,8 @@ int CPowerMPI::Shutdown() const
 		send(fd, &msg, sizeof(msg), 0);
 		close(fd);
 	}
-	reboot(RB_POWER_OFF);
+	//reboot(RB_POWER_OFF);
 #endif
-	// Embedded version should never get here
 	_exit(kKernelExitShutdown);
 	return kKernelExitError;
 }
@@ -179,10 +178,9 @@ int CPowerMPI::Reset() const
 	debug.DebugOut(kDbgLvlCritical, "PowerMPI::Reset reboot\n");
 	// system("sudo /sbin/reboot -f");
 	// execl("/usr/bin/sudo", "sudo", "/sbin/reboot", "-f", NULL);
-	reboot(RB_AUTOBOOT);
+	//reboot(RB_AUTOBOOT);
 #endif
-	// Embedded version should never get here
-	_exit(kKernelExitShutdown);
+	_exit(kKernelExitReset);
 	return kKernelExitError;
 }
 

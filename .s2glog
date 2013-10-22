@@ -37482,3 +37482,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/17/13 12:36 PM
 5,985 ms. (Cumulative: 15,500,002 ms)
 
 ----------------
+Revision 10,334 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,335 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-361 Changed PowerMPI to stop calling reboot(RB_POWER_OFF), but instead call _exit.  This makes Brio Apps exit like normal even on power timeout, allowing normal shutdown to occur.
+
+By Minh Saelock (msaelock@leapfrog.com) on 10/21/13 5:44 PM
+1 changed, 0 added, 0 deleted.
+6,039 ms. (Cumulative: 15,506,150 ms)
+
+----------------
