@@ -37492,3 +37492,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/21/13 5:44 PM
 6,039 ms. (Cumulative: 15,506,150 ms)
 
 ----------------
+Revision 10,336 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding "nosvn" option to Brio, if true will not attempt to get the version number from svn (will use 9.9.99999).
+
+By Minh Saelock (msaelock@leapfrog.com) on 10/28/13 1:52 PM
+1 changed, 0 added, 0 deleted.
+6,063 ms. (Cumulative: 15,512,307 ms)
+
+----------------
