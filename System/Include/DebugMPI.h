@@ -21,7 +21,7 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-const char* const ErrToStr( tErrType error );
+const char* ErrToStr( tErrType error );
 
 /// \class CDebugMPI
 ///
