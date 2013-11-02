@@ -37501,3 +37501,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/28/13 1:52 PM
 6,063 ms. (Cumulative: 15,512,307 ms)
 
 ----------------
+Revision 10,337 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove extraneous const flagged by compiler warning during Rio UI builds.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/1/13 6:25 PM
+1 changed, 0 added, 0 deleted.
+6,078 ms. (Cumulative: 15,518,463 ms)
+
+----------------
