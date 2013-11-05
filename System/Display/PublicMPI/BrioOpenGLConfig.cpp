@@ -18,6 +18,7 @@
 #include <DebugMPI.h>
 #include <EmulationConfig.h>
 #include <DisplayPriv.h>
+#include <stdio.h>
 
 #ifndef  EMULATION
 #ifdef   LF1000
@@ -306,8 +307,17 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	ctx.eglWindow = hwnd; // something non-NULL
 #ifdef 	LF2000
 	disp_.InitOpenGL(&ctx);
-	hwnd->width = ctx.owidth;
-	hwnd->height = ctx.oheight;
+	FILE *noscale_flag = fopen("/flags/ogl_noscale", "r");
+	if(!noscale_flag)
+		noscale_flag = fopen("/tmp/ogl_noscale", "r");
+	if(noscale_flag) {
+		hwnd->width = ctx.width;
+		hwnd->height = ctx.height;
+		fclose(noscale_flag);
+	} else {
+		hwnd->width = ctx.owidth;
+		hwnd->height = ctx.oheight;
+	}
 	hwnd->pctx = ctx.hndlDisplay;
 #endif
 #else
@@ -545,8 +555,17 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	ctx.eglWindow = hwnd; // something non-NULL
 #ifdef 	LF2000
 	disp_.InitOpenGL(&ctx);
-	hwnd->width = ctx.owidth;
-	hwnd->height = ctx.oheight;
+	FILE *noscale_flag = fopen("/flags/ogl_noscale", "r");
+	if(!noscale_flag)
+		noscale_flag = fopen("/tmp/ogl_noscale", "r");
+	if(noscale_flag) {
+		hwnd->width = ctx.width;
+		hwnd->height = ctx.height;
+		fclose(noscale_flag);
+	} else {
+		hwnd->width = ctx.owidth;
+		hwnd->height = ctx.oheight;
+	}
 	hwnd->pctx = ctx.hndlDisplay;
 #endif
 #else
