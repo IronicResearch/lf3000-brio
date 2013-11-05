@@ -37511,3 +37511,12 @@ By Dave Milici (dmilici@leapfrog.com) on 11/1/13 6:25 PM
 6,078 ms. (Cumulative: 15,518,463 ms)
 
 ----------------
+Revision 10,338 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 4379.  Part 1 of 3.  Adding support for /tmp/ogl_noscale and /flags/ogl_noscale.  If either of these flags are present when constructing BrioOpenGLConfig, the context will be full size instead of scaled up.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/4/13 5:34 PM
+1 changed, 0 added, 0 deleted.
+6,079 ms. (Cumulative: 15,524,636 ms)
+
+----------------
