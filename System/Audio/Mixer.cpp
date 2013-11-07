@@ -1018,14 +1018,13 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 				|| pPlayer->GetSampleRate() == 48000)
 			&& sExt
 			&& ((!IS_PCM(sExt) && !IS_OGG(sExt))
+	#ifdef UNIT_TESTING
+				|| (IS_PCM(sExt) || IS_OGG(sExt))
+	#endif
 				|| (IS_OGG(sExt) && pInfo->path->find("/LF/Bulk/Music") != std::string::npos)));
 #endif
 
-	if(external)
-		MIXER_UNLOCK;
 	pStream->InitWithPlayer( pPlayer, external );
-	if(external)
-		MIXER_LOCK;
 
 	// Warn if player sample rate was clamped to fit Brio mixer stream
 	if (pStream->GetSamplingFrequency() != pPlayer->GetSampleRate() && !external) {
@@ -1037,6 +1036,10 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 	pStream->SetPan(	 pInfo->pan );
 	pStream->SetVolume( pInfo->volume );
 	
+	// Pass Stream container object for sanity checking Player in callback 
+	if (external)
+		AddAudioOutputAlsa(&CAudioMixer::WrapperToCallPlayer, pStream, pPlayer->GetSampleRate());
+
 	goto success;
  error:
 	if(pPlayer)
@@ -1085,12 +1088,9 @@ void CAudioMixer::RemovePlayerInternal( tAudioID id, tStopAudioOption stopOption
 		}
 		if(pPlayer)
 			delete pPlayer;
-		bool is_external = pStream->isExternal();
-		if(is_external)
-			MIXER_UNLOCK;
+		if (pStream->isExternal())
+			RemoveAudioOutputAlsa(pStream);
 		pStream->Release(true);
-		if(is_external)
-			MIXER_LOCK;
 	}
 }
 
@@ -1474,9 +1474,15 @@ int CAudioMixer::WrapperToCallPlayer( S16 *pOut,
 									  void *pToObject  )
 {
 	int frames = 0;
-	CAudioPlayer* pPlayer = (CAudioPlayer*)pToObject;
+	CAudioPlayer* pPlayer = NULL;
+	CStream*      pStream = (CStream*)pToObject;
 
 	MIXER_LOCK;
+
+	// Sanity check Player attached to Stream object
+	pPlayer = pStream->GetPlayer();
+	if (!pPlayer)
+		goto done;
 
 	if (pPlayer->IsPaused() || pMixer_->IsPaused())
 	{
@@ -1494,6 +1500,7 @@ int CAudioMixer::WrapperToCallPlayer( S16 *pOut,
 		}
 	}
 
+done:
 	MIXER_UNLOCK;
 
 	return frames;
