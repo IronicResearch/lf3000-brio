@@ -50,6 +50,7 @@ static BrioAudioRenderCallback* 	gAudioRenderCallback = NULL;	// Brio callback f
 static void* 						gCallbackUserData = NULL;		// Brio callback data
 extern CKernelMPI*					pKernelMPI_;
 extern CDebugMPI*					pDebugMPI_;
+static tMutex						mutexAlsa = PTHREAD_MUTEX_INITIALIZER;	// ALSA callback lock
 
 //==============================================================================
 // Local functions
@@ -338,6 +339,7 @@ static int direct_write_loop(snd_pcm_t *handle, signed short* samples, int perio
 	signed short *ptr;
 	int err, cptr;
 	
+	pKernelMPI_->LockMutex(mutexAlsa);
 	{
 		ptr = samples;
 		cptr = period_size;
@@ -348,7 +350,7 @@ static int direct_write_loop(snd_pcm_t *handle, signed short* samples, int perio
 			if (err < 0) {
 				if (xrun_recovery(handle, err) < 0) {
 					pDebugMPI_->DebugOut(kDbgLvlImportant, "Write error: %s\n", snd_strerror(err));
-					return err;
+					goto done;
 				}
 				break;
 			}
@@ -356,6 +358,9 @@ static int direct_write_loop(snd_pcm_t *handle, signed short* samples, int perio
 			cptr -= err;
 		}
 	}
+done:
+	pKernelMPI_->UnlockMutex(mutexAlsa);
+	return err;
 }
 
 //==============================================================================
@@ -400,10 +405,8 @@ static void* CallbackThread(void* pCtx)
 				r = pRenderCallback(pRenderBuffer, kAudioFramesPerBuffer * ratedmix / kAudioSampleRate, pPlayer);
 
 				// External stream may have been removed during Mixer callback lock/unlock
-				pKernelMPI_->LockMutex(mutexExternal);
 				if (r > 0 && handle2)
 					direct_write_loop(handle2, pRenderBuffer, r, channels);
-				pKernelMPI_->UnlockMutex(mutexExternal);
 			}
 		}
 		else
@@ -489,9 +492,12 @@ int StartAudioOutputAlsa( void )
 // ==============================================================================
 int StopAudioOutputAlsa( void )
 {
+	int ret;
+	pKernelMPI_->LockMutex(mutexAlsa);
 	bRendering = false;
-	pKernelMPI_->TaskSleep(10);
-	return snd_pcm_drop(handle);
+	ret = snd_pcm_drop(handle);
+	pKernelMPI_->UnlockMutex(mutexAlsa);
+	return ret;
 }
 
 //==============================================================================
@@ -562,12 +568,12 @@ int RemoveAudioOutputAlsa( void* pUserData )
 		return kInvalidParamErr;
 
 	// Close additional ALSA stream
-	pKernelMPI_->LockMutex(mutexExternal);
+	pKernelMPI_->LockMutex(mutexAlsa);
 	snd_pcm_drop(handle2);
 	snd_pcm_close(handle2);
 	handle2 = NULL;
 	pDebugMPI_->DebugOut(kDbgLvlImportant, "Removed dmix stream for player %p\n", pPlayer);
-	pKernelMPI_->UnlockMutex(mutexExternal);
+	pKernelMPI_->UnlockMutex(mutexAlsa);
 
 	// Release render buffer for additional player
 	if (pRenderBuffer)
