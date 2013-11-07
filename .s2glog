@@ -37540,3 +37540,17 @@ By Dave Milici (dmilici@leapfrog.com) on 11/7/13 12:33 PM
 6,094 ms. (Cumulative: 15,530,839 ms)
 
 ----------------
+Revision 10,342 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Generalized lock for protecting ALSA stream callback against removal. (TTP 6700 2:2)
+Prevents ALSA stream from being dropped while callback is in progress throwing errors.
+Separate from lock acquried in Brio Mixer callbacks, so should not deadlock.
+
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/7/13 1:21 PM
+2 changed, 0 added, 0 deleted.
+6,016 ms. (Cumulative: 15,536,949 ms)
+
+----------------
