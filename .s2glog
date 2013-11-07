@@ -37520,3 +37520,23 @@ By Minh Saelock (msaelock@leapfrog.com) on 11/4/13 5:34 PM
 6,079 ms. (Cumulative: 15,524,636 ms)
 
 ----------------
+Revision 10,339 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,340 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,341 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify adding and removal of external dmix player stream synchonized with Mixer lock. (TTP 6700 1:2)
+
+Pass container Stream object to callback function so the external Player object can be
+sanity checked inside the callback, similar to how internal player streams get handled.
+
+No need to aquire extra lock for the external player callback (which was discovered as
+deadlock condition for TTP 4294), however a lock is still needed to protect ALSA stream
+removal, which really could become generalized ALSA lock. 
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/7/13 12:33 PM
+4 changed, 0 added, 0 deleted.
+6,094 ms. (Cumulative: 15,530,839 ms)
+
+----------------

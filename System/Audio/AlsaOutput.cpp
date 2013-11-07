@@ -395,15 +395,16 @@ static void* CallbackThread(void* pCtx)
 			direct_write_loop(handle, pOutputBuffer, period_size, channels);
 
 			// Brio render callback for additional player to separate ALSA output stream
-			pKernelMPI_->LockMutex(mutexExternal);
 			if (pPlayer && pRenderCallback && pRenderBuffer)
 			{
 				r = pRenderCallback(pRenderBuffer, kAudioFramesPerBuffer * ratedmix / kAudioSampleRate, pPlayer);
 
-				if (r > 0)
+				// External stream may have been removed during Mixer callback lock/unlock
+				pKernelMPI_->LockMutex(mutexExternal);
+				if (r > 0 && handle2)
 					direct_write_loop(handle2, pRenderBuffer, r, channels);
+				pKernelMPI_->UnlockMutex(mutexExternal);
 			}
-			pKernelMPI_->UnlockMutex(mutexExternal);
 		}
 		else
 			pKernelMPI_->TaskSleep(10);
@@ -540,17 +541,14 @@ int AddAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData, int 
 
 	// Create render buffer for additional player
 	ratedmix = rate;
-	pKernelMPI_->LockMutex(mutexExternal);
 	pRenderBuffer = (S16*)pKernelMPI_->Malloc(kAudioOutBufSizeInBytes * ratedmix / kAudioSampleRate);
 	if (!pRenderBuffer) {
-		pKernelMPI_->UnlockMutex(mutexExternal);
 		return kMemoryAllocationErr;
 	}
 
 	// Add player to render callback thread
 	pRenderCallback = callback;
 	pPlayer = pUserData;
-	pKernelMPI_->UnlockMutex(mutexExternal);
 
 	return kNoErr;
 }
@@ -569,6 +567,7 @@ int RemoveAudioOutputAlsa( void* pUserData )
 	snd_pcm_close(handle2);
 	handle2 = NULL;
 	pDebugMPI_->DebugOut(kDbgLvlImportant, "Removed dmix stream for player %p\n", pPlayer);
+	pKernelMPI_->UnlockMutex(mutexExternal);
 
 	// Release render buffer for additional player
 	if (pRenderBuffer)
@@ -577,7 +576,6 @@ int RemoveAudioOutputAlsa( void* pUserData )
 	pRenderCallback = NULL;
 	pPlayer = NULL;
 
-	pKernelMPI_->UnlockMutex(mutexExternal);
 	return kNoErr;
 }
 

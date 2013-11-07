@@ -179,7 +179,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testNoSuchFile()
+    void XXXX_testNoSuchFile()
 	{
 		tAudioID 				id;
 		PRINT_TEST_NAME();
@@ -191,7 +191,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testUnsupportedExtension()
+    void XXXX_testUnsupportedExtension()
 	{
 		tAudioID 				id;
 		PRINT_TEST_NAME();
@@ -203,7 +203,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testAudioStart()
+    void XXXX_testAudioStart()
 	{
 		tAudioID 				id;
 		PRINT_TEST_NAME();
@@ -218,7 +218,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-    void testIsPlaying()
+    void XXXX_testIsPlaying()
 	{
 		tAudioID 				id;
 		PRINT_TEST_NAME();
@@ -240,7 +240,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-    void testAudioStop()
+    void XXXX_testAudioStop()
 	{
 		tAudioID id;
 
@@ -258,7 +258,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-    void testTooManyVorbisFiles()
+    void XXXX_testTooManyVorbisFiles()
 	{
 		tAudioID id[myAudioMaxVorbisStreams + 1];
 		int		 i;
@@ -281,7 +281,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testTooManyAdpcmFiles()
+    void XXXX_testTooManyAdpcmFiles()
 	{
 		tAudioID id[myAudioMaxRawStreams + 1];
 		int		 i;
@@ -304,7 +304,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testVorbisStartStop()
+    void XXXX_testVorbisStartStop()
 	{
 		tAudioID id;
 		int i;
@@ -323,7 +323,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testAudioStopWithCallback()
+    void XXXX_testAudioStopWithCallback()
 	{
 		// NOTE! This functionality is BROKEN and should remain so just in case
 		// people are depending on the broken behavior.  Sigh.
@@ -343,7 +343,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testPauseResumeAudioSystem()
+    void XXXX_testPauseResumeAudioSystem()
 	{
 		tAudioID id;
 		PRINT_TEST_NAME();
@@ -363,7 +363,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testPauseResumeAudio()
+    void XXXX_testPauseResumeAudio()
 	{
 		tAudioID id;
 		PRINT_TEST_NAME();
@@ -383,7 +383,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testPauseResumeAllAudio()
+    void XXXX_testPauseResumeAllAudio()
 	{
 		tAudioID id;
 		PRINT_TEST_NAME();
@@ -404,7 +404,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testGetAudioTime()
+    void XXXX_testGetAudioTime()
 	{
 		tAudioID id;
 		PRINT_TEST_NAME();
@@ -420,7 +420,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testVorbisSimple( )
+	void XXXX_testVorbisSimple( )
 	{
 		tAudioID 				id;
 		PRINT_TEST_NAME();
@@ -438,7 +438,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testAdpcmSimple( )
+	void XXXX_testAdpcmSimple( )
 	{
 		tAudioID 				id;
 		PRINT_TEST_NAME();
@@ -457,7 +457,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testAudioVolume()
+	void XXXX_testAudioVolume()
 	{
 		tAudioID id;
 		U8 volume = 0;
@@ -474,7 +474,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testAudioPan()
+	void XXXX_testAudioPan()
 	{
 		tAudioID id;
 		S8 pan = -100;
@@ -491,7 +491,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testAudioCallback( )
+	void XXXX_testAudioCallback( )
 	{
 		tAudioID 	id;
 		PRINT_TEST_NAME();
@@ -509,7 +509,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testNoAudioCallback( )
+	void XXXX_testNoAudioCallback( )
 	{
 		tAudioID 	id;
 		PRINT_TEST_NAME();
@@ -527,7 +527,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testVorbisLooping( )
+	void XXXX_testVorbisLooping( )
 	{
 		tAudioID 	id;
 		PRINT_TEST_NAME();
@@ -547,7 +547,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testVorbisLoopingCallbacks( )
+	void XXXX_testVorbisLoopingCallbacks( )
 	{
 		tAudioID 	id;
 		PRINT_TEST_NAME();
@@ -567,7 +567,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testAudioTimeCallback( )
+	void XXXX_testAudioTimeCallback( )
 	{
 		tAudioID 		id;
 		tAudioPayload	payload = 256; // msec
@@ -593,7 +593,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testPauseResumeCallback( )
+	void XXXX_testPauseResumeCallback( )
 	{
 		tAudioID 		id;
 		tAudioPayload	payload = 64; // msec (min 8K buffer)
@@ -624,7 +624,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testThree16kStreams()
+	void XXXX_testThree16kStreams()
 	{
 		tAudioID id1, id2, id3;
 		PRINT_TEST_NAME();
@@ -646,7 +646,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testThree32kStreams()
+	void XXXX_testThree32kStreams()
 	{
 		tAudioID id1, id2, id3;
 		PRINT_TEST_NAME();
@@ -668,9 +668,9 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    // This test can generally be disabled.  It is not used to test
+    // This XXXX_test can generally be disabled.  It is not used to XXXX_test
     // functionality and prevent regression, but to test performance.
-	void testPerformanceBaseline()
+	void XXXX_testPerformanceBaseline()
 	{
 		tAudioID id1, id2, id3;
         tErrType err;
@@ -695,7 +695,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testPriorityPolicyGetSet()
+	void XXXX_testPriorityPolicyGetSet()
 	{
         tErrType err;
 		tPriorityPolicy policy;
@@ -713,7 +713,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testSimplePriorityAllPriorityEqual()
+    void XXXX_testSimplePriorityAllPriorityEqual()
 	{
 		tErrType err;
 		tAudioID id;
@@ -736,7 +736,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testSimpleVorbisPriorityIncreasing()
+    void XXXX_testSimpleVorbisPriorityIncreasing()
 	{
 		tErrType err;
 		tAudioID id;
@@ -761,7 +761,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testSimpleVorbisPriorityDecreasing()
+    void XXXX_testSimpleVorbisPriorityDecreasing()
 	{
 		tErrType err;
 		tAudioID id;
@@ -795,7 +795,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testSimpleVorbisPriorityTypical()
+    void XXXX_testSimpleVorbisPriorityTypical()
 	{
 		tErrType err;
 		tAudioID bg, incidental, dialog;
@@ -850,7 +850,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-    void testSimpleAdpcmPriorityIncreasing()
+    void XXXX_testSimpleAdpcmPriorityIncreasing()
 	{
 		tErrType err;
 		tAudioID id;
@@ -875,7 +875,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testSimpleAdpcmPriorityDecreasing()
+    void XXXX_testSimpleAdpcmPriorityDecreasing()
 	{
 		tErrType err;
 		tAudioID id;
@@ -908,7 +908,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-    void testSimpleAdpcmPriorityTypical()
+    void XXXX_testSimpleAdpcmPriorityTypical()
 	{
 		tErrType err;
 		tAudioID bg, incidental, dialog;
@@ -964,7 +964,7 @@ public:
 	}
 
     //------------------------------------------------------------------------
-    void testAudioMemPlayer()
+    void XXXX_testAudioMemPlayer()
 	{
 		tAudioID 				id;
 		tAudioHeader			hdr;
@@ -1002,7 +1002,7 @@ public:
 	}
 
     //------------------------------------------------------------------------
-    void testAudioMemPlayerCallback()
+    void XXXX_testAudioMemPlayerCallback()
 	{
 		tAudioID 				id;
 		tAudioHeader			hdr;
@@ -1035,7 +1035,7 @@ public:
 	}
 
     //------------------------------------------------------------------------
-    void testPlayback44KHz()
+    void XXXX_testPlayback44KHz()
 	{
 		tAudioID 				id;
 
@@ -1068,4 +1068,25 @@ public:
 		pAudioMPI_->StopAudio(id, false);
 	}
 
+    //------------------------------------------------------------------------
+    void testThrash44KHz()
+	{
+		tAudioID 				id;
+
+		PRINT_TEST_NAME();
+
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_ != NULL );
+
+		for (int i = 0; i < 100; i++)
+		{
+			// 500Hz sine in 44KHz WAV
+			id = pAudioMPI_->StartAudio("TestTone_500Hz.wav", kPayload, kFlags);
+			TS_ASSERT(id != kNoAudioID);
+			pKernelMPI_->TaskSleep(rand() % 1000);
+			pAudioMPI_->StopAudio(id, false);
+			pKernelMPI_->TaskSleep(500);
+		}
+
+	}
 };
