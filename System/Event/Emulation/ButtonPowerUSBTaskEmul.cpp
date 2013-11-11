@@ -28,6 +28,12 @@
 #include <SystemErrors.h>
 #include <Utility.h>
 #include <TouchTypes.h>
+#include <AccelerometerTypes.h>
+
+// linux
+#include <linux/input.h>
+#include <poll.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -47,9 +53,16 @@ namespace
 	const tEventPriority	kButtonEventPriority	= 0;
 	const tEventPriority	kTouchEventPriority	= 0;
 	const tEventPriority	kPowerEventPriority	= 0;
+	const tEventPriority	kAccelerometerEventPriority	= 255;
 	
 	volatile bool 			g_threadRun2_ = true;
 	volatile bool 			g_threadRunning2_ = false;
+
+	//Maximum number of input drivers to discover
+	#define NUM_INPUTS	2
+
+	#define INPUT_KEYBOARD		"gpio-keys"
+	#define INPUT_ACLMTR		"Accelerometer"
 
 	//------------------------------------------------------------------------
 	U32 KeySymToButton( KeySym keysym )
@@ -95,6 +108,32 @@ namespace
 		}
 		return 0;
 	}
+
+	//----------------------------------------------------------------------------
+	// Linux keyboard to Brio button mapping
+	//----------------------------------------------------------------------------
+	U32 LinuxKeyToBrio(U16 code)
+	{
+		switch(code) {
+			case KEY_UP:		return kButtonUp;
+			case KEY_DOWN:		return kButtonDown;
+			case KEY_RIGHT:		return kButtonRight;
+			case KEY_LEFT:		return kButtonLeft;
+			case KEY_A:			return kButtonA;
+			case KEY_B:			return kButtonB;
+			case KEY_L:			return kButtonLeftShoulder;
+			case KEY_R:			return kButtonRightShoulder;
+			case KEY_M:			return kButtonMenu;
+			case KEY_H:			return kButtonHint;
+			case KEY_P:			return kButtonPause;
+			case KEY_X:			return kButtonBrightness;
+			case KEY_VOLUMEDOWN: return kButtonVolumeDown;
+			case KEY_VOLUMEUP:	return kButtonVolumeUp;
+			case KEY_ESC:		return kButtonEscape;
+		}
+		return 0;
+	}
+
 }
 
 void* CEventModule::CartridgeTask( void* arg )
@@ -112,6 +151,32 @@ void* CEventModule::CartridgeTask( void* arg )
 void* CEventModule::ButtonPowerUSBTask(void* arg)
 {
 	CEventModule*	pThis = reinterpret_cast<CEventModule*>(arg);
+	struct pollfd	event_fd[NUM_INPUTS];
+ 
+	// Init accelerometer driver and data
+	int aclmtr_index = 0;
+	tAccelerometerData aclmtr_data = {0, 0, 0, {0, 0}};
+	event_fd[aclmtr_index].fd = open_input_device(INPUT_ACLMTR);
+	event_fd[aclmtr_index].events = POLLIN;
+	if (event_fd[aclmtr_index].fd < 0 )
+	{
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_ACLMTR);
+	}
+
+	int button_index = 1;
+	tButtonData2 button_data;
+	button_data.buttonState = 0;
+	button_data.buttonTransition = 0;
+	event_fd[button_index].fd = open_input_device(INPUT_KEYBOARD);
+	event_fd[button_index].events = POLLIN;
+	if (event_fd[button_index].fd < 0 )
+	{
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_KEYBOARD);
+	}
+
+
+
+
 
 	gXDisplay = XOpenDisplay(kDefaultDisplay);
 	if (gXDisplay == NULL)
@@ -136,8 +201,93 @@ void* CEventModule::ButtonPowerUSBTask(void* arg)
 	if (win)
 		XSelectInput(gXDisplay, win, KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | StructureNotifyMask );
 	g_threadRunning2_ = true;
+	int ret;
+	struct input_event ev;
+	U32 button;
+	int size = 0;
 	while (pThis->bThreadRun_)
 	{
+		// block on driver state changes only
+		// use timeout for cancellation point
+		ret = poll(event_fd, NUM_INPUTS, 1000);
+		pthread_testcancel();
+
+		if( ret >= 0 ) {
+			// button driver event?
+			if(button_index >= 0 && event_fd[button_index].revents & POLLIN) {
+				button_data.buttonTransition = 0;
+				size = read(event_fd[button_index].fd, &ev, sizeof(ev));
+				for(int i = 0; i < size; i++) {
+					if(ev.type == EV_KEY) { // this is a key press
+						button = LinuxKeyToBrio(ev.code);
+						if(button == 0) {
+							pThis->debug_.DebugOut(kDbgLvlValuable, "%s: unknown key code: %d type: %d\n", __FUNCTION__, ev.code, ev.type);
+							continue;
+						}
+						//repeat of known-pressed button
+						if(ev.value == 2 && (button_data.buttonState & button))
+							continue;
+					}
+					else if(ev.type == EV_SW) { // this is a switch change
+						// not implemented for emulator
+					}
+					else {
+						continue;
+					}
+
+					if(ev.value > 0 && (!(button_data.buttonState & button))) {
+						button_data.buttonTransition |= button;
+						button_data.buttonState |= button;
+					}
+					else if(ev.value == 0 && (button_data.buttonState & button)) {
+						button_data.buttonTransition |= button;
+						button_data.buttonState &= ~button;
+					}
+				}
+
+				if(button_data.buttonTransition != 0) {
+					button_data.time.seconds      = ev.time.tv_sec;
+					button_data.time.microSeconds = ev.time.tv_usec;
+					CButtonMessage button_msg(button_data, true);
+					pThis->PostEvent(button_msg, kButtonEventPriority, 0);
+				}
+			}
+
+			// Accelerometer driver event?
+			if (aclmtr_index >= 0 && event_fd[aclmtr_index].revents & POLLIN)
+			{
+				read(event_fd[aclmtr_index].fd, &ev, sizeof(ev));
+
+				switch (ev.type) {
+				case EV_ABS:
+					switch (ev.code) {
+					case ABS_X:
+						aclmtr_data.accelX = ev.value;
+						break;
+					case ABS_Y:
+						aclmtr_data.accelY = ev.value;
+						break;
+					case ABS_Z:
+						aclmtr_data.accelZ = ev.value;
+						break;
+					case ABS_MISC: // orientation change
+						CAccelerometerMessage aclmtr_msg(ev.value);
+						pThis->PostEvent(aclmtr_msg, kAccelerometerEventPriority, 0);
+						break;
+					}
+					break;
+				case EV_SYN:
+					aclmtr_data.time.seconds       = ev.time.tv_sec;
+					aclmtr_data.time.microSeconds  = ev.time.tv_usec;
+					CAccelerometerMessage aclmtr_msg(aclmtr_data);
+					pThis->PostEvent(aclmtr_msg, kAccelerometerEventPriority, 0);
+					break;
+				}
+			}
+
+		}
+
+
 		XEvent	event;
 		while(XPending(gXDisplay))
 		{

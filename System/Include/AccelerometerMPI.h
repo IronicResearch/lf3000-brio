@@ -92,6 +92,12 @@ public:
 	
 private:
 	class CAccelerometerModule*	pModule_;
+
+#if defined(EMULATION)
+	int							rate_;
+	int							bias_[3];
+	tAccelerometerMode			mode_;
+#endif
 };
 
 

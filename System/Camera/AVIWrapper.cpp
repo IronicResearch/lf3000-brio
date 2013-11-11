@@ -17,6 +17,13 @@
 
 #include <fcntl.h>
 #include <errno.h>
+#if defined(EMULATION)
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavutil/mathematics.h>
+}
+#endif
 
 //----------------------------------------------------------------------------
 avi_t* AVI_open_output_file(char * filename, bool audio)

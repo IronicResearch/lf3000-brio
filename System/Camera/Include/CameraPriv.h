@@ -51,7 +51,9 @@
 #include <sndfile.h>
 
 #include <linux/fb.h>
+#if !defined(EMULATION)
 #include <vmem.h>
+#endif
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -62,6 +64,8 @@ const CString			kUSBCameraModuleName	= "CameraUSB";
 const tVersion			kUSBCameraModuleVersion	= 2;
 const CString			kVIPCameraModuleName	= "CameraVIP";
 const tVersion			kVIPCameraModuleVersion	= 2;
+const CString			kEmulCameraModuleName	= "CameraEmul";
+const tVersion			kEmulCameraModuleVersion	= 2;
 const tEventPriority	kCameraEventPriority	= 0;
 const tDebugLevel		kCameraDebugLevel		= kDbgLvlImportant;
 
@@ -99,8 +103,10 @@ typedef enum {
 	JPEG_SLOW	= JDCT_ISLOW,		/* sw IDCT & jpeg_read_scanlines() - best for photos */
 	JPEG_FAST	= JDCT_IFAST,		/* sw IDCT & jpeg_read_scanlines() */
 	JPEG_FLOAT	= JDCT_FLOAT,		/* sw IDCT & jpeg_read_scanlines() */
+#if !defined(EMULATION)
 	JPEG_HW1	= JDCT_HW,			/* hw IDCT & jpeg_read_scanlines() */
 	JPEG_HW2						/* hw IDCT & jpeg_read_coefficients() - best for viewfinder */
+#endif
 } JPEG_METHOD;
 
 // Frame info
@@ -309,6 +315,11 @@ public:
 	VTABLE_EXPORT tErrType 		SetCurrentCamera(tCameraDevice device);
 	VTABLE_EXPORT tCameraDevice GetCurrentCamera();
 
+	// surface access and locking
+	VTABLE_EXPORT tVideoSurf* 	GetCaptureVideoSurface(const tVidCapHndl hndl);
+	VTABLE_EXPORT Boolean 		LockCaptureVideoSurface(const tVidCapHndl hndl);
+	VTABLE_EXPORT Boolean 		UnLockCaptureVideoSurface(const tVidCapHndl hndl);
+
 private:
 	MicrophoneListener	*micListener_;
 	CDebugMPI			dbg_;
@@ -373,6 +384,7 @@ private:
 
 	friend class CUSBCameraModule;
 	friend class CVIPCameraModule;
+	friend class CEmulCameraModule;
 };
 
 //==============================================================================
@@ -431,7 +443,9 @@ private:
 	struct fb_var_screeninfo 	vi;
 	int							fd;
 	int							fdvmem;
+#if !defined(EMULATION)
 	VM_IMEMORY 					vm;
+#endif
 
 	void		AllocVMem(tCameraContext& camCtx);
 	void		FreeVMem();
@@ -444,6 +458,30 @@ private:
 	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
+};
+
+
+//==============================================================================
+// USB-specific functionality
+class CEmulCameraModule : public CCameraModule {
+
+public:
+	virtual tVersion		GetModuleVersion() const;
+	virtual const CString*	GetModuleName() const;
+
+private:
+
+	// Limit object creation to the Module Manager interface functions
+	CEmulCameraModule();
+	virtual ~CEmulCameraModule();
+	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
+						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
+	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
+
+	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf,\
+													IEventListener * pListener, const U32 maxLength, const Boolean audio);
+
+	tVideoSurf	videoSurface_;
 };
 
 LF_END_BRIO_NAMESPACE()

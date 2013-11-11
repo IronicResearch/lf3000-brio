@@ -49,7 +49,7 @@ enum eGroupEnum {
 	kGroupKeypad,
 	// Brio v5.1
 	kGroupPrototype,
-	kGroupMotionTracker,
+	kGroupVision,
 
 	// WARNING: After GM, values can only be APPENDED to this enumeration!!!
 	// WARNING: Inserting values will break backwards compatability!!!

@@ -414,6 +414,20 @@ public:
 	/// \return	Returns currently selected camera, or kCameraNone if not present.
 	tCameraDevice	GetCurrentCamera();
 
+	// surface access and locking
+	/// \brief GetCaptureVideoSurface() gets the video surface passed into StartVideoCapture
+	/// \return Returns the video surface passed into StartVideoCapture
+	tVideoSurf* 	GetCaptureVideoSurface(const tVidCapHndl hndl);
+
+	/// \brief LockCaptureVideoSurface() locks the video surface passed into StartVideoCapture
+	/// \return Returns true on success
+	Boolean 		LockCaptureVideoSurface(const tVidCapHndl hndl);
+
+	/// \brief UnLockCaptureVideoSurface() unlocks the video surface passed into StartVideoCapture
+	/// \return Returns true on success
+	Boolean 		UnLockCaptureVideoSurface(const tVidCapHndl hndl);
+
+
 private:
 	class CCameraModule*	pModule_;
 	U32					id_;

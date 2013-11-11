@@ -37554,3 +37554,18 @@ By Dave Milici (dmilici@leapfrog.com) on 11/7/13 1:21 PM
 6,016 ms. (Cumulative: 15,536,949 ms)
 
 ----------------
+Revision 10,343 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,344 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,345 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,346 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,347 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,348 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,349 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Apply changes from Flakasoft to support VisionMPI, CameraMPI, and AccelerometerMPI in emulator.
+
+By dlazzari (dlazzari@leapfrog.com) on 11/11/13 11:46 AM
+16 changed, 113 added, 0 deleted.
+9,026 ms. (Cumulative: 15,546,130 ms)
+
+----------------

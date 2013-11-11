@@ -77,7 +77,7 @@ void CDisplayModule::InitModule()
 	U16 width, height;
 	EmulationConfig::Instance().GetLcdFrameBufferSize(width, height);
 	// Creates the X11 window
-	dbg_.DebugOut(kDbgLvlCritical, "CDisplayModule::InitModule width=%d, height=%d\n", width, height);
+	dbg_.DebugOut(kDbgLvlCritical, "CDisplayModule::InitModule EMULATION width=%d, height=%d\n", width, height);
     x11Window = XCreateWindow( x11Display, RootWindow(x11Display, x11Screen), 0, 0, width, height,
 								 0, CopyFromParent, InputOutput, CopyFromParent, ui32Mask, &sWA);
 	XMapWindow(x11Display, x11Window);
