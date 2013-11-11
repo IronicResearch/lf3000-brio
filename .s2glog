@@ -37569,3 +37569,13 @@ By dlazzari (dlazzari@leapfrog.com) on 11/11/13 11:46 AM
 9,026 ms. (Cumulative: 15,546,130 ms)
 
 ----------------
+Revision 10,350 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,351 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add OpenCV libraries missed in last commit. Note that these libraries were built at LeapFrog, not by Flakasoft.
+
+By dlazzari (dlazzari@leapfrog.com) on 11/11/13 2:07 PM
+0 changed, 48 added, 0 deleted.
+9,408 ms. (Cumulative: 15,555,741 ms)
+
+----------------
