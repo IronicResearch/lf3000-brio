@@ -167,6 +167,7 @@ void* CameraTaskMain(void* arg)
 	// set up save-to-file
 	if(pCtx->path.length())
 	{
+#if !defined(EMULATION)
 		bFile	= true;
 
 		avi	= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()), pCtx->bAudio);
@@ -195,6 +196,7 @@ void* CameraTaskMain(void* arg)
 			audio_bps   = audio_rate * audio_chans * sizeof(short); // bytes per sec
 			AVI_set_audio(avi, audio_chans, audio_rate, audio_width, audio_fmt, audio_rate * audio_width / 1000);
 		}
+#endif
 	}
 
 	// set up render-to-screen

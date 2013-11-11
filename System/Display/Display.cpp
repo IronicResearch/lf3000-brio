@@ -61,7 +61,7 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay),
 	mViewport_(kViewportLegacy), mOrient_(kOrientationLandscape),
 	xvp_(0), yvp_(0), wvp_(0), hvp_(0) , ow_(0), oh_(0)
 {
-	dbg_.SetDebugLevel(kDisplayDebugLevel);
+	dbg_.SetDebugLevel(kDbgLvlVerbose);
 
 	InitModule(); // delegate to platform or emulation initializer
 

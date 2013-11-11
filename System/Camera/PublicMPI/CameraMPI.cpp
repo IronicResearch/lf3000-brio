@@ -92,8 +92,13 @@ CCameraMPI::CCameraMPI() : pModule_(NULL)
 
 	if(HaveLF2000VIPDriver())
 		Module::Connect(pModule, kVIPCameraModuleName, kVIPCameraModuleVersion);
-	else
+	else {
+#ifdef EMULATION
+		Module::Connect(pModule, kEmulCameraModuleName, kUSBCameraModuleVersion);
+#else
 		Module::Connect(pModule, kUSBCameraModuleName, kUSBCameraModuleVersion);
+#endif
+	}
 
 	pModule_ = reinterpret_cast<CCameraModule*>(pModule);
 }
@@ -382,6 +387,28 @@ tCameraDevice CCameraMPI::GetCurrentCamera()
 	if (!pModule_)
 		return kCameraNone;
 	return pModule_->GetCurrentCamera();
+}
+
+tVideoSurf* CCameraMPI::GetCaptureVideoSurface(const tVidCapHndl hndl)
+{
+	if(!pModule_)
+		return NULL;
+
+	return pModule_->GetCaptureVideoSurface(hndl);
+}
+
+Boolean CCameraMPI::LockCaptureVideoSurface(const tVidCapHndl hndl)
+{
+	if(!pModule_)
+		return false;
+	return pModule_->LockCaptureVideoSurface(hndl);
+}
+
+Boolean CCameraMPI::UnLockCaptureVideoSurface(const tVidCapHndl hndl)
+{
+	if(!pModule_)
+		return false;
+	return pModule_->UnLockCaptureVideoSurface(hndl);
 }
 
 //----------------------------------------------------------------------------

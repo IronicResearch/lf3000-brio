@@ -9,6 +9,7 @@ Import('env')
 common_name		= 'Camera'
 usb_module_name	= common_name + 'USB'
 vip_module_name	= common_name + 'VIP'
+emu_module_name = common_name + 'Emul'
 mpi_name		= common_name + 'MPI'
 
 #-----------------------------------------------------------------------------
@@ -17,6 +18,7 @@ mpi_name		= common_name + 'MPI'
 modsrcs		= Glob('*.cpp') + ['Platform/CameraCommon.cpp']
 usbmodsrcs	= ['Platform/CameraUSB.cpp']
 vipmodsrcs	= ['Platform/CameraVIP.cpp']
+emumodsrcs	= ['Platform/CameraEmul.cpp']
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['Utility', 'AudioMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI',
 					 'DebugMPI', 'MicrophoneMPI', 'USBDeviceMPI', 'jpeg', 'asound', 'sndfile',
@@ -42,11 +44,16 @@ myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 
 myenv.Append(CPPPATH=['Include'])
-usbmodule	= MakeMyModule(myenv, usb_module_name, modsrcs + usbmodsrcs, modlibs, kBuildModule)
-vipmodule	= MakeMyModule(myenv, vip_module_name, modsrcs + vipmodsrcs, modlibs, kBuildModule)
+if not env['cpu'] == 'x86':
+	usbmodule	= MakeMyModule(myenv, usb_module_name, modsrcs + usbmodsrcs, modlibs, kBuildModule)
+	vipmodule	= MakeMyModule(myenv, vip_module_name, modsrcs + vipmodsrcs, modlibs, kBuildModule)
+else:
+	emumodule	= MakeMyModule(myenv, emu_module_name, modsrcs + emumodsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
-Depends(mympi, [usbmodule, vipmodule])
-
+if not env['cpu'] == 'x86':
+	Depends(mympi, [usbmodule, vipmodule])
+else:
+	Depends(mympi, [emumodule])
 targets = mympi or []
 
 #-----------------------------------------------------------------------------

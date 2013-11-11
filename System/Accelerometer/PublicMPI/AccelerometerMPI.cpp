@@ -37,6 +37,8 @@ const CString	SYSFS_ACLMTR_LF1000			= "/sys/devices/platform/lf1000-aclmtr/";
 const CString	SYSFS_ACLMTR_LF2000			= "/sys/devices/platform/lf2000-aclmtr/";
 static CString	SYSFS_ACLMTR_ROOT			= SYSFS_ACLMTR_LF2000;
 
+#define DEVICE_INPUT_NAME  "Accelerometer"
+
 static tAccelerometerData 	gCachedData 	= {0, 0, 0, {0, 0}};
 static S32					gCachedOrient	= 0;
 static bool					gbOneShot		= false;
@@ -79,6 +81,7 @@ CAccelerometerMessage::CAccelerometerMessage( const tAccelerometerData& data )
 	: IEventMessage(kAccelerometerDataChanged), mData(data)
 {
 	gCachedData = data;
+#if !defined(EMULATION)
 	if (gbOneShot) {
 		FILE* fd = fopen(SYSFS_ACLMTR_PATH("enable"), "w");
 		if (fd != NULL) {
@@ -86,6 +89,7 @@ CAccelerometerMessage::CAccelerometerMessage( const tAccelerometerData& data )
 			fclose(fd);
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -119,9 +123,15 @@ S32 CAccelerometerMessage::GetOrientation() const
 //----------------------------------------------------------------------------
 CAccelerometerMPI::CAccelerometerMPI() : pModule_(NULL)
 {
+#if defined(EMULATION)
+	rate_ = 10;
+	bias_[0] = bias_[1] = bias_[2] = 0;
+	mode_ = kAccelerometerModeContinuous;
+#else
 #ifdef LF1000
 	SYSFS_ACLMTR_ROOT = (HasPlatformCapability(kCapsLF1000)) ? SYSFS_ACLMTR_LF1000 : SYSFS_ACLMTR_LF2000;
 #endif
+#endif // defined(EMULATION)
 	//gRefCnt++;
 }
 
@@ -184,11 +194,15 @@ tErrType CAccelerometerMPI::UnregisterEventListener(const IEventListener *pListe
 //----------------------------------------------------------------------------
 Boolean	CAccelerometerMPI::IsAccelerometerPresent()
 {
+#if defined(EMULATION)
+	return true;
+#else
 	CDebugMPI dbg(kGroupAccelerometer);
 	struct stat stbuf;
 	int r = stat(SYSFS_ACLMTR_PATH("enable"), &stbuf);
 	dbg.DebugOut(kDbgLvlImportant, "IsAccelerometerPresent: %d\n", (r == 0));
 	return (r == 0) ? true : false;
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -206,6 +220,9 @@ S32 CAccelerometerMPI::GetOrientation() const
 //----------------------------------------------------------------------------
 U32	CAccelerometerMPI::GetAccelerometerRate() const
 {
+#if defined(EMULATION)
+	return rate_;
+#else
 	U32 rate = 0;
 	FILE* fd = fopen(SYSFS_ACLMTR_PATH("rate"), "r");
 	if (fd != NULL) {
@@ -214,11 +231,16 @@ U32	CAccelerometerMPI::GetAccelerometerRate() const
 		return rate;
 	}
 	return 0;
+#endif
 }
 
 //----------------------------------------------------------------------------
 tErrType CAccelerometerMPI::SetAccelerometerRate(U32 rate)
 {
+#if defined(EMULATION)
+	rate_ = rate;
+	return kNoErr;
+#else
 	FILE* fd = fopen(SYSFS_ACLMTR_PATH("rate"), "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", (unsigned int)rate);
@@ -226,11 +248,15 @@ tErrType CAccelerometerMPI::SetAccelerometerRate(U32 rate)
 		return kNoErr;
 	}
 	return kNoImplErr;
+#endif
 }
 
 //----------------------------------------------------------------------------
 tAccelerometerMode CAccelerometerMPI::GetAccelerometerMode() const
 {
+#if defined(EMULATION)
+	return mode_;
+#else
 	int enable = 0;
 	int orient = 0;
 	FILE* fd = fopen(SYSFS_ACLMTR_PATH("enable"), "r");
@@ -250,6 +276,7 @@ tAccelerometerMode CAccelerometerMPI::GetAccelerometerMode() const
 	if (enable)
 		return kAccelerometerModeContinuous;
 	return kAccelerometerModeDisabled;
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -274,7 +301,8 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 		gbOneShot = true;
 		break;
 	}
-	
+
+#if !defined(EMULATION)
 	// Set enable and orient state
 	FILE* fd = fopen(SYSFS_ACLMTR_PATH("enable"), "w");
 	if (fd != NULL) {
@@ -283,7 +311,7 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 	}
 	else
 		success = false;
-	
+
 	fd = fopen(SYSFS_ACLMTR_PATH("orient"), "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", orient);
@@ -291,6 +319,7 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 	}
 	else
 		success = false;
+#endif
 	
 	//Wait till driver updates data (at least one tick)
 	U32 rate = GetAccelerometerRate();
@@ -299,7 +328,7 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 	
 	// Get initial x,y,z and orientation data if enable
 	if (enable) {
-		int id = open_input_device("Accelerometer");
+		int id = open_input_device(DEVICE_INPUT_NAME);
 		if (id > 0)  {
 			struct input_absinfo ai[4];
 			ioctl(id, EVIOCGABS(ABS_X), &ai[0]);
@@ -320,6 +349,11 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 
 tErrType CAccelerometerMPI::GetAccelerometerBias(S32& xoffset, S32& yoffset, S32& zoffset)
 {
+#if defined(EMULATION)
+	xoffset = bias_[0];
+	yoffset = bias_[1];
+	zoffset = bias_[2];
+#else
 	//Read values directly from sysfs entry
 	FILE* fd = fopen(SYSFS_ACLMTR_PATH("bias"), "r");
 	if( fd != NULL ) {
@@ -328,10 +362,16 @@ tErrType CAccelerometerMPI::GetAccelerometerBias(S32& xoffset, S32& yoffset, S32
 		return kNoErr;
 	}
 	return kNoImplErr;
+#endif
 }
 
 tErrType CAccelerometerMPI::SetAccelerometerBias(S32 xoffset, S32 yoffset, S32 zoffset)
 {
+#if defined(EMULATION)
+	bias_[0] = xoffset;
+	bias_[1] = yoffset;
+	bias_[2] = zoffset;
+#else
 	//Write values directly to sysfs entry
 	FILE* fd = fopen(SYSFS_ACLMTR_PATH("bias"), "w");
 	if( fd != NULL ) {
@@ -340,6 +380,7 @@ tErrType CAccelerometerMPI::SetAccelerometerBias(S32 xoffset, S32 yoffset, S32 z
 		return kNoErr;
 	}
 	return kNoImplErr;
+#endif
 }
 
 LF_END_BRIO_NAMESPACE()

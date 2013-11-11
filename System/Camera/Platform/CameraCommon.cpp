@@ -224,8 +224,12 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 
 	InitLut();
 
-#ifdef LF1000
+#if defined(LF1000)
 	V4L2_MEMORY_XXXX = (HasPlatformCapability(kCapsLF1000)) ? V4L2_MEMORY_MMAP : V4L2_MEMORY_USERPTR;
+#endif
+
+#if defined(EMULATION)
+	V4L2_MEMORY_XXXX = V4L2_MEMORY_MMAP;
 #endif
 
 }
@@ -469,6 +473,7 @@ static Boolean InitCameraHWInt(tCameraContext *pCamCtx)
 	return true;
 }
 
+#   define FourCC2Str(fourcc) (const char[]){*((char*)&fourcc), *(((char*)&fourcc)+1), *(((char*)&fourcc)+2), *(((char*)&fourcc)+3),0}
 //----------------------------------------------------------------------------
 static Boolean	EnumFramerates(tCameraContext *pCamCtx, v4l2_frmsizeenum *frm )
 {
@@ -523,6 +528,12 @@ static Boolean	EnumFramerates(tCameraContext *pCamCtx, v4l2_frmsizeenum *frm )
 			{
 			case V4L2_PIX_FMT_MJPEG:
 				mode->pixelformat = kCaptureFormatMJPEG;
+				break;
+			case V4L2_PIX_FMT_YUV420:
+				mode->pixelformat = kCaptureFormatYUV420;
+				break;
+			case V4L2_PIX_FMT_YUYV:
+				mode->pixelformat = kCaptureFormatRAWYUYV;
 				break;
 			default:
 				mode->pixelformat = kCaptureFormatError;
@@ -1303,6 +1314,7 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		return false;
     }
 
+	frame->pixelformat = camCtx_.mode.pixelformat;
 	frame->index	= camCtx_.buf.index;
 	frame->data		= camCtx_.bufs[camCtx_.buf.index];
 	frame->size		= camCtx_.buf.bytesused;
@@ -1583,11 +1595,208 @@ __attribute__((always_inline)) inline void CCameraModule::DecompressAndPaint(str
 
 }
 
+void convert_yuv422_to_yuv420(char *InBuff, char *OutBuff, int width,
+int height)
+{
+    int i = 0, j = 0, k = 0;
+    int UOffset = width * height;
+    int VOffset = (width * height) * 5/4;
+    int UVSize = (width * height) / 4;
+    int line1 = 0, line2 = 0;
+    int m = 0, n = 0;
+    int y = 0, u = 0, v = 0;
+
+    u = UOffset;
+    v = VOffset;
+
+    for (i = 0, j = 1; i < height; i += 2, j += 2)
+    {
+        /* Input Buffer Pointer Indexes */
+        line1 = i * width * 2;
+        line2 = j * width * 2;
+
+        /* Output Buffer Pointer Indexes */
+        m = width * y;
+        y = y + 1;
+        n = width * y;
+        y = y + 1;
+
+        /* Scan two lines at a time */
+        for (k = 0; k < width*2; k += 4)
+        {
+            unsigned char Y1, Y2, U, V;
+            unsigned char Y3, Y4, U2, V2;
+
+            /* Read Input Buffer */
+            Y1 = InBuff[line1++];
+            U  = InBuff[line1++];
+            Y2 = InBuff[line1++];
+            V  = InBuff[line1++];
+
+            Y3 = InBuff[line2++];
+            U2 = InBuff[line2++];
+            Y4 = InBuff[line2++];
+            V2 = InBuff[line2++];
+
+            /* Write Output Buffer */
+            OutBuff[m++] = Y1;
+            OutBuff[m++] = Y2;
+
+            OutBuff[n++] = Y3;
+            OutBuff[n++] = Y4;
+
+            OutBuff[u++] = (U + U2)/2;
+            OutBuff[v++] = (V + V2)/2;
+        }
+    }
+}
+
+static inline
+void saturate(int& value, int min_val, int max_val)
+{
+  if (value < min_val) value = min_val;
+  if (value > max_val) value = max_val;
+}
+
+void convert_YUYV_to_RGB24(int size_x, int size_y, const unsigned char* YUYV_ptr, unsigned char* out_ptr )
+{
+  const int K1 = int(1.402f * (1 << 16));
+  const int K2 = int(0.714f * (1 << 16));
+  const int K3 = int(0.334f * (1 << 16));
+  const int K4 = int(1.772f * (1 << 16));
+
+  typedef unsigned char T;
+  const int pitch = size_x * 2; // 2 bytes per one YU-YV pixel
+
+  for (int y=0; y<size_y; y++) {
+    const unsigned char* src = YUYV_ptr + pitch * y;
+    for (int x=0; x<size_x*2; x+=4) { // Y1 U Y2 V
+      unsigned char Y1 = src[x + 0];
+      unsigned char U  = src[x + 1];
+      unsigned char Y2 = src[x + 2];
+      unsigned char V  = src[x + 3];
+
+      signed char uf = U - 128;
+      signed char vf = V - 128;
+
+      int R = Y1 + (K1*vf >> 16);
+      int G = Y1 - (K2*vf >> 16) - (K3*uf >> 16);
+      int B = Y1 + (K4*uf >> 16);
+
+      saturate(R, 0, 255);
+      saturate(G, 0, 255);
+      saturate(B, 0, 255);
+
+      *out_ptr++ = T(B);
+      *out_ptr++ = T(G);
+      *out_ptr++ = T(R);
+
+      R = Y2 + (K1*vf >> 16);
+      G = Y2 - (K2*vf >> 16) - (K3*uf >> 16);
+      B = Y2 + (K4*uf >> 16);
+
+      saturate(R, 0, 255);
+      saturate(G, 0, 255);
+      saturate(B, 0, 255);
+
+      *out_ptr++ = T(B);
+      *out_ptr++ = T(G);
+      *out_ptr++ = T(R);
+    }
+
+  }
+}
+
+void convert_YUYV_to_RGB24_double(int width, int height, const unsigned char* yuyv_image, unsigned char* rgb_image )
+{
+
+	int y;
+	int cr;
+	int cb;
+
+	double r;
+	double g;
+	double b;
+
+	for (int i = 0, j = 0; i < width * height * 3; i+=6, j+=4) {
+	    //first pixel
+	    y = yuyv_image[j];
+	    cb = yuyv_image[j+1];
+	    cr = yuyv_image[j+3];
+
+	    r = y + (1.4065 * (cr - 128));
+	    g = y - (0.3455 * (cb - 128)) - (0.7169 * (cr - 128));
+	    b = y + (1.7790 * (cb - 128));
+
+	    //This prevents colour distortions in your rgb image
+	    if (r < 0) r = 0;
+	    else if (r > 255) r = 255;
+	    if (g < 0) g = 0;
+	    else if (g > 255) g = 255;
+	    if (b < 0) b = 0;
+	    else if (b > 255) b = 255;
+
+	    rgb_image[i] = (unsigned char)r;
+	    rgb_image[i+1] = (unsigned char)g;
+	    rgb_image[i+2] = (unsigned char)b;
+
+	    //second pixel
+	    y = yuyv_image[j+2];
+	    cb = yuyv_image[j+1];
+	    cr = yuyv_image[j+3];
+
+	    r = y + (1.4065 * (cr - 128));
+	    g = y - (0.3455 * (cb - 128)) - (0.7169 * (cr - 128));
+	    b = y + (1.7790 * (cb - 128));
+
+	    if (r < 0) r = 0;
+	    else if (r > 255) r = 255;
+	    if (g < 0) g = 0;
+	    else if (g > 255) g = 255;
+	    if (b < 0) b = 0;
+	    else if (b > 255) b = 255;
+
+	    rgb_image[i+3] = (unsigned char)r;
+	    rgb_image[i+4] = (unsigned char)g;
+	    rgb_image[i+5] = (unsigned char)b;
+	}
+
+}
+
+void convert_YUYV_to_YCbCr(int size_x, int size_y, const unsigned char* YUYV_ptr, unsigned char* out_ptr )
+{
+  const int K1 = int(1.402f * (1 << 16));
+  const int K2 = int(0.714f * (1 << 16));
+  const int K3 = int(0.334f * (1 << 16));
+  const int K4 = int(1.772f * (1 << 16));
+
+  typedef unsigned char T;
+  const int pitch = size_x * 2; // 2 bytes per one YU-YV pixel
+
+  for (int y=0; y<size_y; y++) {
+    const unsigned char* src = YUYV_ptr + pitch * y;
+    for (int x=0; x<size_x*2; x+=4) { // Y1 U Y2 V
+      unsigned char Y1 = src[x + 0];
+      unsigned char U  = src[x + 1];
+      unsigned char Y2 = src[x + 2];
+      unsigned char V  = src[x + 3];
+
+      *out_ptr++ = T(Y1);
+      *out_ptr++ = T(U);
+      *out_ptr++ = T(V);
+
+      *out_ptr++ = T(Y2);
+      *out_ptr++ = T(U);
+      *out_ptr++ = T(V);
+    }
+
+  }
+}
+//----------------------------------------------------------------------------
+
 //----------------------------------------------------------------------------
 Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapInfo *bitmap, const JPEG_METHOD method)
 {
-	struct jpeg_decompress_struct	cinfo;
-	struct my_error_mgr				jerr;
 	int 							row = 0;
 	int								row_stride;
 	Boolean							bRet = true, bAlloc = false;
@@ -1639,114 +1848,141 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 		bAlloc = true;
 	}
 
-	/* We set up the normal JPEG error routines, then override error_exit
-	 * and emit_message. */
-	cinfo.err = jpeg_std_error(&jerr.pub);
+	row_stride = bitmap->width * bitmap->depth;	
 
-	/*
-	 * The PixArt camera produces JPEGs which libjpeg complains about:
-	 *   "Corrupt JPEG data: 1 extraneous bytes before marker 0xd9"
-	 * These appear visually fine, but the warnings on stderr are distracting,
-	 * so stifle them.
-	 */
-	jerr.pub.emit_message	= silence_warning;
-	/*
-	 * v4l2 sometimes produces totally invalid JPEGs which cause libjpeg to exit.
-	 * TODO: root cause why so this stop-gap isn't needed.
-	 */
-	jerr.pub.error_exit		= my_error_exit;
-
-	/* Establish the setjmp return context for my_error_exit to use. */
-	if (setjmp(jerr.setjmp_buffer))
+	if( frame->pixelformat == kCaptureFormatMJPEG )
 	{
-		/* If we get here, the JPEG code has signaled an error.
-		 * We need to clean up the JPEG object, close the input file, and return.
+		struct jpeg_decompress_struct	cinfo;
+		struct my_error_mgr				jerr;
+	
+
+		/* We set up the normal JPEG error routines, then override error_exit
+		 * and emit_message. */
+		cinfo.err = jpeg_std_error(&jerr.pub);
+
+		/*
+		 * The PixArt camera produces JPEGs which libjpeg complains about:
+		 *   "Corrupt JPEG data: 1 extraneous bytes before marker 0xd9"
+		 * These appear visually fine, but the warnings on stderr are distracting,
+		 * so stifle them.
 		 */
+		jerr.pub.emit_message	= silence_warning;
+		/*
+		 * v4l2 sometimes produces totally invalid JPEGs which cause libjpeg to exit.
+		 * TODO: root cause why so this stop-gap isn't needed.
+		 */
+		jerr.pub.error_exit		= my_error_exit;
+ 		
+		/* Establish the setjmp return context for my_error_exit to use. */
+		if (setjmp(jerr.setjmp_buffer))
+		{
+			/* If we get here, the JPEG code has signaled an error.
+			 * We need to clean up the JPEG object, close the input file, and return.
+			 */
+			jpeg_destroy_decompress(&cinfo);
+			bRet = false;
+			goto out;
+		}
+
+		jpeg_create_decompress(&cinfo);
+		jpeg_mem_src(&cinfo, (U8*)frame->data, frame->size);
+
+		(void) jpeg_read_header(&cinfo, TRUE);
+
+		switch(bitmap->format)
+		{
+		case kBitmapFormatYCbCr888:
+			cinfo.out_color_space = JCS_YCbCr;
+			break;
+		case kBitmapFormatRGB888:
+			cinfo.out_color_space = JCS_RGB;
+			break;
+		case kBitmapFormatGrayscale8:
+			cinfo.out_color_space = JCS_GRAYSCALE;
+			break;
+		case kBitmapFormatError:
+			/* fall through */
+		default:
+			bRet = false;
+			;
+		}
+	#ifdef LF1000 //#ifndef EMULATION
+		/*
+		 * Decode JPEG using jpeg_read_coefficients() and LF1000 IDCT, then paint
+		 * video layer directly.  This has about 5 fps better performance than the
+		 * jpeg_read_scanlines() version below.
+		 *
+		 * TODO: Still outstanding:
+		 * -better integration with scaler (internal tVideoSurf to match camera size?)
+		 *
+		 * -Implement QVGA->QQVGA rendering that doesn't look terrible
+		 *
+		 * -IDCT independent?: HW scaler produces a few rows of green pixels at
+		 *  bottom edge of screen (lack U & V?) when scaling up
+		 *
+		 * -use hardware color space converter to support RGB textures
+		 *
+		 * -determine why colors look somewhat muted
+		 *
+		 * -verify IDCT resolution
+		 */
+		if(method == JPEG_HW2)
+		{
+			DecompressAndPaint(&cinfo, surf);
+			/* JPEG has been rendered, prevent re-draw below */
+			surf = NULL;
+		}
+		else
+	#endif
+		{
+		/*
+		 * libjpeg natively supports M/8, where M is 1..16.
+		 */
+ 		
+		//scale up
+		if( frame->height > bitmap->height)
+		{
+			cinfo.scale_num		= (8 * bitmap->height) / frame->height;
+		}
+		else
+		{
+			cinfo.scale_num		= (8 * (bitmap->height / frame->height));
+		}
+
+		cinfo.dct_method	= (J_DCT_METHOD)method;
+		(void) jpeg_start_decompress(&cinfo);
+		row_stride = cinfo.output_width * cinfo.output_components;
+
+		while (cinfo.output_scanline < cinfo.output_height) {
+			row += jpeg_read_scanlines(&cinfo, &bitmap->buffer[row], cinfo.output_height);
+		}
+
+		}
+		(void) jpeg_finish_decompress(&cinfo);
+
 		jpeg_destroy_decompress(&cinfo);
-		bRet = false;
-		goto out;
+
 	}
-
-	jpeg_create_decompress(&cinfo);
-
-	jpeg_mem_src(&cinfo, (U8*)frame->data, frame->size);
-
-	(void) jpeg_read_header(&cinfo, TRUE);
-
-	switch(bitmap->format)
+	else if( frame->pixelformat == kCaptureFormatRAWYUYV )
 	{
-	case kBitmapFormatYCbCr888:
-		cinfo.out_color_space = JCS_YCbCr;
-		break;
-	case kBitmapFormatRGB888:
-		cinfo.out_color_space = JCS_RGB;
-		break;
-	case kBitmapFormatGrayscale8:
-		cinfo.out_color_space = JCS_GRAYSCALE;
-		break;
-	case kBitmapFormatError:
-		/* fall through */
-	default:
-		bRet = false;
-		;
-	}
-#ifdef LF1000 //#ifndef EMULATION
-	/*
-	 * Decode JPEG using jpeg_read_coefficients() and LF1000 IDCT, then paint
-	 * video layer directly.  This has about 5 fps better performance than the
-	 * jpeg_read_scanlines() version below.
-	 *
-	 * TODO: Still outstanding:
-	 * -better integration with scaler (internal tVideoSurf to match camera size?)
-	 *
-	 * -Implement QVGA->QQVGA rendering that doesn't look terrible
-	 *
-	 * -IDCT independent?: HW scaler produces a few rows of green pixels at
-	 *  bottom edge of screen (lack U & V?) when scaling up
-	 *
-	 * -use hardware color space converter to support RGB textures
-	 *
-	 * -determine why colors look somewhat muted
-	 *
-	 * -verify IDCT resolution
-	 */
-	if(method == JPEG_HW2)
-	{
-		DecompressAndPaint(&cinfo, surf);
-		/* JPEG has been rendered, prevent re-draw below */
-		surf = NULL;
-	}
-	else
-#endif
-	{
-	/*
-	 * libjpeg natively supports M/8, where M is 1..16.
-	 */
-
-	//scale up
-	if( frame->height > bitmap->height)
-	{
-		cinfo.scale_num		= (8 * bitmap->height) / frame->height;
-	}
-	else
-	{
-		cinfo.scale_num		= (8 * (bitmap->height / frame->height));
-	}
-
-	cinfo.dct_method	= (J_DCT_METHOD)method;
-
-	(void) jpeg_start_decompress(&cinfo);
-
-	row_stride = cinfo.output_width * cinfo.output_components;
-
-	while (cinfo.output_scanline < cinfo.output_height) {
-		row += jpeg_read_scanlines(&cinfo, &bitmap->buffer[row], cinfo.output_height);
-	}
+//		tBitmapFormat
+		switch( bitmap->format )
+		{
+		case kBitmapFormatRGB888:
+			convert_YUYV_to_RGB24_double( bitmap->width, bitmap->height,
+					(unsigned char*) frame->data, (unsigned char*) bitmap->data );
+			break;
+		case kBitmapFormatYCbCr888:
+			convert_YUYV_to_YCbCr( bitmap->width, bitmap->height,
+					(unsigned char*) frame->data, (unsigned char*) bitmap->data );
+//			convert_yuv422_to_yuv420( (char*)frame->data, (char*) bitmap->data,
+//					bitmap->width, bitmap->height );
+			break;
+ 
+		}
+		// TODO: deal with bitmap formats other then RGB
 
 	}
-	(void) jpeg_finish_decompress(&cinfo);
-
-	jpeg_destroy_decompress(&cinfo);
 
 	// draw to screen
 	if(surf != NULL)
@@ -2612,6 +2848,20 @@ tCameraDevice CCameraModule::GetCurrentCamera()
 }
 
 //----------------------------------------------------------------------------
+
+// surface access and locking
+tVideoSurf* 	CCameraModule::GetCaptureVideoSurface(const tVidCapHndl hndl)
+{
+	return camCtx_.surf;
+}
+Boolean 	CCameraModule::LockCaptureVideoSurface(const tVidCapHndl hndl)
+{
+	THREAD_LOCK;
+}
+Boolean 	CCameraModule::UnLockCaptureVideoSurface(const tVidCapHndl hndl)
+{
+	THREAD_UNLOCK;
+}
 
 LF_END_BRIO_NAMESPACE()
 

@@ -37,6 +37,7 @@ targets.extend(SConscript('USBDevice/SConscript', variant_dir=MakeTempDirName('U
 targets.extend(SConscript('Utility/SConscript', variant_dir=MakeTempDirName('Utility'), duplicate=0))
 targets.extend(SConscript('Accelerometer/SConscript', variant_dir=MakeTempDirName('Accelerometer'), duplicate=0))
 targets.extend(SConscript('Wireless/SConscript', variant_dir=MakeTempDirName('Wireless'), duplicate=0))
+targets.extend(SConscript('Vision/SConscript', variant_dir=MakeTempDirName('Vision'), duplicate=0))
 if env['cpu'] == 'x86':
 	targets.extend(SConscript('Emulation/SConscript', variant_dir=MakeTempDirName('Emulation'), duplicate=0))
 
@@ -46,6 +47,7 @@ if env['cpu'] == 'x86':
 #-----------------------------------------------------------------------------
 if env['hdr_deploy_dir']:
 	targets += env.Install(env['hdr_deploy_dir'].Dir('LF'), Glob(os.path.join('Include', '*.h')) )
+	targets += env.Install(env['hdr_deploy_dir'].Dir('LF/Vision'), Glob(os.path.join('Include/Vision', '*.h')) )
 	
 
 Return('targets')

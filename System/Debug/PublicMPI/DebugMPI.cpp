@@ -181,7 +181,7 @@ namespace
 			CKernelMPI	kernel;
 
 			U32 mSec = kernel.GetElapsedTimeAsMSecs();
-			nc = sprintf(outstr,kDebugOutTimestampFmt, mSec);
+			nc = sprintf(outstr,kDebugOutTimestampFmt, (unsigned int)mSec);
 		}
 
 		if (errString != NULL)

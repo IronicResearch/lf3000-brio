@@ -1,0 +1,46 @@
+#-----------------------------------------------------------------------------
+# Brio/System/Vision
+#-----------------------------------------------------------------------------
+from Etc.Tools.SConsTools.Priv.LfUtils import *
+import os
+
+Import('env')
+
+module_name	= 'Vision'
+mpi_name	= module_name + 'MPI'
+
+#-----------------------------------------------------------------------------
+# Setup module source files and libraries
+#-----------------------------------------------------------------------------
+emulibs			= []
+ocvlibs2_3_1 	= []
+if env['cpu'] == 'x86':
+	ocvlibs2_3_1= ['opencv_core', 'opencv_imgproc', 'opencv_highgui', 'opencv_ml', 'opencv_video', 'opencv_features2d', 'opencv_calib3d', 
+					'opencv_objdetect', 'opencv_contrib', 'opencv_legacy', 'opencv_flann']
+					
+modsrcs		= Glob('*.cpp')
+mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp')) + Glob('*.cpp') + Glob(os.path.join('Private', '*.cpp'))
+modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI'] + emulibs
+mpilibs		= ['ModuleMPI', 'KernelMPI', 'CameraMPI'] + ocvlibs2_3_1
+						
+#-----------------------------------------------------------------------------
+# Modify the build environment and build the module
+#-----------------------------------------------------------------------------
+myenv		= env.Clone()
+myenv.Append(CPPPATH=['Include'])
+myenv.Append(CPPPATH = ['#ThirdParty/OpenCV/Include'])
+myenv.Append(LIBPATH = ['#ThirdParty/OpenCV/Libs/' + env['cpu']])
+
+mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
+mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
+
+targets = mympi or []
+
+#-----------------------------------------------------------------------------
+# Modify the build environment and build and run the unit tests
+#-----------------------------------------------------------------------------
+
+if env['buildtests']:
+	targets.append(RunMyTests(module_name, [], mpilibs + ['EventMPI'], myenv))
+
+Return('targets')
