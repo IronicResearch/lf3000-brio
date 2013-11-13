@@ -37579,3 +37579,16 @@ By dlazzari (dlazzari@leapfrog.com) on 11/11/13 2:07 PM
 9,408 ms. (Cumulative: 15,555,741 ms)
 
 ----------------
+Revision 10,352 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,353 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,354 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,355 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,356 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add lf-input-daemon binary and a README for setting it up. These are used for Glasgow emulation via WiiMote.
+
+By dlazzari (dlazzari@leapfrog.com) on 11/13/13 11:06 AM
+0 changed, 2 added, 0 deleted.
+6,762 ms. (Cumulative: 15,562,644 ms)
+
+----------------
