@@ -35,8 +35,9 @@ const CString* CEmulCameraModule::GetModuleName() const
 CEmulCameraModule::CEmulCameraModule()
 {
 	tCaptureMode VGA = {kCaptureFormatRAWYUYV, 640, 480, 1, 25};
-	valid = true;	//TODO: actually check if camera exists at "/dev/video0"
+	// Enumerate camera modes to match preferred default
 	camCtx_.mode = VGA;
+	valid = InitCameraInt(&camCtx_.mode, false);
 }
 
 //----------------------------------------------------------------------------

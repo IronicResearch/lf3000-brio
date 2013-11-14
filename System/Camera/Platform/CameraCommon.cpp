@@ -539,6 +539,7 @@ static Boolean	EnumFramerates(tCameraContext *pCamCtx, v4l2_frmsizeenum *frm )
 				mode->pixelformat = kCaptureFormatError;
 				break;
 			}
+			pCamCtx->dbg->DebugOut(kDbgLvlVerbose, "%s: %dx%d, fmt=%d(%08x), inv fps=%d:%d\n", __FUNCTION__, mode->width, mode->height, (int)mode->pixelformat, (int)(*fps_it)->pixel_format, (int)mode->fps_numerator, (int)mode->fps_denominator);
 
 			pCamCtx->modes->push_back(mode);
 		}
@@ -773,9 +774,11 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 			break;
 		default:
 			control->type = kControlTypeError;
+			pCamCtx->dbg->DebugOut(kDbgLvlVerbose, "%s: v4l2 cid %08x: ctl=%d, min=%d, max=%d, def=%d, cur=%d\n", __FUNCTION__, query.id, (int)control->type, (int)control->min, (int)control->max, (int)control->preset, (int)control->current);
 			delete control;
 			continue;
 		}
+		pCamCtx->dbg->DebugOut(kDbgLvlVerbose, "%s: v4l2 cid %08x: ctl=%d, min=%d, max=%d, def=%d, cur=%d\n", __FUNCTION__, query.id, (int)control->type, (int)control->min, (int)control->max, (int)control->preset, (int)control->current);
 
 		pCamCtx->controls->push_back(control);
 	}

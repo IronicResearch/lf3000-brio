@@ -37601,3 +37601,13 @@ By dlazzari (dlazzari@leapfrog.com) on 11/14/13 10:30 AM
 6,750 ms. (Cumulative: 15,569,488 ms)
 
 ----------------
+Revision 10,358 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added verbose debug logging for camera mode and control enumerations.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/14/13 10:59 AM
+2 changed, 0 added, 0 deleted.
+6,777 ms. (Cumulative: 15,576,359 ms)
+
+----------------
