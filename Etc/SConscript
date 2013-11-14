@@ -27,6 +27,7 @@ if env['tools_deploy_dir']:
 	targets += env.Install(dest_dir, 'Tools/libOggFLAC.so.3')
 	targets += env.Install(dest_dir, 'Tools/libFLAC.so.7')
 	targets += env.Install(dest_dir, 'Tools/sf2brio')
+	targets += env.Install(dest_dir, 'Tools/lf-input-daemon')
 	targets += env.Install(dest_dir.Dir('DeviceTools'), glob.glob('Tools/SConsTools/DeviceTools/*.py') )
 
 	Return('targets')

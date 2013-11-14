@@ -37592,3 +37592,12 @@ By dlazzari (dlazzari@leapfrog.com) on 11/13/13 11:06 AM
 6,762 ms. (Cumulative: 15,562,644 ms)
 
 ----------------
+Revision 10,357 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix lf-input-daemon tool not getting installed in SDK.
+
+By dlazzari (dlazzari@leapfrog.com) on 11/14/13 10:30 AM
+1 changed, 0 added, 0 deleted.
+6,750 ms. (Cumulative: 15,569,488 ms)
+
+----------------
