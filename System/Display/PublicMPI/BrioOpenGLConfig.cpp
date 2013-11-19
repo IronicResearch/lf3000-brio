@@ -622,7 +622,11 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 		Window surface, i.e. it will be visible on screen. The list
 		has to contain key/value pairs, terminated with EGL_NONE.
 	 */
+#ifdef EMULATION
+	bool using_32_bit = true;
+#else
 	bool using_32_bit = ((tDisplayContext*)ctx.hndlDisplay)->colorDepthFormat == kPixelFormatARGB8888;
+#endif
 	const EGLint pi32ConfigAttribs[] =
 	{
 	    EGL_RED_SIZE,       using_32_bit ? 8 : 5,
@@ -648,7 +652,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	int iConfigs;
 	dbg.DebugOut(kDbgLvlVerbose, "eglChooseConfig()\n");
 	success = eglChooseConfig(eglDisplay, pi32ConfigAttribs, &eglConfig, 1, &iConfigs);
-	dbg.Assert(success && iConfigs == 1, "eglChooseConfig() failed\n");
+	dbg.Assert(success && iConfigs == 1, "eglChooseConfig() failed %d\n", iConfigs);
 
 	/*
 		Step 5 - Create a surface to draw to.

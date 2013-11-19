@@ -37611,3 +37611,18 @@ By Dave Milici (dmilici@leapfrog.com) on 11/14/13 10:59 AM
 6,777 ms. (Cumulative: 15,576,359 ms)
 
 ----------------
+Revision 10,359 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+6,828 ms. (Cumulative: 15,583,297 ms)
+
+----------------
+Revision 10,360 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Commiting some changes to new BrioOpenGLConfig constructor.  Allows running OpenGL 1.1 apps in Emulation.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/19/13 3:35 PM
+1 changed, 0 added, 0 deleted.
+6,579 ms. (Cumulative: 15,589,876 ms)
+
+----------------
