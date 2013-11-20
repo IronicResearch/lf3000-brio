@@ -30,7 +30,8 @@ namespace
 	{
 		struct stat st;
 
-		return stat("/sys/devices/platform/vip.0/driver", &st) == 0;
+		return (stat("/sys/devices/platform/vip.0/driver", &st) == 0)
+			|| (stat("/sys/devices/platform/nxp-v4l2.0/driver", &st) == 0);
 	}
 }
 

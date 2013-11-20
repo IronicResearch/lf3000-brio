@@ -10,6 +10,7 @@
 #include <sys/mman.h>
 #include <linux/fb.h>
 #include <linux/lf2000/lf2000vip.h>
+#include <linux/media.h>
 #include <vmem.h>
 #endif
 
@@ -137,6 +138,46 @@ void CVIPCameraModule::AllocVMem(tCameraContext& camCtx_)
 #endif
 }
 
+//----------------------------------------------------------------------------
+bool EnumMediaNodes(tCameraContext& ctx)
+{
+	int fd = open("/dev/media0", O_RDWR);
+	if (fd == -1)
+		return false;
+
+	struct media_entity_desc md;
+	struct media_link_desc   ml;
+	memset(&md, 0, sizeof(md));
+	memset(&ml, 0, sizeof(ml));
+
+	for (int i = 0, r = 0; r == 0; i++)
+	{
+		md.id = i | MEDIA_ENT_ID_FLAG_NEXT;
+
+		r = ioctl(fd, MEDIA_IOC_ENUM_ENTITIES, &md);
+		if (r != 0)
+			continue;
+
+		ctx.dbg->DebugOut(kDbgLvlImportant, "%s: id=%d, name=%s, pads=%d, links=%d\n", __FUNCTION__, md.id, md.name, md.pads, md.links);
+		if (strstr(md.name, "CLIPPER1"))
+			ml.sink.entity = md.id;
+		if (strstr(md.name, "HI253 0"))
+			ml.source.entity = md.id;
+	}
+
+	if (ml.sink.entity && ml.source.entity) {
+		ml.sink.flags = MEDIA_PAD_FL_SINK;
+		ml.source.flags = MEDIA_PAD_FL_SOURCE;
+		ml.flags = MEDIA_LNK_FL_ENABLED;
+
+		ioctl(fd, MEDIA_IOC_SETUP_LINK, &ml);
+	}
+
+	close(fd);
+
+	return true;
+}
+
 //============================================================================
 // Ctor & dtor
 //============================================================================
@@ -145,6 +186,10 @@ CVIPCameraModule::CVIPCameraModule()
 	tCameraControls::iterator	it;
 
 	dbg_.DebugOut(kDbgLvlImportant, "%s: pid=%d\n", __FUNCTION__, getpid());
+
+	// Enumerate media layer nodes, if any
+	EnumMediaNodes(camCtx_);
+	camCtx_.file = "/dev/video2"; // CLIPPER1
 
 	camCtx_.mode = QVGA;
 	valid = InitCameraInt(&camCtx_.mode, false);
