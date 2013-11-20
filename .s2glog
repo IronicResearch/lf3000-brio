@@ -37688,3 +37688,19 @@ By Dave Milici (dmilici@leapfrog.com) on 11/20/13 2:23 PM
 6,565 ms. (Cumulative: 15,644,342 ms)
 
 ----------------
+Revision 10,369 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+6,780 ms. (Cumulative: 15,651,201 ms)
+
+----------------
+Revision 10,370 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding EGL_RENDERABLE_TYPE parameter when chosing eglConfig.
+
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/20/13 3:43 PM
+1 changed, 0 added, 0 deleted.
+6,797 ms. (Cumulative: 15,657,998 ms)
+
+----------------
