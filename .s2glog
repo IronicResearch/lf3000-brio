@@ -37648,3 +37648,18 @@ By Dave Milici (dmilici@leapfrog.com) on 11/20/13 9:49 AM
 6,815 ms. (Cumulative: 15,610,051 ms)
 
 ----------------
+Revision 10,364 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+6,625 ms. (Cumulative: 15,616,786 ms)
+
+----------------
+Revision 10,365 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding Headers and Libs from PowerVR 3.2 SDK.  This is for getting OpenGL ES 2.0 working in Emulation.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/20/13 1:40 PM
+10 changed, 1 added, 0 deleted.
+7,297 ms. (Cumulative: 15,624,099 ms)
+
+----------------

@@ -1,6 +1,8 @@
 #ifndef __gl_h_
 #define __gl_h_
 
+/* $Revision: 10601 $ on $Date:: 2010-03-04 22:15:27 -0800 #$ */
+
 #include <GLES/glplatform.h>
 
 #ifdef __cplusplus
@@ -13,6 +15,7 @@ extern "C" {
  */
 
 typedef void             GLvoid;
+typedef char             GLchar;
 typedef unsigned int     GLenum;
 typedef unsigned char    GLboolean;
 typedef unsigned int     GLbitfield;
@@ -676,7 +679,7 @@ GL_API void GL_APIENTRY glGetFixedv (GLenum pname, GLfixed *params);
 GL_API void GL_APIENTRY glGetIntegerv (GLenum pname, GLint *params);
 GL_API void GL_APIENTRY glGetLightxv (GLenum light, GLenum pname, GLfixed *params);
 GL_API void GL_APIENTRY glGetMaterialxv (GLenum face, GLenum pname, GLfixed *params);
-GL_API void GL_APIENTRY glGetPointerv (GLenum pname, void **params);
+GL_API void GL_APIENTRY glGetPointerv (GLenum pname, GLvoid **params);
 GL_API const GLubyte * GL_APIENTRY glGetString (GLenum name);
 GL_API void GL_APIENTRY glGetTexEnviv (GLenum env, GLenum pname, GLint *params);
 GL_API void GL_APIENTRY glGetTexEnvxv (GLenum env, GLenum pname, GLfixed *params);
