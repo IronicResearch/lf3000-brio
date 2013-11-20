@@ -37626,3 +37626,25 @@ By Minh Saelock (msaelock@leapfrog.com) on 11/19/13 3:35 PM
 6,579 ms. (Cumulative: 15,589,876 ms)
 
 ----------------
+Revision 10,361 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+6,548 ms. (Cumulative: 15,596,533 ms)
+
+----------------
+Revision 10,362 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+6,703 ms. (Cumulative: 15,603,236 ms)
+
+----------------
+Revision 10,363 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Initial Mods to enumerate V4L2 media layer nodes for LF3000 camera devices. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/20/13 9:49 AM
+2 changed, 0 added, 0 deleted.
+6,815 ms. (Cumulative: 15,610,051 ms)
+
+----------------
