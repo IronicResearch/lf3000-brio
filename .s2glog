@@ -37704,3 +37704,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 11/20/13 3:43 PM
 6,797 ms. (Cumulative: 15,657,998 ms)
 
 ----------------
+Revision 10,371 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+PowerVR libs from the Emulator pack I sent out earlier instead of the 3.2 ones.  For some reason these work better.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/20/13 6:15 PM
+3 changed, 0 added, 0 deleted.
+6,892 ms. (Cumulative: 15,665,000 ms)
+
+----------------
