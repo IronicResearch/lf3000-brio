@@ -37723,3 +37723,12 @@ By Dave Milici (dmilici@leapfrog.com) on 11/21/13 10:03 AM
 7,071 ms. (Cumulative: 15,672,196 ms)
 
 ----------------
+Revision 10,373 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding link to GLESv2 for DisplayMPI, and BrioOpenGLConfig no longer tries to delete ctx.eglWindow.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/21/13 1:02 PM
+2 changed, 0 added, 0 deleted.
+6,605 ms. (Cumulative: 15,678,926 ms)
+
+----------------

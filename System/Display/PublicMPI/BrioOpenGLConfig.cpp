@@ -497,7 +497,9 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 		Step 10 - Destroy the eglWindow.
 		Again, this is platform specific and delegated to a separate function.
 	*/
+#ifndef EMULATION
 	delete (WindowType*)ctx.eglWindow;
+#endif
 #ifdef LF2000
 	// Exit OpenGL hardware
 	disp_.DeinitOpenGL(&ctx);
