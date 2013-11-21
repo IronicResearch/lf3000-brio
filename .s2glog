@@ -37732,3 +37732,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 11/21/13 1:02 PM
 6,605 ms. (Cumulative: 15,678,926 ms)
 
 ----------------
+Revision 10,374 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Removing gl.h from BrioOpenGLConfig header.  It inteferes with titles that include gl2.h.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/21/13 1:13 PM
+1 changed, 0 added, 0 deleted.
+6,219 ms. (Cumulative: 15,685,239 ms)
+
+----------------

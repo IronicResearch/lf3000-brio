@@ -21,10 +21,8 @@
 
 #ifdef KHRONOS
 #include <EGL/egl.h>
-#include <GLES/gl.h>
 #else
 #include <GLES/egl.h>
-#include <GLES/gl.h>
 #endif
 
 #include <SystemTypes.h>
