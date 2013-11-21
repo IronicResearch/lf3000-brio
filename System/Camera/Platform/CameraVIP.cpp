@@ -147,8 +147,10 @@ bool EnumMediaNodes(tCameraContext& ctx)
 
 	struct media_entity_desc md;
 	struct media_link_desc   ml;
+	struct media_links_enum  me;
 	memset(&md, 0, sizeof(md));
 	memset(&ml, 0, sizeof(ml));
+	memset(&me, 0, sizeof(me));
 
 	for (int i = 0, r = 0; r == 0; i++)
 	{
@@ -158,11 +160,38 @@ bool EnumMediaNodes(tCameraContext& ctx)
 		if (r != 0)
 			continue;
 
-		ctx.dbg->DebugOut(kDbgLvlImportant, "%s: id=%d, name=%s, pads=%d, links=%d\n", __FUNCTION__, md.id, md.name, md.pads, md.links);
-		if (strstr(md.name, "CLIPPER1"))
+		ctx.dbg->DebugOut(kDbgLvlImportant, "%s: id=%d, name=%s, pads=%d, links=%d, type=%08x\n", __FUNCTION__, md.id, md.name, md.pads, md.links, md.type);
+
+		if (!(md.type & MEDIA_ENT_T_V4L2_SUBDEV))
+			continue;
+
+		me.entity = md.id;
+		me.pads   = new struct media_pad_desc[md.pads];
+		me.links  = new struct media_link_desc[md.links];
+
+		r = ioctl(fd, MEDIA_IOC_ENUM_LINKS, &me);
+
+		if (strstr(md.name, "VIN CLIPPER1")) {
 			ml.sink.entity = md.id;
-		if (strstr(md.name, "HI253 0"))
+			for (int j = 0; j < md.pads; j++) {
+				if (me.pads[j].flags & MEDIA_PAD_FL_SINK) {
+					ml.sink = me.pads[j];
+					break;
+				}
+			}
+		}
+		if (strstr(md.name, "HI253 0")) {
 			ml.source.entity = md.id;
+			for (int j = 0; j < md.pads; j++) {
+				if (me.pads[j].flags & MEDIA_PAD_FL_SOURCE) {
+					ml.source = me.pads[j];
+					break;
+				}
+			}
+		}
+
+		delete[] me.links;
+		delete[] me.pads;
 	}
 
 	if (ml.sink.entity && ml.source.entity) {
@@ -171,9 +200,13 @@ bool EnumMediaNodes(tCameraContext& ctx)
 		ml.flags = MEDIA_LNK_FL_ENABLED;
 
 		ioctl(fd, MEDIA_IOC_SETUP_LINK, &ml);
+
+		ctx.dbg->DebugOut(kDbgLvlImportant, "%s: link source %d (pad %d) to sink %d (pad %d)\n", __FUNCTION__, ml.source.entity, ml.source.index, ml.sink.entity, ml.sink.index);
 	}
 
-	close(fd);
+//	close(fd);
+
+	ctx.file = "/dev/video2"; // CLIPPER1
 
 	return true;
 }
@@ -189,7 +222,6 @@ CVIPCameraModule::CVIPCameraModule()
 
 	// Enumerate media layer nodes, if any
 	EnumMediaNodes(camCtx_);
-	camCtx_.file = "/dev/video2"; // CLIPPER1
 
 	camCtx_.mode = QVGA;
 	valid = InitCameraInt(&camCtx_.mode, false);

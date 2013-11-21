@@ -447,23 +447,27 @@ static Boolean InitCameraHWInt(tCameraContext *pCamCtx)
 
 	if((cam = open(pCamCtx->file, O_RDWR | flags)) == -1)
 	{
+		pCamCtx->dbg->DebugOut(kDbgLvlCritical, "%s: open failed on %s, errno=%d\n", __FUNCTION__, pCamCtx->file, errno);
 		return false;
 	}
 
 	if(ioctl(cam, VIDIOC_QUERYCAP, cap) == -1)
 	{
+		pCamCtx->dbg->DebugOut(kDbgLvlCritical, "%s: VIDIOC_QUERYCAP failed on %s, errno=%d\n", __FUNCTION__, pCamCtx->file, errno);
 		close(cam);
 		return false;
 	}
 
 	if(!(cap->capabilities & V4L2_CAP_VIDEO_CAPTURE))
 	{
+		pCamCtx->dbg->DebugOut(kDbgLvlCritical, "%s: V4L2_CAP_VIDEO_CAPTURE failed on %s, errno=%d\n", __FUNCTION__, pCamCtx->file, errno);
 		close(cam);
 		return false;
 	}
 
 	if(!(cap->capabilities & V4L2_CAP_STREAMING))
 	{
+		pCamCtx->dbg->DebugOut(kDbgLvlCritical, "%s: V4L2_CAP_STREAMING failed on %s, errno=%d\n", __FUNCTION__, pCamCtx->file, errno);
 		close(cam);
 		return false;
 	}

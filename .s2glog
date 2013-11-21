@@ -37713,3 +37713,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 11/20/13 6:15 PM
 6,892 ms. (Cumulative: 15,665,000 ms)
 
 ----------------
+Revision 10,372 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Mods for enumerating V4L subdevice links and pads for connecting clipper & sensor.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/21/13 10:03 AM
+2 changed, 0 added, 0 deleted.
+7,071 ms. (Cumulative: 15,672,196 ms)
+
+----------------
