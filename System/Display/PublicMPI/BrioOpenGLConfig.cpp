@@ -27,6 +27,8 @@
 #include <signal.h>
 #endif
 
+#include <GLES/gl.h>
+
 // LF2000
 typedef struct {
 	int	width;

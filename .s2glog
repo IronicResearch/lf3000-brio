@@ -37741,3 +37741,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 11/21/13 1:13 PM
 6,219 ms. (Cumulative: 15,685,239 ms)
 
 ----------------
+Revision 10,375 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding <GLES/gl.h> to BrioOpenGLConfig.cpp.  Now that it's removed from the header, we need it here.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/21/13 4:09 PM
+1 changed, 0 added, 0 deleted.
+6,219 ms. (Cumulative: 15,691,552 ms)
+
+----------------
