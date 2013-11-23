@@ -9,6 +9,7 @@ Import('env')
 common_name		= 'Camera'
 usb_module_name	= common_name + 'USB'
 vip_module_name	= common_name + 'VIP'
+nxp_module_name = common_name + 'NXP'
 emu_module_name = common_name + 'Emul'
 mpi_name		= common_name + 'MPI'
 
@@ -18,11 +19,13 @@ mpi_name		= common_name + 'MPI'
 modsrcs		= Glob('*.cpp') + ['Platform/CameraCommon.cpp']
 usbmodsrcs	= ['Platform/CameraUSB.cpp']
 vipmodsrcs	= ['Platform/CameraVIP.cpp']
+nxpmodsrcs	= ['Platform/CameraNXP.cpp']
 emumodsrcs	= ['Platform/CameraEmul.cpp']
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['Utility', 'AudioMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI',
 					 'DebugMPI', 'MicrophoneMPI', 'USBDeviceMPI', 'jpeg', 'asound', 'sndfile',
 					 'avformat', 'avcodec', 'avutil', 'png', 'z']
+nxplibs 	= ['nxv4l2', 'nxvmem', 'nxvip']
 mpilibs		= ['ModuleMPI', 'MicrophoneMPI']
 
 #-----------------------------------------------------------------------------
@@ -40,6 +43,7 @@ myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
+myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
 
 myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 
@@ -47,11 +51,12 @@ myenv.Append(CPPPATH=['Include'])
 if not env['cpu'] == 'x86':
 	usbmodule	= MakeMyModule(myenv, usb_module_name, modsrcs + usbmodsrcs, modlibs, kBuildModule)
 	vipmodule	= MakeMyModule(myenv, vip_module_name, modsrcs + vipmodsrcs, modlibs, kBuildModule)
+	nxpmodule	= MakeMyModule(myenv, nxp_module_name, modsrcs + nxpmodsrcs, modlibs + nxplibs, kBuildModule)
 else:
 	emumodule	= MakeMyModule(myenv, emu_module_name, modsrcs + emumodsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
 if not env['cpu'] == 'x86':
-	Depends(mympi, [usbmodule, vipmodule])
+	Depends(mympi, [usbmodule, vipmodule, nxpmodule])
 else:
 	Depends(mympi, [emumodule])
 targets = mympi or []

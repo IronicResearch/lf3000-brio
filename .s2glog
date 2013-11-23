@@ -37760,3 +37760,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/22/13 4:25 PM
 6,516 ms. (Cumulative: 15,698,162 ms)
 
 ----------------
+Revision 10,377 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Separate Camera NXP module implementation for calling Nexell V4L2 libs on LF3000.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/22/13 6:53 PM
+3 changed, 1 added, 0 deleted.
+6,782 ms. (Cumulative: 15,705,069 ms)
+
+----------------

@@ -30,8 +30,15 @@ namespace
 	{
 		struct stat st;
 
-		return (stat("/sys/devices/platform/vip.0/driver", &st) == 0)
-			|| (stat("/sys/devices/platform/nxp-v4l2.0/driver", &st) == 0);
+		return (stat("/sys/devices/platform/vip.0/driver", &st) == 0);
+	}
+
+	//------------------------------------------------------------------------
+	inline bool HaveLF3000NXPDriver(void)
+	{
+		struct stat st;
+
+		return (stat("/sys/devices/platform/nxp-v4l2.0/driver", &st) == 0);
 	}
 }
 
@@ -91,7 +98,9 @@ CCameraMPI::CCameraMPI() : pModule_(NULL)
 {
 	ICoreModule*	pModule;
 
-	if(HaveLF2000VIPDriver())
+	if (HaveLF3000NXPDriver())
+		Module::Connect(pModule, kNXPCameraModuleName, kNXPCameraModuleVersion);
+	else if (HaveLF2000VIPDriver())
 		Module::Connect(pModule, kVIPCameraModuleName, kVIPCameraModuleVersion);
 	else {
 #ifdef EMULATION
