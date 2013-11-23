@@ -66,6 +66,8 @@ const CString			kVIPCameraModuleName	= "CameraVIP";
 const tVersion			kVIPCameraModuleVersion	= 2;
 const CString			kEmulCameraModuleName	= "CameraEmul";
 const tVersion			kEmulCameraModuleVersion	= 2;
+const CString			kNXPCameraModuleName	= "CameraNXP";
+const tVersion			kNXPCameraModuleVersion	= 2;
 const tEventPriority	kCameraEventPriority	= 0;
 const tDebugLevel		kCameraDebugLevel		= kDbgLvlImportant;
 
@@ -385,6 +387,7 @@ private:
 	friend class CUSBCameraModule;
 	friend class CVIPCameraModule;
 	friend class CEmulCameraModule;
+	friend class CNXPCameraModule;
 };
 
 //==============================================================================
@@ -462,7 +465,39 @@ private:
 
 
 //==============================================================================
-// USB-specific functionality
+// LF3000 NXP-specific functionality
+class CNXPCameraModule : public CCameraModule {
+
+public:
+	virtual tVersion		GetModuleVersion() const;
+	virtual const CString*	GetModuleName() const;
+
+	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf,\
+													IEventListener * pListener, const U32 maxLength, const Boolean audio);
+	VTABLE_EXPORT Boolean		StopVideoCapture(const tVidCapHndl hndl);
+	VTABLE_EXPORT Boolean		SnapFrame(const tVidCapHndl hndl, const CPath &path);
+	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, U8* pixels, tColorOrder color_order);
+	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order);
+	VTABLE_EXPORT Boolean		PauseVideoCapture(const tVidCapHndl hndl, const Boolean display);
+	VTABLE_EXPORT Boolean		ResumeVideoCapture(const tVidCapHndl hndl);
+	VTABLE_EXPORT tErrType		EnumFormats(tCaptureModes& pModeList);
+	VTABLE_EXPORT tErrType		SetCurrentFormat(tCaptureMode* pMode);
+	VTABLE_EXPORT tErrType 		SetCurrentCamera(tCameraDevice device);
+
+private:
+	void*						nxphndl_;
+
+	// Limit object creation to the Module Manager interface functions
+	CNXPCameraModule();
+	virtual ~CNXPCameraModule();
+	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
+						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
+	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
+
+};
+
+//==============================================================================
+// Emulation-specific functionality
 class CEmulCameraModule : public CCameraModule {
 
 public:
