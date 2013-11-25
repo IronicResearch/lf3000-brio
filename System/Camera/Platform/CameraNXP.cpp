@@ -15,8 +15,12 @@
 #include <Utility.h>
 
 #include <CameraPriv.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <linux/fb.h>
 #include <linux/v4l2-mediabus.h>
 #include <lf3000/nxp-v4l2-media.h>
+#include <lf3000/nx_alloc_mem.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
@@ -38,6 +42,8 @@ const CString* CNXPCameraModule::GetModuleName() const
 	return &kNXPCameraModuleName;
 }
 
+//----------------------------------------------------------------------------
+
 //============================================================================
 // Ctor & dtor
 //============================================================================
@@ -45,6 +51,8 @@ CNXPCameraModule::CNXPCameraModule()
 {
 	tCaptureMode QVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
     struct V4l2UsageScheme us;
+    struct nxp_vid_buffer  vb;
+    NX_VID_MEMORY_INFO    *vm;
 
     memset(&us, 0, sizeof(us));
     us.useClipper1 = true;
@@ -69,12 +77,59 @@ CNXPCameraModule::CNXPCameraModule()
 //	valid = InitCameraInt(&camCtx_.mode, false);
 	camCtx_.modes->push_back(new tCaptureMode(QVGA));
 	valid = true;
+
+	// Use YUV framebuffer memory for V4L buffers
+	camCtx_.fi = new struct fb_fix_screeninfo;
+	camCtx_.vi = new struct fb_var_screeninfo;
+	camCtx_.fd = open("/dev/fb2", O_RDWR);
+	ioctl(camCtx_.fd, FBIOGET_FSCREENINFO, camCtx_.fi);
+	ioctl(camCtx_.fd, FBIOGET_VSCREENINFO, camCtx_.vi);
+	camCtx_.vi->reserved[0] = (unsigned int)mmap(0, camCtx_.fi->smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, camCtx_.fd, 0);
+
+	memset(&vb, 0, sizeof(vb));
+	vb.plane_num = 3;
+	vb.fds[0] = vb.fds[1] = vb.fds[2] = camCtx_.fd;
+	vb.sizes[0] = vb.sizes[1] = vb.sizes[2] = camCtx_.fi->smem_len;
+	vb.sizes[0] = vb.sizes[1] = vb.sizes[2] = camCtx_.fi->line_length * camCtx_.mode.height;
+	vb.phys[0] = camCtx_.fi->smem_start;
+	vb.phys[1] = vb.phys[0] + camCtx_.fi->line_length/2;
+	vb.phys[2] = vb.phys[1] + camCtx_.fi->line_length * camCtx_.mode.height/2;
+	vb.virt[0] = (char*)camCtx_.vi->reserved[0];
+	vb.virt[1] = vb.virt[0] + camCtx_.fi->line_length/2;
+	vb.virt[2] = vb.virt[1] + camCtx_.fi->line_length * camCtx_.mode.height/2;
+
+	// Use ION memory for V4L buffers
+	nxpvbuf_ = vm = NX_VideoAllocateMemory(64, camCtx_.mode.width, camCtx_.mode.height, NX_MEM_MAP_TILED, FOURCC_MVS0);
+	vb.phys[0] = vm->luPhyAddr;
+	vb.phys[1] = vm->cbPhyAddr;
+	vb.phys[2] = vm->crPhyAddr;
+	vb.virt[0] = (char*)vm->luVirAddr;
+	vb.virt[1] = (char*)vm->cbVirAddr;
+	vb.virt[2] = (char*)vm->crVirAddr;
+	vb.sizes[0] = vm->luStride * vm->imgHeight;
+	vb.sizes[1] = vm->cbStride * vm->imgHeight;
+	vb.sizes[2] = vm->crStride * vm->imgHeight;
+	vb.fds[0] = (int)((NX_MEMORY_INFO*)vm->privateDesc[0])->privateDesc;
+	vb.fds[1] = (int)((NX_MEMORY_INFO*)vm->privateDesc[1])->privateDesc;
+	vb.fds[2] = (int)((NX_MEMORY_INFO*)vm->privateDesc[2])->privateDesc;
+
+	v4l2_reqbuf(nxphndl_, nxp_v4l2_clipper1, 1);
+	v4l2_qbuf(nxphndl_, nxp_v4l2_clipper1, vb.plane_num, 0, &vb, -1, NULL);
+
+	v4l2_reqbuf(nxphndl_, nxp_v4l2_mlc0_video, 1);
+	v4l2_qbuf(nxphndl_, nxp_v4l2_mlc0_video, vb.plane_num, 0, &vb, -1, NULL);
 }
 
 //----------------------------------------------------------------------------
 CNXPCameraModule::~CNXPCameraModule()
 {
 //	DeinitCameraInt();
+	munmap((void*)camCtx_.vi->reserved[0], camCtx_.fi->smem_len);
+	close(camCtx_.fd);
+	delete camCtx_.vi;
+	delete camCtx_.fi;
+
+	NX_FreeVideoMemory((NX_VID_MEMORY_HANDLE)nxpvbuf_);
 
 	v4l2_unlink(nxphndl_, nxp_v4l2_clipper1, nxp_v4l2_mlc0_video);
 	v4l2_unlink(nxphndl_, nxp_v4l2_sensor1, nxp_v4l2_clipper1);
@@ -115,12 +170,14 @@ tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 	v4l2_streamon(nxphndl_, nxp_v4l2_clipper1);
 
 	if (pSurf) {
-		v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, pSurf->width, pSurf->height, PIXFORMAT_YUV420_PLANAR);
-		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, 0, 0, pSurf->width, pSurf->height);
+		int index = 0;
+//		v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, pSurf->width, pSurf->height, PIXFORMAT_YUV420_PLANAR);
+//		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, 0, 0, pSurf->width, pSurf->height);
+		v4l2_dqbuf(nxphndl_, nxp_v4l2_clipper1, 3, &index, NULL);
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
 	}
 
-	return CCameraModule::StartVideoCapture(path, pSurf, pListener, maxLength, bAudio);
+	return (tVidCapHndl)nxphndl_; //CCameraModule::StartVideoCapture(path, pSurf, pListener, maxLength, bAudio);
 }
 
 //----------------------------------------------------------------------------
@@ -129,19 +186,19 @@ Boolean CNXPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 	v4l2_streamoff(nxphndl_, nxp_v4l2_mlc0_video);
 	v4l2_streamoff(nxphndl_, nxp_v4l2_clipper1);
 
-	return CCameraModule::StopVideoCapture(hndl);
+	return true; //CCameraModule::StopVideoCapture(hndl);
 }
 
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean display)
 {
-	return CCameraModule::PauseVideoCapture(hndl, display);
+	return true; //CCameraModule::PauseVideoCapture(hndl, display);
 }
 
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 {
-	return CCameraModule::ResumeVideoCapture(hndl);
+	return true; //CCameraModule::ResumeVideoCapture(hndl);
 }
 
 //----------------------------------------------------------------------------
