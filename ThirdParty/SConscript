@@ -128,6 +128,9 @@ if not env['cpu']=='x86' and not env['is_sdk']:
 		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavformat.so.52'))
 		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavutil.so.49'))
 
+	if env['platform'] == 'LF2000':
+		libs += glob.glob(os.path.join('Nexell', 'Libs', env['cpu'], '*.so*'))
+
 	if env['platform']=='Lightning':
 		libs += glob.glob(os.path.join('MagicEyes', 'Libs', env['cpu'], 'libopengles_lite.so'))
 		libs += glob.glob(os.path.join('Portaudio', 'Libs', env['cpu'], 'libportaudio.so'))

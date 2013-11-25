@@ -37770,3 +37770,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/22/13 6:53 PM
 6,782 ms. (Cumulative: 15,705,069 ms)
 
 ----------------
+Revision 10,378 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Interim deployment of Nexell V4L2 & VPU libs until LF3K rootfs images have them.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/25/13 11:15 AM
+1 changed, 0 added, 0 deleted.
+6,672 ms. (Cumulative: 15,711,835 ms)
+
+----------------
