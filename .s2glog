@@ -37780,3 +37780,16 @@ By Dave Milici (dmilici@leapfrog.com) on 11/25/13 11:15 AM
 6,672 ms. (Cumulative: 15,711,835 ms)
 
 ----------------
+Revision 10,379 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Use ION memory allocation for V4L buffers. 
+YUV framebuffer memory did not work with NXP V4L qbuf routines.
+ION file descriptors appear to be significant for V4L qbuf routines.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/25/13 1:02 PM
+2 changed, 0 added, 0 deleted.
+6,689 ms. (Cumulative: 15,718,618 ms)
+
+----------------

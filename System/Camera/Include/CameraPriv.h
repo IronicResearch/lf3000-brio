@@ -486,6 +486,7 @@ public:
 
 private:
 	void*						nxphndl_;
+	void*						nxpvbuf_;
 
 	// Limit object creation to the Module Manager interface functions
 	CNXPCameraModule();
