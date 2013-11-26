@@ -27,6 +27,67 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Defines
 //==============================================================================
 
+tCaptureMode QVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
+tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 30};
+tCaptureMode UXGA = {kCaptureFormatYUV420, 1600, 1200, 1, 30};
+
+//----------------------------------------------------------------------------
+inline void PackVidBuf(struct nxp_vid_buffer& vb, NX_VID_MEMORY_INFO* vm)
+{
+	vb.plane_num = 3;
+	vb.phys[0] = vm->luPhyAddr;
+	vb.phys[1] = vm->cbPhyAddr;
+	vb.phys[2] = vm->crPhyAddr;
+	vb.virt[0] = (char*)vm->luVirAddr;
+	vb.virt[1] = (char*)vm->cbVirAddr;
+	vb.virt[2] = (char*)vm->crVirAddr;
+	vb.sizes[0] = vm->luStride * vm->imgHeight;
+	vb.sizes[1] = vm->cbStride * vm->imgHeight;
+	vb.sizes[2] = vm->crStride * vm->imgHeight;
+	vb.fds[0] = (int)((NX_MEMORY_INFO*)vm->privateDesc[0])->privateDesc;
+	vb.fds[1] = (int)((NX_MEMORY_INFO*)vm->privateDesc[1])->privateDesc;
+	vb.fds[2] = (int)((NX_MEMORY_INFO*)vm->privateDesc[2])->privateDesc;
+}
+
+//----------------------------------------------------------------------------
+inline void PackVidBuf(struct nxp_vid_buffer& vb, tCameraContext& ctx)
+{
+	vb.plane_num = 3;
+	vb.fds[0] = vb.fds[1] = vb.fds[2] = ctx.fd;
+	vb.sizes[0] = vb.sizes[1] = vb.sizes[2] = ctx.fi->line_length * ctx.mode.height;
+	vb.phys[0] = ctx.fi->smem_start;
+	vb.phys[1] = vb.phys[0] + ctx.fi->line_length/2;
+	vb.phys[2] = vb.phys[1] + ctx.fi->line_length * ctx.mode.height/2;
+	vb.virt[0] = (char*)ctx.vi->reserved[0];
+	vb.virt[1] = vb.virt[0] + ctx.fi->line_length/2;
+	vb.virt[2] = vb.virt[1] + ctx.fi->line_length * ctx.mode.height/2;
+}
+
+//----------------------------------------------------------------------------
+inline void PackVidBuf(struct nxp_vid_buffer& vb, tVideoSurf* pSurf)
+{
+	vb.plane_num = 3;
+	vb.phys[0] = (unsigned int)pSurf->buffer;
+	vb.phys[1] = vb.phys[0] + pSurf->pitch/2;
+	vb.phys[2] = vb.phys[1] + pSurf->pitch * pSurf->height/2;
+	vb.virt[0] = (char*)pSurf->buffer;
+	vb.virt[1] = vb.virt[0] + pSurf->pitch/2;
+	vb.virt[2] = vb.virt[1] + pSurf->pitch * pSurf->height/2;
+	vb.sizes[0] = pSurf->pitch * pSurf->height;
+	vb.sizes[1] =
+	vb.sizes[2] = pSurf->pitch * pSurf->height/2;
+}
+
+//----------------------------------------------------------------------------
+inline void PackVidBuf(struct nxp_vid_buffer& vb, struct tFrameInfo* fi)
+{
+}
+
+//----------------------------------------------------------------------------
+inline void UnPackVidBuf(struct nxp_vid_buffer& vb, struct tFrameInfo* fi)
+{
+}
+
 //============================================================================
 // CCameraModule: Informational functions
 //============================================================================
@@ -42,14 +103,11 @@ const CString* CNXPCameraModule::GetModuleName() const
 	return &kNXPCameraModuleName;
 }
 
-//----------------------------------------------------------------------------
-
 //============================================================================
 // Ctor & dtor
 //============================================================================
 CNXPCameraModule::CNXPCameraModule()
 {
-	tCaptureMode QVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
     struct V4l2UsageScheme us;
     struct nxp_vid_buffer  vb;
     NX_VID_MEMORY_INFO    *vm;
@@ -76,6 +134,8 @@ CNXPCameraModule::CNXPCameraModule()
 	camCtx_.file = "/dev/video2";
 //	valid = InitCameraInt(&camCtx_.mode, false);
 	camCtx_.modes->push_back(new tCaptureMode(QVGA));
+	camCtx_.modes->push_back(new tCaptureMode(SVGA));
+	camCtx_.modes->push_back(new tCaptureMode(UXGA));
 	valid = true;
 
 	// Use YUV framebuffer memory for V4L buffers
@@ -87,31 +147,11 @@ CNXPCameraModule::CNXPCameraModule()
 	camCtx_.vi->reserved[0] = (unsigned int)mmap(0, camCtx_.fi->smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, camCtx_.fd, 0);
 
 	memset(&vb, 0, sizeof(vb));
-	vb.plane_num = 3;
-	vb.fds[0] = vb.fds[1] = vb.fds[2] = camCtx_.fd;
-	vb.sizes[0] = vb.sizes[1] = vb.sizes[2] = camCtx_.fi->smem_len;
-	vb.sizes[0] = vb.sizes[1] = vb.sizes[2] = camCtx_.fi->line_length * camCtx_.mode.height;
-	vb.phys[0] = camCtx_.fi->smem_start;
-	vb.phys[1] = vb.phys[0] + camCtx_.fi->line_length/2;
-	vb.phys[2] = vb.phys[1] + camCtx_.fi->line_length * camCtx_.mode.height/2;
-	vb.virt[0] = (char*)camCtx_.vi->reserved[0];
-	vb.virt[1] = vb.virt[0] + camCtx_.fi->line_length/2;
-	vb.virt[2] = vb.virt[1] + camCtx_.fi->line_length * camCtx_.mode.height/2;
+	PackVidBuf(vb, camCtx_);
 
 	// Use ION memory for V4L buffers
 	nxpvbuf_ = vm = NX_VideoAllocateMemory(64, camCtx_.mode.width, camCtx_.mode.height, NX_MEM_MAP_TILED, FOURCC_MVS0);
-	vb.phys[0] = vm->luPhyAddr;
-	vb.phys[1] = vm->cbPhyAddr;
-	vb.phys[2] = vm->crPhyAddr;
-	vb.virt[0] = (char*)vm->luVirAddr;
-	vb.virt[1] = (char*)vm->cbVirAddr;
-	vb.virt[2] = (char*)vm->crVirAddr;
-	vb.sizes[0] = vm->luStride * vm->imgHeight;
-	vb.sizes[1] = vm->cbStride * vm->imgHeight;
-	vb.sizes[2] = vm->crStride * vm->imgHeight;
-	vb.fds[0] = (int)((NX_MEMORY_INFO*)vm->privateDesc[0])->privateDesc;
-	vb.fds[1] = (int)((NX_MEMORY_INFO*)vm->privateDesc[1])->privateDesc;
-	vb.fds[2] = (int)((NX_MEMORY_INFO*)vm->privateDesc[2])->privateDesc;
+	PackVidBuf(vb, vm);
 
 	v4l2_reqbuf(nxphndl_, nxp_v4l2_clipper1, 1);
 	v4l2_qbuf(nxphndl_, nxp_v4l2_clipper1, vb.plane_num, 0, &vb, -1, NULL);
@@ -160,7 +200,32 @@ tErrType CNXPCameraModule::SetCurrentFormat(tCaptureMode* pMode)
 //----------------------------------------------------------------------------
 tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 {
-	return kNoImplErr;
+	if (device_ == device)
+		return kNoErr;
+
+	switch (device) {
+	case kCameraFront:
+		v4l2_unlink(nxphndl_, nxp_v4l2_clipper1, nxp_v4l2_mlc0_video);
+		v4l2_unlink(nxphndl_, nxp_v4l2_sensor1, nxp_v4l2_clipper1);
+		device_ = device;
+		sensor_ = nxp_v4l2_sensor0;
+		clipper_ = nxp_v4l2_clipper0;
+		v4l2_link(nxphndl_, nxp_v4l2_sensor0, nxp_v4l2_clipper0);
+		v4l2_link(nxphndl_, nxp_v4l2_clipper0, nxp_v4l2_mlc0_video);
+		break;
+	case kCameraDefault:
+		v4l2_unlink(nxphndl_, nxp_v4l2_clipper0, nxp_v4l2_mlc0_video);
+		v4l2_unlink(nxphndl_, nxp_v4l2_sensor0, nxp_v4l2_clipper0);
+		device_ = device;
+		sensor_ = nxp_v4l2_sensor1;
+		clipper_ = nxp_v4l2_clipper1;
+		v4l2_link(nxphndl_, nxp_v4l2_sensor1, nxp_v4l2_clipper1);
+		v4l2_link(nxphndl_, nxp_v4l2_clipper1, nxp_v4l2_mlc0_video);
+		break;
+	default:
+		return kInvalidParamErr;
+	}
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
@@ -219,6 +284,39 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrd
 Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order)
 {
 	return false;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
+{
+	int index = 0;
+	long long int timestamp = 0;
+	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_;
+
+	v4l2_dqbuf(nxphndl_, nxp_v4l2_clipper1, 3, &index, NULL);
+	v4l2_get_timestamp(nxphndl_, nxp_v4l2_clipper1, &timestamp);
+
+	timestamp /= 1000LL;
+	frame->timestamp.tv_sec 	= timestamp / 1000000LL;
+	frame->timestamp.tv_usec 	= timestamp % 1000000LL;
+	frame->index 	= index;
+	frame->data  	= (void*)vm->luVirAddr;
+	frame->size  	= vm->luStride * vm->imgHeight;
+	frame->width 	= vm->imgWidth;
+	frame->height	= vm->imgHeight;
+
+	return true;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CNXPCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame)
+{
+	struct nxp_vid_buffer  vb;
+	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_;
+
+	PackVidBuf(vb, vm);
+	v4l2_qbuf(nxphndl_, nxp_v4l2_clipper1, vb.plane_num, 0, &vb, -1, NULL);
+	return true;
 }
 
 LF_END_BRIO_NAMESPACE()

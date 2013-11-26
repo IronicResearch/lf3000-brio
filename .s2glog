@@ -37793,3 +37793,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/25/13 1:02 PM
 6,689 ms. (Cumulative: 15,718,618 ms)
 
 ----------------
+Revision 10,380 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Subroutines for handling YUV buffer descriptors in various capture or display contexts.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/25/13 7:27 PM
+2 changed, 0 added, 0 deleted.
+6,611 ms. (Cumulative: 15,725,369 ms)
+
+----------------

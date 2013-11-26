@@ -487,6 +487,8 @@ public:
 private:
 	void*						nxphndl_;
 	void*						nxpvbuf_;
+	int  						clipper_;
+	int  						sensor_;
 
 	// Limit object creation to the Module Manager interface functions
 	CNXPCameraModule();
@@ -494,6 +496,9 @@ private:
 	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
+
+	Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
+	Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
 
 };
 
