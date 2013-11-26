@@ -113,7 +113,10 @@ CNXPCameraModule::CNXPCameraModule()
     NX_VID_MEMORY_INFO    *vm;
 
     memset(&us, 0, sizeof(us));
+    us.useClipper0 = true;
     us.useClipper1 = true;
+    us.useDecimator0 = true;
+    us.useDecimator1 = true;
     us.useMlc0Video = true;
 
 	// Init NXP V4L2 module
@@ -158,6 +161,10 @@ CNXPCameraModule::CNXPCameraModule()
 
 	v4l2_reqbuf(nxphndl_, nxp_v4l2_mlc0_video, 1);
 	v4l2_qbuf(nxphndl_, nxp_v4l2_mlc0_video, vb.plane_num, 0, &vb, -1, NULL);
+
+	device_ = kCameraDefault;
+	sensor_ = nxp_v4l2_sensor1;
+	clipper_ = nxp_v4l2_clipper1;
 }
 
 //----------------------------------------------------------------------------
@@ -171,8 +178,8 @@ CNXPCameraModule::~CNXPCameraModule()
 
 	NX_FreeVideoMemory((NX_VID_MEMORY_HANDLE)nxpvbuf_);
 
-	v4l2_unlink(nxphndl_, nxp_v4l2_clipper1, nxp_v4l2_mlc0_video);
-	v4l2_unlink(nxphndl_, nxp_v4l2_sensor1, nxp_v4l2_clipper1);
+	v4l2_unlink(nxphndl_, clipper_, nxp_v4l2_mlc0_video);
+	v4l2_unlink(nxphndl_, sensor_, clipper_);
 
 	// Exit NXP V4L2 module
 	v4l2_exit(nxphndl_);
@@ -192,14 +199,17 @@ tErrType CNXPCameraModule::EnumFormats(tCaptureModes& pModeList)
 tErrType CNXPCameraModule::SetCurrentFormat(tCaptureMode* pMode)
 {
 	camCtx_.mode = *pMode;
-	v4l2_set_format(nxphndl_, nxp_v4l2_clipper1, camCtx_.mode.width, camCtx_.mode.height, PIXFORMAT_YUV420_PLANAR);
-	v4l2_set_crop(nxphndl_, nxp_v4l2_clipper1, 0, 0, camCtx_.mode.width, camCtx_.mode.height);
+	v4l2_set_format(nxphndl_, clipper_, camCtx_.mode.width, camCtx_.mode.height, PIXFORMAT_YUV420_PLANAR);
+	v4l2_set_crop(nxphndl_, clipper_, 0, 0, camCtx_.mode.width, camCtx_.mode.height);
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 {
+	struct nxp_vid_buffer  vb;
+	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_;
+
 	if (device_ == device)
 		return kNoErr;
 
@@ -225,6 +235,15 @@ tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 	default:
 		return kInvalidParamErr;
 	}
+
+	v4l2_set_format(nxphndl_, sensor_, camCtx_.mode.width, camCtx_.mode.height, PIXCODE_YUV420_PLANAR);
+	v4l2_set_format(nxphndl_, clipper_, camCtx_.mode.width, camCtx_.mode.height, PIXFORMAT_YUV420_PLANAR);
+	v4l2_set_crop(nxphndl_, clipper_, 0, 0, camCtx_.mode.width, camCtx_.mode.height);
+
+	PackVidBuf(vb, vm);
+	v4l2_reqbuf(nxphndl_, clipper_, 1);
+	v4l2_qbuf(nxphndl_, clipper_, vb.plane_num, 0, &vb, -1, NULL);
+
 	return kNoErr;
 }
 
@@ -232,13 +251,13 @@ tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf,
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
-	v4l2_streamon(nxphndl_, nxp_v4l2_clipper1);
+	v4l2_streamon(nxphndl_, clipper_);
 
 	if (pSurf) {
 		int index = 0;
 //		v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, pSurf->width, pSurf->height, PIXFORMAT_YUV420_PLANAR);
 //		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, 0, 0, pSurf->width, pSurf->height);
-		v4l2_dqbuf(nxphndl_, nxp_v4l2_clipper1, 3, &index, NULL);
+		v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
 	}
 
@@ -249,7 +268,7 @@ tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 Boolean CNXPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 {
 	v4l2_streamoff(nxphndl_, nxp_v4l2_mlc0_video);
-	v4l2_streamoff(nxphndl_, nxp_v4l2_clipper1);
+	v4l2_streamoff(nxphndl_, clipper_);
 
 	return true; //CCameraModule::StopVideoCapture(hndl);
 }
@@ -293,8 +312,8 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	long long int timestamp = 0;
 	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_;
 
-	v4l2_dqbuf(nxphndl_, nxp_v4l2_clipper1, 3, &index, NULL);
-	v4l2_get_timestamp(nxphndl_, nxp_v4l2_clipper1, &timestamp);
+	v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
+	v4l2_get_timestamp(nxphndl_, clipper_, &timestamp);
 
 	timestamp /= 1000LL;
 	frame->timestamp.tv_sec 	= timestamp / 1000000LL;
@@ -315,7 +334,7 @@ Boolean	CNXPCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *
 	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_;
 
 	PackVidBuf(vb, vm);
-	v4l2_qbuf(nxphndl_, nxp_v4l2_clipper1, vb.plane_num, 0, &vb, -1, NULL);
+	v4l2_qbuf(nxphndl_, clipper_, vb.plane_num, 0, &vb, -1, NULL);
 	return true;
 }
 

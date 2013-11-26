@@ -37803,3 +37803,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/25/13 7:27 PM
 6,611 ms. (Cumulative: 15,725,369 ms)
 
 ----------------
+Revision 10,381 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Support runtime camera selection switching between front and back cameras.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/26/13 10:46 AM
+1 changed, 0 added, 0 deleted.
+6,755 ms. (Cumulative: 15,732,218 ms)
+
+----------------
