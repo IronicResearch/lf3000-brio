@@ -360,6 +360,12 @@ private:
 	Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
 	Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
 	Boolean		SnapFrameRGB(const tVidCapHndl hndl, const CPath &path);
+
+	Boolean 	InitCameraBufferInt(tCameraContext *pCamCtx);
+	Boolean 	DeinitCameraBufferInt(tCameraContext *pCamCtx);
+	Boolean 	InitCameraStartInt(tCameraContext *pCamCtx);
+	Boolean 	StopVideoCaptureInt(int fd);
+
 #if 0
 	tErrType	InitMicInt();
 	tErrType	DeinitMicInt();
@@ -461,12 +467,13 @@ private:
 	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
+	friend class CNXPCameraModule;
 };
 
 
 //==============================================================================
 // LF3000 NXP-specific functionality
-class CNXPCameraModule : public CCameraModule {
+class CNXPCameraModule : public CVIPCameraModule {
 
 public:
 	virtual tVersion		GetModuleVersion() const;
@@ -497,8 +504,20 @@ private:
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 
+	// Implementation-specific functionality
+	Boolean		InitCameraInt(const tCaptureMode* mode, bool reinit = false);
+	Boolean		DeinitCameraInt(bool reinit = false);
+	Boolean		SetCameraMode(const tCaptureMode* mode);
+	Boolean		SetBuffers(const U32 numBuffers);
+	Boolean		PollFrame(const tVidCapHndl hndl);
 	Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
 	Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
+	Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
+
+	Boolean 	InitCameraBufferInt(tCameraContext *pCamCtx);
+	Boolean 	DeinitCameraBufferInt(tCameraContext *pCamCtx);
+	Boolean 	InitCameraStartInt(tCameraContext *pCamCtx);
+	Boolean 	StopVideoCaptureInt(int fd);
 
 };
 

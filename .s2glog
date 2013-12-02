@@ -37813,3 +37813,14 @@ By Dave Milici (dmilici@leapfrog.com) on 11/26/13 10:46 AM
 6,755 ms. (Cumulative: 15,732,218 ms)
 
 ----------------
+Revision 10,382 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Re-factor Camera module to expose more interal functions as overideable methods.
+Leverage Camera VIP module functionality for GetFrame() and SnapFrame(). (FIXME runtime link)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/2/13 11:02 AM
+3 changed, 0 added, 0 deleted.
+6,532 ms. (Cumulative: 15,738,843 ms)
+
+----------------
