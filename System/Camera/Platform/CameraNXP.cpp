@@ -294,17 +294,19 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf,
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
-//	v4l2_streamon(nxphndl_, clipper_);
+	v4l2_streamon(nxphndl_, clipper_);
 
-//	if (pSurf) {
+	if (pSurf) {
 //		int index = 0;
 //		v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, pSurf->width, pSurf->height, PIXFORMAT_YUV420_PLANAR);
 //		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, 0, 0, pSurf->width, pSurf->height);
 //		v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
-//		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
-//	}
+		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
+	}
 
-	return CCameraModule::StartVideoCapture(path, pSurf, pListener, maxLength, bAudio);
+//	return CCameraModule::StartVideoCapture(path, pSurf, pListener, maxLength, bAudio);
+//	return InitCameraTask(&camCtx_);
+	return STREAMING_HANDLE((tVidCapHndl)nxphndl_);
 }
 
 //----------------------------------------------------------------------------
@@ -317,10 +319,12 @@ Boolean CNXPCameraModule::StopVideoCaptureInt(int fd)
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 {
-//	v4l2_streamoff(nxphndl_, nxp_v4l2_mlc0_video);
-//	v4l2_streamoff(nxphndl_, clipper_);
+	v4l2_streamoff(nxphndl_, nxp_v4l2_mlc0_video);
+	v4l2_streamoff(nxphndl_, clipper_);
 
-	return CCameraModule::StopVideoCapture(hndl);
+//	return CCameraModule::StopVideoCapture(hndl);
+//	return DeInitCameraTask(&camCtx_);
+	return true;
 }
 
 //----------------------------------------------------------------------------

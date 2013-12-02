@@ -37834,3 +37834,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/2/13 11:06 AM
 6,234 ms. (Cumulative: 15,745,187 ms)
 
 ----------------
+Revision 10,384 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Temporaily revert previous stream on/off functionality until capture thread works with overide methods.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/2/13 11:30 AM
+2 changed, 0 added, 0 deleted.
+6,318 ms. (Cumulative: 15,751,599 ms)
+
+----------------
