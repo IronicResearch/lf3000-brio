@@ -338,7 +338,7 @@ Boolean CNXPCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean	CNXPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 {
-	return CVIPCameraModule::SnapFrame(hndl, path);
+	return CCameraModule::SnapFrame(hndl, path);
 }
 
 //----------------------------------------------------------------------------
@@ -352,7 +352,7 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrd
 //----------------------------------------------------------------------------
 Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order)
 {
-	return CVIPCameraModule::GetFrame(hndl, pSurf, color_order);
+	return CCameraModule::GetFrame(hndl, pSurf, color_order);
 }
 
 //----------------------------------------------------------------------------
