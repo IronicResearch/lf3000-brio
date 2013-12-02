@@ -361,10 +361,10 @@ private:
 	Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
 	Boolean		SnapFrameRGB(const tVidCapHndl hndl, const CPath &path);
 
-	Boolean 	InitCameraBufferInt(tCameraContext *pCamCtx);
-	Boolean 	DeinitCameraBufferInt(tCameraContext *pCamCtx);
-	Boolean 	InitCameraStartInt(tCameraContext *pCamCtx);
-	Boolean 	StopVideoCaptureInt(int fd);
+	virtual Boolean 	InitCameraBufferInt(tCameraContext *pCamCtx);
+	virtual Boolean 	DeinitCameraBufferInt(tCameraContext *pCamCtx);
+	virtual Boolean 	InitCameraStartInt(tCameraContext *pCamCtx);
+	virtual Boolean 	StopVideoCaptureInt(int fd);
 
 #if 0
 	tErrType	InitMicInt();
