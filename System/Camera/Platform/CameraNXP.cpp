@@ -189,6 +189,31 @@ CNXPCameraModule::~CNXPCameraModule()
 // NXP specific implementation
 //============================================================================
 //----------------------------------------------------------------------------
+Boolean CNXPCameraModule::InitCameraInt(const tCaptureMode* mode, bool reinit)
+{
+	return true;
+}
+//----------------------------------------------------------------------------
+Boolean CNXPCameraModule::DeinitCameraInt(bool reinit)
+{
+	return true;
+}
+//----------------------------------------------------------------------------
+Boolean CNXPCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
+{
+	return true;
+}
+//----------------------------------------------------------------------------
+Boolean CNXPCameraModule::DeinitCameraBufferInt(tCameraContext *pCamCtx)
+{
+	return true;
+}
+//----------------------------------------------------------------------------
+Boolean CNXPCameraModule::SetBuffers(const U32 numBuffers)
+{
+	return true;
+}
+//----------------------------------------------------------------------------
 tErrType CNXPCameraModule::EnumFormats(tCaptureModes& pModeList)
 {
 	pModeList = *camCtx_.modes;
@@ -196,11 +221,20 @@ tErrType CNXPCameraModule::EnumFormats(tCaptureModes& pModeList)
 }
 
 //----------------------------------------------------------------------------
+Boolean CNXPCameraModule::SetCameraMode(const tCaptureMode* mode)
+{
+	v4l2_set_format(nxphndl_, sensor_, mode->width, mode->height, PIXCODE_YUV420_PLANAR);
+	v4l2_set_format(nxphndl_, clipper_, mode->width, mode->height, PIXFORMAT_YUV420_PLANAR);
+	v4l2_set_crop(nxphndl_, clipper_, 0, 0, mode->width, mode->height);
+	return true;
+}
+//----------------------------------------------------------------------------
 tErrType CNXPCameraModule::SetCurrentFormat(tCaptureMode* pMode)
 {
 	camCtx_.mode = *pMode;
-	v4l2_set_format(nxphndl_, clipper_, camCtx_.mode.width, camCtx_.mode.height, PIXFORMAT_YUV420_PLANAR);
-	v4l2_set_crop(nxphndl_, clipper_, 0, 0, camCtx_.mode.width, camCtx_.mode.height);
+//	v4l2_set_format(nxphndl_, clipper_, camCtx_.mode.width, camCtx_.mode.height, PIXFORMAT_YUV420_PLANAR);
+//	v4l2_set_crop(nxphndl_, clipper_, 0, 0, camCtx_.mode.width, camCtx_.mode.height);
+	SetCameraMode(pMode);
 	return kNoErr;
 }
 
@@ -248,47 +282,63 @@ tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 }
 
 //----------------------------------------------------------------------------
+Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
+{
+	v4l2_streamon(nxphndl_, clipper_);
+	if (pCamCtx->surf) {
+		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
+	}
+	return true;
+}
+//----------------------------------------------------------------------------
 tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf,
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
-	v4l2_streamon(nxphndl_, clipper_);
+//	v4l2_streamon(nxphndl_, clipper_);
 
-	if (pSurf) {
-		int index = 0;
+//	if (pSurf) {
+//		int index = 0;
 //		v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, pSurf->width, pSurf->height, PIXFORMAT_YUV420_PLANAR);
 //		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, 0, 0, pSurf->width, pSurf->height);
-		v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
-		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
-	}
+//		v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
+//		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
+//	}
 
-	return (tVidCapHndl)nxphndl_; //CCameraModule::StartVideoCapture(path, pSurf, pListener, maxLength, bAudio);
+	return CCameraModule::StartVideoCapture(path, pSurf, pListener, maxLength, bAudio);
 }
 
 //----------------------------------------------------------------------------
-Boolean CNXPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
+Boolean CNXPCameraModule::StopVideoCaptureInt(int fd)
 {
 	v4l2_streamoff(nxphndl_, nxp_v4l2_mlc0_video);
 	v4l2_streamoff(nxphndl_, clipper_);
+	return true;
+}
+//----------------------------------------------------------------------------
+Boolean CNXPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
+{
+//	v4l2_streamoff(nxphndl_, nxp_v4l2_mlc0_video);
+//	v4l2_streamoff(nxphndl_, clipper_);
 
-	return true; //CCameraModule::StopVideoCapture(hndl);
+	return CCameraModule::StopVideoCapture(hndl);
 }
 
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean display)
 {
-	return true; //CCameraModule::PauseVideoCapture(hndl, display);
+	return CCameraModule::PauseVideoCapture(hndl, display);
 }
 
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 {
-	return true; //CCameraModule::ResumeVideoCapture(hndl);
+	return CCameraModule::ResumeVideoCapture(hndl);
 }
 
 //----------------------------------------------------------------------------
 Boolean	CNXPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 {
-	return false;
+	return CVIPCameraModule::SnapFrame(hndl, path);
 }
 
 //----------------------------------------------------------------------------
@@ -302,7 +352,13 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrd
 //----------------------------------------------------------------------------
 Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order)
 {
-	return false;
+	return CVIPCameraModule::GetFrame(hndl, pSurf, color_order);
+}
+
+//----------------------------------------------------------------------------
+Boolean CNXPCameraModule::PollFrame(const tVidCapHndl hndl)
+{
+	return true;
 }
 
 //----------------------------------------------------------------------------
@@ -336,6 +392,12 @@ Boolean	CNXPCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *
 	PackVidBuf(vb, vm);
 	v4l2_qbuf(nxphndl_, clipper_, vb.plane_num, 0, &vb, -1, NULL);
 	return true;
+}
+
+//----------------------------------------------------------------------------
+Boolean CNXPCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
+{
+	return CCameraModule::GrabFrame(hndl, frame);
 }
 
 LF_END_BRIO_NAMESPACE()

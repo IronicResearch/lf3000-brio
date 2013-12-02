@@ -331,7 +331,7 @@ CPath* CCameraModule::GetCameraStillPath()
 }
 
 //----------------------------------------------------------------------------
-static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
+Boolean CCameraModule::DeinitCameraBufferInt(tCameraContext *pCamCtx)
 {
 	struct v4l2_requestbuffers rb;
 	int i, ret = true;
@@ -791,7 +791,7 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 }
 
 //----------------------------------------------------------------------------
-static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
+Boolean CCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 {
 	struct v4l2_requestbuffers rb;
 	int i, ret, cam = pCamCtx->fd;
@@ -864,7 +864,7 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 }
 
 //----------------------------------------------------------------------------
-static Boolean InitCameraStartInt(tCameraContext *pCamCtx)
+Boolean CCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 {
 	int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
@@ -2181,7 +2181,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 }
 
 //----------------------------------------------------------------------------
-static Boolean StopVideoCaptureInt(int fd)
+Boolean CCameraModule::StopVideoCaptureInt(int fd)
 {
 	int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
