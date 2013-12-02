@@ -473,7 +473,7 @@ private:
 
 //==============================================================================
 // LF3000 NXP-specific functionality
-class CNXPCameraModule : public CVIPCameraModule {
+class CNXPCameraModule : public CCameraModule {
 
 public:
 	virtual tVersion		GetModuleVersion() const;

@@ -37824,3 +37824,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/2/13 11:02 AM
 6,532 ms. (Cumulative: 15,738,843 ms)
 
 ----------------
+Revision 10,383 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Temporarily revert VIP subclass dependency for runtime support.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/2/13 11:06 AM
+2 changed, 0 added, 0 deleted.
+6,234 ms. (Cumulative: 15,745,187 ms)
+
+----------------
