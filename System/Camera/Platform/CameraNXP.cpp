@@ -15,6 +15,8 @@
 #include <Utility.h>
 
 #include <CameraPriv.h>
+#include <DisplayMPI.h>
+
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <linux/fb.h>
@@ -47,6 +49,12 @@ inline void PackVidBuf(struct nxp_vid_buffer& vb, NX_VID_MEMORY_INFO* vm)
 	vb.fds[0] = (int)((NX_MEMORY_INFO*)vm->privateDesc[0])->privateDesc;
 	vb.fds[1] = (int)((NX_MEMORY_INFO*)vm->privateDesc[1])->privateDesc;
 	vb.fds[2] = (int)((NX_MEMORY_INFO*)vm->privateDesc[2])->privateDesc;
+
+	// fixup planar buffer for 4K stride
+	vb.phys[1] = vb.phys[0] + vm->luStride/2;
+	vb.phys[2] = vb.phys[1] + vm->luStride * vm->imgHeight/2;
+	vb.virt[1] = vb.virt[0] + vm->luStride/2;
+	vb.virt[2] = vb.virt[1] + vm->luStride * vm->imgHeight/2;
 }
 
 //----------------------------------------------------------------------------
@@ -86,6 +94,20 @@ inline void PackVidBuf(struct nxp_vid_buffer& vb, struct tFrameInfo* fi)
 //----------------------------------------------------------------------------
 inline void UnPackVidBuf(struct nxp_vid_buffer& vb, struct tFrameInfo* fi)
 {
+}
+
+//----------------------------------------------------------------------------
+inline void GetWindowPosition(tVideoSurf* pSurf, int* dx, int* dy)
+{
+	S16 x, y;
+	U16 w, h;
+	Boolean v;
+	CDisplayMPI 	dispmgr;
+	tDisplayHandle 	hvideo = dispmgr.GetCurrentDisplayHandle(kPixelFormatYUV420);
+
+	dispmgr.GetWindowPosition(hvideo, x, y, w, h, v);
+	*dx = x;
+	*dy = y;
 }
 
 //============================================================================
@@ -138,7 +160,7 @@ Boolean CNXPCameraModule::InitCameraInt(const tCaptureMode* mode, bool reinit)
 	v4l2_link(nxphndl_, nxp_v4l2_sensor1, nxp_v4l2_clipper1);
 	v4l2_link(nxphndl_, nxp_v4l2_clipper1, nxp_v4l2_mlc0_video);
 
-	v4l2_set_format(nxphndl_, nxp_v4l2_sensor1, QVGA.width, QVGA.height, PIXCODE_YUV420_PLANAR);
+	v4l2_set_format(nxphndl_, nxp_v4l2_sensor1, QVGA.width, QVGA.height, PIXFORMAT_YUV422_PACKED);
 	v4l2_set_format(nxphndl_, nxp_v4l2_clipper1, QVGA.width, QVGA.height, PIXFORMAT_YUV420_PLANAR);
 	v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, QVGA.width, QVGA.height, PIXFORMAT_YUV420_PLANAR);
 	v4l2_set_crop(nxphndl_, nxp_v4l2_clipper1, 0, 0, QVGA.width, QVGA.height);
@@ -181,7 +203,7 @@ Boolean CNXPCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
     NX_VID_MEMORY_INFO    *vm;
 
 	// Use ION memory for V4L buffers
-	nxpvbuf_ = vm = NX_VideoAllocateMemory(64, camCtx_.mode.width, camCtx_.mode.height, NX_MEM_MAP_TILED, FOURCC_MVS0);
+	nxpvbuf_ = vm = NX_VideoAllocateMemory(64, 4096, camCtx_.mode.height, NX_MEM_MAP_TILED, FOURCC_MVS0);
 	PackVidBuf(vb, vm);
 
 	v4l2_reqbuf(nxphndl_, clipper_, 1);
@@ -195,6 +217,7 @@ Boolean CNXPCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 Boolean CNXPCameraModule::DeinitCameraBufferInt(tCameraContext *pCamCtx)
 {
 	NX_FreeVideoMemory((NX_VID_MEMORY_HANDLE)nxpvbuf_);
+	nxpvbuf_ = NULL;
 	return true;
 }
 //----------------------------------------------------------------------------
@@ -212,7 +235,7 @@ tErrType CNXPCameraModule::EnumFormats(tCaptureModes& pModeList)
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::SetCameraMode(const tCaptureMode* mode)
 {
-	v4l2_set_format(nxphndl_, sensor_, mode->width, mode->height, PIXCODE_YUV420_PLANAR);
+	v4l2_set_format(nxphndl_, sensor_, mode->width, mode->height, PIXFORMAT_YUV422_PACKED);
 	v4l2_set_format(nxphndl_, clipper_, mode->width, mode->height, PIXFORMAT_YUV420_PLANAR);
 	v4l2_set_crop(nxphndl_, clipper_, 0, 0, mode->width, mode->height);
 	return true;
@@ -257,7 +280,7 @@ tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 		return kInvalidParamErr;
 	}
 
-	v4l2_set_format(nxphndl_, sensor_, camCtx_.mode.width, camCtx_.mode.height, PIXCODE_YUV420_PLANAR);
+	v4l2_set_format(nxphndl_, sensor_, camCtx_.mode.width, camCtx_.mode.height, PIXFORMAT_YUV422_PACKED);
 	v4l2_set_format(nxphndl_, clipper_, camCtx_.mode.width, camCtx_.mode.height, PIXFORMAT_YUV420_PLANAR);
 	v4l2_set_crop(nxphndl_, clipper_, 0, 0, camCtx_.mode.width, camCtx_.mode.height);
 
@@ -270,8 +293,10 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 	v4l2_streamon(nxphndl_, clipper_);
 	if (pCamCtx->surf) {
 		int index = 0;
+		int x, y;
+		GetWindowPosition(pCamCtx->surf, &x, &y);
 		v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
-		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, 0, 0, pCamCtx->surf->width, pCamCtx->surf->height);
+		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
 	}
 	return true;
