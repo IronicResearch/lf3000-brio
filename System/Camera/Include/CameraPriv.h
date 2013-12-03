@@ -347,16 +347,16 @@ private:
 	friend void* CameraTaskRender(void* arg);
 
 	// Implementation-specific functionality
-	Boolean		InitCameraInt(const tCaptureMode* mode, bool reinit = false);
-	Boolean		DeinitCameraInt(bool reinit = false);
+	virtual Boolean		InitCameraInt(const tCaptureMode* mode, bool reinit = false);
+	virtual Boolean		DeinitCameraInt(bool reinit = false);
 	Boolean		GetCameraModes(tCaptureModes &modes);
-	Boolean		SetCameraMode(const tCaptureMode* mode);
-	Boolean		SetBuffers(const U32 numBuffers);
-	Boolean		PollFrame(const tVidCapHndl hndl);
-	Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
+	virtual Boolean		SetCameraMode(const tCaptureMode* mode);
+	virtual Boolean		SetBuffers(const U32 numBuffers);
+	virtual Boolean		PollFrame(const tVidCapHndl hndl);
+	virtual Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
 	Boolean		RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf, tBitmapInfo *image, const JPEG_METHOD method);
-	Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
-	Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
+	virtual Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
+	virtual Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
 	Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
 	Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
 	Boolean		SnapFrameRGB(const tVidCapHndl hndl, const CPath &path);
