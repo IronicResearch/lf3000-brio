@@ -295,8 +295,9 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf,
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
-//	return CCameraModule::StartVideoCapture(path, pSurf, pListener, maxLength, bAudio);
-
+#if 0
+	return CCameraModule::StartVideoCapture(path, pSurf, pListener, maxLength, bAudio);
+#else
 	camCtx_.module	= this;
 	camCtx_.path	= path;
 	camCtx_.surf	= pSurf;
@@ -306,8 +307,9 @@ tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 	camCtx_.pListener = pListener;
 
 	InitCameraStartInt(&camCtx_);
-	InitCameraTask(&camCtx_);
+//	InitCameraTask(&camCtx_);
 	return STREAMING_HANDLE((tVidCapHndl)nxphndl_);
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -320,10 +322,13 @@ Boolean CNXPCameraModule::StopVideoCaptureInt(int fd)
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 {
-//	return CCameraModule::StopVideoCapture(hndl);
+#if 0
+	return CCameraModule::StopVideoCapture(hndl);
+#else
+//	DeInitCameraTask(&camCtx_);
 	StopVideoCaptureInt(camCtx_.fd);
-	DeInitCameraTask(&camCtx_);
 	return true;
+#endif
 }
 
 //----------------------------------------------------------------------------
