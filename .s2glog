@@ -37864,3 +37864,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/2/13 6:30 PM
 6,181 ms. (Cumulative: 15,764,250 ms)
 
 ----------------
+Revision 10,387 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Defer buffer allocations until capture mode set. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/2/13 7:58 PM
+1 changed, 0 added, 0 deleted.
+6,235 ms. (Cumulative: 15,770,579 ms)
+
+----------------
