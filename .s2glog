@@ -37874,3 +37874,14 @@ By Dave Milici (dmilici@leapfrog.com) on 12/2/13 7:58 PM
 6,235 ms. (Cumulative: 15,770,579 ms)
 
 ----------------
+Revision 10,388 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixup planar buffer for 4K stride.
+Fixup overlay window positioning.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/3/13 1:21 PM
+1 changed, 0 added, 0 deleted.
+6,313 ms. (Cumulative: 15,776,985 ms)
+
+----------------
