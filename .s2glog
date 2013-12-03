@@ -37854,3 +37854,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/2/13 5:30 PM
 6,283 ms. (Cumulative: 15,757,976 ms)
 
 ----------------
+Revision 10,386 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Disable capture thread until sufficient support in place.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/2/13 6:30 PM
+1 changed, 0 added, 0 deleted.
+6,181 ms. (Cumulative: 15,764,250 ms)
+
+----------------
