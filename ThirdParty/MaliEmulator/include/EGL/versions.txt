@@ -1,0 +1,14 @@
+Header file versions
+====================
+
+# egl.h and eglext.h were downloaded from silver connect on Aug 24, 2009.
+https://silver.arm.com/browse/ZX000
+The versions in the current folder are from the folder Mali200 in the
+downloaded bundle.
+
+# eglplatform.h
+This is a modified version of the Khronos eglplatform.h. The only change is
+the addition of a macro (EGLint). This will be shipped in the emulator bundle.
+
+The above headers were used as the idea was to use the same set of headers
+for all the tools on the Mali Developer Portal.

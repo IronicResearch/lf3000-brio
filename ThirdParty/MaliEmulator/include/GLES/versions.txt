@@ -1,0 +1,5 @@
+15/11/2007
+
+OpenGL ES 2.0 .h header file (text file updated Dec 15, 2005)
+
+http://www.khronos.org/opengles/headers/2_0/GL.h
