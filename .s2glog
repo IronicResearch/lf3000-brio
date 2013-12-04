@@ -37921,3 +37921,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 12/4/13 11:53 AM
 7,344 ms. (Cumulative: 15,807,110 ms)
 
 ----------------
+Revision 10,393 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify SConscript to install MaliEmulator libs and headers instead of PowerVR.  Also added GLchar to gl2.h.
+
+By Minh Saelock (msaelock@leapfrog.com) on 12/4/13 2:02 PM
+2 changed, 0 added, 0 deleted.
+6,750 ms. (Cumulative: 15,813,969 ms)
+
+----------------
