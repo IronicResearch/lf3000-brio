@@ -37896,3 +37896,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 12/3/13 4:57 PM
 7,451 ms. (Cumulative: 15,784,546 ms)
 
 ----------------
+Revision 10,390 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Re-enable basic GrabFrame() support for RGB PNGs.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/4/13 9:28 AM
+2 changed, 0 added, 0 deleted.
+7,345 ms. (Cumulative: 15,792,000 ms)
+
+----------------

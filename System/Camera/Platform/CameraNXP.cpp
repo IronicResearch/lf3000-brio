@@ -15,6 +15,7 @@
 #include <Utility.h>
 
 #include <CameraPriv.h>
+#include <DisplayPriv.h>
 #include <DisplayMPI.h>
 
 #include <sys/ioctl.h>
@@ -55,6 +56,24 @@ inline void PackVidBuf(struct nxp_vid_buffer& vb, NX_VID_MEMORY_INFO* vm)
 	vb.phys[2] = vb.phys[1] + vm->luStride * vm->imgHeight/2;
 	vb.virt[1] = vb.virt[0] + vm->luStride/2;
 	vb.virt[2] = vb.virt[1] + vm->luStride * vm->imgHeight/2;
+}
+
+//----------------------------------------------------------------------------
+inline void PackVidBuf(struct nxp_vid_buffer& vb, NX_MEMORY_INFO* vm)
+{
+	vb.plane_num = 3;
+	vb.phys[0] = vm->phyAddr;
+	vb.phys[1] = vb.phys[0] + 4096/2;
+	vb.phys[2] = vb.phys[1] + vm->size/2;
+	vb.virt[0] = (char*)vm->virAddr;
+	vb.virt[1] = vb.virt[0] + 4096/2;
+	vb.virt[2] = vb.virt[1] + vm->size/2;
+	vb.sizes[0] =
+	vb.sizes[1] =
+	vb.sizes[2] = vm->size;
+	vb.fds[0] =
+	vb.fds[1] =
+	vb.fds[2] = (int)vm->privateDesc;
 }
 
 //----------------------------------------------------------------------------
@@ -169,6 +188,7 @@ Boolean CNXPCameraModule::InitCameraInt(const tCaptureMode* mode, bool reinit)
 	device_ = kCameraDefault;
 	sensor_ = nxp_v4l2_sensor1;
 	clipper_ = nxp_v4l2_clipper1;
+	nxpvbuf_ = NULL;
 
 	return true;
 }
@@ -182,7 +202,7 @@ CNXPCameraModule::~CNXPCameraModule()
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::DeinitCameraInt(bool reinit)
 {
-//	NX_FreeVideoMemory((NX_VID_MEMORY_HANDLE)nxpvbuf_);
+	DeinitCameraBufferInt(&camCtx_);
 
 	v4l2_unlink(nxphndl_, clipper_, nxp_v4l2_mlc0_video);
 	v4l2_unlink(nxphndl_, sensor_, clipper_);
@@ -216,6 +236,9 @@ Boolean CNXPCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::DeinitCameraBufferInt(tCameraContext *pCamCtx)
 {
+	if (!nxpvbuf_)
+		return true;
+
 	NX_FreeVideoMemory((NX_VID_MEMORY_HANDLE)nxpvbuf_);
 	nxpvbuf_ = NULL;
 	return true;
@@ -358,7 +381,7 @@ Boolean CNXPCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean	CNXPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 {
-	return false; //CCameraModule::SnapFrame(hndl, path);
+	return CCameraModule::SnapFrame(hndl, path);
 }
 
 //----------------------------------------------------------------------------
@@ -372,7 +395,57 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrd
 //----------------------------------------------------------------------------
 Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order)
 {
-	return false; //CCameraModule::GetFrame(hndl, pSurf, color_order);
+	tFrameInfo 	frame	= {kCaptureFormatYUV420, pSurf->width, pSurf->height, 0, NULL, 0};
+
+	GetFrame(hndl, &frame);
+
+	// Pack captured data into requested surface format
+	if (frame.data)
+	{
+		int			i,j,k,m;
+		int			r = (color_order == kDisplayRgb) ? 2 : 0;
+		int			b = (color_order == kDisplayRgb) ? 0 : 2;
+		int			pitch = frame.size / frame.height;
+		int			width = MIN(frame.width, pSurf->width);
+		int			height = MIN(frame.height, pSurf->height);
+		U8* 		sy = (U8*)frame.data;
+		U8*			su = sy + pitch/2;
+		U8*			sv = su + pitch * frame.height/2;
+		U8*			dy = pSurf->buffer;
+		U8*			du = dy + pSurf->pitch/2;
+		U8*			dv = du + pSurf->pitch * pSurf->height/2;
+		if (pSurf->format == kPixelFormatRGB888 || pSurf->pitch == 3 * pSurf->width)
+		{
+			// Convert YUV to RGB format surface
+			for (i = 0; i < height; i++)
+			{
+				for (j = k = m = 0; k < width; j++, k+=2, m+=6)
+				{
+					U8 y0 = sy[k];
+					U8 y1 = sy[k+1];
+					U8 u0 = su[j];
+					U8 v0 = sv[j];
+					dy[m+b] = B(y0,u0,v0);
+					dy[m+1] = G(y0,u0,v0);
+					dy[m+r] = R(y0,u0,v0);
+					dy[m+3+b] = B(y1,u0,v0);
+					dy[m+4]   = G(y1,u0,v0);
+					dy[m+3+r] = R(y1,u0,v0);
+				}
+				sy += pitch;
+				dy += pSurf->pitch;
+				if (i % 2)
+				{
+					su += pitch;
+					sv += pitch;
+				}
+			}
+		}
+	}
+
+	ReturnFrame(hndl, &frame);
+
+	return true;
 }
 
 //----------------------------------------------------------------------------
@@ -399,6 +472,7 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	frame->size  	= vm->luStride * vm->imgHeight;
 	frame->width 	= vm->imgWidth;
 	frame->height	= vm->imgHeight;
+	frame->pixelformat = kCaptureFormatYUV420;
 
 	return true;
 }
@@ -417,7 +491,23 @@ Boolean	CNXPCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 {
-	return CCameraModule::GrabFrame(hndl, frame);
+	void* buf;
+
+	if (frame->width != camCtx_.mode.width || frame->height != camCtx_.mode.height)
+		return false;
+
+	// Make copy of captured data for legacy GrabFrame() compatibility
+	GetFrame(hndl, frame);
+
+	buf = kernel_.Malloc(frame->size);
+	memcpy(buf, frame->data, frame->size);
+
+	ReturnFrame(hndl, frame);
+
+	// Caller releases copy buffer
+	frame->data = buf;
+
+	return true;
 }
 
 LF_END_BRIO_NAMESPACE()
