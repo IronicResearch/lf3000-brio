@@ -50,7 +50,7 @@ if env['hdr_deploy_dir']:
 
 #Install OpenGL headers
 	dest_dir = env['hdr_deploy_dir'].Dir('OpenGL').Dir('x86').abspath
-	ExportHeaders( dest_dir, Dir('PowerVR').Dir('Include').abspath, '.h' )
+	ExportHeaders( dest_dir, Dir('MaliEmulator').Dir('include').abspath, '.h' )
 	
 	#Normally, cpu is not set in the sdk_headers target (not sure why this worked in oe-classic)
 	dest_dir = env['hdr_deploy_dir'].Dir('OpenGL')
@@ -70,7 +70,7 @@ if env['install_dir']:
 		opengl_lib_dir = env['install_dir'].Dir('lib')
 	
 	if env['cpu'] == 'x86':
-		libs = glob.glob(os.path.join('PowerVR', 'Libs', '*.so*'))
+		libs = glob.glob(os.path.join('MaliEmulator', 'bin', '*.so*'))
 	elif env['platform'] == 'Lightning':
 		libs = glob.glob(os.path.join('MagicEyes', 'Libs', env['cpu'], '*.so*'))
 	elif env['platform'] == 'LF2000':
@@ -127,9 +127,6 @@ if not env['cpu']=='x86' and not env['is_sdk']:
 		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavdevice.so.52'))
 		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavformat.so.52'))
 		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavutil.so.49'))
-
-	if env['platform'] == 'LF2000':
-		libs += glob.glob(os.path.join('Nexell', 'Libs', env['cpu'], '*.so*'))
 
 	if env['platform']=='Lightning':
 		libs += glob.glob(os.path.join('MagicEyes', 'Libs', env['cpu'], 'libopengles_lite.so'))

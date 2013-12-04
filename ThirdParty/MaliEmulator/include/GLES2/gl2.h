@@ -19,6 +19,7 @@ extern "C" {
  *-----------------------------------------------------------------------*/
 
 typedef void             GLvoid;
+typedef char             GLchar;
 typedef unsigned int     GLenum;
 typedef unsigned char    GLboolean;
 typedef unsigned int     GLbitfield;
