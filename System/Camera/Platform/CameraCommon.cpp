@@ -2326,7 +2326,7 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColo
 	int i, row_stride;
 	Boolean ret;
 	tFrameInfo frame	= {kCaptureFormatMJPEG, pSurf->width, pSurf->height, 0, NULL, 0};
-	tBitmapInfo bmp 	= {kBitmapFormatRGB888, pSurf->width, pSurf->height, 3, pSurf->buffer, 921600, NULL};
+	tBitmapInfo bmp 	= {kBitmapFormatRGB888, pSurf->width, pSurf->height, 3, pSurf->buffer, 3 * pSurf->width * pSurf->height, NULL};
 
 	ret = GrabFrame(hndl, &frame);
 	if(ret)
