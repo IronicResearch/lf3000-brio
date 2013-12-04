@@ -14,7 +14,7 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 if env['cpu'] == 'x86':
 	emulibs		=  ['X11']
-	ogllibs		=  ['EGL', 'GLES_CM', 'GLESv2']
+	ogllibs		=  ['EGL']
 	modsrcs		=  Glob('*.cpp') + Glob( os.path.join('Emulation', '*.cpp') )
 elif env['platform'] == 'LF2000':
 	emulibs		= ['ustring', 'iconv', 'intl', 'sigc-2.0']
