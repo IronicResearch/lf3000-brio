@@ -37930,3 +37930,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 12/4/13 2:02 PM
 6,750 ms. (Cumulative: 15,813,969 ms)
 
 ----------------
+Revision 10,394 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding actual .so for MaliEmulator.
+
+By Minh Saelock (msaelock@leapfrog.com) on 12/4/13 3:53 PM
+0 changed, 3 added, 0 deleted.
+6,896 ms. (Cumulative: 15,820,975 ms)
+
+----------------
