@@ -37885,3 +37885,14 @@ By Dave Milici (dmilici@leapfrog.com) on 12/3/13 1:21 PM
 6,313 ms. (Cumulative: 15,776,985 ms)
 
 ----------------
+Revision 10,389 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Removing DisplayMPI's link to either GLES_CM or GLESv2 for emulation.  This was causing problems with glGenTextures.
+
+Also rolling back PowerVR libs to the EmulationLibs I had before.  These work on Kenny's machine.
+
+By Minh Saelock (msaelock@leapfrog.com) on 12/3/13 4:57 PM
+5 changed, 0 added, 0 deleted.
+7,451 ms. (Cumulative: 15,784,546 ms)
+
+----------------

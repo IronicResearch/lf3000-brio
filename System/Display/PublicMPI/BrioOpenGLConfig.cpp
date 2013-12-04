@@ -25,9 +25,9 @@
 #include "GLES/libogl.h"
 #endif
 #include <signal.h>
+#include <GLES/gl.h>
 #endif
 
-#include <GLES/gl.h>
 
 // LF2000
 typedef struct {
@@ -46,7 +46,7 @@ void glColor4ub( GLubyte red,
                  GLubyte blue,
                  GLubyte alpha )
 {
-	glColor4x( B2FIX(red), B2FIX(green), B2FIX(blue), B2FIX(alpha));
+	//glColor4x( B2FIX(red), B2FIX(green), B2FIX(blue), B2FIX(alpha));
 }
 #endif
 
@@ -443,18 +443,22 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "eglMakeCurrent()\n");
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 	AbortIfEGLError("eglMakeCurrent");
+#ifndef EMULATION
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", glGetString(GL_VENDOR));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", glGetString(GL_VERSION));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
+#endif
 
 	surface_context_map[eglSurface] = &brioopenglconfig_context_map[this];
 	// Clear garbage pixels from previous OpenGL context (embedded target)
+#ifndef EMULATION
 	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	dbg.DebugOut(kDbgLvlVerbose, "eglSwapBuffers()\n");
 	eglSwapBuffers(eglDisplay, eglSurface);
 	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
+#endif
 
 #ifdef LF2000
 	// Enable display context layer visibility after initial buffer swap
@@ -700,19 +704,22 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	dbg.DebugOut(kDbgLvlVerbose, "eglMakeCurrent()\n");
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 	AbortIfEGLError("eglMakeCurrent");
+#ifndef EMULATION
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", glGetString(GL_VENDOR));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", glGetString(GL_VERSION));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
+#endif
 
 	surface_context_map[eglSurface] = &brioopenglconfig_context_map[this];
 	// Clear garbage pixels from previous OpenGL context (embedded target)
+#ifndef EMULATION
 	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	dbg.DebugOut(kDbgLvlVerbose, "eglSwapBuffers()\n");
 	eglSwapBuffers(eglDisplay, eglSurface);
 	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
-
+#endif
 	// Enable display context layer visibility after initial buffer swap
 	disp_.EnableOpenGL(&ctx);
 	isEnabled = true;
