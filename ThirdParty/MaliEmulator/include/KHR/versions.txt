@@ -1,0 +1,7 @@
+Header file version
+===================
+
+# This khrplatform.h was taken from the DDK release from Connect on Aug 28, 2009.
+
+The above header was used as the idea was to use the same headers as the DDK for
+all the tools on the Mali Developer Portal.

@@ -37906,3 +37906,18 @@ By Dave Milici (dmilici@leapfrog.com) on 12/4/13 9:28 AM
 7,345 ms. (Cumulative: 15,792,000 ms)
 
 ----------------
+Revision 10,391 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+7,625 ms. (Cumulative: 15,799,750 ms)
+
+----------------
+Revision 10,392 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding MaliEmulator without modifications.  Sconscript will need to be modified if we switch to this instead of PowerVR.
+
+By Minh Saelock (msaelock@leapfrog.com) on 12/4/13 11:53 AM
+0 changed, 33 added, 0 deleted.
+7,344 ms. (Cumulative: 15,807,110 ms)
+
+----------------

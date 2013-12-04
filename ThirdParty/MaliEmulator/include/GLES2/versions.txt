@@ -1,0 +1,11 @@
+Header file versions
+====================
+
+# gl2.h, gl2ext.h, and gl2platform.h were downloaded from silver connect on
+Aug 24, 2009.
+https://silver.arm.com/browse/ZX000
+The versions in the current folder are from the folder Mali200 in the
+downloaded bundle.
+
+The above headers were used as the idea was to use the same set of headers
+for all the tools on the Mali Developer Portal.
