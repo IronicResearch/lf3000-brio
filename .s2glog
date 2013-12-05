@@ -37939,3 +37939,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 12/4/13 3:53 PM
 6,896 ms. (Cumulative: 15,820,975 ms)
 
 ----------------
+Revision 10,395 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Re-enable capture thread for proper queue/dequeue sequencing and AVI support.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/5/13 10:26 AM
+2 changed, 0 added, 0 deleted.
+6,940 ms. (Cumulative: 15,828,024 ms)
+
+----------------

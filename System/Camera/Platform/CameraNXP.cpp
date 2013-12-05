@@ -221,9 +221,11 @@ Boolean CNXPCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 {
     struct nxp_vid_buffer  vb;
     NX_VID_MEMORY_INFO    *vm;
+//	NX_MEMORY_INFO    	  *vm;
 
 	// Use ION memory for V4L buffers
 	nxpvbuf_ = vm = NX_VideoAllocateMemory(64, 4096, camCtx_.mode.height, NX_MEM_MAP_TILED, FOURCC_MVS0);
+//	nxpvbuf_ = vm = NX_AllocateMemory(4096 * camCtx_.mode.height, 64);
 	PackVidBuf(vb, vm);
 
 	v4l2_reqbuf(nxphndl_, clipper_, 1);
@@ -240,6 +242,7 @@ Boolean CNXPCameraModule::DeinitCameraBufferInt(tCameraContext *pCamCtx)
 		return true;
 
 	NX_FreeVideoMemory((NX_VID_MEMORY_HANDLE)nxpvbuf_);
+//	NX_FreeMemory((NX_MEMORY_HANDLE)nxpvbuf_);
 	nxpvbuf_ = NULL;
 	return true;
 }
@@ -261,6 +264,13 @@ Boolean CNXPCameraModule::SetCameraMode(const tCaptureMode* mode)
 	v4l2_set_format(nxphndl_, sensor_, mode->width, mode->height, PIXFORMAT_YUV422_PACKED);
 	v4l2_set_format(nxphndl_, clipper_, mode->width, mode->height, PIXFORMAT_YUV420_PLANAR);
 	v4l2_set_crop(nxphndl_, clipper_, 0, 0, mode->width, mode->height);
+
+	camCtx_.mode = *mode;
+	camCtx_.fmt.fmt.pix.width	= mode->width;
+	camCtx_.fmt.fmt.pix.height	= mode->height;
+	camCtx_.fmt.fmt.pix.pixelformat	= V4L2_PIX_FMT_YUV420;
+	camCtx_.fps = mode->fps_denominator / mode->fps_numerator;
+
 	return true;
 }
 //----------------------------------------------------------------------------
@@ -274,9 +284,6 @@ tErrType CNXPCameraModule::SetCurrentFormat(tCaptureMode* pMode)
 //----------------------------------------------------------------------------
 tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 {
-	struct nxp_vid_buffer  vb;
-	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_;
-
 	if (device_ == device)
 		return kNoErr;
 
@@ -318,7 +325,6 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 		int index = 0;
 		int x, y;
 		GetWindowPosition(pCamCtx->surf, &x, &y);
-		v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
 		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
 	}
@@ -329,7 +335,7 @@ tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
 #if 0
-	return CCameraModule::StartVideoCapture(path, pSurf, pListener, maxLength, bAudio);
+	return CCameraModule::StartVideoCapture(path, NULL, pListener, maxLength, bAudio);
 #else
 	camCtx_.module	= this;
 	camCtx_.path	= path;
@@ -339,9 +345,16 @@ tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 	camCtx_.reqLength = maxLength;
 	camCtx_.pListener = pListener;
 
+	camCtx_.fmt.fmt.pix.width	= camCtx_.mode.width;
+	camCtx_.fmt.fmt.pix.height	= camCtx_.mode.height;
+	camCtx_.fmt.fmt.pix.pixelformat	= V4L2_PIX_FMT_YUV420;
+	camCtx_.fps = camCtx_.mode.fps_denominator / camCtx_.mode.fps_numerator;
+
 	InitCameraBufferInt(&camCtx_);
 	InitCameraStartInt(&camCtx_);
-//	InitCameraTask(&camCtx_);
+	camCtx_.surf	= NULL;
+	InitCameraTask(&camCtx_);
+
 	return STREAMING_HANDLE((tVidCapHndl)nxphndl_);
 #endif
 }
@@ -359,9 +372,13 @@ Boolean CNXPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 #if 0
 	return CCameraModule::StopVideoCapture(hndl);
 #else
-//	DeInitCameraTask(&camCtx_);
+	kernel_.LockMutex(camCtx_.mThread);
+	
+	DeInitCameraTask(&camCtx_);
 	StopVideoCaptureInt(camCtx_.fd);
 	DeinitCameraBufferInt(&camCtx_);
+	
+	kernel_.UnlockMutex(camCtx_.mThread);
 	return true;
 #endif
 }
@@ -497,6 +514,7 @@ Boolean CNXPCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		return false;
 
 	// Make copy of captured data for legacy GrabFrame() compatibility
+	kernel_.LockMutex(camCtx_.mThread);
 	GetFrame(hndl, frame);
 
 	buf = kernel_.Malloc(frame->size);
@@ -506,6 +524,7 @@ Boolean CNXPCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 
 	// Caller releases copy buffer
 	frame->data = buf;
+	kernel_.UnlockMutex(camCtx_.mThread);
 
 	return true;
 }

@@ -550,7 +550,7 @@ tErrType InitCameraTask(tCameraContext* pCtx)
 	prop.taskMainArgCount		= 1;
 	prop.pTaskMainArgValues		= pCtx;
 	// FIXME: magic number.  Encoding will fail with stack overflow with default stack size
-	if (HasPlatformCapability(kCapsLF2000))
+	if (!HasPlatformCapability(kCapsLF1000))
 		prop.stackSize			= 4194304;
 
 	r = kernel.CreateTask( hndl, prop, NULL );
