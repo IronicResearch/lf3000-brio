@@ -417,48 +417,7 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	GetFrame(hndl, &frame);
 
 	// Pack captured data into requested surface format
-	if (frame.data)
-	{
-		int			i,j,k,m;
-		int			r = (color_order == kDisplayRgb) ? 2 : 0;
-		int			b = (color_order == kDisplayRgb) ? 0 : 2;
-		int			pitch = frame.size / frame.height;
-		int			width = MIN(frame.width, pSurf->width);
-		int			height = MIN(frame.height, pSurf->height);
-		U8* 		sy = (U8*)frame.data;
-		U8*			su = sy + pitch/2;
-		U8*			sv = su + pitch * frame.height/2;
-		U8*			dy = pSurf->buffer;
-		U8*			du = dy + pSurf->pitch/2;
-		U8*			dv = du + pSurf->pitch * pSurf->height/2;
-		if (pSurf->format == kPixelFormatRGB888 || pSurf->pitch == 3 * pSurf->width)
-		{
-			// Convert YUV to RGB format surface
-			for (i = 0; i < height; i++)
-			{
-				for (j = k = m = 0; k < width; j++, k+=2, m+=6)
-				{
-					U8 y0 = sy[k];
-					U8 y1 = sy[k+1];
-					U8 u0 = su[j];
-					U8 v0 = sv[j];
-					dy[m+b] = B(y0,u0,v0);
-					dy[m+1] = G(y0,u0,v0);
-					dy[m+r] = R(y0,u0,v0);
-					dy[m+3+b] = B(y1,u0,v0);
-					dy[m+4]   = G(y1,u0,v0);
-					dy[m+3+r] = R(y1,u0,v0);
-				}
-				sy += pitch;
-				dy += pSurf->pitch;
-				if (i % 2)
-				{
-					su += pitch;
-					sv += pitch;
-				}
-			}
-		}
-	}
+	RenderFrame(frame, pSurf, color_order);
 
 	ReturnFrame(hndl, &frame);
 
