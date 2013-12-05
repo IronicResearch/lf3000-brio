@@ -495,9 +495,13 @@ public:
 
 private:
 	void*						nxphndl_;
-	void*						nxpvbuf_;
+	void*						nxpvbuf_[3];
+	void*						nxpmbuf_[3];
+	int  						index_;
+	int							outcnt_;
 	int  						clipper_;
 	int  						sensor_;
+	bool 						overlay_;
 
 	// Limit object creation to the Module Manager interface functions
 	CNXPCameraModule();
