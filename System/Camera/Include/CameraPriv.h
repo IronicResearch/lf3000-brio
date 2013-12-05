@@ -355,11 +355,14 @@ private:
 	virtual Boolean		PollFrame(const tVidCapHndl hndl);
 	virtual Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
 	Boolean		RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf, tBitmapInfo *image, const JPEG_METHOD method);
+	Boolean		RenderFrame(tFrameInfo &frame, tVideoSurf *pSurf, tColorOrder color_order);
 	virtual Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
 	virtual Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
 	Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
 	Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
 	Boolean		SnapFrameRGB(const tVidCapHndl hndl, const CPath &path);
+	Boolean		SnapFrameJPG(const tVidCapHndl hndl, const CPath &path);
+	Boolean		CompressFrame(tFrameInfo *frame, int stride);
 
 	virtual Boolean 	InitCameraBufferInt(tCameraContext *pCamCtx);
 	virtual Boolean 	DeinitCameraBufferInt(tCameraContext *pCamCtx);
@@ -458,7 +461,6 @@ private:
 
 	void		AllocVMem(tCameraContext& camCtx);
 	void		FreeVMem();
-	Boolean		CompressFrame(tFrameInfo *frame, int stride);
 	Boolean 	EnableOverlay(int fd, int enable);
 
 	// Limit object creation to the Module Manager interface functions

@@ -37949,3 +37949,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/5/13 10:26 AM
 6,940 ms. (Cumulative: 15,828,024 ms)
 
 ----------------
+Revision 10,396 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Migrated Camera VIP code for JPEG and RGB conversion into common Camera module for NXP support.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/5/13 11:50 AM
+4 changed, 0 added, 0 deleted.
+6,751 ms. (Cumulative: 15,834,885 ms)
+
+----------------

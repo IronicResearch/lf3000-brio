@@ -18,6 +18,7 @@
 #include <CameraPriv.h>
 #include <KernelMPI.h>
 #include <DisplayMPI.h>
+#include <DisplayPriv.h>
 #include <Utility.h>
 #include <USBDeviceMPI.h>
 #include <AtomicFile.h>
@@ -2011,6 +2012,270 @@ out:
 	return bRet;
 }
 
+//----------------------------------------------------------------------------
+Boolean CCameraModule::RenderFrame(tFrameInfo &frame, tVideoSurf *pSurf, tColorOrder color_order)
+{
+	if (!pSurf || !pSurf->buffer || !frame.data || !frame.size)
+		return false;
+
+	// Repack rendered frame into surface format
+	{
+		int			i,j,k,m;
+		int			r = (color_order == kDisplayRgb) ? 2 : 0;
+		int			b = (color_order == kDisplayRgb) ? 0 : 2;
+		int			pitch = frame.size / frame.height;
+		int			width = MIN(frame.width, pSurf->width);
+		int			height = MIN(frame.height, pSurf->height);
+		U8* 		sy = (U8*)frame.data;
+		U8*			su = sy + pitch/2;
+		U8*			sv = su + pitch * frame.height/2;
+		U8*			dy = pSurf->buffer;
+		U8*			du = dy + pSurf->pitch/2;
+		U8*			dv = du + pSurf->pitch * pSurf->height/2;
+		if (frame.pixelformat == kCaptureFormatRAWYUYV)
+		{
+			pitch = frame.width * 2;
+			if (pSurf->format == kPixelFormatRGB888)
+			{
+				// Convert YUYV to RGB format surface
+				for (i = 0; i < height; i++)
+				{
+					for (j = k = m = 0; j < width; j+=2, k+=4, m+=6)
+					{
+						U8 y0 = sy[k+0];
+						U8 v0 = sy[k+1];
+						U8 y1 = sy[k+2];
+						U8 u0 = sy[k+3];
+						dy[m+0] = B(y0,u0,v0);
+						dy[m+1] = G(y0,u0,v0);
+						dy[m+2] = R(y0,u0,v0);
+						dy[m+3] = B(y1,u0,v0);
+						dy[m+4] = G(y1,u0,v0);
+						dy[m+5] = R(y1,u0,v0);
+					}
+					sy += pitch;
+					dy += pSurf->pitch;
+				}
+			}
+			else if (pSurf->format == kPixelFormatARGB8888)
+			{
+				// Convert YUYV to ARGB format surface
+				for (i = 0; i < height; i++)
+				{
+					for (j = k = m = 0; j < width; j+=2, k+=4, m+=8)
+					{
+						U8 y0 = sy[k+0];
+						U8 u0 = sy[k+1];
+						U8 y1 = sy[k+2];
+						U8 v0 = sy[k+3];
+						dy[m+0] = B(y0,u0,v0);
+						dy[m+1] = G(y0,u0,v0);
+						dy[m+2] = R(y0,u0,v0);
+						dy[m+3] = 0xFF;
+						dy[m+4] = B(y1,u0,v0);
+						dy[m+5] = G(y1,u0,v0);
+						dy[m+6] = R(y1,u0,v0);
+						dy[m+7] = 0xFF;
+					}
+					sy += pitch;
+					dy += pSurf->pitch;
+				}
+			}
+			else if (pSurf->format == kPixelFormatYUV420)
+			{
+				// Convert YUYV to YUV
+				for (i = 0; i < height; i++)
+				{
+					for (j = k = m = 0; j < width; j+=2, k++, m+=4)
+					{
+						U8 y = sy[m+0];
+						U8 u = sy[m+1];
+						U8 z = sy[m+2];
+						U8 v = sy[m+3];
+						dy[j+0] = y;
+						dy[j+1] = z;
+						du[k] = u;
+						dv[k] = v;
+					}
+					sy += pitch;
+					dy += pSurf->pitch;
+					if (i % 2)
+					{
+						du += pSurf->pitch;
+						dv += pSurf->pitch;
+					}
+				}
+			}
+			else if (pSurf->format == kPixelFormatYUYV422)
+			{
+				// Copy YUYV to YUYV
+				for (i = 0; i < height; i++)
+				{
+					memcpy(dy, sy, 2 * width);
+					sy += pitch;
+					dy += pSurf->pitch;
+				}
+			}
+			else
+				return false;
+		}
+		else if (pSurf->format == kPixelFormatRGB888 || pSurf->pitch == 3 * pSurf->width)
+		{
+			// Convert YUV to RGB format surface
+			for (i = 0; i < height; i++)
+			{
+				for (j = k = m = 0; k < width; j++, k+=2, m+=6)
+				{
+					U8 y0 = sy[k];
+					U8 y1 = sy[k+1];
+					U8 u0 = su[j];
+					U8 v0 = sv[j];
+					dy[m+b] = B(y0,u0,v0);
+					dy[m+1] = G(y0,u0,v0);
+					dy[m+r] = R(y0,u0,v0);
+					dy[m+3+b] = B(y1,u0,v0);
+					dy[m+4]   = G(y1,u0,v0);
+					dy[m+3+r] = R(y1,u0,v0);
+				}
+				sy += pitch;
+				dy += pSurf->pitch;
+				if (i % 2)
+				{
+					su += pitch;
+					sv += pitch;
+				}
+			}
+		}
+		else if (pSurf->format == kPixelFormatARGB8888)
+		{
+			// Convert YUV to ARGB format surface
+			for (i = 0; i < height; i++)
+			{
+				for (j = k = m = 0; k < width; j++, k+=2, m+=8)
+				{
+					U8 y0 = sy[k];
+					U8 y1 = sy[k+1];
+					U8 u0 = su[j];
+					U8 v0 = sv[j];
+					dy[m+b] = B(y0,u0,v0);
+					dy[m+1] = G(y0,u0,v0);
+					dy[m+r] = R(y0,u0,v0);
+					dy[m+3] = 0xFF;
+					dy[m+4+b] = B(y1,u0,v0);
+					dy[m+5]   = G(y1,u0,v0);
+					dy[m+4+r] = R(y1,u0,v0);
+					dy[m+7] = 0xFF;
+				}
+				sy += pitch;
+				dy += pSurf->pitch;
+				if (i % 2)
+				{
+					su += pitch;
+					sv += pitch;
+				}
+			}
+		}
+		else if (pSurf->format == kPixelFormatYUV420)
+		{
+			for (i = 0; i < height; i++)
+			{
+				memcpy(dy, sy, width);
+				sy += pitch;
+				dy += pSurf->pitch;
+				if (i % 2)
+				{
+					memcpy(du, su, width/2);
+					memcpy(dv, sv, width/2);
+					su += pitch;
+					sv += pitch;
+					du += pSurf->pitch;
+					dv += pSurf->pitch;
+				}
+			}
+		}
+		else
+			return false;
+	}
+
+	return true;
+}
+
+//----------------------------------------------------------------------------
+Boolean CCameraModule::CompressFrame(tFrameInfo *frame, int stride)
+{
+	Boolean			ret = false;
+	int				out_size = frame->width * frame->height * 3;
+	uint8_t			*frame_outbuf	= NULL;
+
+	AVCodec			*pCodec	= NULL;
+	AVCodecContext	*pCtx	= NULL;
+	AVFrame			*pFrame	= NULL;
+
+	avcodec_register_all();
+
+	pCodec = avcodec_find_encoder(CODEC_ID_MJPEG);
+	if(pCodec == NULL)
+		goto out;
+
+	pCtx = avcodec_alloc_context();
+	if(pCtx == NULL)
+		goto out;
+
+	pCtx->pix_fmt			= PIX_FMT_YUVJ420P;
+	pCtx->width				= frame->width;
+	pCtx->height			= frame->height;
+	pCtx->codec_id			= CODEC_ID_MJPEG;
+	pCtx->codec_type 		= AVMEDIA_TYPE_VIDEO;
+	pCtx->bit_rate 			= 400000;
+	pCtx->time_base.den 	= 1;
+	pCtx->time_base.num 	= 1;
+	pCtx->gop_size 			= 1;
+
+	if(avcodec_open2(pCtx, pCodec, NULL) < 0)
+		goto out_context;
+
+	pFrame = avcodec_alloc_frame();
+	if(pFrame == NULL)
+		goto out_frame;
+
+	frame_outbuf = (uint8_t*)av_malloc(out_size);
+	if(frame_outbuf == NULL)
+		goto out_outbuf;
+
+	pFrame->data[0] = (uint8_t *)frame->data;
+	pFrame->data[1] = pFrame->data[0] + stride/2;
+	pFrame->data[2] = pFrame->data[1] + stride * pCtx->height/2;
+
+	pFrame->linesize[0] = stride;
+	pFrame->linesize[1] = stride;
+	pFrame->linesize[2] = stride;
+
+	out_size = avcodec_encode_video(pCtx, frame_outbuf, out_size, pFrame);
+	if(out_size <= 0)
+		goto out_copy;
+
+	memcpy(frame->data, frame_outbuf, out_size);
+	frame->size	= out_size;
+
+	ret = true;
+
+out_copy:
+	av_free(frame_outbuf);
+
+out_outbuf:
+	av_free(pFrame);
+
+out_frame:
+	avcodec_close(pCtx);
+
+out_context:
+	av_free(pCtx);
+
+out:
+	return ret;
+}
+
+//----------------------------------------------------------------------------
 static Boolean ReturnFrameInt(tCameraContext *pCtx, const U32 index)
 {
 	struct v4l2_buffer	buf;
@@ -2255,7 +2520,7 @@ Boolean	CCameraModule::SnapFrameRGB(const tVidCapHndl hndl, const CPath &path)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
+Boolean	CCameraModule::SnapFrameJPG(const tVidCapHndl hndl, const CPath &path)
 {
 	Boolean ret;
 	tFrameInfo frame	= {kCaptureFormatMJPEG, 640, 480, 0, NULL, 0};
@@ -2278,45 +2543,64 @@ out:
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder color_order)
+Boolean	CCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 {
-	int i, row_stride;
-	Boolean ret;
-	tFrameInfo frame	= {kCaptureFormatMJPEG, 640, 480, 0, NULL, 0};
-	tBitmapInfo bmp 	= {kBitmapFormatRGB888, 640, 480, 3, pixels, 921600, NULL};
+	Boolean				ret		= false;
+	tFrameInfo			frame	= {kCaptureFormatYUV420, 640, 480, 0, NULL, 0};
+	tVideoSurf			surf	= {frame.width, frame.height, 4096, NULL, kPixelFormatYUV420};
 
-	ret = GrabFrame(hndl, &frame);
-	if(ret)
+	// Fallthrough to original SnapFrame() for MJPEG format capture
+	if (camCtx_.mode.pixelformat == kCaptureFormatMJPEG)
+		return SnapFrameJPG(hndl, path);
+
+	// Grab video frame as RGB format for saving as PNG
+	if (path.rfind(".png") != std::string::npos)
 	{
-		bmp.buffer = static_cast<U8**>(kernel_.Malloc(bmp.height * sizeof(U8*)));
+		frame.size = frame.width * frame.height * 3;
+		frame.data = kernel_.Malloc(frame.size);
 
-		row_stride = bmp.width * bmp.depth;
-		for(i = 0; i < bmp.height; i++)
-		{
-			bmp.buffer[i] = &bmp.data[i*row_stride];
-		}
+		surf.buffer = (U8*)frame.data;
+		surf.format = kPixelFormatRGB888;
+		surf.pitch  = frame.width * 3;
+		ret = GetFrame(hndl, &surf, kDisplayRgb);
+		if (!ret)
+			goto out;
 
-		ret = RenderFrame(&frame, NULL, &bmp, JPEG_SLOW);
-
-		if(color_order == kDisplayRgb)
-		{
-			for(i = 0; i < bmp.height; ++i)
-			{
-				int i_stride = i * row_stride;
-				for(int j = 0; j < bmp.width * 3; j += 3)
-				{
-					U8 temp = pixels[i_stride + j];
-					pixels[i_stride + j] = pixels[i_stride + j + 2];
-					pixels[i_stride + j + 2] = temp;
-				}
-			}
-		}
-
-		kernel_.Free(frame.data);	/* alloced by GrabFrame */
-		kernel_.Free(bmp.buffer);
+		ret = PNG_save(path.c_str(), surf.width, surf.height, surf.pitch, (char*)surf.buffer);
+		goto out;
 	}
 
+	// Grab video frame as YUV format for saving as JPEG
+	frame.size = 4096 * frame.height;
+	frame.data = kernel_.Malloc(frame.size);
+
+	surf.buffer = (U8*)frame.data;
+	surf.format = kPixelFormatYUV420;
+	surf.pitch  = 4096;
+	ret = GetFrame(hndl, &surf, kDisplayRgb);
+	if(!ret)
+		goto out;
+
+	/* Compress frame */
+	ret = CompressFrame(&frame, 4096);
+	if(!ret)
+		goto out;
+
+	ret = SaveFrame(path, &frame);
+
+out:
+	if (frame.data)
+		kernel_.Free(frame.data);
+
 	return ret;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder color_order)
+{
+	tVideoSurf 	surf = {640, 480, 640*3, pixels, kPixelFormatRGB888};
+
+	return GetFrame(hndl, &surf, color_order);
 }
 
 //----------------------------------------------------------------------------
