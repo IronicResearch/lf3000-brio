@@ -47,9 +47,12 @@ inline void PackVidBuf(struct nxp_vid_buffer& vb, NX_VID_MEMORY_INFO* vm)
 	vb.sizes[0] = vm->luStride * vm->imgHeight;
 	vb.sizes[1] = vm->cbStride * vm->imgHeight;
 	vb.sizes[2] = vm->crStride * vm->imgHeight;
-	vb.fds[0] = (int)((NX_MEMORY_INFO*)vm->privateDesc[0])->privateDesc;
-	vb.fds[1] = (int)((NX_MEMORY_INFO*)vm->privateDesc[1])->privateDesc;
-	vb.fds[2] = (int)((NX_MEMORY_INFO*)vm->privateDesc[2])->privateDesc;
+//	vb.fds[0] = (int)((NX_MEMORY_INFO*)vm->privateDesc[0])->privateDesc;
+//	vb.fds[1] = (int)((NX_MEMORY_INFO*)vm->privateDesc[1])->privateDesc;
+//	vb.fds[2] = (int)((NX_MEMORY_INFO*)vm->privateDesc[2])->privateDesc;
+	vb.fds[0] = (int)vm->privateDesc[0];
+	vb.fds[1] = (int)vm->privateDesc[1];
+	vb.fds[2] = (int)vm->privateDesc[2];
 
 	// fixup planar buffer for 4K stride
 	vb.phys[1] = vb.phys[0] + vm->luStride/2;
@@ -74,6 +77,25 @@ inline void PackVidBuf(struct nxp_vid_buffer& vb, NX_MEMORY_INFO* vm)
 	vb.fds[0] =
 	vb.fds[1] =
 	vb.fds[2] = (int)vm->privateDesc;
+}
+
+//----------------------------------------------------------------------------
+inline void PackVidBuf(NX_VID_MEMORY_INFO* vm, NX_MEMORY_INFO* mi, int w, int h)
+{
+	vm->luPhyAddr = mi->phyAddr;
+	vm->cbPhyAddr = vm->luPhyAddr + 4096/2;
+	vm->crPhyAddr = vm->cbPhyAddr + 4096 * h/2;
+	vm->luVirAddr = mi->virAddr;
+	vm->cbVirAddr = vm->luVirAddr + 4096/2;
+	vm->crVirAddr = vm->cbVirAddr + 4096 * h/2;
+	vm->luStride =
+	vm->cbStride =
+	vm->crStride = 4096;
+	vm->imgWidth  = w;
+	vm->imgHeight = h;
+	vm->privateDesc[0] =
+	vm->privateDesc[1] =
+	vm->privateDesc[2] = mi->privateDesc;
 }
 
 //----------------------------------------------------------------------------
@@ -188,7 +210,9 @@ Boolean CNXPCameraModule::InitCameraInt(const tCaptureMode* mode, bool reinit)
 	device_ = kCameraDefault;
 	sensor_ = nxp_v4l2_sensor1;
 	clipper_ = nxp_v4l2_clipper1;
-	nxpvbuf_ = NULL;
+	nxpvbuf_[0] = NULL;
+	nxpmbuf_[0] = NULL;
+	overlay_ = false;
 
 	return true;
 }
@@ -221,29 +245,44 @@ Boolean CNXPCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 {
     struct nxp_vid_buffer  vb;
     NX_VID_MEMORY_INFO    *vm;
-//	NX_MEMORY_INFO    	  *vm;
+	NX_MEMORY_INFO    	  *mi;
 
-	// Use ION memory for V4L buffers
-	nxpvbuf_ = vm = NX_VideoAllocateMemory(64, 4096, camCtx_.mode.height, NX_MEM_MAP_TILED, FOURCC_MVS0);
-//	nxpvbuf_ = vm = NX_AllocateMemory(4096 * camCtx_.mode.height, 64);
-	PackVidBuf(vb, vm);
+	v4l2_reqbuf(nxphndl_, clipper_, 3);
+	v4l2_reqbuf(nxphndl_, nxp_v4l2_mlc0_video, 3);
 
-	v4l2_reqbuf(nxphndl_, clipper_, 1);
-	v4l2_qbuf(nxphndl_, clipper_, vb.plane_num, 0, &vb, -1, NULL);
+	for (int i = 0; i < 3; i++)
+	{
+		// Use ION memory for V4L buffers
+	//	nxpvbuf_[i] = vm = NX_VideoAllocateMemory(64, 4096, camCtx_.mode.height, NX_MEM_MAP_TILED, FOURCC_MVS0);
+		nxpmbuf_[i] = mi = NX_AllocateMemory(4096 * camCtx_.mode.height, 64);
+		nxpvbuf_[i] = vm = new NX_VID_MEMORY_INFO;
+	//	PackVidBuf(vb, vm);
+		PackVidBuf(vb, mi);
+		PackVidBuf(vm, mi, camCtx_.mode.width, camCtx_.mode.height);
 
-	v4l2_reqbuf(nxphndl_, nxp_v4l2_mlc0_video, 1);
-	v4l2_qbuf(nxphndl_, nxp_v4l2_mlc0_video, vb.plane_num, 0, &vb, -1, NULL);
+		v4l2_qbuf(nxphndl_, clipper_, vb.plane_num, i, &vb, -1, NULL);
+	//	v4l2_qbuf(nxphndl_, nxp_v4l2_mlc0_video, vb.plane_num, i, &vb, -1, NULL);
+	}
+
+	index_ = 0;
+	outcnt_ = 0;
+
 	return true;
 }
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::DeinitCameraBufferInt(tCameraContext *pCamCtx)
 {
-	if (!nxpvbuf_)
+	if (!nxpvbuf_[0])
 		return true;
 
-	NX_FreeVideoMemory((NX_VID_MEMORY_HANDLE)nxpvbuf_);
-//	NX_FreeMemory((NX_MEMORY_HANDLE)nxpvbuf_);
-	nxpvbuf_ = NULL;
+	for (int i = 0; i < 3; i++)
+	{
+	//	NX_FreeVideoMemory((NX_VID_MEMORY_HANDLE)nxpvbuf_[i]);
+		NX_FreeMemory((NX_MEMORY_HANDLE)nxpmbuf_[i]);
+		delete (NX_VID_MEMORY_HANDLE)nxpvbuf_[i];
+		nxpvbuf_[i] = NULL;
+		nxpmbuf_[i] = NULL;
+	}
 	return true;
 }
 //----------------------------------------------------------------------------
@@ -327,6 +366,7 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 		GetWindowPosition(pCamCtx->surf, &x, &y);
 		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
+		overlay_ = true;
 	}
 	return true;
 }
@@ -368,6 +408,7 @@ Boolean CNXPCameraModule::StopVideoCaptureInt(int fd)
 {
 	v4l2_streamoff(nxphndl_, nxp_v4l2_mlc0_video);
 	v4l2_streamoff(nxphndl_, clipper_);
+	overlay_ = false;
 	return true;
 }
 //----------------------------------------------------------------------------
@@ -445,22 +486,29 @@ Boolean CNXPCameraModule::PollFrame(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 {
-	int index = 0;
 	long long int timestamp = 0;
-	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_;
+	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[index_];
+	struct nxp_vid_buffer  vb;
 
-	v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
+	v4l2_dqbuf(nxphndl_, clipper_, 3, &index_, NULL);
 	v4l2_get_timestamp(nxphndl_, clipper_, &timestamp);
+	vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[index_];
 
 	timestamp /= 1000LL;
 	frame->timestamp.tv_sec 	= timestamp / 1000000LL;
 	frame->timestamp.tv_usec 	= timestamp % 1000000LL;
-	frame->index 	= index;
+	frame->index 	= index_;
 	frame->data  	= (void*)vm->luVirAddr;
 	frame->size  	= vm->luStride * vm->imgHeight;
 	frame->width 	= vm->imgWidth;
 	frame->height	= vm->imgHeight;
 	frame->pixelformat = kCaptureFormatYUV420;
+
+	if (overlay_) {
+		PackVidBuf(vb, vm);
+		v4l2_qbuf(nxphndl_, nxp_v4l2_mlc0_video, vb.plane_num, index_, &vb, -1, NULL);
+		outcnt_++;
+	}
 
 	return true;
 }
@@ -469,10 +517,17 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 Boolean	CNXPCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame)
 {
 	struct nxp_vid_buffer  vb;
-	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_;
+	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[index_];
 
 	PackVidBuf(vb, vm);
-	v4l2_qbuf(nxphndl_, clipper_, vb.plane_num, 0, &vb, -1, NULL);
+	v4l2_qbuf(nxphndl_, clipper_, vb.plane_num, index_, &vb, -1, NULL);
+
+	if (overlay_ && outcnt_ > 1) {
+		int index = 0;
+		v4l2_dqbuf(nxphndl_, nxp_v4l2_mlc0_video, 3, &index, NULL);
+		outcnt_--;
+	}
+
 	return true;
 }
 

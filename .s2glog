@@ -37969,3 +37969,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/5/13 12:18 PM
 6,547 ms. (Cumulative: 15,841,542 ms)
 
 ----------------
+Revision 10,398 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Enable multi-buffering to prevent tearing in viewfinder and capture buffers.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/5/13 1:58 PM
+2 changed, 0 added, 0 deleted.
+6,704 ms. (Cumulative: 15,848,355 ms)
+
+----------------
