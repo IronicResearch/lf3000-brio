@@ -37959,3 +37959,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/5/13 11:50 AM
 6,751 ms. (Cumulative: 15,834,885 ms)
 
 ----------------
+Revision 10,397 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Correct camera thread and data locking in NXP module like other camera modules.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/5/13 12:18 PM
+1 changed, 0 added, 0 deleted.
+6,547 ms. (Cumulative: 15,841,542 ms)
+
+----------------
