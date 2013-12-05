@@ -337,6 +337,8 @@ tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 #if 0
 	return CCameraModule::StartVideoCapture(path, NULL, pListener, maxLength, bAudio);
 #else
+	kernel_.LockMutex(mutex_);
+
 	camCtx_.module	= this;
 	camCtx_.path	= path;
 	camCtx_.surf	= pSurf;
@@ -354,6 +356,8 @@ tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 	InitCameraStartInt(&camCtx_);
 	camCtx_.surf	= NULL;
 	InitCameraTask(&camCtx_);
+
+	kernel_.UnlockMutex(mutex_);
 
 	return STREAMING_HANDLE((tVidCapHndl)nxphndl_);
 #endif
@@ -373,11 +377,13 @@ Boolean CNXPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 	return CCameraModule::StopVideoCapture(hndl);
 #else
 	kernel_.LockMutex(camCtx_.mThread);
+	kernel_.LockMutex(mutex_);
 	
 	DeInitCameraTask(&camCtx_);
 	StopVideoCaptureInt(camCtx_.fd);
 	DeinitCameraBufferInt(&camCtx_);
 	
+	kernel_.UnlockMutex(mutex_);
 	kernel_.UnlockMutex(camCtx_.mThread);
 	return true;
 #endif
@@ -414,12 +420,18 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 {
 	tFrameInfo 	frame	= {kCaptureFormatYUV420, pSurf->width, pSurf->height, 0, NULL, 0};
 
+	kernel_.LockMutex(camCtx_.mThread);
+	kernel_.LockMutex(mutex_);
+
 	GetFrame(hndl, &frame);
 
 	// Pack captured data into requested surface format
 	RenderFrame(frame, pSurf, color_order);
 
 	ReturnFrame(hndl, &frame);
+
+	kernel_.UnlockMutex(mutex_);
+	kernel_.UnlockMutex(camCtx_.mThread);
 
 	return true;
 }
@@ -472,8 +484,10 @@ Boolean CNXPCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	if (frame->width != camCtx_.mode.width || frame->height != camCtx_.mode.height)
 		return false;
 
-	// Make copy of captured data for legacy GrabFrame() compatibility
 	kernel_.LockMutex(camCtx_.mThread);
+	kernel_.LockMutex(mutex_);
+
+	// Make copy of captured data for legacy GrabFrame() compatibility
 	GetFrame(hndl, frame);
 
 	buf = kernel_.Malloc(frame->size);
@@ -483,6 +497,8 @@ Boolean CNXPCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 
 	// Caller releases copy buffer
 	frame->data = buf;
+
+	kernel_.UnlockMutex(mutex_);
 	kernel_.UnlockMutex(camCtx_.mThread);
 
 	return true;
