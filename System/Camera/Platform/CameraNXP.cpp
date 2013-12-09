@@ -356,6 +356,7 @@ tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 	return kNoErr;
 }
 
+#define V4L2_CID_MLC_VID_PRIORITY    (V4L2_CTRL_CLASS_USER + 21)
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 {
@@ -365,8 +366,21 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 		int x, y;
 		GetWindowPosition(pCamCtx->surf, &x, &y);
 		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
+
+		v4l2_unlink(nxphndl_, clipper_, nxp_v4l2_mlc0_video);
+		v4l2_link(nxphndl_, clipper_, nxp_v4l2_decimator1);
+		v4l2_link(nxphndl_, nxp_v4l2_decimator1, nxp_v4l2_mlc0_video);
+		v4l2_set_format(nxphndl_, nxp_v4l2_decimator1, pCamCtx->surf->width, pCamCtx->surf->height, PIXFORMAT_YUV420_PLANAR);
+		v4l2_set_crop(nxphndl_, nxp_v4l2_decimator1, 0, 0, pCamCtx->surf->width, pCamCtx->surf->height);
+
+		v4l2_set_ctrl(nxphndl_, nxp_v4l2_mlc0_video, V4L2_CID_MLC_VID_PRIORITY, 1);
+		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_BRIGHTNESS, pCamCtx->surf->width);
+		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_CONTRAST,   pCamCtx->surf->height);
+		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_SATURATION, (int)pCamCtx->surf->buffer);
+
+		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
-		overlay_ = true;
+//		overlay_ = true;
 	}
 	return true;
 }
