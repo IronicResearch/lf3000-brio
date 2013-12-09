@@ -360,16 +360,15 @@ tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 {
-	v4l2_streamon(nxphndl_, clipper_);
 	if (pCamCtx->surf) {
 		int index = 0;
 		int x, y;
 		GetWindowPosition(pCamCtx->surf, &x, &y);
 		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
 
-		v4l2_unlink(nxphndl_, clipper_, nxp_v4l2_mlc0_video);
-		v4l2_link(nxphndl_, clipper_, nxp_v4l2_decimator1);
-		v4l2_link(nxphndl_, nxp_v4l2_decimator1, nxp_v4l2_mlc0_video);
+//		v4l2_unlink(nxphndl_, clipper_, nxp_v4l2_mlc0_video);
+//		v4l2_link(nxphndl_, clipper_, nxp_v4l2_decimator1);
+//		v4l2_link(nxphndl_, nxp_v4l2_decimator1, nxp_v4l2_mlc0_video);
 		v4l2_set_format(nxphndl_, nxp_v4l2_decimator1, pCamCtx->surf->width, pCamCtx->surf->height, PIXFORMAT_YUV420_PLANAR);
 		v4l2_set_crop(nxphndl_, nxp_v4l2_decimator1, 0, 0, pCamCtx->surf->width, pCamCtx->surf->height);
 
@@ -382,6 +381,7 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
 //		overlay_ = true;
 	}
+	v4l2_streamon(nxphndl_, clipper_);
 	return true;
 }
 //----------------------------------------------------------------------------
