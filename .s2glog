@@ -37989,3 +37989,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/9/13 11:30 AM
 6,678 ms. (Cumulative: 15,855,142 ms)
 
 ----------------
+Revision 10,400 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Hack for setting viewfinder framebuffer address in decimator.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/9/13 12:43 PM
+1 changed, 0 added, 0 deleted.
+6,922 ms. (Cumulative: 15,862,158 ms)
+
+----------------
