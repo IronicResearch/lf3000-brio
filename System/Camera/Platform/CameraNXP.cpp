@@ -151,6 +151,15 @@ inline void GetWindowPosition(tVideoSurf* pSurf, int* dx, int* dy)
 	*dy = y;
 }
 
+//----------------------------------------------------------------------------
+inline void SetWindowScale(tVideoSurf* pSurf, int sw, int sh)
+{
+	CDisplayMPI 	dispmgr;
+	tDisplayHandle 	hvideo = dispmgr.GetCurrentDisplayHandle(kPixelFormatYUV420);
+
+	dispmgr.SetVideoScaler(hvideo, sw, sh, false);
+}
+
 //============================================================================
 // CCameraModule: Informational functions
 //============================================================================
@@ -302,7 +311,9 @@ Boolean CNXPCameraModule::SetCameraMode(const tCaptureMode* mode)
 {
 	v4l2_set_format(nxphndl_, sensor_, mode->width, mode->height, PIXFORMAT_YUV422_PACKED);
 	v4l2_set_format(nxphndl_, clipper_, mode->width, mode->height, PIXFORMAT_YUV420_PLANAR);
+	v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, mode->width, mode->height, PIXFORMAT_YUV420_PLANAR);
 	v4l2_set_crop(nxphndl_, clipper_, 0, 0, mode->width, mode->height);
+	v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, 0, 0, mode->width, mode->height);
 
 	camCtx_.mode = *mode;
 	camCtx_.fmt.fmt.pix.width	= mode->width;
@@ -360,28 +371,31 @@ tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 {
+	v4l2_streamon(nxphndl_, clipper_);
 	if (pCamCtx->surf) {
 		int index = 0;
 		int x, y;
+//		v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, camCtx_.mode.width, camCtx_.mode.height, PIXFORMAT_YUV420_PLANAR);
 		GetWindowPosition(pCamCtx->surf, &x, &y);
 		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
+		SetWindowScale(pCamCtx->surf, camCtx_.mode.width, camCtx_.mode.height);
 
 //		v4l2_unlink(nxphndl_, clipper_, nxp_v4l2_mlc0_video);
 //		v4l2_link(nxphndl_, clipper_, nxp_v4l2_decimator1);
 //		v4l2_link(nxphndl_, nxp_v4l2_decimator1, nxp_v4l2_mlc0_video);
-		v4l2_set_format(nxphndl_, nxp_v4l2_decimator1, pCamCtx->surf->width, pCamCtx->surf->height, PIXFORMAT_YUV420_PLANAR);
-		v4l2_set_crop(nxphndl_, nxp_v4l2_decimator1, 0, 0, pCamCtx->surf->width, pCamCtx->surf->height);
+//		v4l2_set_format(nxphndl_, nxp_v4l2_decimator1, pCamCtx->surf->width, pCamCtx->surf->height, PIXFORMAT_YUV420_PLANAR);
+//		v4l2_set_crop(nxphndl_, nxp_v4l2_decimator1, 0, 0, pCamCtx->surf->width, pCamCtx->surf->height);
 
 		v4l2_set_ctrl(nxphndl_, nxp_v4l2_mlc0_video, V4L2_CID_MLC_VID_PRIORITY, 1);
-		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_BRIGHTNESS, pCamCtx->surf->width);
-		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_CONTRAST,   pCamCtx->surf->height);
-		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_SATURATION, (int)pCamCtx->surf->buffer);
+//		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_BRIGHTNESS, pCamCtx->surf->width);
+//		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_CONTRAST,   pCamCtx->surf->height);
+//		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_SATURATION, (int)pCamCtx->surf->buffer);
 
-		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
+//		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
-//		overlay_ = true;
+		overlay_ = true;
 	}
-	v4l2_streamon(nxphndl_, clipper_);
+//	v4l2_streamon(nxphndl_, clipper_);
 	return true;
 }
 //----------------------------------------------------------------------------
