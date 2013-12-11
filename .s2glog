@@ -37998,3 +37998,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/9/13 12:43 PM
 6,922 ms. (Cumulative: 15,862,158 ms)
 
 ----------------
+Revision 10,401 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Undo hack for setting decimator and use video scaler for viewfinder instead.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/11/13 11:45 AM
+1 changed, 0 added, 0 deleted.
+6,688 ms. (Cumulative: 15,868,940 ms)
+
+----------------
