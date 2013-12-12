@@ -14,11 +14,6 @@
 //
 //==============================================================================
 
-#ifdef EMULATION	
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#endif
-
 #ifdef KHRONOS
 #include <EGL/egl.h>
 #else

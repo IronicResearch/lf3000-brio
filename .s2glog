@@ -38008,3 +38008,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/11/13 11:45 AM
 6,688 ms. (Cumulative: 15,868,940 ms)
 
 ----------------
+Revision 10,402 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 6879.  Removed X11 headers from BrioOpenGLConfig.h, not needed and pollutes the namespace.
+
+By Minh Saelock (msaelock@leapfrog.com) on 12/11/13 5:51 PM
+1 changed, 0 added, 0 deleted.
+6,266 ms. (Cumulative: 15,875,300 ms)
+
+----------------
