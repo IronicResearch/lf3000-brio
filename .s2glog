@@ -38017,3 +38017,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 12/11/13 5:51 PM
 6,266 ms. (Cumulative: 15,875,300 ms)
 
 ----------------
+Revision 10,403 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 6887.  Modified the wait for vsync for glFinish call instead.  This ensures the drawing is done before returning, preventing the game from updating the display handle that is being used as a live texture for drawing.
+
+By Minh Saelock (msaelock@leapfrog.com) on 12/13/13 3:05 PM
+1 changed, 0 added, 0 deleted.
+6,284 ms. (Cumulative: 15,881,677 ms)
+
+----------------
