@@ -38026,3 +38026,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 12/13/13 3:05 PM
 6,284 ms. (Cumulative: 15,881,677 ms)
 
 ----------------
+Revision 10,404 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,405 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Don't force a device poweroff when the PoweroffTimer expires, just exit the current application. This fixes an issue seen on Rio where the device would shut off without running /etc/init.d/shutdown sometimes (often when idle timer expired).
+
+By dlazzari (dlazzari@leapfrog.com) on 12/15/13 12:45 AM
+1 changed, 0 added, 0 deleted.
+6,240 ms. (Cumulative: 15,888,026 ms)
+
+----------------
