@@ -161,7 +161,7 @@ namespace
 		CPowerMPI power;
 		CDebugMPI debug(kGroupEvent);
 		debug.DebugOut(kDbgLvlCritical, "%s: timeout!\n", __FUNCTION__);
-		//power.Shutdown();
+		power.Shutdown();
 		exit(kKernelExitShutdown);
 	}
 }
