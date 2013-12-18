@@ -38048,3 +38048,13 @@ By dlazzari (dlazzari@leapfrog.com) on 12/16/13 10:36 AM
 6,203 ms. (Cumulative: 15,894,354 ms)
 
 ----------------
+Revision 10,410 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added V4L controls to NXP camera module.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/17/13 6:44 PM
+2 changed, 0 added, 0 deleted.
+6,313 ms. (Cumulative: 15,900,761 ms)
+
+----------------

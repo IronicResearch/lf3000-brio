@@ -34,6 +34,16 @@ tCaptureMode QVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
 tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 30};
 tCaptureMode UXGA = {kCaptureFormatYUV420, 1600, 1200, 1, 30};
 
+tControlInfo CTRLS[] = {
+	{kControlTypeBrightness, 0, 255, 128, 128},
+	{kControlTypeContrast, 0, 255, 128, 128},
+	{kControlTypeSaturation, 0, 255, 128, 128},
+	{kControlTypeAutoWhiteBalance, 0, 1, 1, 1},
+	{kControlTypeHorizontalFlip, 0, 1, 0, 0},
+	{kControlTypeVerticalFlip, 0, 1, 0, 0},
+	{kControlTypeRotate, 0, 1, 0, 0},
+};
+
 //----------------------------------------------------------------------------
 inline void PackVidBuf(struct nxp_vid_buffer& vb, NX_VID_MEMORY_INFO* vm)
 {
@@ -186,6 +196,9 @@ CNXPCameraModule::CNXPCameraModule()
 	camCtx_.modes->push_back(new tCaptureMode(QVGA));
 	camCtx_.modes->push_back(new tCaptureMode(SVGA));
 	camCtx_.modes->push_back(new tCaptureMode(UXGA));
+	for (int i = 0; i < sizeof(CTRLS)/sizeof(CTRLS[0]); i++) {
+		camCtx_.controls->push_back(new tControlInfo(CTRLS[i]));
+	}
 	valid = InitCameraInt(&camCtx_.mode, false);
 }
 
@@ -210,11 +223,11 @@ Boolean CNXPCameraModule::InitCameraInt(const tCaptureMode* mode, bool reinit)
 	v4l2_link(nxphndl_, nxp_v4l2_sensor1, nxp_v4l2_clipper1);
 	v4l2_link(nxphndl_, nxp_v4l2_clipper1, nxp_v4l2_mlc0_video);
 
-	v4l2_set_format(nxphndl_, nxp_v4l2_sensor1, QVGA.width, QVGA.height, PIXFORMAT_YUV422_PACKED);
-	v4l2_set_format(nxphndl_, nxp_v4l2_clipper1, QVGA.width, QVGA.height, PIXFORMAT_YUV420_PLANAR);
-	v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, QVGA.width, QVGA.height, PIXFORMAT_YUV420_PLANAR);
-	v4l2_set_crop(nxphndl_, nxp_v4l2_clipper1, 0, 0, QVGA.width, QVGA.height);
-	v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, 0, 0, QVGA.width, QVGA.height);
+	v4l2_set_format(nxphndl_, nxp_v4l2_sensor1, mode->width, mode->height, PIXFORMAT_YUV422_PACKED);
+	v4l2_set_format(nxphndl_, nxp_v4l2_clipper1, mode->width, mode->height, PIXFORMAT_YUV420_PLANAR);
+	v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, mode->width, mode->height, PIXFORMAT_YUV420_PLANAR);
+	v4l2_set_crop(nxphndl_, nxp_v4l2_clipper1, 0, 0, mode->width, mode->height);
+	v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, 0, 0, mode->width, mode->height);
 
 	device_ = kCameraDefault;
 	sensor_ = nxp_v4l2_sensor1;
@@ -229,7 +242,18 @@ Boolean CNXPCameraModule::InitCameraInt(const tCaptureMode* mode, bool reinit)
 //----------------------------------------------------------------------------
 CNXPCameraModule::~CNXPCameraModule()
 {
+	tCaptureModes::iterator	mit;
+	tCameraControls::iterator cit;
+
 	DeinitCameraInt();
+
+	for (cit = camCtx_.controls->begin(); cit != camCtx_.controls->end(); cit++) {
+		delete *cit;
+	}
+
+	for (mit = camCtx_.modes->begin(); mit != camCtx_.modes->end(); mit++) {
+		delete *mit;
+	}
 }
 
 //----------------------------------------------------------------------------
@@ -366,6 +390,52 @@ tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 
 	return kNoErr;
 }
+//----------------------------------------------------------------------------
+Boolean	CNXPCameraModule::SetCameraControl(const tControlInfo* control, const S32 value)
+{
+	Boolean ret = false;
+	int r = 0;
+
+	switch (control->type) {
+	case kControlTypeBrightness:
+		r = v4l2_set_ctrl(nxphndl_, sensor_, V4L2_CID_BRIGHTNESS, value);
+		break;
+	case kControlTypeContrast:
+		r = v4l2_set_ctrl(nxphndl_, sensor_, V4L2_CID_CONTRAST, value);
+		break;
+	case kControlTypeSaturation:
+		r = v4l2_set_ctrl(nxphndl_, sensor_, V4L2_CID_SATURATION, value);
+		break;
+	case kControlTypeAutoWhiteBalance:
+		r = v4l2_set_ctrl(nxphndl_, sensor_, V4L2_CID_AUTO_WHITE_BALANCE, value);
+		break;
+	case kControlTypeHorizontalFlip:
+		r = v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_HFLIP, value);
+		break;
+	case kControlTypeVerticalFlip:
+		r = v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_VFLIP, value);
+		break;
+	case kControlTypeRotate:
+		r = v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_ROTATE, value);
+		break;
+	default:
+		ret = false;
+		break;
+	}
+
+	if (r == 0) {
+		tCameraControls::iterator	it;
+		for (it = camCtx_.controls->begin(); it < camCtx_.controls->end(); it++) {
+			if ( control->type == (*it)->type ) {
+				(*it)->current = value;
+				ret = true;
+				break;
+			}
+		}
+	}
+
+	return ret;
+}
 
 #define V4L2_CID_MLC_VID_PRIORITY    (V4L2_CTRL_CLASS_USER + 21)
 //----------------------------------------------------------------------------
@@ -375,23 +445,12 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 	if (pCamCtx->surf) {
 		int index = 0;
 		int x, y;
-//		v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, camCtx_.mode.width, camCtx_.mode.height, PIXFORMAT_YUV420_PLANAR);
 		GetWindowPosition(pCamCtx->surf, &x, &y);
 		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
 		SetWindowScale(pCamCtx->surf, camCtx_.mode.width, camCtx_.mode.height);
 
-//		v4l2_unlink(nxphndl_, clipper_, nxp_v4l2_mlc0_video);
-//		v4l2_link(nxphndl_, clipper_, nxp_v4l2_decimator1);
-//		v4l2_link(nxphndl_, nxp_v4l2_decimator1, nxp_v4l2_mlc0_video);
-//		v4l2_set_format(nxphndl_, nxp_v4l2_decimator1, pCamCtx->surf->width, pCamCtx->surf->height, PIXFORMAT_YUV420_PLANAR);
-//		v4l2_set_crop(nxphndl_, nxp_v4l2_decimator1, 0, 0, pCamCtx->surf->width, pCamCtx->surf->height);
-
 		v4l2_set_ctrl(nxphndl_, nxp_v4l2_mlc0_video, V4L2_CID_MLC_VID_PRIORITY, 1);
-//		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_BRIGHTNESS, pCamCtx->surf->width);
-//		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_CONTRAST,   pCamCtx->surf->height);
-//		v4l2_set_ctrl(nxphndl_, clipper_, V4L2_CID_SATURATION, (int)pCamCtx->surf->buffer);
 
-//		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
 		overlay_ = true;
 	}
