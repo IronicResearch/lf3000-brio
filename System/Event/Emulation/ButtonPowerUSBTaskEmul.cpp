@@ -29,6 +29,7 @@
 #include <Utility.h>
 #include <TouchTypes.h>
 #include <AccelerometerTypes.h>
+#include <Hardware/HWAnalogStickMPI.h>
 
 // linux
 #include <linux/input.h>
@@ -59,10 +60,11 @@ namespace
 	volatile bool 			g_threadRunning2_ = false;
 
 	//Maximum number of input drivers to discover
-	#define NUM_INPUTS	2
+	#define NUM_INPUTS	3
 
 	#define INPUT_KEYBOARD		"gpio-keys"
 	#define INPUT_ACLMTR		"Accelerometer"
+	#define INPUT_ANALOGSTICK	"analog-stick"
 
 	//------------------------------------------------------------------------
 	U32 KeySymToButton( KeySym keysym )
@@ -175,7 +177,19 @@ void* CEventModule::ButtonPowerUSBTask(void* arg)
 	}
 
 
-
+	int analog_stick_index = 2;
+	LF::Hardware::tHWAnalogStickData analog_stick_data;
+	analog_stick_data.x = 0.0f;
+	analog_stick_data.y = 0.0f;
+	analog_stick_data.id = LF::Hardware::kHWDefaultAnalogStickID;
+	analog_stick_data.time.seconds = 0;
+	analog_stick_data.time.microSeconds = 0;
+	event_fd[analog_stick_index].fd = open_input_device(INPUT_ANALOGSTICK);
+	event_fd[analog_stick_index].events = POLLIN;
+	if (event_fd[analog_stick_index].fd < 0 )
+	{
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_ANALOGSTICK);
+	}
 
 
 	gXDisplay = XOpenDisplay(kDefaultDisplay);
@@ -281,6 +295,34 @@ void* CEventModule::ButtonPowerUSBTask(void* arg)
 					aclmtr_data.time.microSeconds  = ev.time.tv_usec;
 					CAccelerometerMessage aclmtr_msg(aclmtr_data);
 					pThis->PostEvent(aclmtr_msg, kAccelerometerEventPriority, 0);
+					break;
+				}
+			}
+
+			// Analog Stick driver event?
+			if (analog_stick_index >= 0 && event_fd[analog_stick_index].revents & POLLIN)
+			{
+				read(event_fd[analog_stick_index].fd, &ev, sizeof(ev));
+
+				S32 value = ev.value;
+				switch (ev.type) {
+				case EV_ABS:
+					switch (ev.code) {
+					case ABS_HAT0X:
+						// scale from 0..127..255 to -1..0..1
+						analog_stick_data.x = float(value - 127)/127.0f;
+						break;
+					case ABS_HAT0Y:
+						// scale from 0..127..255 to -1..0..1
+						analog_stick_data.y = float(value - 127)/127.0f;
+						break;
+					}
+					break;
+				case EV_SYN:
+					analog_stick_data.time.seconds       = ev.time.tv_sec;
+					analog_stick_data.time.microSeconds  = ev.time.tv_usec;
+					LF::Hardware::HWAnalogStickMessage analog_stick_msg(analog_stick_data);
+					pThis->PostEvent(analog_stick_msg, kAccelerometerEventPriority, 0);
 					break;
 				}
 			}

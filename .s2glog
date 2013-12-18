@@ -38058,3 +38058,14 @@ By Dave Milici (dmilici@leapfrog.com) on 12/17/13 6:44 PM
 6,313 ms. (Cumulative: 15,900,761 ms)
 
 ----------------
+Revision 10,411 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add AnalogStick MPI implementation to Brio. (FWSCRUM-702 1:2)
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/18/13 12:24 PM
+4 changed, 7 added, 0 deleted.
+6,454 ms. (Cumulative: 15,907,325 ms)
+
+----------------
