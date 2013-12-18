@@ -17,6 +17,9 @@ ocvlibs2_3_1 	= []
 if env['cpu'] == 'x86':
 	ocvlibs2_3_1= ['opencv_core', 'opencv_imgproc', 'opencv_highgui', 'opencv_ml', 'opencv_video', 'opencv_features2d', 'opencv_calib3d', 
 					'opencv_objdetect', 'opencv_contrib', 'opencv_legacy', 'opencv_flann']
+else:
+	ocvlibs2_3_1= ['opencv_core', 'opencv_imgproc', 'opencv_ml', 'opencv_video', 'opencv_features2d', 'opencv_calib3d', 
+					'opencv_objdetect', 'opencv_contrib', 'opencv_legacy', 'opencv_flann']
 					
 modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp')) + Glob('*.cpp') + Glob(os.path.join('Private', '*.cpp'))
