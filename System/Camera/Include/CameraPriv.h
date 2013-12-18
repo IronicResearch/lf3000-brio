@@ -492,6 +492,7 @@ public:
 	VTABLE_EXPORT tErrType		EnumFormats(tCaptureModes& pModeList);
 	VTABLE_EXPORT tErrType		SetCurrentFormat(tCaptureMode* pMode);
 	VTABLE_EXPORT tErrType 		SetCurrentCamera(tCameraDevice device);
+	VTABLE_EXPORT Boolean		SetCameraControl(const tControlInfo* control, const S32 value);
 
 private:
 	void*						nxphndl_;
