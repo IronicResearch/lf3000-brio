@@ -5,18 +5,77 @@
 #include <SystemEvents.h>
 #include <GroupEnumeration.h>
 
+// Need to include this for event types
 using namespace LeapFrog::Brio;
 
 namespace LF {
 namespace Vision {
 
-#define VN_VISION_EVENTS			\
+  /*!
+   * VN_VISION_EVENTS
+   * \brief the events that can cause VNHotSpotEventMessages to fire
+   */
+#define VN_VISION_EVENTS		\
   (kVNHotSpotTriggeredEvent)		\
   (kVNHotSpotTriggerChangeEvent)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, LeapFrog::Brio::FirstEvent(LeapFrog::Brio::kGroupVision), VN_VISION_EVENTS)
 
-const LeapFrog::Brio::tEventType kVNAllVisionEvents = LeapFrog::Brio::AllEvents(LeapFrog::Brio::kGroupVision);
+  /*!
+   * All possible vision events that can trigger an event message
+   */
+  const LeapFrog::Brio::tEventType kVNAllVisionEvents = LeapFrog::Brio::AllEvents(LeapFrog::Brio::kGroupVision);
+
+  /*!
+   * The default wand id
+   */
+  static const LeapFrog::Brio::U32 kVNDefaultWandID = 0;
+
+  /*!
+   * VNPixelType
+   * 8-bit pixel data, typedef'ed to U8
+   */
+  typedef LeapFrog::Brio::U8 VNPixelType;
+
+  /*!
+   * The minimum value a pixel can take on
+   */
+  static const VNPixelType kVNMinPixelValue = 0;
+  /*!
+   * The maximum value a pixel can take on
+   */
+  static const VNPixelType kVNMaxPixelValue = 255;
+  
+  /*!
+   * \class VNPoint
+   *
+   * \brief A basic 2d point class.  Primarily used to represent
+   * onscreen coordinates for wand tracking
+   */
+  class VNPoint {
+  public:
+    /*!
+     * Default constructor, set to 0,0 point
+     */
+    VNPoint(void) :
+      x(0), y(0) { }
+    /*!
+     * Constructor
+     * \param x_ the x value of the point
+     * \param y_ the y value of the point
+     */
+    VNPoint(float x_, float y_):
+      x(x_), y(y_) { }
+    
+    /*!
+     * The x value of the point, publicly available
+     */
+    float x;
+    /*!
+     * The y value of the point, publicly available
+     */
+    float y;
+  };
 
 }
 }

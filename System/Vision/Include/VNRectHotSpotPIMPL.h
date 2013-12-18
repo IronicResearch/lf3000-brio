@@ -7,15 +7,17 @@
 namespace LF {
 namespace Vision {
 
-	class VNRectHotSpotPIMPL : public VNHotSpotPIMPL {
-	public:
-		VNRectHotSpotPIMPL(void);
-		VNRectHotSpotPIMPL(const LeapFrog::Brio::tRect& rect);
-		virtual ~VNRectHotSpotPIMPL(void);
+  class VNRectHotSpotPIMPL : public VNHotSpotPIMPL {
+  public:
+    VNRectHotSpotPIMPL(void);
+    VNRectHotSpotPIMPL(const LeapFrog::Brio::tRect& rect);
+    virtual ~VNRectHotSpotPIMPL(void);
+    
+    void Trigger(void *input);
 
-		LeapFrog::Brio::tRect rect_;
-	};
-
+    LeapFrog::Brio::tRect rect_;
+  };
+  
 } // namespace Vision
 } // namespace LF
 

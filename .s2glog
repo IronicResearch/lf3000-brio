@@ -38069,3 +38069,14 @@ By Dave Milici (dmilici@leapfrog.com) on 12/18/13 12:24 PM
 6,454 ms. (Cumulative: 15,907,325 ms)
 
 ----------------
+Revision 10,412 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Update/Replace Vision MPI implementation and OpenCV libs. (ARIA-80)
+Needed to be handled as separate pass from Brio.tar due to patch failures past AnalogStick MPI.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/18/13 1:05 PM
+82 changed, 65 added, 20 deleted.
+13,330 ms. (Cumulative: 15,920,765 ms)
+
+----------------

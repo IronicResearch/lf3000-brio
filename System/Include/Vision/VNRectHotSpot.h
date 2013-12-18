@@ -7,19 +7,50 @@
 namespace LF {
 namespace Vision {
 
+  // forward declarations
   class VNVisionMPI;
   class VNRectHotSpotPIMPL;
   class VNTrigger;
 
   class VNRectHotSpot : public VNHotSpot {
   public:
+
+    /*!
+     * \brief Default Constructor
+     * This constructor does not specify a rectangle to cover.  The developer must specify
+     * the rectangle associated with this hot spot via \sa SetRect
+     */
     VNRectHotSpot(void);
+
+    /*!
+     * \biref Constructor
+     * \param rect the rectangle specifying the region of the framebuffer to monitor
+     * for trigger events
+     */
     VNRectHotSpot(const LeapFrog::Brio::tRect& rect);
+
+    /*!
+     * \brief Default destructor
+     */
     virtual ~VNRectHotSpot(void);
     
+    /*!
+     * \brief Trigger the virtual method used to determine if this hot spot 
+     * should be triggered in the current algorithmic cycle
+     * \param input a void pointer to the input data used to check for triggering events
+     */
     void Trigger(void *input) const;
 
+    /*!
+     * \brief SetRect sets the rectangle for this hot spot to monitor
+     * \param rect the rectangle specifying the region of the framebuffer to monitor
+     */
     void SetRect(const LeapFrog::Brio::tRect& rect);
+
+    /*!
+     * \biref GetRect returns the current rectangle this hot spot is tracking
+     * \return the rectangle this hot spot is tracking
+     */
     LeapFrog::Brio::tRect& GetRect(void) const;
 
   private:
@@ -31,6 +62,9 @@ namespace Vision {
     VNRectHotSpot(const VNRectHotSpot& hotSpot);
     VNRectHotSpot& operator=(const VNRectHotSpot& hotSpot);
 
+    /*!
+     * friend classes
+     */
     friend class VNVisionMPI;
     friend class VNTrigger;
   };
