@@ -38080,3 +38080,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/18/13 1:05 PM
 13,330 ms. (Cumulative: 15,920,765 ms)
 
 ----------------
+Revision 10,413 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix VisionMPI link to OpenCV libs for ARM targets. (ARIA-80)
+
+By Dave Milici (dmilici@leapfrog.com) on 12/18/13 1:12 PM
+1 changed, 0 added, 0 deleted.
+7,064 ms. (Cumulative: 15,927,985 ms)
+
+----------------
