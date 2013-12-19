@@ -38107,3 +38107,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/18/13 4:13 PM
 12,165 ms. (Cumulative: 15,948,526 ms)
 
 ----------------
+Revision 10,416 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Replace OpenCV ARM libs. (ARIA-80).
+
+By Dave Milici (dmilici@leapfrog.com) on 12/18/13 4:36 PM
+0 changed, 86 added, 0 deleted.
+16,833 ms. (Cumulative: 15,965,484 ms)
+
+----------------
