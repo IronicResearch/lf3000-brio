@@ -38098,3 +38098,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/18/13 3:49 PM
 8,141 ms. (Cumulative: 15,936,236 ms)
 
 ----------------
+Revision 10,415 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Replace OpenCV headers per svn -r10412. (ARIA-80)
+
+By Dave Milici (dmilici@leapfrog.com) on 12/18/13 4:13 PM
+0 changed, 43 added, 0 deleted.
+12,165 ms. (Cumulative: 15,948,526 ms)
+
+----------------
