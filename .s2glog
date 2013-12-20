@@ -38116,3 +38116,16 @@ By Dave Milici (dmilici@leapfrog.com) on 12/18/13 4:36 PM
 16,833 ms. (Cumulative: 15,965,484 ms)
 
 ----------------
+Revision 10,417 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Cleanup hacks used for Glasgow USB cameras until better NXP + USB integration.
+
+FIXME: Enumerate USB UVC devices by class type instead of USB ID.
+FIXME: Integrate USB support in NXP module to use scaler device and ION allocator.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/19/13 7:23 PM
+4 changed, 0 added, 0 deleted.
+6,813 ms. (Cumulative: 15,972,406 ms)
+
+----------------
