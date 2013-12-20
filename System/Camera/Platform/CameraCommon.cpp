@@ -233,6 +233,9 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 	V4L2_MEMORY_XXXX = V4L2_MEMORY_MMAP;
 #endif
 
+	// FIXME: Hacks for Glasgow support until USB + NXP integration
+	if (GetPlatformName() == "GLASGOW")
+		V4L2_MEMORY_XXXX = V4L2_MEMORY_MMAP;
 }
 
 //----------------------------------------------------------------------------

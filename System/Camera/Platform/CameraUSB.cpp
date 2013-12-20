@@ -45,9 +45,15 @@ Boolean EnumCameraCallback(const CPath& path, void* pctx)
 	U32 id					= FindDevice(path);
 
 	// FIXME: Generalize camera device enumeration
-	#define USB_WEB_CAM_ID	0x046d08d7	// Logitech
+//	#define USB_WEB_CAM_ID	0x046d08d7	// Logitech
+	#define USB_WEB_CAM_ID	0x0ac83580	// Richtek
+	#define USB_EXT_CAM_ID	0x18710101	// GI
 
 	if (id == USB_WEB_CAM_ID) {
+		pObj->sysfs = path;
+		return false; // stop
+	}
+	if (id == USB_EXT_CAM_ID) {
 		pObj->sysfs = path;
 		return false; // stop
 	}
@@ -104,6 +110,11 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 				pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera detected %s\n", pMod->sysfs.c_str());
 
 				pMod->kernel_.LockMutex(pMod->mutex_);
+				// FIXME: Hacks for Glasgow support
+				if (GetPlatformName() == "GLASGOW") {
+					pMod->camCtx_.file = "/dev/video5"; // FIXME
+					QVGA.pixelformat = kCaptureFormatRAWYUYV;
+				}
 				pMod->valid = pMod->InitCameraInt(&QVGA);
 				pMod->kernel_.UnlockMutex(pMod->mutex_);
 			}

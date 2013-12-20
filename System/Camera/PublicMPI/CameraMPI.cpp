@@ -20,6 +20,7 @@
 #include <Module.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+#include <Utility.h>
 #include <sys/stat.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -37,6 +38,10 @@ namespace
 	inline bool HaveLF3000NXPDriver(void)
 	{
 		struct stat st;
+
+		// FIXME: Fallback to USB camera until NXP scaler is online
+		if (GetPlatformName() == "GLASGOW")
+			return false;
 
 		return (stat("/sys/devices/platform/nxp-v4l2.0/driver", &st) == 0);
 	}
