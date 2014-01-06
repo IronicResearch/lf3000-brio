@@ -38129,3 +38129,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/19/13 7:23 PM
 6,813 ms. (Cumulative: 15,972,406 ms)
 
 ----------------
+Revision 10,418 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove old 2.3.1 libraries from OpenCV emulation.
+
+By dlazzari (dlazzari@leapfrog.com) on 1/6/14 11:40 AM
+0 changed, 0 added, 26 deleted.
+7,219 ms. (Cumulative: 15,979,719 ms)
+
+----------------
