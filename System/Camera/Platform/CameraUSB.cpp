@@ -46,8 +46,11 @@ Boolean EnumCameraCallback(const CPath& path, void* pctx)
 
 	// FIXME: Generalize camera device enumeration
 //	#define USB_WEB_CAM_ID	0x046d08d7	// Logitech
-	#define USB_WEB_CAM_ID	0x0ac83580	// Richtek
-	#define USB_EXT_CAM_ID	0x18710101	// GI
+	#define USB_WEB_CAM_ID	0x0ac80000	// Richtek
+	#define USB_EXT_CAM_ID	0x18710000	// GI
+
+	// FIXME: Mask off product ID variants in USB camera samples
+	id &= 0xFFFF0000;
 
 	if (id == USB_WEB_CAM_ID) {
 		pObj->sysfs = path;
