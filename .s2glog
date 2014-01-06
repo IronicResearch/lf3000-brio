@@ -38138,3 +38138,12 @@ By dlazzari (dlazzari@leapfrog.com) on 1/6/14 11:40 AM
 7,219 ms. (Cumulative: 15,979,719 ms)
 
 ----------------
+Revision 10,419 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Interim deployment of OpenCV 2.4 ARM libs until LF3K rootfs deploys them.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/6/14 12:41 PM
+1 changed, 0 added, 0 deleted.
+6,611 ms. (Cumulative: 15,986,424 ms)
+
+----------------
