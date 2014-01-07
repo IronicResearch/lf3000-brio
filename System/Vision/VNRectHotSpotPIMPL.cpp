@@ -25,22 +25,33 @@ namespace Vision {
   }
   
   void
-  VNRectHotSpotPIMPL::Trigger(void *input) {
+  VNRectHotSpotPIMPL::Trigger(void *input, const VNHotSpot *hs) {
     if (trigger_ != NULL) {
       cv::Rect imgRect(rect_.left,
 		       rect_.top,
 		       fabs(rect_.right - rect_.left),
 		       fabs(rect_.bottom - rect_.top));
       cv::Mat *img = static_cast<cv::Mat*>(input);
-      cv::Mat triggerImg;
       if (img && img->rows > 0 && img->cols > 0) {
-	triggerImg = (*img)(imgRect);
+	triggerImage_ = (*img)(imgRect);
       }
-      trigger_->SetInputData(VNVisionMPI().GetWandByID()->GetLocation(),
-			     imgRect,
-			     triggerImg);
-      isTriggered_ = trigger_->Triggered();      
+      isTriggered_ = trigger_->Triggered(hs);      
     }
   }
+
+  bool
+  VNRectHotSpotPIMPL::ContainsPoint(VNPoint &p) {
+    return (p.x >= rect_.left &&
+	    p.x <= rect_.right &&
+	    p.y >= rect_.top &&
+	    p.y <= rect_.bottom);
+  }
+
+  int
+  VNRectHotSpotPIMPL::GetTriggerImage(cv::Mat &img) {
+    img = triggerImage_;
+    return triggerImage_.cols*triggerImage_.rows;
+  }
+
 } // namespace Vision
 } // namespace LF

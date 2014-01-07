@@ -41,6 +41,8 @@ if env['hdr_deploy_dir']:
 					Dir('boost').Dir('Include').Dir('boost').abspath, '.ipp')
 	ExportHeaders(env['hdr_deploy_dir'].Dir('OpenCV').abspath,
 					Dir('OpenCV').Dir('Include').abspath, '.hpp')
+	ExportHeaders(env['hdr_deploy_dir'].Dir('OpenCV').abspath,
+					Dir('OpenCV').Dir('Include').abspath, '.h')
 	ExportHeaders(env['hdr_deploy_dir'].Dir('ustring').abspath,
 					Dir('ustring').abspath, '.h')
 	ExportHeaders(env['hdr_deploy_dir'].Dir('freetype').abspath,
@@ -101,6 +103,7 @@ if env['install_dir']:
 		libs = glob.glob(os.path.join('ustring', 'libs', env['cpu'], '*.so'))
 		libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], '*.so'))
 		libs += glob.glob(os.path.join('LibJPEG', 'Libs', env['cpu'], '*.so'))
+		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], '*.so'))
 		targets += env.Install(lib_install_dir, libs)
 
 #-----------------------------------------------------------------------------
@@ -127,6 +130,9 @@ if not env['cpu']=='x86' and not env['is_sdk']:
 		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavdevice.so.52'))
 		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavformat.so.52'))
 		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavutil.so.49'))
+		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], 'libopencv_core.so.2.4'))
+		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], 'libopencv_imgproc.so.2.4'))
+		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], 'libopencv_video.so.2.4'))
 
 	if env['platform'] == 'LF2000':
 		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], '*.so.2.4'))

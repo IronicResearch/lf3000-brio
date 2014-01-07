@@ -13,18 +13,12 @@ mpi_name	= module_name + 'MPI'
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
 emulibs			= []
-ocvlibs2_3_1 	= []
-if env['cpu'] == 'x86':
-	ocvlibs2_3_1= ['opencv_core', 'opencv_imgproc', 'opencv_highgui', 'opencv_ml', 'opencv_video', 'opencv_features2d', 'opencv_calib3d', 
-					'opencv_objdetect', 'opencv_contrib', 'opencv_legacy', 'opencv_flann']
-else:
-	ocvlibs2_3_1= ['opencv_core', 'opencv_imgproc', 'opencv_ml', 'opencv_video', 'opencv_features2d', 'opencv_calib3d', 
-					'opencv_objdetect', 'opencv_contrib', 'opencv_legacy', 'opencv_flann']
+ocvlibs2_4_6 = ['opencv_core', 'opencv_imgproc', 'opencv_video']
 					
 modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp')) + Glob('*.cpp') + Glob(os.path.join('Private', '*.cpp'))
 modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI'] + emulibs
-mpilibs		= ['ModuleMPI', 'KernelMPI', 'CameraMPI'] + ocvlibs2_3_1
+mpilibs		= ['ModuleMPI', 'KernelMPI', 'CameraMPI'] + ocvlibs2_4_6
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
@@ -33,6 +27,7 @@ myenv		= env.Clone()
 myenv.Append(CPPPATH=['Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/OpenCV/Include'])
 myenv.Append(LIBPATH = ['#ThirdParty/OpenCV/Libs/' + env['cpu']])
+myenv.Append(LIBS = ['opencv_core', 'opencv_imgproc', 'opencv_video'])
 
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)

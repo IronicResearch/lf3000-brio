@@ -12,9 +12,9 @@ namespace Vision {
   }
 
   bool
-  VNPointTriggerPIMPL::Triggered(void) const {
-    cv::Point p(triggerPoint_.x, triggerPoint_.y);
-    return triggerRect_.contains(p);
+  VNPointTriggerPIMPL::Triggered(VNHotSpotPIMPL &hs) const {
+    VNPoint p = hs.WandPoint();
+    return hs.ContainsPoint(p);
   }
 
 } // namespace Vision

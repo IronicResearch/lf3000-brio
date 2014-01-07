@@ -1,6 +1,6 @@
 # Package Information for pkg-config
 
-prefix=/home/alex/Downloads/opencv-2.4.6.1/lf_release/install
+prefix=/home/lfu/Desktop/opencv-2.4.6.1/lf_arm_release/install
 exec_prefix=${prefix}
 libdir=
 includedir_old=${prefix}/include/opencv

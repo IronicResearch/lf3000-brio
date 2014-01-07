@@ -10,7 +10,6 @@ namespace Vision {
 
   VNOcclusionTrigger::VNOcclusionTrigger(float percentOccluded) :
     pimpl_(new VNOcclusionTriggerPIMPL(percentOccluded)) {
-    VNTrigger::pimpl_ = pimpl_;
   }
   
   VNOcclusionTrigger::~VNOcclusionTrigger(void) {
@@ -18,8 +17,8 @@ namespace Vision {
   }
   
   bool
-  VNOcclusionTrigger::Triggered(void) {
-    pimpl_->Triggered();
+  VNOcclusionTrigger::Triggered(const VNHotSpot *hotSpot) {
+    return pimpl_->Triggered(*hotSpot->pimpl_);
   }
   
   void

@@ -12,14 +12,6 @@ namespace Vision {
   public:
     VNTriggerPIMPL(void);
     virtual ~VNTriggerPIMPL(void);
-    void SetInputData(VNPoint point,
-		      cv::Rect& rect,
-		      cv::Mat& img);
-
-  protected:
-    VNPoint triggerPoint_;
-    cv::Rect triggerRect_;
-    cv::Mat triggerImg_;
   };
 
 } // namespace Vision

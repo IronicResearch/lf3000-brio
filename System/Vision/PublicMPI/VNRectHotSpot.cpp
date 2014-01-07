@@ -36,7 +36,7 @@ namespace Vision {
   void
   VNRectHotSpot::Trigger(void *input) const {
     bool wasTriggered = pimpl_->isTriggered_;
-    pimpl_->Trigger(input);
+    pimpl_->Trigger(input, this);
     
     // send appropriate notifications
     if (pimpl_->isTriggered_) {

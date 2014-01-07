@@ -1,18 +1,24 @@
 #ifndef __VISION_INCLUDE_VNDURATIONTRIGGERPIMPL_H__
 #define __VISION_INCLUDE_VNDURATIONTRIGGERPIMPL_H__
 
+#include <boost/timer.hpp>
+
 namespace LF {
 namespace Vision {
 
-	class VNDurationTriggerPIMPL {
-	public:
-		VNDurationTriggerPIMPL(void);
-		VNDurationTriggerPIMPL(float duration);
-		virtual ~VNDurationTriggerPIMPL(void);
+  class VNDurationTriggerPIMPL {
+  public:
+    VNDurationTriggerPIMPL(float duration);
+    virtual ~VNDurationTriggerPIMPL(void);
+    
+    bool Triggered(bool spatiallyTriggered);
 
-		float duration_;
-	};
+    float duration_;
 
+    bool wasSpatiallyTriggered_;
+    boost::timer timer_;
+  };
+  
 } // namespace Vision
 } // namespace LF
 

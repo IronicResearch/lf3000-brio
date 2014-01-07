@@ -1,7 +1,7 @@
 #ifndef __INCLUDE_VISION_VNOCCLUSIONTRIGGER_H__
 #define __INCLUDE_VISION_VNOCCLUSIONTRIGGER_H__
 
-#include <Vision/VNTrigger.h>
+#include <Vision/VNSpatialTrigger.h>
 #include <boost/shared_ptr.hpp>
 
 namespace LF {
@@ -26,7 +26,7 @@ namespace Vision {
    * segmentation.  This class is typically used in conjunction with the VNVirtualTouch 
    * algorithm.  
    */
-  class VNOcclusionTrigger : public VNTrigger {
+  class VNOcclusionTrigger : public VNSpatialTrigger {
   public:
 
     /*!
@@ -48,7 +48,7 @@ namespace Vision {
      * hot spot(s) using this trigger is in fact triggered.
      * \return true if triggered, false if not
      */
-    virtual bool Triggered(void);
+    virtual bool Triggered(const VNHotSpot *hotSpot);
 
     /*!
      * \biref SetOcclusionPercentage 

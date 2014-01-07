@@ -12,6 +12,7 @@ namespace Vision {
   class VNOcclusionTrigger;
   class VNPointTrigger;
   class VNRectHotSpot;
+  class VNCircleHotSpot;
   class VNHotSpotPIMPL;
 
   /*!
@@ -96,6 +97,7 @@ namespace Vision {
     friend class VNOcclusionTrigger;
     friend class VNPointTrigger;
     friend class VNRectHotSpot;
+    friend class VNCircleHotSpot;
   };
 
 } // namespace Vision

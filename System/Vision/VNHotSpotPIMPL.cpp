@@ -1,5 +1,6 @@
 #include <VNHotSpotPIMPL.h>
 #include <Vision/VNVisionMPI.h>
+#include <Vision/VNWand.h>
 
 LeapFrog::Brio::U32 LF::Vision::VNHotSpotPIMPL::instanceCounter_ = 0;
 
@@ -9,7 +10,8 @@ namespace Vision {
   VNHotSpotPIMPL::VNHotSpotPIMPL(void) :
     trigger_(NULL),
     tag_(VNHotSpotPIMPL::instanceCounter_++),
-    isTriggered_(false) {
+    isTriggered_(false),
+    triggerImage_(cv::Size(0,0), CV_8U) {
 
   }
   
@@ -18,8 +20,27 @@ namespace Vision {
   }
 
   void
-  VNHotSpotPIMPL::Trigger(void *input) {
+  VNHotSpotPIMPL::Trigger(void *input, const VNHotSpot *hs) {
     // do nothing in this method
+  }
+
+  bool
+  VNHotSpotPIMPL::ContainsPoint(VNPoint &p ) {
+    // the base class does not know about point containment
+    return false;
+  }
+
+  VNPoint
+  VNHotSpotPIMPL::WandPoint(void) {
+    VNVisionMPI mpi;
+    return mpi.GetWandByID()->GetLocation();
+  }
+
+  int
+  VNHotSpotPIMPL::GetTriggerImage(cv::Mat &img) {
+    // set the image to size zero
+    img = triggerImage_;
+    return 0;
   }
 
 } // namespace Vision

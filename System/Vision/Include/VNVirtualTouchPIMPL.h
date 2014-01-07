@@ -20,6 +20,7 @@ namespace Vision {
     cv::Mat backImage_;
     cv::Mat foreground_;
   };
+
 }
 }
 
