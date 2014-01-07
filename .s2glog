@@ -38193,3 +38193,12 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 1/7/14 1:18 PM
 6,830 ms. (Cumulative: 16,024,204 ms)
 
 ----------------
+Revision 10,425 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding debug message on error when allocating buffer
+
+By kpetersen (kpetersen@leapfrog.com) on 1/7/14 3:43 PM
+1 changed, 0 added, 0 deleted.
+6,948 ms. (Cumulative: 16,031,245 ms)
+
+----------------
