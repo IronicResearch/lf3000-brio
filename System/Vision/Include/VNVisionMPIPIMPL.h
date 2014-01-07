@@ -32,6 +32,8 @@ namespace Vision {
     void BeginFrameProcessing(void);
     void EndFrameProcessing(void) const;
     void Wait(double secondsToWait) const;
+    void CreateRGBImage(LeapFrog::Brio::tVideoSurf &surf,
+			cv::Mat &img) const;
     
     bool visionAlgorithmRunning_;
     float frameProcessingRate_;

@@ -1,5 +1,4 @@
 #include <VNVirtualTouchPIMPL.h>
-#include <opencv2/imgproc/types_c.h>
 
 namespace LF {
 namespace Vision {
@@ -18,7 +17,7 @@ namespace Vision {
   
   void
   VNVirtualTouchPIMPL::Execute(cv::Mat *input, cv::Mat *output) {
-    cv::cvtColor(*input, gray_, CV_BGR2GRAY);
+    cv::cvtColor(*input, gray_, CV_RGB2GRAY);
     
     // initialize background to first frame
     if (background_.empty())
@@ -37,6 +36,6 @@ namespace Vision {
     cv::accumulateWeighted(gray_, background_, learningRate_);
     
   }
-  
+
 }
 }

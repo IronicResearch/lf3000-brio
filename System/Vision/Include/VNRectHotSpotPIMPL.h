@@ -13,7 +13,10 @@ namespace Vision {
     VNRectHotSpotPIMPL(const LeapFrog::Brio::tRect& rect);
     virtual ~VNRectHotSpotPIMPL(void);
     
-    void Trigger(void *input);
+    void Trigger(void *input, const VNHotSpot *hs);
+
+    virtual bool ContainsPoint(VNPoint &p);
+    virtual int GetTriggerImage(cv::Mat &img);
 
     LeapFrog::Brio::tRect rect_;
   };
@@ -21,4 +24,4 @@ namespace Vision {
 } // namespace Vision
 } // namespace LF
 
-#endif // __VISION_INCLUDE_VNHOTSPOTPIMPL_H__
+#endif // __VISION_INCLUDE_VNRECTHOTSPOTPIMPL_H__

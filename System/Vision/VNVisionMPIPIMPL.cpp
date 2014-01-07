@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <Vision/VNAlgorithm.h>
 #include <Vision/VNHotSpot.h>
+#include <DisplayTypes.h>
 #include <Vision/VNWand.h>
 
 namespace LF {
@@ -32,14 +33,26 @@ namespace Vision {
   
   void
   VNVisionMPIPIMPL::DeleteTask(void) {
+    cameraMPI_.StopVideoCapture(videoCapture_);
     visionAlgorithmRunning_ = false;
   }
   void
   VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf& surf) {
     if (!visionAlgorithmRunning_) {
-      visionAlgorithmRunning_ = true;
-      videoSurf_ = surf;
-      videoCapture_ = cameraMPI_.StartVideoCapture(&videoSurf_, NULL, "");      
+#ifdef EMULATION
+      if (cameraMPI_.SetCurrentCamera(LeapFrog::Brio::kCameraDefault) == kNoErr) 
+#else
+      if (cameraMPI_.SetCurrentCamera(LeapFrog::Brio::kCameraFront) == kNoErr) 
+#endif      
+      {
+	visionAlgorithmRunning_ = true;
+	videoSurf_ = surf;
+	LeapFrog::Brio::tCaptureMode* mode = cameraMPI_.GetCurrentFormat();
+	mode->width = surf.width;
+	mode->height = surf.height;
+	cameraMPI_.SetCurrentFormat(mode);
+	videoCapture_ = cameraMPI_.StartVideoCapture(&videoSurf_, NULL, "");
+      }
     }
   }
   
@@ -85,29 +98,49 @@ namespace Vision {
   }
   
   void
-  VNVisionMPIPIMPL::Update(void) {
+  VNVisionMPIPIMPL::CreateRGBImage(LeapFrog::Brio::tVideoSurf& surf,
+				   cv::Mat& img) const {
 
-    bool ret = false;
+    LeapFrog::Brio::U32 width = surf.width;
+    LeapFrog::Brio::U32 height = surf.height;
+
+    if (surf.format == LeapFrog::Brio::kPixelFormatYUV420) {
+      
+
+    } else if (surf.format == LeapFrog::Brio::kPixelFormatRGB888) {
+      img = cv::Mat(cv::Size(width, height), CV_8UC3, surf.buffer);
+    }
     
+  }
+
+  void
+  VNVisionMPIPIMPL::Update(void) {
     BeginFrameProcessing();
 
     if (visionAlgorithmRunning_) {
       if (!cameraMPI_.IsVideoCapturePaused(videoCapture_) ) {
+
+#ifdef EMULATION
 	if (cameraMPI_.LockCaptureVideoSurface(videoCapture_)) {
-	  // now do something with the buffer
-	  LeapFrog::Brio::tVideoSurf* captureSurface = cameraMPI_.GetCaptureVideoSurface( videoCapture_ );
-	  
-	  if (captureSurface) {
-	    unsigned char* buffer = captureSurface->buffer;
-	    
-	    if (algorithm_) {
-	      cv::Mat img(cv::Size(captureSurface->width,captureSurface->height), CV_8UC3, buffer);
-	      algorithm_->Execute(&img, &outputImg_);
-	      TriggerHotSpots();
-	    }
-	    ret = cameraMPI_.UnLockCaptureVideoSurface( videoCapture_);
+	  LeapFrog::Brio::tVideoSurf *surf = cameraMPI_.GetCaptureVideoSurface(videoCapture_);
+	  unsigned char *buffer = surf->buffer;
+#else
+	if (cameraMPI_.GetFrame(videoCapture_, &videoSurf_)) {	  
+	  unsigned char* buffer = videoSurf_.buffer;
+#endif
+	  if (buffer && algorithm_) {
+	    cv::Mat img(cv::Size(videoSurf_.width, 
+				 videoSurf_.height), 
+			CV_8UC3, 
+			buffer);
+
+	    algorithm_->Execute(&img, &outputImg_);
+	    TriggerHotSpots();
 	  }
 	}
+#ifdef EMULATION
+	cameraMPI_.UnLockCaptureVideoSurface(videoCapture_);
+#endif
       }
     }
     EndFrameProcessing();

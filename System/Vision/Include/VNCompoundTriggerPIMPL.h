@@ -5,18 +5,19 @@
 
 namespace LF {
 namespace Vision {
+    
+  class VNCompoundTriggerPIMPL {
+  public:
+    VNCompoundTriggerPIMPL(VNSpatialTrigger *spatialTrigger,
+			   VNTemporalTriggering *temporalTrigger);
+    virtual ~VNCompoundTriggerPIMPL(void);
 
-	class VNCompoundTriggerPIMPL {
-	public:
-		VNCompoundTriggerPIMPL(void);
-		VNCompoundTriggerPIMPL(VNCompoundTriggerType type,
-							   const std::vector<const VNTrigger*>& subTriggers);
-		virtual ~VNCompoundTriggerPIMPL(void);
+    bool Triggered(const VNHotSpot *hs);
 
-		VNCompoundTriggerType type_;
-		std::vector<const VNTrigger*> triggers_;
-	};
-
+    VNSpatialTrigger *spatialTrigger_;
+    VNTemporalTriggering *temporalTrigger_;
+  };
+  
 } // namespace Vision
 } // namespace LF
 

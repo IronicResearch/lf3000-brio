@@ -9,15 +9,14 @@ namespace Vision {
 
   VNPointTrigger::VNPointTrigger(void) :
     pimpl_(new VNPointTriggerPIMPL()) {
-    VNTrigger::pimpl_ = pimpl_;
   }
   
   VNPointTrigger::~VNPointTrigger(void) {    
   }
   
   bool
-  VNPointTrigger::Triggered(void) {
-    return pimpl_->Triggered();
+  VNPointTrigger::Triggered(const VNHotSpot *hotSpot) {
+    return pimpl_->Triggered(*hotSpot->pimpl_);
   }
     
 } // namespace Vision

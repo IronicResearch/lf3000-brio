@@ -1,7 +1,7 @@
 #ifndef __INCLUDE_VISION_VNPOINTTRIGGER_H__
 #define __INCLUDE_VISION_VNPOINTTRIGGER_H__
 
-#include <Vision/VNTrigger.h>
+#include <Vision/VNSpatialTrigger.h>
 #include <boost/shared_ptr.hpp>
 
 namespace LF {
@@ -19,7 +19,7 @@ namespace Vision {
    * This type of trigger is typically used in conjunction with the VNWandTracking 
    * algorithm
    */
-  class VNPointTrigger : public VNTrigger {
+  class VNPointTrigger : public VNSpatialTrigger {
   public:
 
     /*!
@@ -38,7 +38,7 @@ namespace Vision {
      * hot spot(s) using this trigger is in fact triggered.
      * \return true if triggered, false if not
      */
-    virtual bool Triggered(void);
+    virtual bool Triggered(const VNHotSpot *hotSpot);
 
   private:
     boost::shared_ptr<VNPointTriggerPIMPL> pimpl_;

@@ -2,6 +2,7 @@
 #define __VISION_INCLUDE_VNOCCLUSIONTRIGGERPIMPL_H__
 
 #include <VNTriggerPIMPL.h>
+#include <VNHotSpotPIMPL.h>
 
 namespace LF {
 namespace Vision {
@@ -10,7 +11,7 @@ namespace Vision {
   public:
     VNOcclusionTriggerPIMPL(float percentOccludedToTrigger);
     virtual ~VNOcclusionTriggerPIMPL(void);
-    bool Triggered(void) const;
+    bool Triggered(VNHotSpotPIMPL &hs) const;
 
     float percentOccludedToTrigger_;
   };
