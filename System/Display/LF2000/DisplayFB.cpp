@@ -1314,6 +1314,7 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 		// Allocate aligned buffer from end of heap (OGL, YUV)
 		if (gMarkBufEnd - bufsize < gMarkBufStart) {
 			kernel_.UnlockMutex(gListMutex);
+			dbg_.DebugOut(kDbgLvlCritical, "AllocBuffer: unable to allocate aligned buffer of from end of heap, start %08X, end %08X, length %08X\n", (unsigned)gMarkBufStart, (unsigned)gMarkBufEnd, (unsigned)bufsize);
 			return false;
 		}
 		pdc->offset = gMarkBufEnd - bufsize - finfo[RGBFB].smem_len;
@@ -1324,10 +1325,13 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 		// Allocate unaligned buffer at top of heap if there's room
 		if (gMarkBufStart + bufsize > gMarkBufEnd) {	
 			kernel_.UnlockMutex(gListMutex);
+			dbg_.DebugOut(kDbgLvlCritical, "AllocBuffer: unable to allocate unaligned buffer at top of heap, start %08X, end %08X, length %08X\n", (unsigned)gMarkBufStart, (unsigned)gMarkBufEnd, (unsigned)bufsize);
 			return false;
 		}
 		if(gMarkBufStart + bufsize > finfo[RGBFB].smem_len)  {
 			kernel_.UnlockMutex(gListMutex);
+			
+			dbg_.DebugOut(kDbgLvlCritical, "AllocBuffer: unable to allocate unaligned buffer, start %08X, end %08X, length %08X\n", (unsigned)gMarkBufStart, (unsigned)gMarkBufEnd, (unsigned)bufsize);
 			return false;
 		}
 		pdc->offset = gMarkBufStart;
