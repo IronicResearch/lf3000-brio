@@ -38222,3 +38222,13 @@ By dlazzari (dlazzari@leapfrog.com) on 1/7/14 5:02 PM
 7,188 ms. (Cumulative: 16,045,439 ms)
 
 ----------------
+Revision 10,428 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Overide NXP module GetCaptureVideoSurface() method to return surface data for VisionMPI support.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/7/14 6:20 PM
+2 changed, 0 added, 0 deleted.
+7,125 ms. (Cumulative: 16,052,674 ms)
+
+----------------
