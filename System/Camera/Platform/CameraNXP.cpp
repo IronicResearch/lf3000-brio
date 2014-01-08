@@ -148,6 +148,16 @@ inline void UnPackVidBuf(struct nxp_vid_buffer& vb, struct tFrameInfo* fi)
 }
 
 //----------------------------------------------------------------------------
+inline void UnPackVidBuf(NX_VID_MEMORY_INFO* vm, tVideoSurf* pSurf)
+{
+	pSurf->buffer = (U8*)vm->luVirAddr;
+	pSurf->pitch  = vm->luStride;
+	pSurf->width  = vm->imgWidth;
+	pSurf->height = vm->imgHeight;
+	pSurf->format = kPixelFormatYUV420;
+}
+
+//----------------------------------------------------------------------------
 inline void GetWindowPosition(tVideoSurf* pSurf, int* dx, int* dy)
 {
 	S16 x, y;
@@ -644,6 +654,17 @@ Boolean CNXPCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	kernel_.UnlockMutex(camCtx_.mThread);
 
 	return true;
+}
+
+//----------------------------------------------------------------------------
+tVideoSurf* CNXPCameraModule::GetCaptureVideoSurface(const tVidCapHndl hndl)
+{
+	static tVideoSurf     surf; // FIXME
+	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[index_];
+
+	UnPackVidBuf(vm, &surf);
+
+	return &surf;
 }
 
 LF_END_BRIO_NAMESPACE()

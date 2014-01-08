@@ -493,6 +493,7 @@ public:
 	VTABLE_EXPORT tErrType		SetCurrentFormat(tCaptureMode* pMode);
 	VTABLE_EXPORT tErrType 		SetCurrentCamera(tCameraDevice device);
 	VTABLE_EXPORT Boolean		SetCameraControl(const tControlInfo* control, const S32 value);
+	VTABLE_EXPORT tVideoSurf* 	GetCaptureVideoSurface(const tVidCapHndl hndl);
 
 private:
 	void*						nxphndl_;
