@@ -38213,3 +38213,12 @@ By dlazzari (dlazzari@leapfrog.com) on 1/7/14 5:00 PM
 6,818 ms. (Cumulative: 16,038,157 ms)
 
 ----------------
+Revision 10,427 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add lf-input-daemon to sdk tools. Note that libcwiid-dev is required to build lf-input-daemon.
+
+By dlazzari (dlazzari@leapfrog.com) on 1/7/14 5:02 PM
+1 changed, 5 added, 0 deleted.
+7,188 ms. (Cumulative: 16,045,439 ms)
+
+----------------
