@@ -38247,3 +38247,18 @@ By kpetersen (kpetersen@leapfrog.com) on 1/8/14 12:24 PM
 7,038 ms. (Cumulative: 16,066,713 ms)
 
 ----------------
+Revision 10,431 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+7,407 ms. (Cumulative: 16,074,229 ms)
+
+----------------
+Revision 10,432 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-769.  After each ogl_8888to8888 flag check, also check for PlatformName CABO or GLASGOW.  On these platforms, always use 32 bit OpenGL.
+
+By Minh Saelock (msaelock@leapfrog.com) on 1/8/14 3:00 PM
+2 changed, 0 added, 0 deleted.
+7,048 ms. (Cumulative: 16,081,292 ms)
+
+----------------
