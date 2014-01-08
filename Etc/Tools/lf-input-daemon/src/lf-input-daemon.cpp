@@ -16,6 +16,7 @@
 #include <linux/uinput.h>
 #include <cwiid.h>
 #include <bluetooth/bluetooth.h>
+#include <unistd.h>
 
 using namespace std;
 
