@@ -38202,3 +38202,14 @@ By kpetersen (kpetersen@leapfrog.com) on 1/7/14 3:43 PM
 6,948 ms. (Cumulative: 16,031,245 ms)
 
 ----------------
+Revision 10,426 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove lf-input-daemon in preparation to build from source.
+
+
+
+By dlazzari (dlazzari@leapfrog.com) on 1/7/14 5:00 PM
+0 changed, 0 added, 1 deleted.
+6,818 ms. (Cumulative: 16,038,157 ms)
+
+----------------
