@@ -38232,3 +38232,18 @@ By Dave Milici (dmilici@leapfrog.com) on 1/7/14 6:20 PM
 7,125 ms. (Cumulative: 16,052,674 ms)
 
 ----------------
+Revision 10,429 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+6,891 ms. (Cumulative: 16,059,675 ms)
+
+----------------
+Revision 10,430 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding required include for newer Ubuntu boxes (13.xx)
+
+By kpetersen (kpetersen@leapfrog.com) on 1/8/14 12:24 PM
+2 changed, 0 added, 0 deleted.
+7,038 ms. (Cumulative: 16,066,713 ms)
+
+----------------
