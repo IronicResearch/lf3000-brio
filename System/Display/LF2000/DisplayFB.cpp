@@ -16,6 +16,7 @@
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
 #include <BrioOpenGLConfig.h>
+#include <Utility.h>
 #ifdef LF1000
 #include <GLES/libogl.h>
 #endif
@@ -1067,6 +1068,9 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 		use_32_bit_buffer = true;
 		fclose(opengl_flag);
 	}
+	CString platform_name = GetPlatformName();
+	if(platform_name == "CABO" || platform_name == "GLASGOW")
+		use_32_bit_buffer = true;
 	tDisplayHandle hogl = CreateHandle(vyres, vxres, use_32_bit_buffer ? kPixelFormatARGB8888 : kPixelFormatRGB565, fbmem[n]);
 	tDisplayContext *dcogl = (tDisplayContext*)hogl;
 	memset(fbmem[n], 0, 2 * vyres * vxres * dcogl->bpp/8);

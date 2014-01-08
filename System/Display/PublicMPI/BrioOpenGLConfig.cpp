@@ -19,6 +19,7 @@
 #include <EmulationConfig.h>
 #include <DisplayPriv.h>
 #include <stdio.h>
+#include <Utility.h>
 
 #ifndef  EMULATION
 #ifdef   LF1000
@@ -381,6 +382,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 #else
 	bool using_32_bit = ((tDisplayContext*)ctx.hndlDisplay)->colorDepthFormat == kPixelFormatARGB8888;
 #endif
+	CString platform_name = GetPlatformName();
+	if(platform_name == "CABO" || platform_name == "GLASGOW")
+		using_32_bit = true;
 	const EGLint pi32ConfigAttribs[] =
 	{
 	    EGL_RED_SIZE,       using_32_bit ? 8 : 5,
@@ -635,6 +639,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 #else
 	bool using_32_bit = ((tDisplayContext*)ctx.hndlDisplay)->colorDepthFormat == kPixelFormatARGB8888;
 #endif
+	CString platform_name = GetPlatformName();
+	if(platform_name == "CABO" || platform_name == "GLASGOW")
+		using_32_bit = true;
 	const EGLint pi32ConfigAttribs[] =
 	{
 	    EGL_RED_SIZE,       using_32_bit ? 8 : 5,
