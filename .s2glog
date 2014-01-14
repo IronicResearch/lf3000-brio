@@ -38262,3 +38262,115 @@ By Minh Saelock (msaelock@leapfrog.com) on 1/8/14 3:00 PM
 7,048 ms. (Cumulative: 16,081,292 ms)
 
 ----------------
+Revision 10,433 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+19,742 ms. (Cumulative: 16,101,128 ms)
+
+----------------
+Revision 10,434 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+6,188 ms. (Cumulative: 16,107,316 ms)
+
+----------------
+Revision 10,435 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,979 ms. (Cumulative: 16,131,295 ms)
+
+----------------
+Revision 10,436 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,016 ms. (Cumulative: 16,155,317 ms)
+
+----------------
+Revision 10,437 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,889 ms. (Cumulative: 16,179,221 ms)
+
+----------------
+Revision 10,438 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,020 ms. (Cumulative: 16,203,257 ms)
+
+----------------
+Revision 10,439 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,306 ms. (Cumulative: 16,227,563 ms)
+
+----------------
+Revision 10,440 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,882 ms. (Cumulative: 16,251,445 ms)
+
+----------------
+Revision 10,441 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,193 ms. (Cumulative: 16,275,654 ms)
+
+----------------
+Revision 10,442 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,102 ms. (Cumulative: 16,299,771 ms)
+
+----------------
+Revision 10,443 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,929 ms. (Cumulative: 16,323,700 ms)
+
+----------------
+Revision 10,444 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,911 ms. (Cumulative: 16,348,627 ms)
+
+----------------
+Revision 10,445 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,033 ms. (Cumulative: 16,372,660 ms)
+
+----------------
+Revision 10,446 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,891 ms. (Cumulative: 16,396,567 ms)
+
+----------------
+Revision 10,447 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,963 ms. (Cumulative: 16,420,546 ms)
+
+----------------
+Revision 10,448 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,970 ms. (Cumulative: 16,444,516 ms)
+
+----------------
+Revision 10,449 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,916 ms. (Cumulative: 16,468,448 ms)
+
+----------------
+Revision 10,450 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Link DisplayMPI libs with Utility lib for GetPlatform() support to resolve in unit tests.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/14/14 3:36 PM
+1 changed, 0 added, 0 deleted.
+24,067 ms. (Cumulative: 16,492,531 ms)
+
+----------------
