@@ -250,6 +250,13 @@ void SetSwapBufferCallback()
 		CString fname = "__vr5_set_swap_buffer_callback2";
 		fp2.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf2000_egl_handle, fname);
 		SwapBufferCallback2Setter swap_buffer_callback2_setter = fp2.pfnSwapBufferCallback2Setter;
+		if(!swap_buffer_callback2_setter)
+		{
+			fname = "eglSetSwapbufferCallback";
+			fp2.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf2000_egl_handle, fname);
+			SwapBufferCallback2Setter swap_buffer_callback2_setter = fp2.pfnSwapBufferCallback2Setter;
+		}
+
 		if(swap_buffer_callback2_setter)
 		{
 			swap_buffer_callback2_setter(GLESOAL_SwapBufferCallback2);
@@ -453,6 +460,31 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 #endif
+	if(platform_name == "CABO" || platform_name == "GLASGOW") {
+		if(ctx.width != ctx.owidth || ctx.height != ctx.oheight)
+		{
+			CPath egl_path = "libEGL.so";
+			CKernelMPI kernel_mpi;
+			tHndl lf3000_egl_handle = kernel_mpi.LoadModule(egl_path);
+			union ObjPtrToFunPtrConverter {
+				void* voidptr;
+				void (*egl_set_drawing_org_size)(EGLint widht, EGLint height);
+			} fp;
+			CString fname = "eglSetDrawingOrgSize";
+			fp.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf3000_egl_handle, fname);
+			if(fp.egl_set_drawing_org_size)
+				fp.egl_set_drawing_org_size(ctx.owidth, ctx.oheight);
+			union ObjPtrToFunPtrConverter2 {
+				void* voidptr;
+				void (*egl_enable_drawing_org_size)(void);
+			} fp2;
+			fname = "eglEnableDrawingOrgSize";
+			fp2.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf3000_egl_handle, fname);
+			if(fp2.egl_enable_drawing_org_size)
+				fp2.egl_enable_drawing_org_size();
+			kernel_mpi.UnloadModule(lf3000_egl_handle);
+		}
+	}
 
 	surface_context_map[eglSurface] = &brioopenglconfig_context_map[this];
 	// Clear garbage pixels from previous OpenGL context (embedded target)
@@ -495,6 +527,24 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 		eglDestroyContext here.
 	*/
 	tOpenGLContext &ctx = brioopenglconfig_context_map[this];
+	CString platform_name = GetPlatformName();
+	if(platform_name == "CABO" || platform_name == "GLASGOW") {
+		if(ctx.width != ctx.owidth || ctx.height != ctx.oheight)
+		{
+			CPath egl_path = "libEGL.so";
+			CKernelMPI kernel_mpi;
+			tHndl lf3000_egl_handle = kernel_mpi.LoadModule(egl_path);
+			union ObjPtrToFunPtrConverter {
+				void* voidptr;
+				void (*egl_disable_drawing_org_size)(void);
+			} fp;
+			CString fname = "eglDisableDrawingOrgSize";
+			fp.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf3000_egl_handle, fname);
+			if(fp.egl_disable_drawing_org_size)
+				fp.egl_disable_drawing_org_size();
+			kernel_mpi.UnloadModule(lf3000_egl_handle);
+		}
+	}
 	eglMakeCurrent(eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT) ;
 	if(eglContext) eglDestroyContext(eglDisplay, eglContext);
 	if(eglSurface) eglDestroySurface(eglDisplay, eglSurface);
@@ -717,6 +767,31 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 #endif
+	if(platform_name == "CABO" || platform_name == "GLASGOW") {
+		if(hwnd->width != ctx.owidth || hwnd->height != ctx.oheight)
+		{
+			CPath egl_path = "libEGL.so";
+			CKernelMPI kernel_mpi;
+			tHndl lf3000_egl_handle = kernel_mpi.LoadModule(egl_path);
+			union ObjPtrToFunPtrConverter {
+				void* voidptr;
+				void (*egl_set_drawing_org_size)(EGLint widht, EGLint height);
+			} fp;
+			CString fname = "eglSetDrawingOrgSize";
+			fp.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf3000_egl_handle, fname);
+			if(fp.egl_set_drawing_org_size)
+				fp.egl_set_drawing_org_size(ctx.owidth, ctx.oheight);
+			union ObjPtrToFunPtrConverter2 {
+				void* voidptr;
+				void (*egl_enable_drawing_org_size)(void);
+			} fp2;
+			fname = "eglEnableDrawingOrgSize";
+			fp2.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf3000_egl_handle, fname);
+			if(fp2.egl_enable_drawing_org_size)
+				fp2.egl_enable_drawing_org_size();
+			kernel_mpi.UnloadModule(lf3000_egl_handle);
+		}
+	}
 
 	surface_context_map[eglSurface] = &brioopenglconfig_context_map[this];
 	// Clear garbage pixels from previous OpenGL context (embedded target)

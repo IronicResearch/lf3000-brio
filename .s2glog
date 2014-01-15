@@ -38374,3 +38374,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/14/14 3:36 PM
 24,067 ms. (Cumulative: 16,492,531 ms)
 
 ----------------
+Revision 10,451 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Calling new SwapBufferCallback and DrawingOrgSize functions.  Being done through RetrieveSymbolFromModule, so that executable will still run on LF2000.
+
+By Minh Saelock (msaelock@leapfrog.com) on 1/15/14 1:06 PM
+1 changed, 0 added, 0 deleted.
+24,067 ms. (Cumulative: 16,516,692 ms)
+
+----------------
