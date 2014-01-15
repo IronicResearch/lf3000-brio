@@ -38392,3 +38392,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 1/15/14 1:25 PM
 24,113 ms. (Cumulative: 16,540,899 ms)
 
 ----------------
+Revision 10,453 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add support for building an LF3000 platform. Currently it won't build because of some ifdef issues.
+
+By dlazzari (dlazzari@leapfrog.com) on 1/15/14 2:17 PM
+1 changed, 13 added, 0 deleted.
+24,518 ms. (Cumulative: 16,565,511 ms)
+
+----------------
