@@ -38383,3 +38383,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 1/15/14 1:06 PM
 24,067 ms. (Cumulative: 16,516,692 ms)
 
 ----------------
+Revision 10,452 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Moving new code inside of ifndef EMULATION.  Also use ctx instead of hwnd.
+
+By Minh Saelock (msaelock@leapfrog.com) on 1/15/14 1:25 PM
+1 changed, 0 added, 0 deleted.
+24,113 ms. (Cumulative: 16,540,899 ms)
+
+----------------
