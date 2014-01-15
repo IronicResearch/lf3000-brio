@@ -459,7 +459,6 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", glGetString(GL_VERSION));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
-#endif
 	if(platform_name == "CABO" || platform_name == "GLASGOW") {
 		if(ctx.width != ctx.owidth || ctx.height != ctx.oheight)
 		{
@@ -485,6 +484,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 			kernel_mpi.UnloadModule(lf3000_egl_handle);
 		}
 	}
+#endif
 
 	surface_context_map[eglSurface] = &brioopenglconfig_context_map[this];
 	// Clear garbage pixels from previous OpenGL context (embedded target)
@@ -527,6 +527,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 		eglDestroyContext here.
 	*/
 	tOpenGLContext &ctx = brioopenglconfig_context_map[this];
+#ifndef EMULATION
 	CString platform_name = GetPlatformName();
 	if(platform_name == "CABO" || platform_name == "GLASGOW") {
 		if(ctx.width != ctx.owidth || ctx.height != ctx.oheight)
@@ -545,6 +546,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 			kernel_mpi.UnloadModule(lf3000_egl_handle);
 		}
 	}
+#endif
 	eglMakeCurrent(eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT) ;
 	if(eglContext) eglDestroyContext(eglDisplay, eglContext);
 	if(eglSurface) eglDestroySurface(eglDisplay, eglSurface);
@@ -766,9 +768,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", glGetString(GL_VERSION));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
-#endif
 	if(platform_name == "CABO" || platform_name == "GLASGOW") {
-		if(hwnd->width != ctx.owidth || hwnd->height != ctx.oheight)
+		if(ctx.width != ctx.owidth || ctx.height != ctx.oheight)
 		{
 			CPath egl_path = "libEGL.so";
 			CKernelMPI kernel_mpi;
@@ -792,6 +793,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 			kernel_mpi.UnloadModule(lf3000_egl_handle);
 		}
 	}
+#endif
 
 	surface_context_map[eglSurface] = &brioopenglconfig_context_map[this];
 	// Clear garbage pixels from previous OpenGL context (embedded target)
