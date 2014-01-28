@@ -38401,3 +38401,81 @@ By dlazzari (dlazzari@leapfrog.com) on 1/15/14 2:17 PM
 24,518 ms. (Cumulative: 16,565,511 ms)
 
 ----------------
+Revision 10,454 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,455 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,101 ms. (Cumulative: 16,589,737 ms)
+
+----------------
+Revision 10,456 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,457 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,147 ms. (Cumulative: 16,613,900 ms)
+
+----------------
+Revision 10,458 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,023 ms. (Cumulative: 16,637,923 ms)
+
+----------------
+Revision 10,459 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,026 ms. (Cumulative: 16,661,964 ms)
+
+----------------
+Revision 10,460 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,998 ms. (Cumulative: 16,685,962 ms)
+
+----------------
+Revision 10,461 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,961 ms. (Cumulative: 16,709,923 ms)
+
+----------------
+Revision 10,462 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,126 ms. (Cumulative: 16,734,049 ms)
+
+----------------
+Revision 10,463 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,045 ms. (Cumulative: 16,758,094 ms)
+
+----------------
+Revision 10,464 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,074 ms. (Cumulative: 16,782,183 ms)
+
+----------------
+Revision 10,465 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,986 ms. (Cumulative: 16,806,169 ms)
+
+----------------
+Revision 10,466 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,013 ms. (Cumulative: 16,830,198 ms)
+
+----------------
+Revision 10,467 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify USB camera device enumeration to detect UVC class device besides VID/PID.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/27/14 7:22 PM
+1 changed, 0 added, 0 deleted.
+24,177 ms. (Cumulative: 16,854,375 ms)
+
+----------------
