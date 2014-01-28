@@ -76,6 +76,7 @@ const U32 kCartridgeDetect      = (1 << 13);
 const U32 kButtonVolumeDown		= (1 << 14);
 const U32 kButtonVolumeUp		= (1 << 15);
 const U32 kButtonEscape			= (1 << 16);
+const U32 kButtonSync			= (1 << 17);
 
 enum tDpadOrientation {
 	kDpadLandscape,

@@ -38489,3 +38489,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/28/14 12:24 PM
 24,162 ms. (Cumulative: 16,878,631 ms)
 
 ----------------
+Revision 10,469 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added Sync button definition and mapping to "S" key. (FWSCRUM-865)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/28/14 12:31 PM
+2 changed, 0 added, 0 deleted.
+24,121 ms. (Cumulative: 16,902,846 ms)
+
+----------------

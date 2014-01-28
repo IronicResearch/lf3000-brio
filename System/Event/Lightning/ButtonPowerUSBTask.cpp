@@ -137,6 +137,7 @@ namespace
 			case KEY_VOLUMEDOWN: return kButtonVolumeDown;
 			case KEY_VOLUMEUP:	return kButtonVolumeUp;
 			case KEY_ESC:		return kButtonEscape;
+			case KEY_S:  		return kButtonSync;
 		}
 		return 0;
 	}
