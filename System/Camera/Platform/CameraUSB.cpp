@@ -44,6 +44,19 @@ Boolean EnumCameraCallback(const CPath& path, void* pctx)
 	CUSBCameraModule* pObj	= (CUSBCameraModule*)pctx;
 	U32 id					= FindDevice(path);
 
+	// Look for USB Video class device (UVC = 0x0E)
+	CPath file = path + "/device/bClassDevice";
+	FILE* fp = fopen(file.c_str(), "r");
+	if (fp) {
+		int devclass = 0;
+		fscanf(fp, "%x", &devclass);
+		fclose(fp);
+		if (devclass == 0x0E) {
+			pObj->sysfs = path;
+			return false; // stop
+		}
+	}
+
 	// FIXME: Generalize camera device enumeration
 //	#define USB_WEB_CAM_ID	0x046d08d7	// Logitech
 	#define USB_WEB_CAM_ID	0x0ac80000	// Richtek
