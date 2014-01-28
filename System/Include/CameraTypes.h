@@ -49,6 +49,7 @@ enum tControlType {
 	kControlTypeVerticalFlip,
 	kControlTypeRotate,
 	kControlTypeAutoWhiteBalance,
+	kControlTypeExposure,
 };
 
 enum tColorOrder {
@@ -77,14 +78,16 @@ enum tCaptureFormat {
 	kCaptureFormatYUV420,
 };
 
-// Three components: image format, image resolution, and video frame rate, determine
-// the camera's capture mode
+/// Three components: image format, image resolution, and video frame rate, determine
+/// the camera's capture mode. Note video frame rate is used by Video4Linux in units
+/// of time-per-frame, so the 'fps' fields are misnamed and actually referring to
+/// inverse fps when using numerator:denominator ratio.
 struct tCaptureMode {
 	tCaptureFormat	pixelformat;
 	U16				width;
 	U16				height;
-	U32				fps_numerator;
-	U32				fps_denominator;
+	U32				fps_numerator;		///< numerator for time-per-frame (inverse fps)
+	U32				fps_denominator;	///< denominator for time-per-frame (inverse fps)
 };
 
 typedef std::vector<tCaptureMode *> tCaptureModes;

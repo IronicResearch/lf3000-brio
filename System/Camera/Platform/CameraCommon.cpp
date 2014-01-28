@@ -780,6 +780,9 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 		case V4L2_CID_AUTO_WHITE_BALANCE:
 			control->type = kControlTypeAutoWhiteBalance;
 			break;
+		case V4L2_CID_EXPOSURE:
+			control->type = kControlTypeExposure;
+			break;
 		default:
 			control->type = kControlTypeError;
 			pCamCtx->dbg->DebugOut(kDbgLvlVerbose, "%s: v4l2 cid %08x: ctl=%d, min=%d, max=%d, def=%d, cur=%d\n", __FUNCTION__, query.id, (int)control->type, (int)control->min, (int)control->max, (int)control->preset, (int)control->current);
@@ -1189,6 +1192,9 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 #endif
 	case kControlTypeAutoWhiteBalance:
 		ctrl.id = V4L2_CID_AUTO_WHITE_BALANCE;
+		break;
+	case kControlTypeExposure:
+		ctrl.id = V4L2_CID_EXPOSURE;
 		break;
 	default:
 		bRet = false;

@@ -38520,3 +38520,14 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 1/28/14 2:53 PM
 25,503 ms. (Cumulative: 16,952,711 ms)
 
 ----------------
+Revision 10,472 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added Camera control for Exposure and linked with V4L control.
+Added Doxygen comments explaining frame rate numerator & denominator fields.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/28/14 3:29 PM
+2 changed, 0 added, 0 deleted.
+26,163 ms. (Cumulative: 16,978,984 ms)
+
+----------------
