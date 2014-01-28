@@ -47,7 +47,7 @@ namespace Vision {
   }
 
   void
-  VNCircleHotSpot::Trigger(void *input) const {
+  VNCircleHotSpot::Trigger(cv::Mat &input) const {
     bool wasTriggered = pimpl_->isTriggered_;
     pimpl_->Trigger(input, this);
     

@@ -20,7 +20,7 @@ namespace Vision {
     /*!
      * methods for triggers to call to facilitate triggering
      */
-    virtual bool ContainsPoint(VNPoint &p);
+    virtual bool ContainsPoint(const VNPoint &p) const;
     VNPoint WandPoint(void);
     // returns the number of pixels in the region
     // and sets the img to the triggering image
@@ -30,6 +30,11 @@ namespace Vision {
     LeapFrog::Brio::U32 tag_;
     bool isTriggered_;
     cv::Mat triggerImage_;
+
+  protected:
+    int numPixels_;
+
+    
 
   private:
     static LeapFrog::Brio::U32 instanceCounter_;

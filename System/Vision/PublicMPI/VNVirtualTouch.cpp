@@ -31,8 +31,8 @@ namespace Vision {
   }
   
   void
-  VNVirtualTouch::Execute(void *input, void *output) {
-    pimpl_->Execute(static_cast<cv::Mat*>(input), static_cast<cv::Mat*>(output));
+  VNVirtualTouch::Execute(cv::Mat &input, cv::Mat &output) {
+    pimpl_->Execute(input, output);
   }
 
 } // namespace Vision

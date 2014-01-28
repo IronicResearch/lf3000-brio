@@ -11,6 +11,8 @@ namespace Vision {
   public:
     VNWandPIMPL(void);
     virtual ~VNWandPIMPL(void);
+    
+    void NotFoundOnScreen(void);
 
     bool visible_;
     VNPoint location_;

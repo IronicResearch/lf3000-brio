@@ -4,6 +4,7 @@
 #include <boost/shared_ptr.hpp>
 #include <DisplayTypes.h>
 #include <Vision/VNTrigger.h>
+#include <opencv2/opencv.hpp>
 
 namespace LF {
 namespace Vision {
@@ -13,6 +14,7 @@ namespace Vision {
   class VNPointTrigger;
   class VNRectHotSpot;
   class VNCircleHotSpot;
+  class VNArbitraryShapeHotSpot;
   class VNHotSpotPIMPL;
 
   /*!
@@ -27,16 +29,38 @@ namespace Vision {
    * and listen for hot spot triggering events via an IEventListener and the passing of
    * VNHotSpotEventMessages.
    *
+   * When a VNHotSpot is situated such that part of the hot spot is off screen, only the
+   * portion of the hot spot that is visible will be considered for triggering.  This
+   * does not impact the VNPointTrigger in that if the point is inside of the portion
+   * of the hot spot that is visible it will still trigger, however, if you are using a
+   * VNOcclusionTrigger you should read the note in the VNOcclusionTrigger.h file as 
+   * it will be harder to trigger a hot spot with an occlusion trigger when part of the
+   * hot spot is not visible.
+   *
+   * This class can be subclassed by developers to create custom hot spots.  Just be sure
+   * to immplement the Trigger method.
    */
   class VNHotSpot {
   public:
     
     /*!
-     * \brief Trigger 
-     * \param input a void pointer to the input data used to determine if the 
-     * hot spot is triggered
+     * Default constructor
      */
-    virtual void Trigger(void *input) const = 0;
+    VNHotSpot(void);
+
+    /*!
+     * Ddestructor
+     */
+    virtual ~VNHotSpot(void);
+
+
+
+    /*!
+     * \brief Trigger 
+     * \param input a cv::Mat reference containing the CV_8U binary image
+     * representing the change that the hot spot should trigger against.
+     */
+    virtual void Trigger(cv::Mat &input) const = 0;
     
     /*!
      * \brief IsTriggered
@@ -80,12 +104,6 @@ namespace Vision {
     boost::shared_ptr<VNHotSpotPIMPL> pimpl_;
     
     /*!
-     * Explicitly disable unintended inheritance
-     */
-    VNHotSpot(void);
-    virtual ~VNHotSpot(void);
-
-    /*!
      * Explicitly disable copy semantic
      */
     VNHotSpot(const VNHotSpot& hotSpot);
@@ -98,6 +116,7 @@ namespace Vision {
     friend class VNPointTrigger;
     friend class VNRectHotSpot;
     friend class VNCircleHotSpot;
+    friend class VNArbitraryShapeHotSpot;
   };
 
 } // namespace Vision

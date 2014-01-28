@@ -11,9 +11,10 @@ namespace Vision {
   public:
     VNOcclusionTriggerPIMPL(float percentOccludedToTrigger);
     virtual ~VNOcclusionTriggerPIMPL(void);
-    bool Triggered(VNHotSpotPIMPL &hs) const;
+    bool Triggered(VNHotSpotPIMPL &hs);
 
     float percentOccludedToTrigger_;
+    float percentOccluded_;
   };
 
 } // namespace Vision

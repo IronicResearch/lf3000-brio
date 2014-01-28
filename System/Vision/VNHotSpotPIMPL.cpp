@@ -11,7 +11,8 @@ namespace Vision {
     trigger_(NULL),
     tag_(VNHotSpotPIMPL::instanceCounter_++),
     isTriggered_(false),
-    triggerImage_(cv::Size(0,0), CV_8U) {
+    triggerImage_(cv::Size(0,0), CV_8U),
+    numPixels_(0) {
 
   }
   
@@ -25,7 +26,7 @@ namespace Vision {
   }
 
   bool
-  VNHotSpotPIMPL::ContainsPoint(VNPoint &p ) {
+  VNHotSpotPIMPL::ContainsPoint(const VNPoint &p) const {
     // the base class does not know about point containment
     return false;
   }
