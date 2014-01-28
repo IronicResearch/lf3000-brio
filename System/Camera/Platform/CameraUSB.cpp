@@ -44,14 +44,14 @@ Boolean EnumCameraCallback(const CPath& path, void* pctx)
 	CUSBCameraModule* pObj	= (CUSBCameraModule*)pctx;
 	U32 id					= FindDevice(path);
 
-	// Look for USB Video class device (UVC = 0x0E)
+	// Look for USB Video class device (UVC = 0xEF)
 	CPath file = path + "/device/bClassDevice";
 	FILE* fp = fopen(file.c_str(), "r");
 	if (fp) {
 		int devclass = 0;
 		fscanf(fp, "%x", &devclass);
 		fclose(fp);
-		if (devclass == 0x0E) {
+		if (devclass == 0xEF) {
 			pObj->sysfs = path;
 			return false; // stop
 		}

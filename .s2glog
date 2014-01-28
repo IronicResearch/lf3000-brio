@@ -38479,3 +38479,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/27/14 7:22 PM
 24,177 ms. (Cumulative: 16,854,375 ms)
 
 ----------------
+Revision 10,468 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix UVC device class ID.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/28/14 12:24 PM
+1 changed, 0 added, 0 deleted.
+24,162 ms. (Cumulative: 16,878,631 ms)
+
+----------------
