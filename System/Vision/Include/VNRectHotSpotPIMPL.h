@@ -13,12 +13,26 @@ namespace Vision {
     VNRectHotSpotPIMPL(const LeapFrog::Brio::tRect& rect);
     virtual ~VNRectHotSpotPIMPL(void);
     
-    void Trigger(void *input, const VNHotSpot *hs);
+    virtual void Trigger(cv::Mat &input, const VNHotSpot *hs);
 
-    virtual bool ContainsPoint(VNPoint &p);
+    virtual bool ContainsPoint(const VNPoint &p) const;
     virtual int GetTriggerImage(cv::Mat &img);
 
-    LeapFrog::Brio::tRect rect_;
+    void SetRect(const LeapFrog::Brio::tRect &rect);
+    LeapFrog::Brio::tRect GetRect(void) const;
+
+  protected:
+    void SetRect(LeapFrog::Brio::S16 left,
+		 LeapFrog::Brio::S16 right,
+		 LeapFrog::Brio::S16 top,
+		 LeapFrog::Brio::S16 bottom);
+    cv::Rect ClipRectToImage(cv::Mat &img) const;
+    void UpdateNumberOfActivePixels(const cv::Mat &img);
+
+    cv::Rect rect_;
+    
+  private:
+    LeapFrog::Brio::tRect lfRect_;
   };
   
 } // namespace Vision

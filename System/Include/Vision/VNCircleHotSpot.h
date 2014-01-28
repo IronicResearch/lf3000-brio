@@ -46,10 +46,10 @@ namespace Vision {
     /*!
      * \brief Trigger the virtual method used to determine if this hot spot 
      * should be triggered in the current algorithmic cycle
-     * \param input a void pointer to the input data used to 
-     * check for triggering events
+     * \param input a cv::Mat reference containing the CV_8U binary image
+     * representing the change that the hot spot should trigger against.
      */
-    virtual void Trigger(void *input) const;
+    virtual void Trigger(cv::Mat &input) const;
 
     /*!
      * \brief SetCenter sets the center of the circle

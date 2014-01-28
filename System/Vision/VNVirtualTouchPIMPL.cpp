@@ -16,8 +16,8 @@ namespace Vision {
   }
   
   void
-  VNVirtualTouchPIMPL::Execute(cv::Mat *input, cv::Mat *output) {
-    cv::cvtColor(*input, gray_, CV_RGB2GRAY);
+  VNVirtualTouchPIMPL::Execute(cv::Mat &input, cv::Mat &output) {
+    cv::cvtColor(input, gray_, CV_RGB2GRAY);
     
     // initialize background to first frame
     if (background_.empty())
@@ -30,7 +30,7 @@ namespace Vision {
     cv::absdiff(backImage_, gray_, foreground_);
     
     // apply threshold to foreground image
-    cv::threshold(foreground_, *output, threshold_, 255, cv::THRESH_BINARY_INV);
+    cv::threshold(foreground_, output, threshold_, 255, cv::THRESH_BINARY);
     
     // accumulate the background
     cv::accumulateWeighted(gray_, background_, learningRate_);

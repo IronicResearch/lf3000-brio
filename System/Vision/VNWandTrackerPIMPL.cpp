@@ -72,9 +72,9 @@ namespace Vision {
   }
 
   void
-  VNWandTrackerPIMPL::Execute(cv::Mat *input, cv::Mat *output) {
+  VNWandTrackerPIMPL::Execute(cv::Mat &input, cv::Mat &output) {
     // switch to HSV color spave
-    cv::cvtColor(*input, hsv_, CV_BGR2HSV);
+    cv::cvtColor(input, hsv_, CV_BGR2HSV);
 
     // filter out the valid pixels based on hue, saturation and intensity
     cv::inRange(hsv_, 
@@ -99,7 +99,11 @@ namespace Vision {
       if (M_PI*r*r > minArea_) {
 	wand_->location_.x = p.x;
 	wand_->location_.y = p.y;
+      } else {
+	wand_->NotFoundOnScreen();
       }
+    } else {
+      wand_->NotFoundOnScreen();
     }    
   }
 

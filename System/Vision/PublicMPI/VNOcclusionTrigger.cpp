@@ -22,13 +22,18 @@ namespace Vision {
   }
   
   void
-  VNOcclusionTrigger::SetOcclusionPercentage(float percentOccluded) {
+  VNOcclusionTrigger::SetOcclusionTriggerPercentage(float percentOccluded) {
     pimpl_->percentOccludedToTrigger_ = percentOccluded;
   }
   
   float
-  VNOcclusionTrigger::GetOcclusionPercentage(void) const {
+  VNOcclusionTrigger::GetOcclusionTriggerPercentage(void) const {
     return pimpl_->percentOccludedToTrigger_;
+  }
+
+  float
+  VNOcclusionTrigger::GetPercentOccluded(void) const {
+    return pimpl_->percentOccluded_;
   }
   
 } // namespace Vision

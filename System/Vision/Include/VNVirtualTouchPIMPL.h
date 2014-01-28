@@ -11,7 +11,7 @@ namespace Vision {
     VNVirtualTouchPIMPL(float learningRate);
     virtual ~VNVirtualTouchPIMPL(void);
     
-    void Execute(cv::Mat *input, cv::Mat *output);
+    void Execute(cv::Mat &input, cv::Mat &output);
     
     float learningRate_;
     int threshold_;

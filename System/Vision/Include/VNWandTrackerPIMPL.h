@@ -13,7 +13,7 @@ namespace Vision {
     VNWandTrackerPIMPL(VNWandPIMPL* wand);
     virtual ~VNWandTrackerPIMPL(void);
     
-    void Execute(cv::Mat *input, cv::Mat *output);
+    void Execute(cv::Mat &input, cv::Mat &output);
     
     VNWandPIMPL* wand_;
     cv::Mat hsv_;

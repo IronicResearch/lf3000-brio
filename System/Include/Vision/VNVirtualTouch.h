@@ -58,10 +58,11 @@ namespace Vision {
 
     /*!
      * \brief Execute the virtual method called to execute the algorithm
-     * \param input a void* to the input data
-     * \param output a void* to the output data
+     * \param input a cv::Mat reference, the current frame from the camera
+     * \param output a cv::Mat reference, the output image used for detecting
+     *        change.  Must be of type CV_8U
      */
-    void Execute(void *input, void *output);
+    void Execute(cv::Mat &input, cv::Mat &output);
   private:
     boost::shared_ptr<VNVirtualTouchPIMPL> pimpl_;
 

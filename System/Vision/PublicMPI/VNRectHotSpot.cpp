@@ -25,16 +25,16 @@ namespace Vision {
   
   void
   VNRectHotSpot::SetRect(const LeapFrog::Brio::tRect& rect) {
-    pimpl_->rect_ = rect;
+    pimpl_->SetRect(rect);
   }
   
-  LeapFrog::Brio::tRect&
+  LeapFrog::Brio::tRect
   VNRectHotSpot::GetRect(void) const {
-    return pimpl_->rect_;
+    return pimpl_->GetRect();
   }
   
   void
-  VNRectHotSpot::Trigger(void *input) const {
+  VNRectHotSpot::Trigger(cv::Mat &input) const {
     bool wasTriggered = pimpl_->isTriggered_;
     pimpl_->Trigger(input, this);
     

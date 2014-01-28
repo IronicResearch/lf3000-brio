@@ -9,6 +9,7 @@ namespace Vision {
 
   // forward declarations
   class VNVisionMPI;
+  class VNArbitraryShapeHotSpot;
   class VNRectHotSpotPIMPL;
   class VNTrigger;
 
@@ -37,9 +38,10 @@ namespace Vision {
     /*!
      * \brief Trigger the virtual method used to determine if this hot spot 
      * should be triggered in the current algorithmic cycle
-     * \param input a void pointer to the input data used to check for triggering events
+     * \param input a cv::Mat reference containing the CV_8U binary image
+     * representing the change that the hot spot should trigger against.
      */
-    void Trigger(void *input) const;
+    virtual void Trigger(cv::Mat &input) const;
 
     /*!
      * \brief SetRect sets the rectangle for this hot spot to monitor
@@ -51,7 +53,7 @@ namespace Vision {
      * \biref GetRect returns the current rectangle this hot spot is tracking
      * \return the rectangle this hot spot is tracking
      */
-    LeapFrog::Brio::tRect& GetRect(void) const;
+    LeapFrog::Brio::tRect GetRect(void) const;
 
   private:
     boost::shared_ptr<VNRectHotSpotPIMPL> pimpl_;
@@ -67,6 +69,7 @@ namespace Vision {
      */
     friend class VNVisionMPI;
     friend class VNTrigger;
+    friend class VNArbitraryShapeHotSpot;
   };
 
 } // namespace Vision

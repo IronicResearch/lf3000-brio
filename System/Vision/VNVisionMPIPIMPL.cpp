@@ -72,7 +72,7 @@ namespace Vision {
 	 hs != hotSpots_.end();
 	 ++hs) {
       
-      (*hs)->Trigger(&outputImg_);
+      (*hs)->Trigger(outputImg_);
     }
   }
   
@@ -134,7 +134,7 @@ namespace Vision {
 			CV_8UC3, 
 			buffer);
 
-	    algorithm_->Execute(&img, &outputImg_);
+	    algorithm_->Execute(img, outputImg_);
 	    TriggerHotSpots();
 	  }
 	}

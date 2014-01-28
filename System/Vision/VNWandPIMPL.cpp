@@ -17,6 +17,10 @@ namespace Vision {
   static const VNPixelType kVNWandBrightnessMin = kVNMinPixelValue;
   static const VNPixelType kVNWandBrightnessMax = kVNMaxPixelValue;
 
+  static const float kVNNoWandLocationX = -10000;
+  static const float kVNNoWandLocationY = -10000;
+
+
   VNWandPIMPL::VNWandPIMPL(void) :
     visible_(false),
     location_(VNPoint()),
@@ -31,5 +35,10 @@ namespace Vision {
   VNWandPIMPL::~VNWandPIMPL(void) {
   }
 
+  void
+  VNWandPIMPL::NotFoundOnScreen(void) {
+    location_.x = kVNNoWandLocationX;
+    location_.y = kVNNoWandLocationY;
+  }
 } // namespace Vision
 } // namespace LF
