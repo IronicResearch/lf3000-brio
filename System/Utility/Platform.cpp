@@ -108,6 +108,8 @@ bool HasPlatformCapability(tPlatformCaps caps)
 		return (0 == stat("/sys/devices/platform/lf1000-alvgpio", &stbuf));
 	case kCapsLF2000:
 		return (0 == stat("/sys/devices/platform/lf2000-alive", &stbuf));
+	case kCapsLF3000:
+		return (0 == stat("/sys/devices/platform/mali-utgard.0", &stbuf)); // FIXME
 	case kCapsTouchscreen:
 		return (0 == stat("/sys/devices/platform/lf1000-touchscreen", &stbuf)) ||
 		       (0 == stat("/sys/devices/platform/lf2000-touchscreen", &stbuf));
@@ -133,7 +135,10 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsCameraFront:
 		return (0 == stat("/sys/class/video4linux/video1", &stbuf));
 	case kCapsMultiTouch:
-		return ("RIO" == GetPlatformFamily()); // FIXME: query input device?
+		return ("RIO" == GetPlatformFamily() ||
+				"CABO" == GetPlatformFamily()); // FIXME: query input device?
+	case kCapsAnalogController:
+		return ("GLASGOW" == GetPlatformFamily()); // FIXME
 	case kCapsButtonMask(kButtonUp):
 	case kCapsButtonMask(kButtonDown):
 	case kCapsButtonMask(kButtonRight):
@@ -156,7 +161,10 @@ bool HasPlatformCapability(tPlatformCaps caps)
 		return true;
 	case kCapsButtonMask(kButtonEscape):
 		return ("LPAD" == GetPlatformFamily() ||
+				"CABO" == GetPlatformFamily() ||
 				"RIO" == GetPlatformFamily());
+	case kCapsButtonMask(kButtonSync):
+		return ("GLASGOW" == GetPlatformFamily()); // FIXME
 	}
 	return false;
 }

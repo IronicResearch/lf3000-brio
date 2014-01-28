@@ -239,6 +239,8 @@ enum tPlatformCaps {
 	kCapsWifi,						///< Has WiFi device?
 	kCapsCameraFront,				///< Has Front-Facing Camera device?
 	kCapsMultiTouch,				///< Has Multi-Touch device?
+	kCapsLF3000,					///< Has LF3000 CPU?
+	kCapsAnalogController,			///< Has Analog controller device?
 	kCapsReserved1 = 0x10000000,
 	kCapsReserved2 = 0x20000000,
 	kCapsButtonSet = 0x40000000,	///< Has Button in kCapsButtonMask() set?
@@ -259,6 +261,7 @@ enum tPlatformCaps {
 	kCapsButtonVolumeDown		= 0x40004000,
 	kCapsButtonVolumeUp			= 0x40008000,
 	kCapsButtonEscape			= 0x40010000,
+	kCapsButtonSync 			= 0x40020000,
 };
 
 //----------------------------------------------------------------------------
