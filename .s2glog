@@ -38531,3 +38531,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/28/14 3:29 PM
 26,163 ms. (Cumulative: 16,978,984 ms)
 
 ----------------
+Revision 10,473 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix USB device class sysfs spelling for UVC detection. (DOH!)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/28/14 4:49 PM
+1 changed, 0 added, 0 deleted.
+24,327 ms. (Cumulative: 17,003,420 ms)
+
+----------------

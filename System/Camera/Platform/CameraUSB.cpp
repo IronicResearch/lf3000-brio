@@ -45,7 +45,7 @@ Boolean EnumCameraCallback(const CPath& path, void* pctx)
 	U32 id					= FindDevice(path);
 
 	// Look for USB Video class device (UVC = 0xEF)
-	CPath file = path + "/device/bClassDevice";
+	CPath file = path + "/device/bDeviceClass";
 	FILE* fp = fopen(file.c_str(), "r");
 	if (fp) {
 		int devclass = 0;
