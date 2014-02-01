@@ -269,6 +269,7 @@ CNXPCameraModule::~CNXPCameraModule()
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::DeinitCameraInt(bool reinit)
 {
+	StopVideoCapture(camCtx_.hndl);
 	DeinitCameraBufferInt(&camCtx_);
 
 	v4l2_unlink(nxphndl_, clipper_, nxp_v4l2_mlc0_video);
@@ -494,9 +495,11 @@ tVidCapHndl CNXPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 	camCtx_.surf	= NULL;
 	InitCameraTask(&camCtx_);
 
+	camCtx_.hndl = STREAMING_HANDLE((tVidCapHndl)nxphndl_);
+
 	kernel_.UnlockMutex(mutex_);
 
-	return STREAMING_HANDLE((tVidCapHndl)nxphndl_);
+	return camCtx_.hndl;
 #endif
 }
 
@@ -517,10 +520,16 @@ Boolean CNXPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 	kernel_.LockMutex(camCtx_.mThread);
 	kernel_.LockMutex(mutex_);
 	
+	if (kInvalidVidCapHndl == camCtx_.hndl)
+		goto done;
+
 	DeInitCameraTask(&camCtx_);
 	StopVideoCaptureInt(camCtx_.fd);
 	DeinitCameraBufferInt(&camCtx_);
+
+	camCtx_.hndl = kInvalidVidCapHndl;
 	
+done:
 	kernel_.UnlockMutex(mutex_);
 	kernel_.UnlockMutex(camCtx_.mThread);
 	return true;
@@ -559,7 +568,7 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	tFrameInfo 	frame	= {kCaptureFormatYUV420, pSurf->width, pSurf->height, 0, NULL, 0};
 
 	kernel_.LockMutex(camCtx_.mThread);
-	kernel_.LockMutex(mutex_);
+//	kernel_.LockMutex(mutex_);
 
 	GetFrame(hndl, &frame);
 
@@ -568,7 +577,7 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 
 	ReturnFrame(hndl, &frame);
 
-	kernel_.UnlockMutex(mutex_);
+//	kernel_.UnlockMutex(mutex_);
 	kernel_.UnlockMutex(camCtx_.mThread);
 
 	return true;
@@ -577,7 +586,15 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::PollFrame(const tVidCapHndl hndl)
 {
-	return true;
+#if 0	// FIXME: VIDIOC_DQBUF blocking
+	int index = 0;
+	int r = v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
+	return (r == 0) ? true : false;
+#else	// FIXME: yield CameraTask thread
+	static bool ping = false;
+	ping = !ping;
+	return ping;
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -586,6 +603,8 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	long long int timestamp = 0;
 	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[index_];
 	struct nxp_vid_buffer  vb;
+
+	kernel_.LockMutex(mutex_);
 
 	v4l2_dqbuf(nxphndl_, clipper_, 3, &index_, NULL);
 	v4l2_get_timestamp(nxphndl_, clipper_, &timestamp);
@@ -607,6 +626,7 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		outcnt_++;
 	}
 
+	kernel_.UnlockMutex(mutex_);
 	return true;
 }
 
@@ -615,6 +635,8 @@ Boolean	CNXPCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *
 {
 	struct nxp_vid_buffer  vb;
 	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[index_];
+
+	kernel_.LockMutex(mutex_);
 
 	PackVidBuf(vb, vm);
 	v4l2_qbuf(nxphndl_, clipper_, vb.plane_num, index_, &vb, -1, NULL);
@@ -625,6 +647,7 @@ Boolean	CNXPCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *
 		outcnt_--;
 	}
 
+	kernel_.UnlockMutex(mutex_);
 	return true;
 }
 
@@ -637,7 +660,7 @@ Boolean CNXPCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		return false;
 
 	kernel_.LockMutex(camCtx_.mThread);
-	kernel_.LockMutex(mutex_);
+//	kernel_.LockMutex(mutex_);
 
 	// Make copy of captured data for legacy GrabFrame() compatibility
 	GetFrame(hndl, frame);
@@ -650,7 +673,7 @@ Boolean CNXPCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	// Caller releases copy buffer
 	frame->data = buf;
 
-	kernel_.UnlockMutex(mutex_);
+//	kernel_.UnlockMutex(mutex_);
 	kernel_.UnlockMutex(camCtx_.mThread);
 
 	return true;

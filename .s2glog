@@ -38541,3 +38541,39 @@ By Dave Milici (dmilici@leapfrog.com) on 1/28/14 4:49 PM
 24,327 ms. (Cumulative: 17,003,420 ms)
 
 ----------------
+Revision 10,474 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,651 ms. (Cumulative: 17,028,165 ms)
+
+----------------
+Revision 10,475 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,068 ms. (Cumulative: 17,052,238 ms)
+
+----------------
+Revision 10,476 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,069 ms. (Cumulative: 17,076,313 ms)
+
+----------------
+Revision 10,477 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify NXP Camera V4L dequeue calls for compatibility with CameraTask thread.
+
+The problem introduced by connecting these NXP V4L Q/DQ calls with the CameraTask
+thread is that these ioctls are continously called without any idle time for the
+thread to yield. The DQBUF ioctl is blocking by default, and the NXP lib did not
+expose an function to query queue status.
+
+Workaround is to make PollFrame() periodically change status to get the CameraTask
+thread to yield so it can be immediately stopped on camera state changes. (FWSCRUM-744)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/31/14 4:36 PM
+1 changed, 0 added, 0 deleted.
+24,223 ms. (Cumulative: 17,100,552 ms)
+
+----------------
