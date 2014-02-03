@@ -586,15 +586,18 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::PollFrame(const tVidCapHndl hndl)
 {
-#if 0	// FIXME: VIDIOC_DQBUF blocking
 	int index = 0;
-	int r = v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
-	return (r == 0) ? true : false;
-#else	// FIXME: yield CameraTask thread
-	static bool ping = false;
-	ping = !ping;
-	return ping;
-#endif
+	int flags = 0;
+	kernel_.LockMutex(mutex_);
+	for (index = 0; index < 3; index++) {
+		int r = v4l2_query_buf(nxphndl_, clipper_, 3, index, &flags);
+		if (r == 0 && (flags & V4L2_BUF_FLAG_DONE)) {
+			kernel_.UnlockMutex(mutex_);
+			return true;
+		}
+	}
+	kernel_.UnlockMutex(mutex_);
+	return false;
 }
 
 //----------------------------------------------------------------------------

@@ -38577,3 +38577,20 @@ By Dave Milici (dmilici@leapfrog.com) on 1/31/14 4:36 PM
 24,223 ms. (Cumulative: 17,100,552 ms)
 
 ----------------
+Revision 10,478 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,222 ms. (Cumulative: 17,124,867 ms)
+
+----------------
+Revision 10,479 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified CameraNXP::PollFrame() to query V4L buffer status via function
+exported from NXP lib for proper Q/DQ sequencing. (FWSCRUM-744)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/3/14 1:55 PM
+5 changed, 0 added, 0 deleted.
+24,311 ms. (Cumulative: 17,149,178 ms)
+
+----------------
