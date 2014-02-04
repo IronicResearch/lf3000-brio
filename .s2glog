@@ -38594,3 +38594,14 @@ By Dave Milici (dmilici@leapfrog.com) on 2/3/14 1:55 PM
 24,311 ms. (Cumulative: 17,149,178 ms)
 
 ----------------
+Revision 10,480 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Reinstating svn -c10236 for more consistant DisplayMPI policy. 
+Prevents initial transparency of lower RGB layer in widgets. (FWSCRUM-744)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/3/14 7:12 PM
+1 changed, 0 added, 0 deleted.
+24,192 ms. (Cumulative: 17,173,480 ms)
+
+----------------
