@@ -61,7 +61,7 @@ void RotateDpad(int rotation, tButtonData2& gButtonData)
 	U32 button_mask = kButtonUp | kButtonDown | kButtonRight | kButtonLeft;
 	tButtonData2 old_dpad = gButtonData;
 	gButtonData.buttonState &= ~button_mask;
-	gButtonData.buttonTransition = 0;
+	gButtonData.buttonTransition &= ~button_mask;
 
 	switch(rotation)
 	{
@@ -71,35 +71,58 @@ void RotateDpad(int rotation, tButtonData2& gButtonData)
 	case 1:
 		if(old_dpad.buttonState & kButtonUp)
 			gButtonData.buttonState |= kButtonLeft;
+		if(old_dpad.buttonTransition & kButtonUp)
+			gButtonData.buttonTransition |= kButtonLeft;
 		if(old_dpad.buttonState & kButtonDown)
 			gButtonData.buttonState |= kButtonRight;
+		if(old_dpad.buttonTransition & kButtonDown)
+			gButtonData.buttonTransition |= kButtonRight;
 		if(old_dpad.buttonState & kButtonRight)
 			gButtonData.buttonState |= kButtonUp;
+		if(old_dpad.buttonTransition & kButtonRight)
+			gButtonData.buttonTransition |= kButtonUp;
 		if(old_dpad.buttonState & kButtonLeft)
 			gButtonData.buttonState |= kButtonDown;
+		if(old_dpad.buttonTransition & kButtonLeft)
+			gButtonData.buttonTransition |= kButtonDown;
 		break;
 	case 2:
 		if(old_dpad.buttonState & kButtonUp)
 			gButtonData.buttonState |= kButtonDown;
+		if(old_dpad.buttonTransition & kButtonUp)
+			gButtonData.buttonTransition |= kButtonDown;
 		if(old_dpad.buttonState & kButtonDown)
 			gButtonData.buttonState |= kButtonUp;
+		if(old_dpad.buttonTransition & kButtonDown)
+			gButtonData.buttonTransition |= kButtonUp;
 		if(old_dpad.buttonState & kButtonRight)
 			gButtonData.buttonState |= kButtonLeft;
+		if(old_dpad.buttonTransition & kButtonRight)
+			gButtonData.buttonTransition |= kButtonLeft;
 		if(old_dpad.buttonState & kButtonLeft)
 			gButtonData.buttonState |= kButtonRight;
+		if(old_dpad.buttonTransition & kButtonLeft)
+			gButtonData.buttonTransition |= kButtonRight;
 		break;
 	case 3:
 		if(old_dpad.buttonState & kButtonUp)
 			gButtonData.buttonState |= kButtonRight;
+		if(old_dpad.buttonTransition & kButtonUp)
+			gButtonData.buttonTransition |= kButtonRight;
 		if(old_dpad.buttonState & kButtonDown)
 			gButtonData.buttonState |= kButtonLeft;
+		if(old_dpad.buttonTransition & kButtonDown)
+			gButtonData.buttonTransition |= kButtonLeft;
 		if(old_dpad.buttonState & kButtonRight)
 			gButtonData.buttonState |= kButtonDown;
+		if(old_dpad.buttonTransition & kButtonRight)
+			gButtonData.buttonTransition |= kButtonDown;
 		if(old_dpad.buttonState & kButtonLeft)
 			gButtonData.buttonState |= kButtonUp;
+		if(old_dpad.buttonTransition & kButtonLeft)
+			gButtonData.buttonTransition |= kButtonUp;
 		break;
 	}
-	gButtonData.buttonTransition = (old_dpad.buttonState ^ gButtonData.buttonState) & button_mask;
 }
 
 //------------------------------------------------------------------------------

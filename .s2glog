@@ -38605,3 +38605,30 @@ By Dave Milici (dmilici@leapfrog.com) on 2/3/14 7:12 PM
 24,192 ms. (Cumulative: 17,173,480 ms)
 
 ----------------
+Revision 10,481 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,163 ms. (Cumulative: 17,197,737 ms)
+
+----------------
+Revision 10,482 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,031 ms. (Cumulative: 17,221,784 ms)
+
+----------------
+Revision 10,483 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,052 ms. (Cumulative: 17,245,851 ms)
+
+----------------
+Revision 10,484 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-1010.  Properly rotate Dpad transitions.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/4/14 5:39 PM
+1 changed, 0 added, 0 deleted.
+24,080 ms. (Cumulative: 17,269,931 ms)
+
+----------------
