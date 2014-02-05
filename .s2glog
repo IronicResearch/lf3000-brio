@@ -38632,3 +38632,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/4/14 5:39 PM
 24,080 ms. (Cumulative: 17,269,931 ms)
 
 ----------------
+Revision 10,485 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraNXP: Clamp mode at native sensor size and let clipper handle cropping. (FWDEF-146)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/4/14 7:00 PM
+1 changed, 0 added, 0 deleted.
+24,120 ms. (Cumulative: 17,294,145 ms)
+
+----------------
