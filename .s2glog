@@ -38642,3 +38642,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/4/14 7:00 PM
 24,120 ms. (Cumulative: 17,294,145 ms)
 
 ----------------
+Revision 10,486 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+revert svn -r10485 for camera widget
+
+By Dave Milici (dmilici@leapfrog.com) on 2/4/14 7:46 PM
+1 changed, 0 added, 0 deleted.
+24,137 ms. (Cumulative: 17,318,376 ms)
+
+----------------

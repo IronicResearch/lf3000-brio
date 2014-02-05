@@ -344,25 +344,8 @@ tErrType CNXPCameraModule::EnumFormats(tCaptureModes& pModeList)
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::SetCameraMode(const tCaptureMode* mode)
 {
-	int width = mode->width;
-	int height = mode->height;
-	
-	// Clamp mode at native sensor size and let clipper handle cropping
-	if (width <= 400 && height <= 300) {
-		width = 400;
-		height = 300;
-	}
-	else if (width <= 800 && height <= 600) {
-		width = 800;
-		height = 600;
-	}
-	else {
-		width = 1200;
-		height = 1600;
-	}
-
-	v4l2_set_format(nxphndl_, sensor_, width, height, PIXFORMAT_YUV422_PACKED);
-	v4l2_set_format(nxphndl_, clipper_, width, height, PIXFORMAT_YUV420_PLANAR);
+	v4l2_set_format(nxphndl_, sensor_, mode->width, mode->height, PIXFORMAT_YUV422_PACKED);
+	v4l2_set_format(nxphndl_, clipper_, mode->width, mode->height, PIXFORMAT_YUV420_PLANAR);
 	v4l2_set_format(nxphndl_, nxp_v4l2_mlc0_video, mode->width, mode->height, PIXFORMAT_YUV420_PLANAR);
 	v4l2_set_crop(nxphndl_, clipper_, 0, 0, mode->width, mode->height);
 	v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, 0, 0, mode->width, mode->height);
