@@ -30,9 +30,12 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Defines
 //==============================================================================
 
-tCaptureMode QVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
+tCaptureMode QVGA = {kCaptureFormatYUV420, 320, 240, 1, 30};
+tCaptureMode QSGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
+tCaptureMode  VGA = {kCaptureFormatYUV420, 640, 480, 1, 30};
 tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 30};
-tCaptureMode UXGA = {kCaptureFormatYUV420, 1600, 1200, 1, 30};
+tCaptureMode SXGA = {kCaptureFormatYUV420, 1280,  960, 1, 15};
+tCaptureMode UXGA = {kCaptureFormatYUV420, 1600, 1200, 1, 15};
 
 tControlInfo CTRLS[] = {
 	{kControlTypeBrightness, 0, 255, 128, 128},
@@ -204,7 +207,10 @@ CNXPCameraModule::CNXPCameraModule()
 	camCtx_.mode = QVGA;
 	camCtx_.file = "/dev/video2";
 	camCtx_.modes->push_back(new tCaptureMode(QVGA));
+	camCtx_.modes->push_back(new tCaptureMode(QSGA));
+	camCtx_.modes->push_back(new tCaptureMode( VGA));
 	camCtx_.modes->push_back(new tCaptureMode(SVGA));
+	camCtx_.modes->push_back(new tCaptureMode(SXGA));
 	camCtx_.modes->push_back(new tCaptureMode(UXGA));
 	for (int i = 0; i < sizeof(CTRLS)/sizeof(CTRLS[0]); i++) {
 		camCtx_.controls->push_back(new tControlInfo(CTRLS[i]));
