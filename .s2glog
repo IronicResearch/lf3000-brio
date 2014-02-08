@@ -38661,3 +38661,26 @@ By Dave Milici (dmilici@leapfrog.com) on 2/6/14 1:46 PM
 24,054 ms. (Cumulative: 17,342,523 ms)
 
 ----------------
+Revision 10,488 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,006 ms. (Cumulative: 17,366,623 ms)
+
+----------------
+Revision 10,489 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,943 ms. (Cumulative: 17,390,582 ms)
+
+----------------
+Revision 10,490 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,491 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Enumerate V4L devices to find matching USB camera device, without presuming devnode.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/7/14 6:55 PM
+2 changed, 0 added, 0 deleted.
+24,160 ms. (Cumulative: 17,414,742 ms)
+
+----------------
