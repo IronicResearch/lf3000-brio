@@ -418,8 +418,11 @@ public:
 
 private:
 	CPath				sysfs;		// e.g., "/sys/class/usb_device/usbdev1.2/"
+	CPath				devname;
+	CPath				devpath;
 	CameraListener		*listener_;
 	friend Boolean EnumCameraCallback(const CPath& path, void* pctx);
+	friend Boolean EnumVideoCallback(const CPath& path, void* pctx);
 
 	// Limit object creation to the Module Manager interface functions
 	CUSBCameraModule();

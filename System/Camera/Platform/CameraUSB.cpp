@@ -15,6 +15,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Defines
 //==============================================================================
 #define USB_DEV_ROOT				"/sys/class/usb_device/"
+#define V4L_DEV_ROOT				"/sys/class/video4linux/"
 
 //============================================================================
 // CCameraModule: Informational functions
@@ -80,6 +81,35 @@ Boolean EnumCameraCallback(const CPath& path, void* pctx)
 	return true; // continue
 }
 
+#ifndef MAX_PATH
+#define MAX_PATH 255
+#endif
+Boolean EnumVideoCallback(const CPath& path, void* pctx)
+{
+	CUSBCameraModule* pObj	= (CUSBCameraModule*)pctx;
+	CPath file = pObj->sysfs + "/device/product";
+	CPath name = path + "/name";
+	char srcbuf[MAX_PATH] = "\0";
+	char dstbuf[MAX_PATH] = "\0";
+	FILE* fp = fopen(file.c_str(), "r");
+	if (fp) {
+		fscanf(fp, "%s", &srcbuf[0]);
+		fclose(fp);
+	}
+	fp = fopen(name.c_str(), "r");
+	if (fp) {
+		fscanf(fp, "%s", &dstbuf[0]);
+		fclose(fp);
+	}
+	if (strncmp(srcbuf, dstbuf, MAX_PATH) == 0) {
+		pObj->devname = dstbuf;
+		pObj->devpath = path;
+		return false; // stop
+	}
+
+	return true; // continue
+}
+
 CUSBCameraModule::CameraListener::CameraListener(CUSBCameraModule* mod):
 			IEventListener(LocalCameraEvents, ArrayCount(LocalCameraEvents)),
 			pMod(mod), running(false)
@@ -118,17 +148,24 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 			pMod->sysfs.clear();
 			EnumFolder(USB_DEV_ROOT, EnumCameraCallback, kFoldersOnly, pMod);
 
-			if(!pMod->sysfs.empty())
+			// Find matching V4L device entry
+			pMod->devname.clear();
+			pMod->devpath.clear();
+			EnumFolder(V4L_DEV_ROOT, EnumVideoCallback, kFoldersOnly, pMod);
+
+			if(!pMod->sysfs.empty() && !pMod->devpath.empty())
 			{
 				struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};
 
 				/* camera present or added */
 				pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera detected %s\n", pMod->sysfs.c_str());
+				pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: V4L device detected %s (%s)\n", pMod->devpath.c_str(), pMod->devname.c_str());
 
 				pMod->kernel_.LockMutex(pMod->mutex_);
 				// FIXME: Hacks for Glasgow support
 				if (GetPlatformName() == "GLASGOW") {
-					pMod->camCtx_.file = "/dev/video5"; // FIXME
+					CPath devnode = CPath("/dev") + pMod->devpath.substr(pMod->devpath.rfind('/'), pMod->devpath.length());
+					pMod->camCtx_.file = devnode.c_str();
 					QVGA.pixelformat = kCaptureFormatRAWYUYV;
 				}
 				pMod->valid = pMod->InitCameraInt(&QVGA);
