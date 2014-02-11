@@ -38684,3 +38684,14 @@ By Dave Milici (dmilici@leapfrog.com) on 2/7/14 6:55 PM
 24,160 ms. (Cumulative: 17,414,742 ms)
 
 ----------------
+Revision 10,492 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added no-op for ::SetCurrentCamera() to USB camera module.
+Fix for maintaining V4L devnode string as member var (not temp).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/10/14 4:22 PM
+2 changed, 0 added, 0 deleted.
+24,223 ms. (Cumulative: 17,439,059 ms)
+
+----------------

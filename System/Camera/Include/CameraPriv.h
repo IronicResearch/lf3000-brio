@@ -416,10 +416,13 @@ public:
 	virtual tVersion		GetModuleVersion() const;
 	virtual const CString*	GetModuleName() const;
 
+	VTABLE_EXPORT tErrType 		SetCurrentCamera(tCameraDevice device);
+
 private:
 	CPath				sysfs;		// e.g., "/sys/class/usb_device/usbdev1.2/"
 	CPath				devname;
 	CPath				devpath;
+	CPath				devnode;
 	CameraListener		*listener_;
 	friend Boolean EnumCameraCallback(const CPath& path, void* pctx);
 	friend Boolean EnumVideoCallback(const CPath& path, void* pctx);
