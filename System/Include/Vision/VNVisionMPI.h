@@ -100,8 +100,13 @@ namespace Vision {
     /*!
      * \brief Start begins the video capture process necessary for video processing
      * \param videoSurf the video surface from which the camera capture is taken
+     * \param dispatchSynchronously when set to true, the vision algorithm will be 
+     * dispatched on a separate thread to allow image processing to occur synchronously.
+     * The default behavior is asynchronous updates with the developer manually calling
+     * the VNVisionMPI::Update method once per state update. 
      */
-    void Start(LeapFrog::Brio::tVideoSurf& videoSurf);
+    void Start(LeapFrog::Brio::tVideoSurf& videoSurf,
+	       bool dispatchSynchronously = false);
 
     /*!
      * \breif Update performs one iteration of the current algorithm allowing

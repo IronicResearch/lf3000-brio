@@ -22,7 +22,8 @@ namespace Vision {
     
     void DeleteTask(void);
     
-    void Start(LeapFrog::Brio::tVideoSurf& surf);
+    void Start(LeapFrog::Brio::tVideoSurf& surf,
+	       bool dispatchSynchronously);
     void Update(void);
     void Stop(void);
     void Pause(void);
@@ -35,16 +36,19 @@ namespace Vision {
     void CreateRGBImage(LeapFrog::Brio::tVideoSurf &surf,
 			cv::Mat &img) const;
     
+    static void* CameraCaptureTask(void* args);
+
     bool visionAlgorithmRunning_;
     float frameProcessingRate_;
     std::vector<const VNHotSpot*> hotSpots_;
+    LeapFrog::Brio::tTaskHndl taskHndl_;
     VNAlgorithm* algorithm_;
     LeapFrog::Brio::tVideoSurf videoSurf_;
     LeapFrog::Brio::tVidCapHndl videoCapture_;
     LeapFrog::Brio::CCameraMPI  cameraMPI_;
     cv::Mat outputImg_;
     boost::timer timer_;
-    
+
   private:
     VNVisionMPIPIMPL(void);
     VNVisionMPIPIMPL(const VNVisionMPIPIMPL&);

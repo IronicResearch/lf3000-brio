@@ -36,9 +36,28 @@ namespace Vision {
   }
 
   void
-  VNWandPIMPL::NotFoundOnScreen(void) {
+  VNWandPIMPL::NotVisibleOnScreen(void) {
     location_.x = kVNNoWandLocationX;
     location_.y = kVNNoWandLocationY;
+    visible_ = false;
   }
+
+  void
+  VNWandPIMPL::VisibleOnScreen(const cv::Point &p) {
+    location_.x = p.x;
+    location_.y = p.y;
+    visible_ = true;
+  }
+
+  bool
+  VNWandPIMPL::IsVisible(void) const {
+    return visible_;
+  }
+
+  VNPoint
+  VNWandPIMPL::GetLocation(void) const {
+    return location_;
+  }
+
 } // namespace Vision
 } // namespace LF

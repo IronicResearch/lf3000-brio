@@ -97,13 +97,12 @@ namespace Vision {
       FitCircleToContour(contours[index], p, r);
       // insure we have at least a minimum circle area
       if (M_PI*r*r > minArea_) {
-	wand_->location_.x = p.x;
-	wand_->location_.y = p.y;
+	wand_->VisibleOnScreen(p);
       } else {
-	wand_->NotFoundOnScreen();
+	wand_->NotVisibleOnScreen();
       }
     } else {
-      wand_->NotFoundOnScreen();
+      wand_->NotVisibleOnScreen();
     }    
   }
 

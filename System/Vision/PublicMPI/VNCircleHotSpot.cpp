@@ -53,14 +53,14 @@ namespace Vision {
     
     // send appropriate notifications
     if (pimpl_->isTriggered_) {
-      VNHotSpotEventMessage *msg = new VNHotSpotEventMessage(LF::Vision::kVNHotSpotTriggeredEvent, this);
+      VNHotSpotEventMessage msg(LF::Vision::kVNHotSpotTriggeredEvent, this);
       LeapFrog::Brio::CEventMPI eventMPI;
-      eventMPI.PostEvent(*msg, 0);
+      eventMPI.PostEvent(msg, 0);
     }
     if (wasTriggered != pimpl_->isTriggered_) {
-      VNHotSpotEventMessage *msg = new VNHotSpotEventMessage(LF::Vision::kVNHotSpotTriggerChangeEvent, this);
+      VNHotSpotEventMessage msg(LF::Vision::kVNHotSpotTriggerChangeEvent, this);
       LeapFrog::Brio::CEventMPI eventMPI;
-      eventMPI.PostEvent(*msg, 0);
+      eventMPI.PostEvent(msg, 0);
     }
   }
   

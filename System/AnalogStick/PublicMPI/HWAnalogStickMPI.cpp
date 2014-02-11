@@ -13,8 +13,9 @@ namespace Hardware {
   /*!
    * \brief Constructor
    */
-  HWAnalogStickMPI::HWAnalogStickMPI(void) 
-    :	pimpl_(HWAnalogStickPIMPL::Instance())
+  HWAnalogStickMPI::HWAnalogStickMPI(void) :
+    LeapFrog::Brio::ICoreMPI(),
+    pimpl_(HWAnalogStickPIMPL::Instance())
   {
   }
   

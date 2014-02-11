@@ -12,12 +12,18 @@ namespace Vision {
     VNWandPIMPL(void);
     virtual ~VNWandPIMPL(void);
     
-    void NotFoundOnScreen(void);
+    void NotVisibleOnScreen(void);
+    void VisibleOnScreen(const cv::Point &p);
 
-    bool visible_;
-    VNPoint location_;
+    bool IsVisible(void) const;
+    VNPoint GetLocation(void) const;
+
     cv::Scalar hsvMin_;
     cv::Scalar hsvMax_;
+
+  protected:
+    bool visible_;
+    VNPoint location_;   
   };
 }
 }
