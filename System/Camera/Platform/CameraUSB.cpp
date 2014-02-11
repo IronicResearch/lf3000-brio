@@ -164,8 +164,8 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 				pMod->kernel_.LockMutex(pMod->mutex_);
 				// FIXME: Hacks for Glasgow support
 				if (GetPlatformName() == "GLASGOW") {
-					CPath devnode = CPath("/dev") + pMod->devpath.substr(pMod->devpath.rfind('/'), pMod->devpath.length());
-					pMod->camCtx_.file = devnode.c_str();
+					pMod->devnode = CPath("/dev") + pMod->devpath.substr(pMod->devpath.rfind('/'), pMod->devpath.length());
+					pMod->camCtx_.file = pMod->devnode.c_str();
 					QVGA.pixelformat = kCaptureFormatRAWYUYV;
 				}
 				pMod->valid = pMod->InitCameraInt(&QVGA);
@@ -250,6 +250,13 @@ CUSBCameraModule::~CUSBCameraModule()
 	// Disable USB host port
 	usbHost_.reset();
 }
+
+//----------------------------------------------------------------------------
+tErrType CUSBCameraModule::SetCurrentCamera(tCameraDevice device)
+{
+	return kNoErr;
+}
+
 
 LF_END_BRIO_NAMESPACE()
 
