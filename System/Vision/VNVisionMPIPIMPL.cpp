@@ -11,7 +11,8 @@ namespace Vision {
 
   static const double kVNMillisecondsInASecond = 1000.0;
   static const float kVNDefaultFrameProcessingRate = 0.03125; // 32 fps
-  
+  static const LeapFrog::Brio::U32 kVNDefaultStackSize = 134217728; // 128 MB in bytes
+
   VNVisionMPIPIMPL*
   VNVisionMPIPIMPL::Instance(void) {
     static VNVisionMPIPIMPL* sharedInstance = NULL;
@@ -24,6 +25,7 @@ namespace Vision {
   VNVisionMPIPIMPL::VNVisionMPIPIMPL(void) :
     visionAlgorithmRunning_(false),
     frameProcessingRate_(kVNDefaultFrameProcessingRate),
+    taskHndl_(LeapFrog::Brio::kInvalidTaskHndl),
     algorithm_(NULL){
   }
   
@@ -35,9 +37,14 @@ namespace Vision {
   VNVisionMPIPIMPL::DeleteTask(void) {
     cameraMPI_.StopVideoCapture(videoCapture_);
     visionAlgorithmRunning_ = false;
+    if (taskHndl_ != LeapFrog::Brio::kInvalidTaskHndl) {
+      LeapFrog::Brio::CKernelMPI kernel;
+      kernel.CancelTask(taskHndl_);
+    }
   }
   void
-  VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf& surf) {
+  VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf& surf,
+			  bool dispatchSynchronously) {
     if (!visionAlgorithmRunning_) {
 #ifdef EMULATION
       if (cameraMPI_.SetCurrentCamera(LeapFrog::Brio::kCameraDefault) == kNoErr) 
@@ -45,13 +52,23 @@ namespace Vision {
       if (cameraMPI_.SetCurrentCamera(LeapFrog::Brio::kCameraFront) == kNoErr) 
 #endif      
       {
-	visionAlgorithmRunning_ = true;
 	videoSurf_ = surf;
 	LeapFrog::Brio::tCaptureMode* mode = cameraMPI_.GetCurrentFormat();
 	mode->width = surf.width;
 	mode->height = surf.height;
 	cameraMPI_.SetCurrentFormat(mode);
 	videoCapture_ = cameraMPI_.StartVideoCapture(&videoSurf_, NULL, "");
+	visionAlgorithmRunning_ = true;
+
+	if (dispatchSynchronously) {
+	  LeapFrog::Brio::CKernelMPI kernel;
+	  LeapFrog::Brio::tTaskProperties props;
+	  props.TaskMainFcn = &VNVisionMPIPIMPL::CameraCaptureTask;
+	  props.taskMainArgCount = 1;
+	  props.pTaskMainArgValues = static_cast<LeapFrog::Brio::tPtr>(this);
+	  props.stackSize = kVNDefaultStackSize;
+	  kernel.CreateTask(taskHndl_, props, NULL);
+	}
       }
     }
   }
@@ -115,15 +132,17 @@ namespace Vision {
 
   void
   VNVisionMPIPIMPL::Update(void) {
-    BeginFrameProcessing();
-
     if (visionAlgorithmRunning_) {
+      BeginFrameProcessing();
+
       if (!cameraMPI_.IsVideoCapturePaused(videoCapture_) ) {
 
 #ifdef EMULATION
 	if (cameraMPI_.LockCaptureVideoSurface(videoCapture_)) {
 	  LeapFrog::Brio::tVideoSurf *surf = cameraMPI_.GetCaptureVideoSurface(videoCapture_);
-	  unsigned char *buffer = surf->buffer;
+	  unsigned char *buffer = NULL;
+	  if (surf)
+	    buffer = surf->buffer;
 #else
 	if (cameraMPI_.GetFrame(videoCapture_, &videoSurf_)) {	  
 	  unsigned char* buffer = videoSurf_.buffer;
@@ -133,7 +152,6 @@ namespace Vision {
 				 videoSurf_.height), 
 			CV_8UC3, 
 			buffer);
-
 	    algorithm_->Execute(img, outputImg_);
 	    TriggerHotSpots();
 	  }
@@ -142,9 +160,22 @@ namespace Vision {
 	cameraMPI_.UnLockCaptureVideoSurface(videoCapture_);
 #endif
       }
+      EndFrameProcessing();
     }
-    EndFrameProcessing();
   }
 
+  void*
+  VNVisionMPIPIMPL::CameraCaptureTask(void* args) {
+    VNVisionMPIPIMPL* me = static_cast<VNVisionMPIPIMPL*>(args);
+    me->visionAlgorithmRunning_ = true;		
+
+    while (true) {
+      me->Update();
+    }
+    
+    me->visionAlgorithmRunning_ = false;
+    //TODO: investigate what we should return here.
+    return NULL;
+  }
 } // namespace Vision
 } // namespace LF

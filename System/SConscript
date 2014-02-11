@@ -39,6 +39,7 @@ targets.extend(SConscript('Accelerometer/SConscript', variant_dir=MakeTempDirNam
 targets.extend(SConscript('Wireless/SConscript', variant_dir=MakeTempDirName('Wireless'), duplicate=0))
 targets.extend(SConscript('Vision/SConscript', variant_dir=MakeTempDirName('Vision'), duplicate=0))
 targets.extend(SConscript('AnalogStick/SConscript', variant_dir=MakeTempDirName('AnalogStick'), duplicate=0))
+targets.extend(SConscript('Controller/SConscript', variant_dir=MakeTempDirName('Controller'), duplicate=0))
 if env['cpu'] == 'x86':
 	targets.extend(SConscript('Emulation/SConscript', variant_dir=MakeTempDirName('Emulation'), duplicate=0))
 

@@ -123,8 +123,9 @@ namespace Vision {
    * Controls the execution of frame processing
    */
   void
-  VNVisionMPI::Start(LeapFrog::Brio::tVideoSurf& surf) {
-    pimpl_->Start(surf);
+  VNVisionMPI::Start(LeapFrog::Brio::tVideoSurf& surf,
+		     bool dispatchSynchronously) {
+    pimpl_->Start(surf, dispatchSynchronously);
   }
   
   void

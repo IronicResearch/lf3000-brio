@@ -13,12 +13,12 @@ namespace Vision {
 
   bool
   VNWand::IsVisible(void) const {
-    return pimpl_->visible_;
+    return pimpl_->IsVisible();
   }
 
   VNPoint
   VNWand::GetLocation(void) const {
-    return pimpl_->location_;
+    return pimpl_->GetLocation();
   }
 
 } // namespace Vision

@@ -51,7 +51,8 @@ enum eGroupEnum {
 	kGroupPrototype,
 	kGroupVision,
 
-	kGroupAnalogStick
+	kGroupAnalogStick,
+	kGroupController
 	// WARNING: After GM, values can only be APPENDED to this enumeration!!!
 	// WARNING: Inserting values will break backwards compatability!!!
 };
