@@ -1982,7 +1982,12 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	}
 	else if( frame->pixelformat == kCaptureFormatRAWYUYV )
 	{
-//		tBitmapFormat
+		// Clamp rendered bitmap size to captured frame size
+		if (bitmap->width > frame->width)
+			bitmap->width = frame->width;
+		if (bitmap->height > frame->height)
+			bitmap->height = frame->height;
+
 		switch( bitmap->format )
 		{
 		case kBitmapFormatRGB888:

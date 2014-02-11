@@ -38705,3 +38705,15 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 2/10/14 5:03 PM
 25,010 ms. (Cumulative: 17,464,163 ms)
 
 ----------------
+Revision 10,494 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,495 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraModule::RenderFrame: Clamp rendered bitmap size to captured frame size.
+Fixes crashes seen in apps which don't set camera format. (FWSCRUM-1134)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/11/14 1:35 PM
+1 changed, 0 added, 0 deleted.
+25,702 ms. (Cumulative: 17,489,974 ms)
+
+----------------
