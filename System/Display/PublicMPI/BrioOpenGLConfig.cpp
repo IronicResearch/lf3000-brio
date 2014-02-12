@@ -705,7 +705,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	    EGL_STENCIL_SIZE,   using_32_bit ? 8 : 0,
 		#endif
 	    EGL_SURFACE_TYPE,   EGL_WINDOW_BIT,
-	    EGL_RENDERABLE_TYPE, brioOpenGLVersion == kBrioOpenGL11 ? EGL_OPENGL_ES_BIT : EGL_OPENGL_ES2_BIT,
+                #ifndef LF1000
+	    EGL_RENDERABLE_TYPE, brioOpenGLVersion == kBrioOpenGL11 ? EGL_OPENGL_ES_BIT : EGL_OPENGL_ES2_BIT, 
+                #endif
 	    EGL_NONE,           EGL_NONE
 	};
 

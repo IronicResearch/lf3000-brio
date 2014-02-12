@@ -10,8 +10,10 @@
 #include <sys/mman.h>
 #include <linux/fb.h>
 #include <linux/lf2000/lf2000vip.h>
-#include <linux/media.h>
 #include <vmem.h>
+#ifndef LF1000
+#include <linux/media.h>
+#endif
 #endif
 
 // PNG wrapper function for saving file
@@ -141,6 +143,7 @@ void CVIPCameraModule::AllocVMem(tCameraContext& camCtx_)
 //----------------------------------------------------------------------------
 bool EnumMediaNodes(tCameraContext& ctx)
 {
+#ifndef LF1000
 	int fd = open("/dev/media0", O_RDWR);
 	if (fd == -1)
 		return false;
@@ -209,6 +212,9 @@ bool EnumMediaNodes(tCameraContext& ctx)
 	ctx.file = "/dev/video2"; // CLIPPER1
 
 	return true;
+#else
+	return false;
+#endif
 }
 
 //============================================================================
