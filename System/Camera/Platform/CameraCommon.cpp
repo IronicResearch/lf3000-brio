@@ -1923,7 +1923,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 			bRet = false;
 			;
 		}
-	#ifdef LF1000 //#ifndef EMULATION
+	#if defined(LF1000) && !defined(EMULATION)
 		/*
 		 * Decode JPEG using jpeg_read_coefficients() and LF1000 IDCT, then paint
 		 * video layer directly.  This has about 5 fps better performance than the

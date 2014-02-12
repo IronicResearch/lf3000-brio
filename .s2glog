@@ -38717,3 +38717,43 @@ By Dave Milici (dmilici@leapfrog.com) on 2/11/14 1:35 PM
 25,702 ms. (Cumulative: 17,489,974 ms)
 
 ----------------
+Revision 10,496 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,825 ms. (Cumulative: 17,514,892 ms)
+
+----------------
+Revision 10,497 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,091 ms. (Cumulative: 17,538,999 ms)
+
+----------------
+Revision 10,498 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,050 ms. (Cumulative: 17,563,064 ms)
+
+----------------
+Revision 10,499 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,939 ms. (Cumulative: 17,587,003 ms)
+
+----------------
+Revision 10,500 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,998 ms. (Cumulative: 17,611,001 ms)
+
+----------------
+Revision 10,501 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Worked with Dave to add conditional compiliation for LF1000 SDK builds.
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 2/12/14 11:53 AM
+5 changed, 0 added, 0 deleted.
+24,330 ms. (Cumulative: 17,635,331 ms)
+
+----------------

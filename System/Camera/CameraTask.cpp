@@ -211,7 +211,7 @@ void* CameraTaskMain(void* arg)
 		{
 		case kPixelFormatYUV420:
 			image.format	= kBitmapFormatYCbCr888;
-#ifdef LF1000 // IDCT support
+#if defined(LF1000) && !defined(EMULATION) // IDCT support
 			/* TODO: libjpeg QVGA->QQVGA rendering + HW scaler is faster than
 			 * HW IDCT QVGA->QVGA rendering
 			 */
