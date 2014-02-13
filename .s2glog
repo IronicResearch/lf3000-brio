@@ -38839,3 +38839,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/13/14 3:08 PM
 24,212 ms. (Cumulative: 17,832,691 ms)
 
 ----------------
+Revision 10,510 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix MaliEmulator pathnames.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/13/14 3:29 PM
+2 changed, 0 added, 0 deleted.
+24,164 ms. (Cumulative: 17,856,949 ms)
+
+----------------

@@ -36,9 +36,9 @@ myenv		= env.Clone()
 myenv.Append(CPPPATH=['Include'])
 myenv.Append(LIBPATH=[ os.path.join('#', 'ThirdParty', 'ustring', 'libs', myenv['cpu']) ] )
 if env['cpu'] == 'x86':
-	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/Include',
+	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/include',
 				'/usr/X11R6/include'])
-	myenv.Append(LIBPATH = ['#ThirdParty/MaliEmulator/Libs'])
+	myenv.Append(LIBPATH = ['#ThirdParty/MaliEmulator/bin'])
 
 elif env['platform'] == 'LF3000' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
