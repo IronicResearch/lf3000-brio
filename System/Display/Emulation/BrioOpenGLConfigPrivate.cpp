@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <Utility.h>
 
-
+#include <GLES/gl.h>
 
 // LF2000
 typedef struct {

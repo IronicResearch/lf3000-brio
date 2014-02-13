@@ -38812,3 +38812,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/13/14 1:46 PM
 25,800 ms. (Cumulative: 17,758,966 ms)
 
 ----------------
+Revision 10,507 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Trying to add GLES/gl.h to Emulation BrioOpenGLConfigPrivate, should fix build problem.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/13/14 2:14 PM
+1 changed, 0 added, 0 deleted.
+25,064 ms. (Cumulative: 17,784,155 ms)
+
+----------------
