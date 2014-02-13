@@ -38801,3 +38801,14 @@ By dlazzari (dlazzari@leapfrog.com) on 2/13/14 1:22 PM
 24,364 ms. (Cumulative: 17,733,072 ms)
 
 ----------------
+Revision 10,506 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Clean up of BrioOpenGL seperation.  No more ifdefs and PlatformNames.  Also added LF3000 to SConstruct.
+
+Tested LF2000 with Rio, LF3000 with Cabo.  Have difficulty building LF1000 and Emulation.  I think they should work.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/13/14 1:46 PM
+8 changed, 0 added, 0 deleted.
+25,800 ms. (Cumulative: 17,758,966 ms)
+
+----------------

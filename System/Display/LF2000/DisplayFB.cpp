@@ -17,9 +17,6 @@
 #include <DisplayPriv.h>
 #include <BrioOpenGLConfigPrivate.h>
 #include <Utility.h>
-#ifdef LF1000
-#include <GLES/libogl.h>
-#endif
 #include <algorithm>
 #include <list>
 #include <map>
@@ -976,88 +973,10 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	// Dereference OpenGL context for MagicEyes OEM memory size config
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	int 							n = OGLFB;
-#ifdef LF1000
-	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
-	
-	// Open driver for 3D engine registers
-	fdreg3d = open(DEV3D, O_RDWR | O_SYNC);
-	dbg_.Assert(fdreg3d >= 0, "%s: Opening %s failed\n", __FUNCTION__, DEV3D);
-
-	// Map 3D engine register space
-	preg3d = mmap(0, REG3D_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fdreg3d, REG3D_PHYS);
-	dbg_.DebugOut(kDbgLvlValuable, "%s: %016lX mapped to %p\n", __FUNCTION__, REG3D_PHYS, preg3d);
-
-	// Check 3D engine running status to avoid hanging in OGL init callback
-	U32 cntl32, stat32, clok32;
-	Check3DEngine((U32*)preg3d, cntl32, stat32, clok32);
-	dbg_.Assert(clok32 == 0, "%s: Reg3D control=%08X, status=%08X, clock=%08X\n",
-			__FUNCTION__, (unsigned)cntl32, (unsigned)stat32, (unsigned)clok32);
-
-	// Clamp requested 1D/2D heap sizes to MagicEyes OGL lib limits
-	if (pMemInfo->Memory2D_SizeInMbyte > 14)
-		pMemInfo->Memory2D_SizeInMbyte = 14;
-	if (pMemInfo->Memory1D_SizeInMbyte + pMemInfo->Memory2D_SizeInMbyte > 16)
-		pMemInfo->Memory1D_SizeInMbyte = 16 - pMemInfo->Memory2D_SizeInMbyte;
-
-	// Get OpenGL context memory heap size requests
-	mem1size = pMemInfo->Memory1D_SizeInMbyte << 20;
-	mem2size = pMemInfo->Memory2D_SizeInMbyte << 20;
-	U32 align = ALIGN(mem2size, k4Meg);
-	U32 delta = align - mem2size;
-
-	// Allocate 4Meg aligned buffer for 2D heap
-	memset(&dcmem1, 0, sizeof(dcmem1));
-	memset(&dcmem2, 0, sizeof(dcmem2));
-	tDisplayContext* pdb = &dcmem2;
-	for (mem2size = align; mem2size >= k4Meg; mem2size -= k4Meg) {
-		if (AllocBuffer(pdb, mem2size)) {
-			mem2phys = pdb->basephys + pdb->offset;
-			pmem2d = pdb->pBuffer;
-			break;
-		}
-	}
-	// Check if 1Meg buffer can fit into 4Meg buffer alignment margin
-	if (delta >= mem1size) {
-		mem2size -= delta;
-		mem1size = delta;
-		mem1phys = mem2phys + mem2size;
-		pmem1d = pdb->pBuffer + mem2size;
-	}
-	else {
-		// Allocate 1Meg aligned buffer for 1D heap
-		pdb = &dcmem1;
-		for ( ; mem1size >= k1Meg; mem1size -= k1Meg) {
-			if (AllocBuffer(pdb, mem1size)) {
-				mem1phys = pdb->basephys + pdb->offset;
-				pmem1d = pdb->pBuffer;
-				break;
-			}
-		}
-	}
-	dbg_.DebugOut(kDbgLvlValuable, "%s: %08X mapped to %p, size = %08X\n", __FUNCTION__, mem1phys, pmem1d, mem1size);
-	dbg_.DebugOut(kDbgLvlValuable, "%s: %08X mapped to %p, size = %08X\n", __FUNCTION__, mem2phys, pmem2d, mem2size);
-
-	// Copy the required mappings into the MagicEyes callback init struct
-	pMemInfo->VirtualAddressOf3DCore	= (unsigned int)preg3d;
-	pMemInfo->Memory1D_VirtualAddress	= (unsigned int)pmem1d;
-	pMemInfo->Memory1D_PhysicalAddress	= mem1phys;
-	pMemInfo->Memory1D_SizeInMbyte		= mem1size >> 20;
-	pMemInfo->Memory2D_VirtualAddress	= (unsigned int)pmem2d;
-	pMemInfo->Memory2D_PhysicalAddress	= mem2phys;
-	pMemInfo->Memory2D_SizeInMbyte		= mem2size >> 20;
-#endif // LF1000
-
 	// Query viewport size to use
 	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres, oxres, oyres);
 
 	// Create DisplayMPI context for OpenGL framebuffer
-#ifdef LF1000
-	pmem2d = (U8*)pmem2d + 0x20000000;
-	tDisplayHandle hogl = CreateHandle(vyres, vxres, kPixelFormatRGB565, (U8*)pmem2d);
-	tDisplayContext *dcogl = (tDisplayContext*)hogl;
-	dcogl->isOpenGL = true;
-	hogls.push_back(hogl);
-#else
 	//hogl = CreateHandle(vyres, vxres, kPixelFormatRGB565, fbmem[n]);
 	//SetPixelFormat(n, vxres, vyres, 32, kPixelFormatRGB565, true); 	// swizzle RGB
 	bool use_32_bit_buffer = false;
@@ -1081,21 +1000,15 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 		SetVisible(dcogl, false);
 	}
 	SetPixelFormat(n, vxres, vyres, use_32_bit_buffer ? 32 : 16, use_32_bit_buffer ? kPixelFormatARGB8888 : kPixelFormatRGB565, true); 	// swizzle RGB
-#endif
 
 	// Pass back essential display context info for OpenGL bindings
 	pOglCtx->width 		= vinfo[n].xres;
 	pOglCtx->height 	= vinfo[n].yres;
 	pOglCtx->owidth = oxres ? oxres : pOglCtx->width;
 	pOglCtx->oheight = oyres ? oyres : pOglCtx->height;
-#ifdef LF1000
-	pOglCtx->eglDisplay = &finfo[n]; // non-NULL ptr
-	pOglCtx->eglWindow 	= &vinfo[n]; // non-NULL ptr
-#else
 	pOglCtx->eglDisplay = n;				// display index
 	//Minh Saelock - eglWindow is already pointing to a valid struct on LF2000
 	//pOglCtx->eglWindow  = &vinfo[n].xres;	// ptr to xres, yres
-#endif
 	pOglCtx->hndlDisplay = hogl;
 
 	// Reset initial HW context state
@@ -1108,12 +1021,6 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 void CDisplayFB::DeinitOpenGL(void* pCtx)
 {
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
-#ifdef LF1000
-	// Release framebuffer allocations used by OpenGL context
-	if (dcmem1.pBuffer)
-		DeAllocBuffer(&dcmem1);
-	DeAllocBuffer(&dcmem2);
-#endif
 	// Release DisplayMPI context
 	if(!pOglCtx)
 	{
@@ -1127,18 +1034,11 @@ void CDisplayFB::DeinitOpenGL(void* pCtx)
 	}
 	
 	
-#ifdef LF1000
-	// Release framebuffer mappings and drivers used by OpenGL
-	munmap(preg3d, REG3D_SIZE);
-	
-	close(fdreg3d);
-#endif
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::EnableOpenGL(void* pCtx)
 {
-#if defined(LF1000) || defined(LF2000)
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	if(pOglCtx)
 	{
@@ -1162,25 +1062,21 @@ void CDisplayFB::EnableOpenGL(void* pCtx)
 		RegisterLayer(pOglCtx->hndlDisplay, dcogl->x, dcogl->y);
 		SetVisible(pOglCtx->hndlDisplay, true);
 	}
-#endif
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::DisableOpenGL(void* pCtx)
 {
-#if defined(LF1000) || defined(LF2000)
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	if(!pOglCtx)
 		SetVisible(hogls.back(), false);
 	else
 		SetVisible(pOglCtx->hndlDisplay, false);
-#endif
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::UpdateOpenGL(void* pCtx)
 {
-#ifdef LF2000
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	// Re-enable OpenGL context which is not registered
 	if(!pOglCtx)
@@ -1203,44 +1099,16 @@ void CDisplayFB::UpdateOpenGL(void* pCtx)
 			}
 		}
 	}
-#endif
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::WaitForDisplayAddressPatched(void)
 {
-#ifdef LF1000
-	int n = OGLFB;
-	int r = 0; 
-	do {
-		r = ioctl(fbdev[n], FBIO_WAITFORVSYNC, 0);
-		if (r == 1)
-			kernel_.TaskSleep(1);
-	} while (r != 0);
-#endif
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress)
 {
-#ifdef LF1000
-	tDisplayContext *dcogl = (tDisplayContext*)hogl;
-	// Re-enable OpenGL context which is not registered
-	if (hogl != NULL && !fbviz[OGLFB])
-	{
-		if (dcogl->isEnabled) {
-			RegisterLayer(hogl, dcogl->x, dcogl->y);
-			SetVisible(hogl, true);
-		}
-	}
-	int n = OGLFB;
-	unsigned int offset = DisplayBufferPhysicalAddress - finfo[n].smem_start;
-	offset &= ~0x20000000;
-	dcogl->offset = offset;
-	vinfo[n].yoffset = offset / finfo[n].line_length;
-	vinfo[n].xoffset = (offset % finfo[n].line_length)  * 8 / vinfo[n].bits_per_pixel;;
-	int r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
-#endif
 }
 
 //----------------------------------------------------------------------------
