@@ -44,6 +44,11 @@ if env['platform'] == 'LF2000' and env['cpu_bare']:
 myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
 myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
 
+#OpenGL emulation
+if env['cpu'] == 'x86':
+	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/include'])
+	myenv.Append(LIBPATH = ['#ThirdParty/MaliEmulator/bin'])
+
 if env['platform'] == 'LF2000' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 	myenv.Append(CPPDEFINES = ['USE_ROTATOR=1'])

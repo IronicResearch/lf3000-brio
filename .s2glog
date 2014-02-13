@@ -38848,3 +38848,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/13/14 3:29 PM
 24,164 ms. (Cumulative: 17,856,949 ms)
 
 ----------------
+Revision 10,511 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Missed one of the modules that include DisplayPriv.h
+
+By dlazzari (dlazzari@leapfrog.com) on 2/13/14 3:54 PM
+1 changed, 0 added, 0 deleted.
+24,038 ms. (Cumulative: 17,881,096 ms)
+
+----------------
