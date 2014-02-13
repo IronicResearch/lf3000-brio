@@ -38792,3 +38792,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/13/14 12:11 PM
 24,272 ms. (Cumulative: 17,708,599 ms)
 
 ----------------
+Revision 10,505 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Move KHRONOS define to common so it applies to both embedded and emulation LF2000 builds.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/13/14 1:22 PM
+2 changed, 0 added, 0 deleted.
+24,364 ms. (Cumulative: 17,733,072 ms)
+
+----------------
