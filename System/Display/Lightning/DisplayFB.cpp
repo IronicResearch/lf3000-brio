@@ -16,9 +16,7 @@
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
 #include <BrioOpenGLConfig.h>
-#ifdef LF1000
 #include <GLES/libogl.h>
-#endif
 #include <algorithm>
 #include <list>
 
@@ -781,7 +779,6 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	// Dereference OpenGL context for MagicEyes OEM memory size config
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	int 							n = OGLFB;
-#ifdef LF1000
 	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
 	
 	// Open driver for 3D engine registers
@@ -850,36 +847,22 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	pMemInfo->Memory2D_VirtualAddress	= (unsigned int)pmem2d;
 	pMemInfo->Memory2D_PhysicalAddress	= mem2phys;
 	pMemInfo->Memory2D_SizeInMbyte		= mem2size >> 20;
-#endif // LF1000
 
 	// Query viewport size to use
 	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
 
 	// Create DisplayMPI context for OpenGL framebuffer
-#ifdef LF1000
 	pmem2d = (U8*)pmem2d + 0x20000000;
 	tDisplayHandle hogl = CreateHandle(vyres, vxres, kPixelFormatRGB565, (U8*)pmem2d);
 	tDisplayContext *dcogl = (tDisplayContext*)hogl;
 	dcogl->isOpenGL = true;
 	hogls.push_back(hogl);
-#else
-	tDisplayHandle hogl = CreateHandle(vyres, vxres, kPixelFormatARGB8888, fbmem[n]);
-	tDisplayContext *dcogl = (tDisplayContext*)hogl;
-	dcogl->isOpenGL = true;
-	hogls.push_back(hogl);
-	SetPixelFormat(n, vxres, vyres, 32, kPixelFormatARGB8888, true); 	// swizzle RGB
-#endif
 
 	// Pass back essential display context info for OpenGL bindings
 	pOglCtx->width 		= vxres;//vinfo[n].xres;
 	pOglCtx->height 	= vyres;//vinfo[n].yres;
-#ifdef LF1000
 	pOglCtx->eglDisplay = &finfo[n]; // non-NULL ptr
 	pOglCtx->eglWindow 	= &vinfo[n]; // non-NULL ptr
-#else
-	pOglCtx->eglDisplay = n;				// display index
-	pOglCtx->eglWindow  = &vinfo[n].xres;	// ptr to xres, yres
-#endif
 	pOglCtx->hndlDisplay = hogl;
 
 	// Reset initial HW context state
@@ -892,12 +875,10 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 void CDisplayFB::DeinitOpenGL(void* pCtx)
 {
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
-#ifdef LF1000
 	// Release framebuffer allocations used by OpenGL context
 	if (dcmem1.pBuffer)
 		DeAllocBuffer(&dcmem1);
 	DeAllocBuffer(&dcmem2);
-#endif
 	// Release DisplayMPI context
 	if(!pOglCtx)
 	{
@@ -910,18 +891,15 @@ void CDisplayFB::DeinitOpenGL(void* pCtx)
 		DestroyHandle(pOglCtx->hndlDisplay, false);
 	}
 	
-#ifdef LF1000
 	// Release framebuffer mappings and drivers used by OpenGL
 	munmap(preg3d, REG3D_SIZE);
 	
 	close(fdreg3d);
-#endif
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::EnableOpenGL(void* pCtx)
 {
-#if defined(LF1000) || defined(LF2000)
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	if(!pOglCtx)
 	{
@@ -933,19 +911,16 @@ void CDisplayFB::EnableOpenGL(void* pCtx)
 		RegisterLayer(pOglCtx->hndlDisplay, dcogl->x, dcogl->y);
 		SetVisible(pOglCtx->hndlDisplay, true);
 	}
-#endif
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::DisableOpenGL(void* pCtx)
 {
-#if defined(LF1000) || defined(LF2000)
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	if(!pOglCtx)
 		SetVisible(hogls.back(), false);
 	else
 		SetVisible(pOglCtx->hndlDisplay, false);
-#endif
 }
 
 //----------------------------------------------------------------------------
@@ -956,7 +931,6 @@ void CDisplayFB::UpdateOpenGL(void* pCtx)
 //----------------------------------------------------------------------------
 void CDisplayFB::WaitForDisplayAddressPatched(void)
 {
-#ifdef LF1000
 	int n = OGLFB;
 	int r = 0; 
 	do {
@@ -964,13 +938,11 @@ void CDisplayFB::WaitForDisplayAddressPatched(void)
 		if (r == 1)
 			kernel_.TaskSleep(1);
 	} while (r != 0);
-#endif
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress)
 {
-#ifdef LF1000
 	tDisplayContext *dcogl = (tDisplayContext*)hogls.back();
 	// Re-enable OpenGL context which is not registered
 	if (!hogls.empty() && !fbviz[OGLFB])
@@ -987,7 +959,6 @@ void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysica
 	vinfo[n].yoffset = offset / finfo[n].line_length;
 	vinfo[n].xoffset = offset % finfo[n].line_length;
 	int r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
-#endif
 }
 
 //----------------------------------------------------------------------------
@@ -1026,25 +997,10 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	
 	kernel_.LockMutex(gListMutex);
 
-#ifdef LF1000
 	// All display contexts now reference common base address
 	pdc->basephys 	= finfo[RGBFB].smem_start;
 	pdc->baselinear = finfo[YUVFB].smem_start;
 	pdc->pBuffer 	= (pdc->isPlanar) ? fbmem[YUVFB] : fbmem[RGBFB];
-#else
-	// Framebuffers reference separate base addresses
-	pdc->basephys 	= finfo[pdc->layer].smem_start;
-	pdc->baselinear = finfo[pdc->layer].smem_start;
-	pdc->pBuffer 	= fbmem[pdc->layer];
-
-	pdc->offset		= fboff[pdc->layer];
-	pdc->pBuffer	+= pdc->offset;
-	if (pdc->layer != RGBFB)
-		fboff[pdc->layer] += bufsize;
-	fboff[pdc->layer] %= finfo[pdc->layer].smem_len;
-#endif
-
-#ifdef LF1000
 	// Look on for available buffer on free list first
 	for (it = gBufListFree.begin(); it != gBufListFree.end(); it++) {
 		buf = *it;
@@ -1089,7 +1045,6 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	buf.aligned = aligned;
 	gBufListUsed.push_back(buf);
 	dbg_.DebugOut(kDbgLvlVerbose, "AllocBuffer: new buf offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
-#endif
 
 	kernel_.UnlockMutex(gListMutex);
 	return true;
@@ -1105,7 +1060,6 @@ bool CDisplayFB::DeAllocBuffer(tDisplayContext* pdc)
 	U32 markStart = gMarkBufStart;
 	U32 markEnd   = gMarkBufEnd;
 
-#ifdef LF1000
 	// Find allocated buffer for this display context
 	for (it = gBufListUsed.begin(); it != gBufListUsed.end(); it++) {
 		buf = *it;
@@ -1142,7 +1096,6 @@ bool CDisplayFB::DeAllocBuffer(tDisplayContext* pdc)
 			}
 		}
 	}
-#endif
 
 	kernel_.UnlockMutex(gListMutex);
 	return true;

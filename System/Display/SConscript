@@ -39,6 +39,10 @@ if env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
 							'/usr/X11R6/include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
+elif env['platform'] == 'LF3000' and env['cpu_bare']:
+	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
+	myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
+	myenv.Append(CPPDEFINES = ['EGL_EGLEXT_PROTOTYPES', 'GL_GLEXT_PROTOTYPES'])
 elif env['platform'] == 'LF2000' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
