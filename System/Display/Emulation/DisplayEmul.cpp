@@ -16,7 +16,7 @@
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
 #include <DisplayMPI.h>
-#include <BrioOpenGLConfig.h>
+#include <BrioOpenGLConfigPrivate.h>
 #include <EmulationConfig.h>
 
 #include <X11/Xlib.h>
