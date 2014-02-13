@@ -38783,3 +38783,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/13/14 11:17 AM
 24,522 ms. (Cumulative: 17,684,202 ms)
 
 ----------------
+Revision 10,504 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Changing DisplayEmul header include.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/13/14 12:11 PM
+1 changed, 0 added, 0 deleted.
+24,272 ms. (Cumulative: 17,708,599 ms)
+
+----------------
