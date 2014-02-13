@@ -41,8 +41,8 @@ myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 
 if env['cpu'] == 'x86':
-	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/Include'])
-	myenv.Append(LIBPATH = ['#ThirdParty/MaliEmulator/Libs'])
+	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/include'])
+	myenv.Append(LIBPATH = ['#ThirdParty/MaliEmulator/bin'])
 
 myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
