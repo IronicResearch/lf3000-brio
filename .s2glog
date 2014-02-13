@@ -38757,3 +38757,12 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 2/12/14 11:53 AM
 24,330 ms. (Cumulative: 17,635,331 ms)
 
 ----------------
+Revision 10,502 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add AccelerometerMPI link to ControllerMPI and module.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/12/14 5:44 PM
+1 changed, 0 added, 0 deleted.
+24,130 ms. (Cumulative: 17,659,571 ms)
+
+----------------

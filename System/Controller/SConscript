@@ -18,8 +18,8 @@ emulibs		= []
 modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp')) + Glob('*.cpp')
 	
-modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI', 'AnalogStickMPI', 'ButtonMPI', 'VisionMPI' ] + emulibs
-mpilibs		= ['ModuleMPI', 'EventMPI', 'KernelMPI', 'AnalogStickMPI', 'ButtonMPI', 'VisionMPI']
+modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI', 'AnalogStickMPI', 'ButtonMPI', 'VisionMPI', 'AccelerometerMPI' ] + emulibs
+mpilibs		= ['ModuleMPI', 'EventMPI', 'KernelMPI', 'AnalogStickMPI', 'ButtonMPI', 'VisionMPI', 'AccelerometerMPI']
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
