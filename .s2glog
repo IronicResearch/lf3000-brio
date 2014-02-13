@@ -38766,3 +38766,20 @@ By dlazzari (dlazzari@leapfrog.com) on 2/12/14 5:44 PM
 24,130 ms. (Cumulative: 17,659,571 ms)
 
 ----------------
+Revision 10,503 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Splitting BrioOpenGLConfig into Public and Private class.  Minimal code changes made.
+
+What was BrioOpenGLConfig is now BrioOpenGLConfigPrivate.  A new BrioOpenGLConfig is now just a pimpl to BrioOpenGLConfigPrivate.
+
+BrioOpenGLConfig is now a friend class of DisplayMPI, this way it can access pModule_.
+
+DisplayModule now has CreateBrioOpenGLConfigPrivate and DestroyBrioOpenGLConfigPrivate functions that BrioOpenGLConfig calls.
+
+brioopenglconfig_context_map is now a mapping of BrioOpenGLConfigPrivate instead of BrioOpenGLConfig.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/13/14 11:17 AM
+9 changed, 5 added, 0 deleted.
+24,522 ms. (Cumulative: 17,684,202 ms)
+
+----------------

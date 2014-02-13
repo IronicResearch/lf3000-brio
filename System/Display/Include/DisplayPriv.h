@@ -20,6 +20,7 @@
 #include <DebugMPI.h>
 #include <EventMPI.h>
 #include <KernelMPI.h>
+#include <BrioOpenGLConfig.h>
 #include <string.h>
 
 #ifdef EMULATION
@@ -34,8 +35,8 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-class BrioOpenGLConfig;
 
+class BrioOpenGLConfigPrivate;
 
 
 //==============================================================================
@@ -492,6 +493,11 @@ public:
 
 	VTABLE_EXPORT EGLClientBuffer	CreateEglClientBuffer(tDisplayHandle hndl);
 	VTABLE_EXPORT void				DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer);
+
+	VTABLE_EXPORT BrioOpenGLConfigPrivate*	CreateBrioOpenGLConfigPrivate(U32 size1D, U32 size2D);
+	VTABLE_EXPORT BrioOpenGLConfigPrivate*	CreateBrioOpenGLConfigPrivate(enum tBrioOpenGLVersion brioOpenGLVersion);
+	VTABLE_EXPORT void						DestroyBrioOpenGLConfigPrivate(BrioOpenGLConfigPrivate* brioOpenGLPrivate);
+
 
 private:
 	void				InitModule( );

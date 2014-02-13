@@ -438,5 +438,20 @@ void CDisplayModule::DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer)
 }
 //----------------------------------------------------------------------------
 
+BrioOpenGLConfigPrivate* CDisplayModule::CreateBrioOpenGLConfigPrivate(U32 size1D, U32 size2D)
+{
+	return new BrioOpenGLConfigPrivate(size1D, size2D);
+}
+
+BrioOpenGLConfigPrivate* CDisplayModule::CreateBrioOpenGLConfigPrivate(enum tBrioOpenGLVersion brioOpenGLVersion)
+{
+	return new BrioOpenGLConfigPrivate(brioOpenGLVersion);
+}
+
+void CDisplayModule::DestroyBrioOpenGLConfigPrivate(BrioOpenGLConfigPrivate* brioOpenGLPrivate)
+{
+	delete brioOpenGLPrivate;
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF
