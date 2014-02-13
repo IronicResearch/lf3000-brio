@@ -38821,3 +38821,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/13/14 2:14 PM
 25,064 ms. (Cumulative: 17,784,155 ms)
 
 ----------------
+Revision 10,508 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Removed SwapBufferCallback setting from SetSwapBufferCallback.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/13/14 2:32 PM
+1 changed, 0 added, 0 deleted.
+24,120 ms. (Cumulative: 17,808,385 ms)
+
+----------------
