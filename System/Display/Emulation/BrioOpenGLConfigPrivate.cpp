@@ -108,46 +108,6 @@ namespace
 //==============================================================================
 void SetSwapBufferCallback()
 {
-	CPath egl_path = "libEGL.so";
-	CKernelMPI kernel_mpi;
-	tHndl lf2000_egl_handle = kernel_mpi.LoadModule(egl_path);
-	if(lf2000_egl_handle)
-	{
-		typedef void (*SwapBufferCallback2)(EGLDisplay dpy, EGLSurface surface);
-		typedef void (*SwapBufferCallback2Setter)(SwapBufferCallback2 callback);
-		union ObjPtrToFunPtrConverter2 {
-			void* voidptr;
-			SwapBufferCallback2Setter pfnSwapBufferCallback2Setter;
-		} fp2;
-		CString fname = "__vr5_set_swap_buffer_callback2";
-		fp2.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf2000_egl_handle, fname);
-		SwapBufferCallback2Setter swap_buffer_callback2_setter = fp2.pfnSwapBufferCallback2Setter;
-		if(!swap_buffer_callback2_setter)
-		{
-			fname = "eglSetSwapbufferCallback";
-			fp2.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf2000_egl_handle, fname);
-			SwapBufferCallback2Setter swap_buffer_callback2_setter = fp2.pfnSwapBufferCallback2Setter;
-		}
-
-		if(swap_buffer_callback2_setter)
-		{
-			swap_buffer_callback2_setter(GLESOAL_SwapBufferCallback2);
-		} else {
-			typedef void (*SwapBufferCallback)( void );
-			typedef void (*SwapBufferCallbackSetter)(SwapBufferCallback callback);
-			union ObjPtrToFunPtrConverter {
-				void* voidptr;
-				SwapBufferCallbackSetter pfnSwapBufferCallbackSetter;
-			} fp;
-			fname = "__vr5_set_swap_buffer_callback";
-			fp.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf2000_egl_handle, fname);
-			SwapBufferCallbackSetter swap_buffer_callback_setter = fp.pfnSwapBufferCallbackSetter;
-			if(swap_buffer_callback_setter)
-				swap_buffer_callback_setter(GLESOAL_SwapBufferCallback);
-		}
-		kernel_mpi.UnloadModule(lf2000_egl_handle);
-	}
-	swapBufferSet = true;
 }
 //----------------------------------------------------------------------
 BrioOpenGLConfigPrivate::BrioOpenGLConfigPrivate(U32 size1D, U32 size2D)
