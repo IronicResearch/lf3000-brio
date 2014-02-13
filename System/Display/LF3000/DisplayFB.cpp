@@ -15,7 +15,7 @@
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
-#include <BrioOpenGLConfig.h>
+#include <BrioOpenGLConfigPrivate.h>
 #ifdef LF1000
 #include <GLES/libogl.h>
 #endif
@@ -46,7 +46,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 //tDisplayHandle		hogl = NULL;
 std::vector<tDisplayHandle> hogls;
-extern std::map<BrioOpenGLConfig *, tOpenGLContext>		brioopenglconfig_context_map;
+extern std::map<BrioOpenGLConfigPrivate *, tOpenGLContext>		brioopenglconfig_context_map;
 namespace 
 {
 	const char*					FBDEV[NUMFB] = {"/dev/fb0", "/dev/fb1", "/dev/fb2"};
@@ -489,7 +489,7 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 		eglDestroyImageKHR(ctx->openGLScaler->eglDisplay, ctx->eGLSourceImage);
 		delete ctx->openGLScaler;
 
-		std::map<BrioOpenGLConfig *, tOpenGLContext>::iterator opengl_context_finder = brioopenglconfig_context_map.begin();
+		std::map<BrioOpenGLConfigPrivate *, tOpenGLContext>::iterator opengl_context_finder = brioopenglconfig_context_map.begin();
 		if(opengl_context_finder != brioopenglconfig_context_map.end())
 		{
 			eglMakeCurrent(opengl_context_finder->first->eglDisplay,
@@ -1138,7 +1138,7 @@ void CDisplayFB::EnableOpenGL(void* pCtx)
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	if(pOglCtx)
 	{
-		std::map<BrioOpenGLConfig *, tOpenGLContext>::iterator opengl_context_finder = brioopenglconfig_context_map.begin();
+		std::map<BrioOpenGLConfigPrivate *, tOpenGLContext>::iterator opengl_context_finder = brioopenglconfig_context_map.begin();
 		for(;opengl_context_finder != brioopenglconfig_context_map.end(); ++opengl_context_finder)
 		{
 			if(pOglCtx == &opengl_context_finder->second)

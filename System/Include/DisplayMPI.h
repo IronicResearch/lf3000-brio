@@ -445,6 +445,7 @@ public:
 
 private:
 	class CDisplayModule*	pModule_;
+	friend class BrioOpenGLConfig;
 };
 
 LF_END_BRIO_NAMESPACE()	
