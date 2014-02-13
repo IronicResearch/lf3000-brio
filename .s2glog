@@ -38830,3 +38830,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/13/14 2:32 PM
 24,120 ms. (Cumulative: 17,808,385 ms)
 
 ----------------
+Revision 10,509 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixup OpenGL header include paths for emulation in Display and Camera modules.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/13/14 3:08 PM
+2 changed, 0 added, 0 deleted.
+24,212 ms. (Cumulative: 17,832,691 ms)
+
+----------------
