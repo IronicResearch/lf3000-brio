@@ -38857,3 +38857,14 @@ By dlazzari (dlazzari@leapfrog.com) on 2/13/14 3:54 PM
 24,038 ms. (Cumulative: 17,881,096 ms)
 
 ----------------
+Revision 10,512 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding new Init functions to BrioOpenGLConfigPrivate, real constructors eventually forward to one of these functions.  Helps eliminate duplication of code.
+
+Also eliminated the LoadModule business from LF3000 and calling the functions directly.  LF2000 still doing LoadModule because callback2 only exists on Rio.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/14/14 11:48 AM
+4 changed, 0 added, 0 deleted.
+24,253 ms. (Cumulative: 17,905,443 ms)
+
+----------------
