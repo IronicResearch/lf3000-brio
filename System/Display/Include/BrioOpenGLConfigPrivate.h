@@ -23,6 +23,10 @@ public:
 
 	CDisplayMPI			disp_;
 	tOpenGLContext		ctx;
+
+private:
+	void Init(U32 size1D, U32 size2D);
+	void Init(enum tBrioOpenGLVersion brioOpenGLVersion);
 };
 LF_END_BRIO_NAMESPACE()
 #endif //LF_BRIO_BRIOOPENGLCONFIG_PRIVATE_H

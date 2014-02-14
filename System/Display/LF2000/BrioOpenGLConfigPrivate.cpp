@@ -176,165 +176,9 @@ BrioOpenGLConfigPrivate::BrioOpenGLConfigPrivate(U32 size1D, U32 size2D)
 	: 
 	eglDisplay(0), eglConfig(0), eglSurface(0), eglContext(0)
 {
-	CDebugMPI				dbg(kGroupDisplay);
-	dbg.SetDebugLevel(kDisplayDebugLevel);
-	if(!dispmgr)
-		dispmgr = new CDisplayMPI();
-	dispmgrcount++;
-
-	tOpenGLContext &ctx = brioopenglconfig_context_map[this];
-	// Setup exit handlers to disable OGL context
-	if (!isHandled) {
-		atexit(BOGLExitHandler);
-		signal(SIGTERM, BOGLSignalHandler);
-		isHandled = true;
-	}
-	// Too soon to call InitOpenGL on LF1000, though we still need EGL params
-	ctx.eglDisplay = display; // FIXME typedef
-	WindowType *hwnd = new WindowType;
-	ctx.eglWindow = hwnd; // something non-NULL
-	disp_.InitOpenGL(&ctx);
-	FILE *noscale_flag = fopen("/flags/ogl_noscale", "r");
-	if(!noscale_flag)
-		noscale_flag = fopen("/tmp/ogl_noscale", "r");
-	if(noscale_flag) {
-		hwnd->width = ctx.width;
-		hwnd->height = ctx.height;
-		fclose(noscale_flag);
-	} else {
-		hwnd->width = ctx.owidth;
-		hwnd->height = ctx.oheight;
-	}
-	hwnd->pctx = ctx.hndlDisplay;
-	
-	/*
-		Step 1 - Get the default display.
-		EGL uses the concept of a "display" which in most environments
-		corresponds to a single physical screen. Since we usually want
-		to draw to the main screen or only have a single screen to begin
-		with, we let EGL pick the default display.
-		Querying other displays is platform specific.
-	*/
-	eglDisplay = eglGetDisplay(ctx.eglDisplay);
-
-	/*
-		Step 2 - Initialize EGL.
-		EGL has to be initialized with the display obtained in the
-		previous step. We cannot use other EGL functions except
-		eglGetDisplay and eglGetError before eglInitialize has been
-		called.
-		If we're not interested in the EGL version number we can just
-		pass NULL for the second and third parameters.
-	*/
-	EGLint iMajorVersion, iMinorVersion;
-	dbg.DebugOut(kDbgLvlVerbose, "eglInitialize()\n");
-	bool success = eglInitialize(eglDisplay, &iMajorVersion, &iMinorVersion);
-	dbg.Assert(success, "eglInitialize() failed\n");
-	dbg.DebugOut(kDbgLvlVerbose, "eglInitialize(): success = %d, version = %d.%d\n", success, iMajorVersion, iMinorVersion);
-	dbg.DebugOut(kDbgLvlVerbose, "EGL vendor = %s\n", eglQueryString(eglDisplay, EGL_VENDOR));
-	dbg.DebugOut(kDbgLvlVerbose, "EGL version = %s\n", eglQueryString(eglDisplay, EGL_VERSION));
-	dbg.DebugOut(kDbgLvlVerbose, "EGL extensions = %s\n", eglQueryString(eglDisplay, EGL_EXTENSIONS));
-
-	eglBindAPI(EGL_OPENGL_ES_API);
-
-	// NOTE: 3D layer can only be enabled after MagicEyes lib 
-	// sets up 3D accelerator, but this cannot happen
-	// until GLESOAL_Initalize() callback gets mappings.
-
-	// NOTE: LF1000 GLESOAL_Initalize() callback now occurs during 
-	// eglCreateWindowSurface() instead of eglInitialize().
-	
-	/*
-		Step 3 - Specify the required configuration attributes.
-		An EGL "configuration" describes the pixel format and type of
-		surfaces that can be used for drawing.
-		For now we just want to use a 16 bit RGB surface that is a 
-		Window surface, i.e. it will be visible on screen. The list
-		has to contain key/value pairs, terminated with EGL_NONE.
-	 */
-	bool using_32_bit = ((tDisplayContext*)ctx.hndlDisplay)->colorDepthFormat == kPixelFormatARGB8888;
-	const EGLint pi32ConfigAttribs[] =
-	{
-	    EGL_RED_SIZE,       using_32_bit ? 8 : 5,
-	    EGL_GREEN_SIZE,     using_32_bit ? 8 : 6,
-	    EGL_BLUE_SIZE,      using_32_bit ? 8 : 5,
-	    EGL_ALPHA_SIZE,     using_32_bit ? 8 : 0,
-	    EGL_DEPTH_SIZE,     16,
-	    EGL_STENCIL_SIZE,   using_32_bit ? 8 : 0,
-	    EGL_SURFACE_TYPE,   EGL_WINDOW_BIT,
-	    EGL_NONE,           EGL_NONE
-	};
-
-	/*
-		Step 4 - Find a config that matches all requirements.
-		eglChooseConfig provides a list of all available configurations
-		that meet or exceed the requirements given as the second
-		argument. In most cases we just want the first config that meets
-		all criteria, so we can limit the number of configs returned to 1.
-	*/
-	int iConfigs;
-	dbg.DebugOut(kDbgLvlVerbose, "eglChooseConfig()\n");
-	success = eglChooseConfig(eglDisplay, pi32ConfigAttribs, &eglConfig, 1, &iConfigs);
-	dbg.Assert(success && iConfigs == 1, "eglChooseConfig() failed %d\n", iConfigs);
-
-	/*
-		Step 5 - Create a surface to draw to.
-		Use the config picked in the previous step and the native window
-		handle when available to create a window surface. A window surface
-		is one that will be visible on screen inside the native display (or 
-		fullscreen if there is no windowing system).
-		Pixmaps and pbuffers are surfaces which only exist in off-screen
-		memory.
-	*/
-	dbg.DebugOut(kDbgLvlVerbose, "eglCreateWindowSurface()\n");
-	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, ctx.eglWindow, NULL);
-	AbortIfEGLError("eglCreateWindowSurface");
-	
-	/*
-		Step 6 - Create a context.
-		EGL has to create a context for OpenGL ES. Our OpenGL ES resources
-		like textures will only be valid inside this context
-		(or shared contexts)
-	*/
-	dbg.DebugOut(kDbgLvlVerbose, "eglCreateContext()\n");
-	eglContext = eglCreateContext(eglDisplay, eglConfig, NULL, NULL);
-	AbortIfEGLError("eglCreateContext");
-
-	/*
-		Step 7 - Bind the context to the current thread and use our 
-		window surface for drawing and reading.
-		Contexts are bound to a thread. This means you don't have to
-		worry about other threads and processes interfering with your
-		OpenGL ES application.
-		We need to specify a surface that will be the target of all
-		subsequent drawing operations, and one that will be the source
-		of read operations. They can be the same surface.
-	*/
-	dbg.DebugOut(kDbgLvlVerbose, "eglMakeCurrent()\n");
-	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
-	AbortIfEGLError("eglMakeCurrent");
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", glGetString(GL_VENDOR));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", glGetString(GL_VERSION));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
-
-	surface_context_map[eglSurface] = &brioopenglconfig_context_map[this];
-	// Clear garbage pixels from previous OpenGL context (embedded target)
-	glClearColorx(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	dbg.DebugOut(kDbgLvlVerbose, "eglSwapBuffers()\n");
-	eglSwapBuffers(eglDisplay, eglSurface);
-	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
-
-	// Enable display context layer visibility after initial buffer swap
-	disp_.EnableOpenGL(&ctx);
-	isEnabled = true;
-	if(!swapBufferSet)
-		SetSwapBufferCallback();
-
-	// Store handle for use in Display MPI functions
-	hndlDisplay = ctx.hndlDisplay;
-	dbg.DebugOut(kDbgLvlVerbose, "display handle = %p\n", hndlDisplay);
+	(void)size1D;
+	(void)size2D;
+	Init(kBrioOpenGL11);
 }
 
 //----------------------------------------------------------------------
@@ -378,6 +222,18 @@ BrioOpenGLConfigPrivate::~BrioOpenGLConfigPrivate()
 BrioOpenGLConfigPrivate::BrioOpenGLConfigPrivate(enum tBrioOpenGLVersion brioOpenGLVersion)
 	:
 	eglDisplay(0), eglConfig(0), eglSurface(0), eglContext(0)
+{
+	Init(brioOpenGLVersion);
+}
+
+void BrioOpenGLConfigPrivate::Init(U32 size1D, U32 size2D)
+{
+	(void)size1D;
+	(void)size2D;
+	Init(kBrioOpenGL11);
+}
+
+void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 {
 	CDebugMPI				dbg(kGroupDisplay);
 	dbg.SetDebugLevel(kDisplayDebugLevel);
