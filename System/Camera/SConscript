@@ -55,7 +55,7 @@ myenv.Append(CPPPATH=['Include'])
 if not env['cpu'] == 'x86':
 	usbmodule	= MakeMyModule(myenv, usb_module_name, modsrcs + usbmodsrcs, modlibs, kBuildModule)
 	vipmodule	= MakeMyModule(myenv, vip_module_name, modsrcs + vipmodsrcs, modlibs, kBuildModule)
-	if env['platform'] == 'LF2000':
+	if env['platform'] == 'LF3000':
 		nxpmodule	= MakeMyModule(myenv, nxp_module_name, modsrcs + nxpmodsrcs, modlibs + nxplibs, kBuildModule)
 	else:
 		nxpmodule = ""
