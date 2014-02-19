@@ -255,6 +255,7 @@ void* CameraTaskMain(void* arg)
 		pCtx->paHndl = &aHndl[0];
 		pCtx->bDoubleBuffered = bDoubleBuffered;
 	}
+	pCtx->frame = &frame;
 
 	timeout = false;
 	timer = kernel.CreateTimer(TimerCallback, props, NULL);
@@ -512,6 +513,7 @@ void* CameraTaskMain(void* arg)
 		pCtx->qframes.pop();
 	}
 #endif
+	pCtx->frame = NULL;
 
 	if(image.data)
 	{

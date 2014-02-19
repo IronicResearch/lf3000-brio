@@ -38889,3 +38889,14 @@ By Dave Milici (dmilici@leapfrog.com) on 2/18/14 6:02 PM
 24,117 ms. (Cumulative: 17,954,051 ms)
 
 ----------------
+Revision 10,516 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraModule::GetCaptureVideoSurface() modified to return surface describing most recent capture frame,
+instead of viewfinder surface. Disabled for interim until pending VisionMPI update. (FWSRUM-1131)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/19/14 12:25 PM
+2 changed, 0 added, 0 deleted.
+24,358 ms. (Cumulative: 17,978,502 ms)
+
+----------------

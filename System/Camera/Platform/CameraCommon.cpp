@@ -3157,7 +3157,21 @@ tCameraDevice CCameraModule::GetCurrentCamera()
 // surface access and locking
 tVideoSurf* 	CCameraModule::GetCaptureVideoSurface(const tVidCapHndl hndl)
 {
+#if 0 	// FIXME: pending VisionMPI update
+	// FIXME: return surface describing most recent captured frame
+	if (camCtx_.frame) {
+		static tVideoSurf surf; // FIXME
+		surf.format = (camCtx_.frame->pixelformat == kCaptureFormatRAWYUYV) ? kPixelFormatYUYV422 : kPixelFormatYUV420;
+		surf.width  = camCtx_.frame->width;
+		surf.height = camCtx_.frame->height;
+		surf.buffer = (U8*)camCtx_.frame->data;
+		surf.pitch  = camCtx_.frame->size / surf.height;
+		return &surf;
+	}
+	return NULL;
+#else
 	return camCtx_.surf;
+#endif
 }
 Boolean 	CCameraModule::LockCaptureVideoSurface(const tVidCapHndl hndl)
 {
