@@ -339,13 +339,14 @@ void* CameraTaskMain(void* arg)
 				kernel.TaskSleep(10);
 			continue;
 		}
+		framecount++;
 
 		// Post event message to listener if streaming without saving to file
 		if(pCtx->pListener && !bFile)
 		{
 			tCaptureFrameMsg    		data;
 			data.vhndl          		= pCtx->hndl;
-			data.frame          		= framecount++;
+			data.frame          		= framecount;
 			data.timestamp.seconds		= frame.timestamp.tv_sec;
 			data.timestamp.microSeconds	= frame.timestamp.tv_usec;
 			CCameraEventMessage 		msg(data);
@@ -442,6 +443,8 @@ void* CameraTaskMain(void* arg)
 		}
 	}
 	elapsed = 1000000 * (tvt.tv_sec) + (tvt.tv_usec);
+
+	dbg.DebugOut( kDbgLvlVerbose, "%s: frames: %d, elapsed: %d, fps = %f\n", __func__, (unsigned)framecount, (unsigned)elapsed,  (float)framecount / ((float)elapsed / 1000000));
 
 	if(bFile)
 	{
