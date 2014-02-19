@@ -38879,3 +38879,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/18/14 5:57 PM
 24,287 ms. (Cumulative: 17,929,840 ms)
 
 ----------------
+Revision 10,515 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Use camera thread frame counter for logging FPS calculation. (FWSCRUM-1329)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/18/14 6:02 PM
+1 changed, 0 added, 0 deleted.
+24,117 ms. (Cumulative: 17,954,051 ms)
+
+----------------
