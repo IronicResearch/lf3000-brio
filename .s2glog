@@ -38868,3 +38868,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/14/14 11:48 AM
 24,253 ms. (Cumulative: 17,905,443 ms)
 
 ----------------
+Revision 10,513 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,514 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally build libCameraNXP.so module for LF3000 platform. (FWUI-548)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/18/14 5:57 PM
+1 changed, 0 added, 0 deleted.
+24,287 ms. (Cumulative: 17,929,840 ms)
+
+----------------
