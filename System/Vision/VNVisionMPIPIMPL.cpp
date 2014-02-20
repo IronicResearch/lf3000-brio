@@ -5,6 +5,9 @@
 #include <Vision/VNHotSpot.h>
 #include <DisplayTypes.h>
 #include <Vision/VNWand.h>
+#ifdef EMULATION
+#include <opencv2/highgui/highgui.hpp>
+#endif
 
 namespace LF {
 namespace Vision {
@@ -153,6 +156,11 @@ namespace Vision {
 			CV_8UC3, 
 			buffer);
 	    algorithm_->Execute(img, outputImg_);
+
+#ifdef EMULATION
+	    OpenCVDebug();
+#endif
+
 	    TriggerHotSpots();
 	  }
 	}
@@ -177,5 +185,22 @@ namespace Vision {
     //TODO: investigate what we should return here.
     return NULL;
   }
+
+
+#ifdef EMULATION
+  void
+  VNVisionMPIPIMPL::OpenCVDebug(void) {
+    //TODO: read from flag whether to show opencv debug
+    if (outputImg_.cols > 0 && outputImg_.rows > 0) {
+      cv::namedWindow("OpenCV Debug");
+      cv::imshow("OpenCV Debug", outputImg_);
+      // the 1 indicates to wait for 1 millisecond
+      // if we do not wait for key events inside of the opencv window
+      // the window does not get displayed.
+      cv::waitKey(1);
+    }
+  }
+#endif
+
 } // namespace Vision
 } // namespace LF
