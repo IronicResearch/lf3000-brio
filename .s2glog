@@ -38910,3 +38910,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/19/14 5:49 PM
 24,205 ms. (Cumulative: 18,002,848 ms)
 
 ----------------
+Revision 10,518 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix RGB swizzle option in YUYV repacking routines for default OpenGL RGB order.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/19/14 6:45 PM
+2 changed, 0 added, 0 deleted.
+24,345 ms. (Cumulative: 18,027,286 ms)
+
+----------------
