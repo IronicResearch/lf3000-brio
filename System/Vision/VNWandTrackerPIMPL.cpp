@@ -80,16 +80,16 @@ namespace Vision {
     cv::inRange(hsv_, 
 		wand_->hsvMin_,
 		wand_->hsvMax_,
-		validRange_);
-    cv::threshold(validRange_, 
-		  validRange_, 
+		output);
+    cv::threshold(output, 
+		  output, 
 		  kVNMinPixelValue, 
 		  kVNMaxPixelValue, 
 		  cv::THRESH_BINARY);
  
     std::vector<std::vector<cv::Point> > contours;
     int index = kVNNoContourIndex;
-    ComputeLargestContour(validRange_, contours, index);
+    ComputeLargestContour(output, contours, index);
 
     if (index != kVNNoContourIndex) {
       cv::Point p(0,0);

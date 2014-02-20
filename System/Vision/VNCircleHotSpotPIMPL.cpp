@@ -70,6 +70,7 @@ namespace Vision {
 
 	// clip the filtering image such that when we apply the filter
 	// to the input image we are applying it in the correct location
+	// TODO: Error check on adjustedClippedRect to insure it's inside of mask_ bounds
 	cv::Mat clippedMask = mask_(adjustedClippedRect);
 
 	// NOTE: If we want to calculate the percentage of occlusion based only on

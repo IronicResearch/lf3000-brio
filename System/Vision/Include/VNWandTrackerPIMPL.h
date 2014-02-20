@@ -17,7 +17,6 @@ namespace Vision {
     
     VNWandPIMPL* wand_;
     cv::Mat hsv_;
-    cv::Mat validRange_;
     float minArea_;
 
   private:

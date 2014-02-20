@@ -73,6 +73,7 @@ namespace Vision {
     if (trigger_ != NULL) {
       if (input.rows > 0 && input.cols > 0) {
 	cv::Rect clippedRect = ClipRectToImage(input);
+	// TODO: Error check on clipped rect to insure it is inside of input image
 	triggerImage_ = (input)(clippedRect);
       }
       isTriggered_ = trigger_->Triggered(hs);      

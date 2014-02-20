@@ -38,6 +38,10 @@ namespace Vision {
     
     static void* CameraCaptureTask(void* args);
 
+#ifdef EMULATION
+    void OpenCVDebug(void);
+#endif
+
     bool visionAlgorithmRunning_;
     float frameProcessingRate_;
     std::vector<const VNHotSpot*> hotSpots_;

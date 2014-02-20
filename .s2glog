@@ -38952,3 +38952,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/20/14 11:54 AM
 24,046 ms. (Cumulative: 18,123,941 ms)
 
 ----------------
+Revision 10,523 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding latest Flakasoft patch and OpenCV libs delivered by Alex Lindblad and Lovica on 19/Feb/14.
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 2/20/14 1:38 PM
+24 changed, 0 added, 0 deleted.
+27,632 ms. (Cumulative: 18,151,667 ms)
+
+----------------
