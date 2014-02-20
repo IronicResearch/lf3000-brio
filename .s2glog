@@ -38920,3 +38920,19 @@ By Dave Milici (dmilici@leapfrog.com) on 2/19/14 6:45 PM
 24,345 ms. (Cumulative: 18,027,286 ms)
 
 ----------------
+Revision 10,519 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,098 ms. (Cumulative: 18,051,478 ms)
+
+----------------
+Revision 10,520 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added kControlAutoExposure enum to pair with exposure controls enumerated by USB camera vendors GI & Richtek. (FWSCRUM-960)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/20/14 10:25 AM
+2 changed, 0 added, 0 deleted.
+24,269 ms. (Cumulative: 18,075,762 ms)
+
+----------------

@@ -50,6 +50,7 @@ enum tControlType {
 	kControlTypeRotate,
 	kControlTypeAutoWhiteBalance,
 	kControlTypeExposure,
+	kControlTypeAutoExposure,
 };
 
 enum tColorOrder {
