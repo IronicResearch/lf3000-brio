@@ -706,7 +706,11 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 	}
 #endif
 
+#ifdef V4L2_CTRL_FLAG_NEXT_CTRL
+	for(query.id = V4L2_CTRL_FLAG_NEXT_CTRL, ret = 0; ret == 0; query.id |= V4L2_CTRL_FLAG_NEXT_CTRL)
+#else
 	for(query.id = V4L2_CID_BASE; query.id < V4L2_CID_LASTP1; query.id++)
+#endif
 	{
 		ret = ioctl(pCamCtx->fd, VIDIOC_QUERYCTRL, &query);
 		if((ret != 0) || (query.flags & V4L2_CTRL_FLAG_DISABLED))
@@ -788,11 +792,11 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 			break;
 		default:
 			control->type = kControlTypeError;
-			pCamCtx->dbg->DebugOut(kDbgLvlVerbose, "%s: v4l2 cid %08x: ctl=%d, min=%d, max=%d, def=%d, cur=%d\n", __FUNCTION__, query.id, (int)control->type, (int)control->min, (int)control->max, (int)control->preset, (int)control->current);
+			pCamCtx->dbg->DebugOut(kDbgLvlVerbose, "%s: v4l2 cid %08x: ctl=%d, min=%d, max=%d, def=%d, cur=%d, name=%s\n", __FUNCTION__, query.id, (int)control->type, (int)control->min, (int)control->max, (int)control->preset, (int)control->current, query.name);
 			delete control;
 			continue;
 		}
-		pCamCtx->dbg->DebugOut(kDbgLvlVerbose, "%s: v4l2 cid %08x: ctl=%d, min=%d, max=%d, def=%d, cur=%d\n", __FUNCTION__, query.id, (int)control->type, (int)control->min, (int)control->max, (int)control->preset, (int)control->current);
+		pCamCtx->dbg->DebugOut(kDbgLvlVerbose, "%s: v4l2 cid %08x: ctl=%d, min=%d, max=%d, def=%d, cur=%d, name=%s\n", __FUNCTION__, query.id, (int)control->type, (int)control->min, (int)control->max, (int)control->preset, (int)control->current, query.name);
 
 		pCamCtx->controls->push_back(control);
 	}
