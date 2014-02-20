@@ -38900,3 +38900,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/19/14 12:25 PM
 24,358 ms. (Cumulative: 17,978,502 ms)
 
 ----------------
+Revision 10,517 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally use slower rendering path for JPEG capture formats, and faster repacking path for YUV capture formats. (FWSCRUM-1329)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/19/14 5:49 PM
+1 changed, 0 added, 0 deleted.
+24,205 ms. (Cumulative: 18,002,848 ms)
+
+----------------

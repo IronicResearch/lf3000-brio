@@ -362,7 +362,10 @@ void* CameraTaskMain(void* arg)
 			pCtx->qframes.push(frame);
 			bQueued = true;
 #else
-			bRet = pCtx->module->RenderFrame(&frame, pSurf, &image, method);
+			if (pCtx->mode.pixelformat == kCaptureFormatMJPEG)
+				bRet = pCtx->module->RenderFrame(&frame, pSurf, &image, method);
+			else
+				bRet = pCtx->module->RenderFrame(frame, pSurf, kDisplayRgb);
 			if(bRet)
 			{
 				if (bDoubleBuffered) {
@@ -445,7 +448,7 @@ void* CameraTaskMain(void* arg)
 	}
 	elapsed = 1000000 * (tvt.tv_sec) + (tvt.tv_usec);
 
-	dbg.DebugOut( kDbgLvlVerbose, "%s: frames: %d, elapsed: %d, fps = %f\n", __func__, (unsigned)framecount, (unsigned)elapsed,  (float)framecount / ((float)elapsed / 1000000));
+	dbg.DebugOut( kDbgLvlValuable, "%s: frames: %d, elapsed: %d, fps = %f\n", __func__, (unsigned)framecount, (unsigned)elapsed,  (float)framecount / ((float)elapsed / 1000000));
 
 	if(bFile)
 	{
