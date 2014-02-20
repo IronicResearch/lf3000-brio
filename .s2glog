@@ -38972,3 +38972,13 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 2/20/14 2:30 PM
 25,006 ms. (Cumulative: 18,176,798 ms)
 
 ----------------
+Revision 10,525 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding missing highgui Includes from Alex Lindblad delivered on 20/Feb/14.
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 2/20/14 2:41 PM
+2 changed, 0 added, 0 deleted.
+24,175 ms. (Cumulative: 18,201,067 ms)
+
+----------------
