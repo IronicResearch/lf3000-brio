@@ -2060,12 +2060,12 @@ Boolean CCameraModule::RenderFrame(tFrameInfo &frame, tVideoSurf *pSurf, tColorO
 						U8 v0 = sy[k+1];
 						U8 y1 = sy[k+2];
 						U8 u0 = sy[k+3];
-						dy[m+0] = B(y0,u0,v0);
+						dy[m+b] = B(y0,u0,v0);
 						dy[m+1] = G(y0,u0,v0);
-						dy[m+2] = R(y0,u0,v0);
-						dy[m+3] = B(y1,u0,v0);
+						dy[m+r] = R(y0,u0,v0);
+						dy[m+3+b] = B(y1,u0,v0);
 						dy[m+4] = G(y1,u0,v0);
-						dy[m+5] = R(y1,u0,v0);
+						dy[m+3+r] = R(y1,u0,v0);
 					}
 					sy += pitch;
 					dy += pSurf->pitch;
@@ -2082,13 +2082,13 @@ Boolean CCameraModule::RenderFrame(tFrameInfo &frame, tVideoSurf *pSurf, tColorO
 						U8 u0 = sy[k+1];
 						U8 y1 = sy[k+2];
 						U8 v0 = sy[k+3];
-						dy[m+0] = B(y0,u0,v0);
+						dy[m+b] = B(y0,u0,v0);
 						dy[m+1] = G(y0,u0,v0);
-						dy[m+2] = R(y0,u0,v0);
+						dy[m+r] = R(y0,u0,v0);
 						dy[m+3] = 0xFF;
-						dy[m+4] = B(y1,u0,v0);
+						dy[m+4+b] = B(y1,u0,v0);
 						dy[m+5] = G(y1,u0,v0);
-						dy[m+6] = R(y1,u0,v0);
+						dy[m+4+r] = R(y1,u0,v0);
 						dy[m+7] = 0xFF;
 					}
 					sy += pitch;

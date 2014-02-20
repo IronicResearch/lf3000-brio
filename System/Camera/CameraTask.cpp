@@ -365,7 +365,7 @@ void* CameraTaskMain(void* arg)
 			if (pCtx->mode.pixelformat == kCaptureFormatMJPEG)
 				bRet = pCtx->module->RenderFrame(&frame, pSurf, &image, method);
 			else
-				bRet = pCtx->module->RenderFrame(frame, pSurf, kDisplayRgb);
+				bRet = pCtx->module->RenderFrame(frame, pSurf, kOpenGlRgb);
 			if(bRet)
 			{
 				if (bDoubleBuffered) {
