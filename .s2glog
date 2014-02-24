@@ -39004,3 +39004,20 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 2/20/14 2:46 PM
 23,995 ms. (Cumulative: 18,249,195 ms)
 
 ----------------
+Revision 10,528 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,529 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,530 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,066 ms. (Cumulative: 18,273,370 ms)
+
+----------------
+Revision 10,531 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge in svn -r10480 from LF2000 branch for lower RGB layer visibility.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/24/14 11:21 AM
+1 changed, 0 added, 0 deleted.
+24,080 ms. (Cumulative: 18,297,450 ms)
+
+----------------
