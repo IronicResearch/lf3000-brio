@@ -39031,3 +39031,18 @@ By Dave Milici (dmilici@leapfrog.com) on 2/24/14 11:40 AM
 24,337 ms. (Cumulative: 18,321,881 ms)
 
 ----------------
+Revision 10,533 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+23,990 ms. (Cumulative: 18,345,965 ms)
+
+----------------
+Revision 10,534 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixup LF1000 build, including MagicEyes headers for Camera and Video (because they include DispalyPriv).
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/24/14 12:17 PM
+2 changed, 0 added, 0 deleted.
+24,252 ms. (Cumulative: 18,370,232 ms)
+
+----------------
