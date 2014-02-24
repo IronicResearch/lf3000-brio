@@ -53,6 +53,9 @@ if env['platform'] == 'LF2000' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 	myenv.Append(CPPDEFINES = ['USE_ROTATOR=1'])
 						
+elif env['platform'] == 'Lightning' and env['cpu_bare']:
+	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
+
 myenv.Append(CPPPATH=['Include'])
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)

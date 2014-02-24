@@ -43,6 +43,9 @@ myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 if env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/MaliEmulator/bin'])
+	
+elif env['platform'] == 'Lightning' and env['cpu_bare']:
+	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
 
 myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
