@@ -39021,3 +39021,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/24/14 11:21 AM
 24,080 ms. (Cumulative: 18,297,450 ms)
 
 ----------------
+Revision 10,532 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Re-configure compile-time conditional for building NXP Camera module on non-LF1000 platforms, as future-proof step.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/24/14 11:40 AM
+1 changed, 0 added, 0 deleted.
+24,337 ms. (Cumulative: 18,321,881 ms)
+
+----------------
