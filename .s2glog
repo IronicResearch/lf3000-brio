@@ -39080,3 +39080,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/25/14 12:01 PM
 24,207 ms. (Cumulative: 18,442,912 ms)
 
 ----------------
+Revision 10,540 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix up building unit tests in emulation by not overriding emulation environment LIBS in RunMyTests (misnomer, it actually builds the tests). Also, disable Display, Font, and Video unit tests in emulation because they require more work to get building.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/25/14 12:02 PM
+4 changed, 0 added, 0 deleted.
+24,318 ms. (Cumulative: 18,467,324 ms)
+
+----------------

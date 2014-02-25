@@ -68,7 +68,11 @@ targets = mympi or []
 if env['cpu'] == 'x86':
 	myenv.Append(RPATH   = [myenv.Dir('#ThirdParty/Theora/Libs/x86').abspath, myenv.Dir('#ThirdParty/Portaudio/Libs/x86').abspath])
 	myenv.Append(RPATH   = [myenv.Dir('#ThirdParty/LibAVFormat/Libs/x86').abspath])
+
 if env['buildtests']:
-	targets.append(RunMyTests(module_name, [], mpilibs +  ['DisplayMPI', 'EventMPI', 'AudioMPI', 'KernelMPI'], myenv))
+	if env['cpu'] != 'x86':
+		targets.append(RunMyTests(module_name, [], mpilibs +  ['DisplayMPI', 'EventMPI', 'AudioMPI', 'KernelMPI'], myenv))
+	else:
+		print "WARNING: Video test disabled in emulation until fixed!"
 
 Return('targets')
