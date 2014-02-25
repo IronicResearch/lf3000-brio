@@ -51,6 +51,9 @@ else:
 	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + env['cpu']])
 
 if env['buildtests']:
-	targets.append(RunMyTests(module_name, [], mpilibs + ogllibs + ['DisplayMPI', 'EventMPI'], myenv))
+	if env['cpu'] != 'x86':
+		targets.append(RunMyTests(module_name, [], mpilibs + ogllibs + ['DisplayMPI', 'EventMPI'], myenv))
+	else:
+		print "WARNING: Font test disabled in emulation until fixed!"
 
 Return('targets')

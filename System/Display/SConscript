@@ -65,6 +65,9 @@ if env['cpu'] == 'x86':
 	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/PowerVR/Libs').abspath)
 
 if env['buildtests']:
-	targets.append(RunMyTests(module_name, [], mpilibs + ['DebugMPI', 'EventMPI', 'Utility', 'ButtonMPI'], myenv))
+	if env['cpu'] != 'x86':
+		targets.append(RunMyTests(module_name, [], mpilibs + ['DebugMPI', 'EventMPI', 'Utility', 'ButtonMPI'], myenv))
+	else:
+		print "WARNING: Display test disabled in emulation until fixed!"
 
 Return('mymodule', 'mympi')

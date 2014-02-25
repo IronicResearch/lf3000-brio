@@ -193,9 +193,10 @@ def RunMyTests(ptarget, psources, plibs, penv):
 		if penv['cpu'] == 'x86':
 			fulllibs +=  ['X11']
 
+	testenv.Append(LIBS = fulllibs + platformlibs)
 	mytestexe = []
 	for test in mytests:
-		temp = testenv.Program([test] + psources, LIBS = fulllibs + platformlibs)
+		temp = testenv.Program([test] + psources)
 		mytestexe += testenv.Install(penv['install_dir'].Dir('bin'), temp)
 	targets = mytestexe
 	if penv['runtests']:
