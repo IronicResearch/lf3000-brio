@@ -39046,3 +39046,22 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/24/14 12:17 PM
 24,252 ms. (Cumulative: 18,370,232 ms)
 
 ----------------
+Revision 10,535 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,047 ms. (Cumulative: 18,394,373 ms)
+
+----------------
+Revision 10,536 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,537 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,538 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Exit NXP allocation loop if ION buffer allocation fails. (FWUI-660 1:2 simple version)
+ION re-allocations are falling back from 3 to 2 buffers, which seems like ION bug.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/24/14 7:46 PM
+1 changed, 0 added, 0 deleted.
+24,223 ms. (Cumulative: 18,418,612 ms)
+
+----------------
