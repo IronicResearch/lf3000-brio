@@ -306,6 +306,8 @@ Boolean CNXPCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 	//	nxpvbuf_[i] = vm = NX_VideoAllocateMemory(64, 4096, camCtx_.mode.height, NX_MEM_MAP_TILED, FOURCC_MVS0);
 		nxpmbuf_[i] = mi = NX_AllocateMemory(4096 * camCtx_.mode.height, 64);
 		nxpvbuf_[i] = vm = new NX_VID_MEMORY_INFO;
+		if (nxpmbuf_[i] == NULL)
+			break;
 	//	PackVidBuf(vb, vm);
 		PackVidBuf(vb, mi);
 		PackVidBuf(vm, mi, camCtx_.mode.width, camCtx_.mode.height);
