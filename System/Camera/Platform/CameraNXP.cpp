@@ -250,7 +250,9 @@ Boolean CNXPCameraModule::InitCameraInt(const tCaptureMode* mode, bool reinit)
 	clipper_ = nxp_v4l2_clipper1;
 	nxpvbuf_[0] = NULL;
 	nxpmbuf_[0] = NULL;
+	maxcnt_ = MAX_NXP_BUFS;
 	overlay_ = false;
+	streaming_ = false;
 
 	return true;
 }
@@ -297,17 +299,17 @@ Boolean CNXPCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
     NX_VID_MEMORY_INFO    *vm;
 	NX_MEMORY_INFO    	  *mi;
 
-	v4l2_reqbuf(nxphndl_, clipper_, 3);
-	v4l2_reqbuf(nxphndl_, nxp_v4l2_mlc0_video, 3);
+	v4l2_reqbuf(nxphndl_, clipper_, maxcnt_);
+	v4l2_reqbuf(nxphndl_, nxp_v4l2_mlc0_video, maxcnt_);
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < maxcnt_; i++)
 	{
 		// Use ION memory for V4L buffers
 	//	nxpvbuf_[i] = vm = NX_VideoAllocateMemory(64, 4096, camCtx_.mode.height, NX_MEM_MAP_TILED, FOURCC_MVS0);
 		nxpmbuf_[i] = mi = NX_AllocateMemory(4096 * camCtx_.mode.height, 64);
 		nxpvbuf_[i] = vm = new NX_VID_MEMORY_INFO;
 		if (nxpmbuf_[i] == NULL)
-			break;
+			continue;
 	//	PackVidBuf(vb, vm);
 		PackVidBuf(vb, mi);
 		PackVidBuf(vm, mi, camCtx_.mode.width, camCtx_.mode.height);
@@ -327,7 +329,10 @@ Boolean CNXPCameraModule::DeinitCameraBufferInt(tCameraContext *pCamCtx)
 	if (!nxpvbuf_[0])
 		return true;
 
-	for (int i = 0; i < 3; i++)
+	if (streaming_)
+		StopVideoCaptureInt(camCtx_.fd);
+
+	for (int i = maxcnt_-1; i >= 0; i--)
 	{
 	//	NX_FreeVideoMemory((NX_VID_MEMORY_HANDLE)nxpvbuf_[i]);
 		NX_FreeMemory((NX_MEMORY_HANDLE)nxpmbuf_[i]);
@@ -379,6 +384,9 @@ tErrType CNXPCameraModule::SetCurrentCamera(tCameraDevice device)
 {
 	if (device_ == device)
 		return kNoErr;
+
+	if (streaming_)
+		StopVideoCaptureInt(camCtx_.fd);
 
 	switch (device) {
 	case kCameraFront:
@@ -473,7 +481,7 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
 		overlay_ = true;
 	}
-//	v4l2_streamon(nxphndl_, clipper_);
+	streaming_ = true;
 	return true;
 }
 //----------------------------------------------------------------------------
@@ -516,6 +524,7 @@ Boolean CNXPCameraModule::StopVideoCaptureInt(int fd)
 {
 	v4l2_streamoff(nxphndl_, nxp_v4l2_mlc0_video);
 	v4l2_streamoff(nxphndl_, clipper_);
+	streaming_ = false;
 	overlay_ = false;
 	return true;
 }
@@ -597,7 +606,7 @@ Boolean CNXPCameraModule::PollFrame(const tVidCapHndl hndl)
 	int index = 0;
 	int flags = 0;
 	kernel_.LockMutex(mutex_);
-	for (index = 0; index < 3; index++) {
+	for (index = 0; index < maxcnt_; index++) {
 		int r = v4l2_query_buf(nxphndl_, clipper_, 3, index, &flags);
 		if (r == 0 && (flags & V4L2_BUF_FLAG_DONE)) {
 			kernel_.UnlockMutex(mutex_);
