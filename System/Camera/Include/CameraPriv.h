@@ -481,6 +481,7 @@ private:
 
 //==============================================================================
 // LF3000 NXP-specific functionality
+#define MAX_NXP_BUFS	4
 class CNXPCameraModule : public CCameraModule {
 
 public:
@@ -503,13 +504,16 @@ public:
 
 private:
 	void*						nxphndl_;
-	void*						nxpvbuf_[3];
-	void*						nxpmbuf_[3];
+	void*						nxpvbuf_[MAX_NXP_BUFS];
+	void*						nxpmbuf_[MAX_NXP_BUFS];
+	int 						maxcnt_;
 	int  						index_;
 	int							outcnt_;
 	int  						clipper_;
 	int  						sensor_;
 	bool 						overlay_;
+	bool						streaming_;
+	tVideoSurf					surf_;
 
 	// Limit object creation to the Module Manager interface functions
 	CNXPCameraModule();

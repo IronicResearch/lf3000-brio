@@ -39065,3 +39065,18 @@ By Dave Milici (dmilici@leapfrog.com) on 2/24/14 7:46 PM
 24,223 ms. (Cumulative: 18,418,612 ms)
 
 ----------------
+Revision 10,539 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Attempt additional requests if ION buffer allocation fails. (FWUI-660 2:2)
+
+More complicated variation of svn -r10538 which defaults to 4 vs 3 max buffers.
+No apparent pattern to ION allocation requests, so need updated NXP V4L drivers.
+Successive degradation of viewfinder performance will be seen with fewer buffers.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/25/14 12:01 PM
+2 changed, 0 added, 0 deleted.
+24,207 ms. (Cumulative: 18,442,912 ms)
+
+----------------
