@@ -355,7 +355,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	if (n == YUVFB && colorDepth == kPixelFormatYUV420)
 		line_length = finfo[n].line_length;
 	int offset = 0;
-	int aligned = (n == YUVFB && colorDepth == kPixelFormatYUV420) ? ALIGN(height * line_length, k1Meg) : 0;
+	int aligned = (n == YUVFB) ? ALIGN(height * line_length, k1Meg) : 0;
 	
 	memset(ctx, 0, sizeof(tDisplayContext));
 	ctx->width				= width;
@@ -1140,7 +1140,7 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	// All display contexts now reference common base address
 	pdc->basephys 	= finfo[RGBFB].smem_start;
 	pdc->baselinear = finfo[YUVFB].smem_start;
-	pdc->pBuffer 	= (pdc->isPlanar) ? fbmem[YUVFB] : fbmem[RGBFB];
+	pdc->pBuffer 	= (pdc->isVideo) ? fbmem[YUVFB] : fbmem[RGBFB];
 #else
 	// Framebuffers reference separate base addresses
 	pdc->basephys 	= finfo[pdc->layer].smem_start;
