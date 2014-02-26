@@ -39089,3 +39089,14 @@ By dlazzari (dlazzari@leapfrog.com) on 2/25/14 12:02 PM
 24,318 ms. (Cumulative: 18,467,324 ms)
 
 ----------------
+Revision 10,541 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix to Allocate YUYV packed format display context from YUV framebuffer region. (FWSCRUM-1329)
+YUYV packed was excluded from aligned heap when previous framebuffer scheme managed all memory.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/25/14 7:04 PM
+1 changed, 0 added, 0 deleted.
+24,174 ms. (Cumulative: 18,491,607 ms)
+
+----------------
