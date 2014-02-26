@@ -39100,3 +39100,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/25/14 7:04 PM
 24,174 ms. (Cumulative: 18,491,607 ms)
 
 ----------------
+Revision 10,542 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+For LF3000, uncommenting the new glEnableSpecialMode calls, they are included in the last angstrom-denzil toolchain.  Added commented glSetSpecialModeParam that isn't yet in the toolchain.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/26/14 1:02 PM
+1 changed, 0 added, 0 deleted.
+24,148 ms. (Cumulative: 18,515,849 ms)
+
+----------------
