@@ -263,6 +263,9 @@ void* CameraTaskMain(void* arg)
 	props.timeout.it_value.tv_nsec = 0;
 	kernel.StartTimer(timer, props);
 
+	gettimeofday(&tv0, NULL);
+	tvn = tv0;
+
 	if(bFile && pCtx->bAudio)
 	{
 		// Zero threshold params to prevent flushing audio from AVI recording
@@ -448,7 +451,7 @@ void* CameraTaskMain(void* arg)
 	}
 	elapsed = 1000000 * (tvt.tv_sec) + (tvt.tv_usec);
 
-	dbg.DebugOut( kDbgLvlValuable, "%s: frames: %d, elapsed: %d, fps = %f\n", __func__, (unsigned)framecount, (unsigned)elapsed,  (float)framecount / ((float)elapsed / 1000000));
+	dbg.DebugOut( kDbgLvlValuable, "%s: frames: %d, elapsed: %d, fps = %f\n", __func__, (unsigned)framecount, (unsigned)elapsed,  (elapsed) ? 1000000.0 * framecount / elapsed : 0.0);
 
 	if(bFile)
 	{

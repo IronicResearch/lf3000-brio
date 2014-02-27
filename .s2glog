@@ -39109,3 +39109,20 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/26/14 1:02 PM
 24,148 ms. (Cumulative: 18,515,849 ms)
 
 ----------------
+Revision 10,543 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added USB camera option for receiving capture data directly into viewfinder surface. (FWSCRUM-1329)
+
+This method would have used the native YUYV capture format in viewfinder framebuffer without copying,
+except the V4L UVC driver is not accepting framebuffer addresses as valid user pointer addresses.
+Ditto for ION buffer addresses. This seems like a limitation in V4L UVC driver with the user pointer option.
+
+Added YUYV format as option for viewfinder scaling, even if zero-copy option cannot be used.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/26/14 5:37 PM
+4 changed, 0 added, 0 deleted.
+24,915 ms. (Cumulative: 18,540,873 ms)
+
+----------------

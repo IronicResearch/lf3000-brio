@@ -152,10 +152,10 @@ inline void PROFILE_END(const char* msg)
 
 //----------------------------------------------------------------------------
 // Set video scaler (embedded only)
-void CCameraModule::SetScaler(int width, int height, bool centered)
+void CCameraModule::SetScaler(int width, int height, bool centered, tPixelFormat format)
 {
 	CDisplayMPI 	dispmgr;
-	tDisplayHandle 	hvideo = dispmgr.GetCurrentDisplayHandle(kPixelFormatYUV420);
+	tDisplayHandle 	hvideo = dispmgr.GetCurrentDisplayHandle(format);
 
 	dispmgr.SetVideoScaler(hvideo, width, height, centered);
 }
@@ -810,6 +810,11 @@ Boolean CCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 	struct v4l2_requestbuffers rb;
 	int i, ret, cam = pCamCtx->fd;
 
+#if 0
+	// Late check for user pointer method
+	V4L2_MEMORY_XXXX = (pCamCtx->fi && pCamCtx->vi) ? V4L2_MEMORY_USERPTR : V4L2_MEMORY_MMAP;
+#endif
+
 	memset(&rb, 0, sizeof(struct v4l2_requestbuffers));
 
 	rb.count  = pCamCtx->numBufs;
@@ -818,6 +823,7 @@ Boolean CCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 
 	if(ioctl(cam, VIDIOC_REQBUFS, &rb) < 0)
 	{
+		pCamCtx->dbg->DebugOut(kDbgLvlCritical, "%s: VIDIOC_REQBUFS failed, errno=%d\n", __FUNCTION__, errno);
 		return false;
 	}
 
@@ -835,6 +841,7 @@ Boolean CCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 
 		if(ioctl(cam, VIDIOC_QUERYBUF, &pCamCtx->buf) < 0)
 		{
+			pCamCtx->dbg->DebugOut(kDbgLvlCritical, "%s: VIDIOC_QUERYBUF failed, errno=%d\n", __FUNCTION__, errno);
 			DeinitCameraBufferInt(pCamCtx);
 			return false;
 		}
@@ -845,6 +852,7 @@ Boolean CCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 		pCamCtx->bufs[i] = mmap(0, pCamCtx->buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, cam, pCamCtx->buf.m.offset);
         if(pCamCtx->bufs[i] == MAP_FAILED)
         {
+			pCamCtx->dbg->DebugOut(kDbgLvlCritical, "%s: MAP_FAILED failed, errno=%d\n", __FUNCTION__, errno);
 			DeinitCameraBufferInt(pCamCtx);
 			return false;
         }
@@ -869,6 +877,7 @@ Boolean CCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 
 		if(ioctl(pCamCtx->fd, VIDIOC_QBUF, &pCamCtx->buf) < 0)
 		{
+			pCamCtx->dbg->DebugOut(kDbgLvlCritical, "%s: VIDIOC_QBUF failed, errno=%d\n", __FUNCTION__, errno);
 			DeinitCameraBufferInt(pCamCtx);
 			return false;
         }
@@ -1365,8 +1374,8 @@ Boolean	CCameraModule::RenderFrame(const CPath &path, tVideoSurf *pSurf)
 		goto out;
 	}
 
-	if (pSurf && pSurf->format == kPixelFormatYUV420)
-		SetScaler(pSurf->width, pSurf->height, false);
+	if (pSurf && (pSurf->format == kPixelFormatYUV420 || pSurf->format == kPixelFormatYUYV422))
+		SetScaler(pSurf->width, pSurf->height, false, pSurf->format);
 
 	ret = RenderFrame(&frame, pSurf, NULL, JPEG_SLOW);
 
@@ -2132,6 +2141,9 @@ Boolean CCameraModule::RenderFrame(tFrameInfo &frame, tVideoSurf *pSurf, tColorO
 			}
 			else if (pSurf->format == kPixelFormatYUYV422)
 			{
+				// No Copy if captured directly
+				if (sy == dy)
+					return true;
 				// Copy YUYV to YUYV
 				for (i = 0; i < height; i++)
 				{
@@ -2413,6 +2425,16 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		return hndl;
 	}
 
+#if 0
+	// Capture to viewfinder surface?
+	if (pSurf && pSurf->format == kPixelFormatYUYV422 && camCtx_.mode.pixelformat == kCaptureFormatRAWYUYV && camCtx_.fi && camCtx_.vi)
+	{
+		V4L2_MEMORY_XXXX = V4L2_MEMORY_USERPTR;
+		camCtx_.vi->reserved[0] = (__u32)pSurf->buffer;
+		camCtx_.fi->smem_len = pSurf->pitch * pSurf->height;
+	}
+#endif 
+
 	//3 buffers needed for avi recording
 	//2 buffers prefered if it fits
 	if(path.empty())
@@ -2442,16 +2464,15 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	/* TODO: libjpeg QVGA->QQVGA rendering + HW scaler is faster than
 	 * HW IDCT QVGA->QVGA rendering
 	 */
-	if(pSurf && pSurf->format == kPixelFormatYUV420)
+	if(pSurf && (pSurf->format == kPixelFormatYUV420 || pSurf->format == kPixelFormatYUYV422))
 	{
-		//SetScaler(QVGA.width, QVGA.height, false);
-		SetScaler(pSurf->width, pSurf->height, false);
+		SetScaler(pSurf->width, pSurf->height, false, pSurf->format);
 	}
 
 	//hndl must be set before thread starts.  It is used in thread initialization.
 	camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
 
-	if (fpath.empty() && V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR && !pListener)
+	if (fpath.empty() && !pSurf && !pListener)
 	{
 		hndl = camCtx_.hndl = STREAMING_HANDLE(FRAME_HANDLE(1));
 	}
