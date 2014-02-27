@@ -4,6 +4,8 @@
 #include <Vision/VNHotSpotEventMessage.h>
 #include <EventMPI.h>
 
+#include <stdio.h>
+
 namespace LF {
 namespace Vision {
 
