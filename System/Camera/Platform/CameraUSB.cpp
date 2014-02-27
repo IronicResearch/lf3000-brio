@@ -239,11 +239,18 @@ CUSBCameraModule::CUSBCameraModule()
 		while (!valid && --counter > 0)
 			kernel_.TaskSleep(10);
 	}
+
+	// Emulate framebuffer support
+	camCtx_.fi = new struct fb_fix_screeninfo;
+	camCtx_.vi = new struct fb_var_screeninfo;
 }
 
 //----------------------------------------------------------------------------
 CUSBCameraModule::~CUSBCameraModule()
 {
+	delete camCtx_.vi;
+	delete camCtx_.fi;
+
 	event_.UnregisterEventListener(listener_);
 	delete listener_;
 
