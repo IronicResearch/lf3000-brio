@@ -4,6 +4,8 @@
 #include <VideoTypes.h>
 #include <KernelTypes.h>
 #include <CameraMPI.h>
+#include <DebugMPI.h>
+
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include <boost/timer.hpp>
@@ -57,6 +59,11 @@ namespace Vision {
     VNVisionMPIPIMPL(void);
     VNVisionMPIPIMPL(const VNVisionMPIPIMPL&);
     VNVisionMPIPIMPL& operator=(const VNVisionMPIPIMPL&);
+    
+    LF_ADD_BRIO_NAMESPACE(CDebugMPI) dbg_;
+    
+    time_t frameTime_;
+    int frameCount_;
   };
 
 }
