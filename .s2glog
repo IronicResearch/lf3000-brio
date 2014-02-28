@@ -39159,3 +39159,15 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/28/14 11:38 AM
 24,157 ms. (Cumulative: 18,615,590 ms)
 
 ----------------
+Revision 10,548 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Now calling glSetSpecialModeParam for fog offset.  Update your toolchain with
+
+opkg-toolchain update
+opkg-toolchain install opengl-mali
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/28/14 11:40 AM
+1 changed, 0 added, 0 deleted.
+24,212 ms. (Cumulative: 18,639,896 ms)
+
+----------------
