@@ -39143,3 +39143,19 @@ By Dave Milici (dmilici@leapfrog.com) on 2/27/14 2:04 PM
 25,675 ms. (Cumulative: 18,566,641 ms)
 
 ----------------
+Revision 10,545 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,667 ms. (Cumulative: 18,591,418 ms)
+
+----------------
+Revision 10,546 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,547 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Moving OpenGL linking from DisplayMPI to Display module.  This makes more sense now that the BrioOpenGLPrivate is making the OpenGL calls, and it's in the module not the MPI.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/28/14 11:38 AM
+1 changed, 0 added, 0 deleted.
+24,157 ms. (Cumulative: 18,615,590 ms)
+
+----------------
