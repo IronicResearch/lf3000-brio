@@ -319,7 +319,7 @@ void YUV2RGB_fast_table(cv::Mat src, cv::Mat dst)
 				 videoSurf_.height), 
 			CV_8U, 
 			buffer,
-			4096);
+			surf->pitch); //4096); // FIXME
 	    cv::Mat rgbMat(cv::Size(videoSurf_.width, 
 				    videoSurf_.height), 
 			   CV_8UC3);

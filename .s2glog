@@ -39171,3 +39171,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/28/14 11:40 AM
 24,212 ms. (Cumulative: 18,639,896 ms)
 
 ----------------
+Revision 10,549 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+VisionMPI followup to use surface pitch instead of hard-coded value, for emulation compatibility.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/28/14 12:20 PM
+1 changed, 0 added, 0 deleted.
+24,158 ms. (Cumulative: 18,664,148 ms)
+
+----------------
