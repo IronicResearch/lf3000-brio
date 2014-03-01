@@ -7,7 +7,7 @@ ifndef BLUETOPIA_PATH
    BLUETOPIA_PATH = $(HOME)/workspace/LinuxDist/packages/ss1/BluetopiaPM
 endif
 
-INCLDDIRS = -I$(BLUETOPIA_PATH)/include                        \
+INCLDDIRS = -I. -I$(BLUETOPIA_PATH)/include                        \
 	    -I$(BLUETOPIA_PATH)/include/client                     \
 	    -I$(BLUETOPIA_PATH)/Bluetopia/include                  \
 	    -I$(BLUETOPIA_PATH)/Bluetopia/profiles/GATT/include
@@ -26,12 +26,17 @@ OBJS = BluetopiaIO.o
 
 LIB = libBluetopiaIO.so
 
+TEST = Loader
+
 .PHONY:
 all: $(LIB)
 
 $(LIB): $(OBJS)
 	$(CC) -shared -Wl,-soname,$(LIB),-export-dynamic -o $(LIB) $(OBJS) -Wl,$(LDLIBS) -Wl,$(LDFLAGS)
 
+$(TEST): $(LIB)
+	$(CXX) -I. -DTEST_HARNESS -o $(TEST) $(TEST).cpp -ldl 
+	
 .PHONY: clean veryclean realclean
 clean veryclean realclean:
 	-rm *.o
