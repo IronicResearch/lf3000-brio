@@ -39198,3 +39198,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/28/14 4:34 PM
 24,159 ms. (Cumulative: 18,712,472 ms)
 
 ----------------
+Revision 10,552 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Created dynamic library with stub functions for testing Bluetopia client. (FWSCRUM-1405)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/28/14 7:17 PM
+0 changed, 2 added, 0 deleted.
+24,237 ms. (Cumulative: 18,736,803 ms)
+
+----------------
