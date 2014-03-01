@@ -1,9 +1,5 @@
 #include <stdio.h>
-
-int BTIO_Init(void* callback);
-int BTIO_Exit(int handle);
-int BTIO_SendCommand(int handle, int command, void* data, int length);
-int BTIO_QueryStatus(int handle, int command, void* data, int length);
+#include <BluetopiaIO.h>
 
 int BTIO_Init(void* callback)
 {
