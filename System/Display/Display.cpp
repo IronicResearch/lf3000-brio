@@ -89,6 +89,8 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay),
 	yvp_		= 0;
 	wvp_		= screenwidth;
 	hvp_		= screenheight;
+	ow_			= screenwidth;
+	oh_			= screenheight;
 }
 
 //----------------------------------------------------------------------------
