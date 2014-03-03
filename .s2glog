@@ -39236,3 +39236,13 @@ By dlazzari (dlazzari@leapfrog.com) on 3/2/14 6:29 PM
 24,850 ms. (Cumulative: 18,810,557 ms)
 
 ----------------
+Revision 10,556 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+meta.inf: Edit LF3000 meta.inf to be LeapPad3 device type with PAD3 prefix.
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 3/2/14 10:34 PM
+1 changed, 0 added, 0 deleted.
+24,661 ms. (Cumulative: 18,835,312 ms)
+
+----------------
