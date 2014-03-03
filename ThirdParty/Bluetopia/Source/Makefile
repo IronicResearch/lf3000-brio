@@ -7,7 +7,7 @@ ifndef BLUETOPIA_PATH
    BLUETOPIA_PATH = $(HOME)/workspace/LinuxDist/packages/ss1/BluetopiaPM
 endif
 
-INCLDDIRS = -I. -I$(BLUETOPIA_PATH)/include                        \
+INCLDDIRS = -I. -I../Include -I$(BLUETOPIA_PATH)/include           \
 	    -I$(BLUETOPIA_PATH)/include/client                     \
 	    -I$(BLUETOPIA_PATH)/Bluetopia/include                  \
 	    -I$(BLUETOPIA_PATH)/Bluetopia/profiles/GATT/include
@@ -16,13 +16,13 @@ ifndef SYSTEMLIBS
    SYSTEMLIBS = -lpthread -lm
 endif
 	
-CFLAGS = -fPIC -Wall $(DEFS) $(INCLDDIRS) $(GLOBINCLDDIRS) -O2 $(GLOBCFLAGS)
+CXXFLAGS = -fPIC -Wall $(DEFS) $(INCLDDIRS) $(GLOBINCLDDIRS) -O2 $(GLOBCFLAGS)
 
 LDFLAGS = -L$(BLUETOPIA_PATH)/lib/client -L$(BLUETOPIA_PATH)/Bluetopia/lib $(GLOBLDFLAGS)
 
 LDLIBS = -lSS1BTPM $(SYSTEMLIBS) $(GLOBLDLIBS)
 
-OBJS = BluetopiaIO.o
+OBJS = BluetopiaIO.o BTAddr.o
 
 LIB = libBluetopiaIO.so
 

@@ -1,6 +1,8 @@
 
 #include <BTAddr.h>
 
+#include <string.h> //For memcpy
+#include <stdio.h>
 #include <sstream>
 
 BTAddr::BTAddr()
@@ -33,7 +35,7 @@ BTAddr* BTAddr::fromString(const std::string& address)
 	{
 		ss << std::hex << address.substr(pos, 2);
 		ss >> buffer;
-		new_addr.mAddress[i] = (char)buffer;
+		new_addr->mAddress[i] = (char)buffer;
 	}
 	
 	return new_addr;
@@ -42,17 +44,18 @@ BTAddr* BTAddr::fromString(const std::string& address)
 BTAddr* BTAddr::fromByteArray(const char* address)
 {
 	BTAddr* new_addr = new BTAddr();
-	memcpy(new_addr.mAddress, address, 6);
+	memcpy(new_addr->mAddress, address, 6);
+	return new_addr;
 }
 
-void BTAddr::toByteArray(char* buf)
+void BTAddr::toByteArray(char* buf) const
 {
 	memcpy(buf, mAddress, 6);
 }
 
-std::string BTAddr::toString()
+std::string BTAddr::toString() const
 {
-	char[18] str;
+	char str[18];
 	sprintf(str, "%0X:%0X:%0X:%0X:%0X:%0X",
 	        mAddress[0], mAddress[1], mAddress[2],
 	        mAddress[3], mAddress[4], mAddress[5]);
