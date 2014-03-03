@@ -36,18 +36,18 @@ class BTAddr
 		 * @param buf A buffer at least 6 bytes long that the address will be
 		 *            copied into.
 		 */
-		void toByteArray(char* buf);
+		void toByteArray(char* buf) const;
 		
 		/**
 		 * @brief Copy this BTAddr into a human readable string.
 		 *
 		 * @return A human readable string in the format 00:00:00:00:00:00
 		 */
-		std::string toString();
+		std::string toString() const;
 		
 	private:
 		BTAddr();
-		char[6]	mAddress;
+		char	mAddress[6];
 };
 
 #endif //BTADDR_H_

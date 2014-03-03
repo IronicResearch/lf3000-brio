@@ -39227,3 +39227,12 @@ By dlazzari (dlazzari@leapfrog.com) on 3/2/14 6:29 PM
 24,212 ms. (Cumulative: 18,785,614 ms)
 
 ----------------
+Revision 10,555 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add some new functions to BluetopiaIO library and fix compile errors.
+
+By dlazzari (dlazzari@leapfrog.com) on 3/2/14 6:29 PM
+4 changed, 1 added, 1 deleted.
+24,850 ms. (Cumulative: 18,810,557 ms)
+
+----------------
