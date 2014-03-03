@@ -1,15 +1,23 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <BluetopiaIO.h>
+
+extern "C" {
+#include <SS1BTPM.h>
+};
 
 int BTIO_Init(void* callback)
 {
 	printf("%s: %p\n", __func__, callback);
-	return 0;
+	int r = BTPM_Initialize(getpid(), NULL, NULL, NULL);
+	printf("BTPM_Initialize() returned %d\n", r);
+	return r;
 }
 
 int BTIO_Exit(int handle)
 {
 	printf("%s: %d\n", __func__, handle);
+	BTPM_Cleanup();
 	return 0;
 }
 

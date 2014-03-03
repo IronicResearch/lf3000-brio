@@ -39246,3 +39246,13 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 3/2/14 10:34 PM
 24,661 ms. (Cumulative: 18,835,312 ms)
 
 ----------------
+Revision 10,557 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Declare export functions and SS1 import functions as C-style if compiling as C++ module. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/3/14 12:44 PM
+2 changed, 0 added, 0 deleted.
+26,218 ms. (Cumulative: 18,861,626 ms)
+
+----------------
