@@ -39266,3 +39266,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/3/14 6:36 PM
 29,020 ms. (Cumulative: 18,890,786 ms)
 
 ----------------
+Revision 10,559 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added enumerated BTIO commands to support ControllerMPI functionality. (FWSCRUM-1405)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/3/14 7:36 PM
+1 changed, 2 added, 1 deleted.
+28,671 ms. (Cumulative: 18,919,582 ms)
+
+----------------

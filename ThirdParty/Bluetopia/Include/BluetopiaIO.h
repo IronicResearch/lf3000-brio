@@ -2,6 +2,7 @@
 #define __BLUETOPIAIO_H__
 
 #include <BTAddr.h>
+#include <BTIOTypes.h>
 
 typedef int (*pFnInit)( void* );
 typedef int (*pFnExit)( int );

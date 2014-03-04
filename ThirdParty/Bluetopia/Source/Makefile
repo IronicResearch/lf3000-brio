@@ -35,7 +35,7 @@ $(LIB): $(OBJS)
 	$(CC) -shared -Wl,-soname,$(LIB),-export-dynamic -o $(LIB) $(OBJS) -Wl,$(LDLIBS) -Wl,$(LDFLAGS)
 
 $(TEST): $(LIB)
-	$(CXX) -I. -DTEST_HARNESS -o $(TEST) $(TEST).cpp -ldl 
+	$(CXX) -I../Include -DTEST_HARNESS -o $(TEST) $(TEST).cpp -ldl 
 	
 .PHONY: clean veryclean realclean
 clean veryclean realclean:
