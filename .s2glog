@@ -39256,3 +39256,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/3/14 12:44 PM
 26,218 ms. (Cumulative: 18,861,626 ms)
 
 ----------------
+Revision 10,558 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixed HWAnalogStick getter upon inspection.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/3/14 6:36 PM
+1 changed, 0 added, 0 deleted.
+29,020 ms. (Cumulative: 18,890,786 ms)
+
+----------------
