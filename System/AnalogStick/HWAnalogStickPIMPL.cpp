@@ -82,7 +82,7 @@ namespace Hardware {
    * \return the value for the dead zone of the stick with id stickID
    */
   float HWAnalogStickPIMPL::GetAnalogStickDeadZone(const LeapFrog::Brio::U8 stickID) const {
-    return mode_;
+    return deadZone_;
   }
   
   /*!
