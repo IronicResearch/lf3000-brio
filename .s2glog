@@ -39316,3 +39316,16 @@ By Dave Milici (dmilici@leapfrog.com) on 3/4/14 7:27 PM
 24,601 ms. (Cumulative: 19,021,766 ms)
 
 ----------------
+Revision 10,565 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,566 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,567 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,568 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added deployment of Bluetopia interface lib to device.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/5/14 11:33 AM
+1 changed, 1 added, 0 deleted.
+24,820 ms. (Cumulative: 19,046,696 ms)
+
+----------------
