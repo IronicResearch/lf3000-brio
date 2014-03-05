@@ -39276,3 +39276,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/3/14 7:36 PM
 28,671 ms. (Cumulative: 18,919,582 ms)
 
 ----------------
+Revision 10,560 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,561 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Changing fog offset to 5000, by Jinho's advice.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/4/14 5:29 PM
+1 changed, 0 added, 0 deleted.
+26,452 ms. (Cumulative: 18,946,159 ms)
+
+----------------
