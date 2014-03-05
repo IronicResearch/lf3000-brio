@@ -39296,3 +39296,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/4/14 6:04 PM
 25,048 ms. (Cumulative: 18,971,300 ms)
 
 ----------------
+Revision 10,563 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Migrate Bluetooth functions into subclass of HWControllerPIMPL. (FWSCRUM-1406, FWSCRUM-1407)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/4/14 7:26 PM
+2 changed, 2 added, 1 deleted.
+25,631 ms. (Cumulative: 18,997,024 ms)
+
+----------------

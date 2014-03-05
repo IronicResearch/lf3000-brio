@@ -1,7 +1,6 @@
 #include "HWControllerPIMPL.h"
 #include <Hardware/HWControllerTypes.h>
 #include <Vision/VNWand.h>
-#include <BluetopiaIO.h>
 #include <string.h>
 #include <iostream> //AJL Debug
 
@@ -18,11 +17,9 @@ namespace Hardware {
     ZeroAccelerometerData();
     ZeroButtonData();
     ZeroAnalogStickData();
-    BTIO_Init(NULL);
   }
 
   HWControllerPIMPL::~HWControllerPIMPL(void) {
-	  BTIO_Exit(0);
   }
   
   void
