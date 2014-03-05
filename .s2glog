@@ -39306,3 +39306,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/4/14 7:26 PM
 25,631 ms. (Cumulative: 18,997,024 ms)
 
 ----------------
+Revision 10,564 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add error message to Bluetooth loader if lib cannot be loaded.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/4/14 7:27 PM
+1 changed, 0 added, 0 deleted.
+24,601 ms. (Cumulative: 19,021,766 ms)
+
+----------------

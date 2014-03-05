@@ -14,8 +14,10 @@ void*  				dll = NULL;
 int BTIO_Init(void* callback)
 {
 	dll = dlopen("libBluetopiaIO.so", RTLD_LAZY);
-	if (dll == NULL)
+	if (dll == NULL) {
+		printf("%s: dlopen failed to load libBluetopiaIO.so, error=%s\n", __func__, dlerror());
 		return -1;
+	}
 
 	pBTIO_Init 			= (pFnInit)dlsym(dll, "BTIO_Init");
 	pBTIO_Exit 			= (pFnExit)dlsym(dll, "BTIO_Exit");
