@@ -27,6 +27,10 @@ mpilibs		= ['ModuleMPI', 'EventMPI', 'KernelMPI', 'AnalogStickMPI', 'ButtonMPI',
 myenv		= env.Clone()
 myenv.Append(CPPPATH=['Include'])
 
+if not env['cpu'] == 'x86':
+	myenv.Append(CPPPATH = ['#ThirdParty/Bluetopia/Include'])
+	myenv.Append(CPPDEFINES = ['USE_EXPORTS'])
+	
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
 

@@ -39286,3 +39286,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/4/14 5:29 PM
 26,452 ms. (Cumulative: 18,946,159 ms)
 
 ----------------
+Revision 10,562 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Interim test for dynamic Bluetooth bindings in ControllerMPI implementation. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/4/14 6:04 PM
+2 changed, 1 added, 0 deleted.
+25,048 ms. (Cumulative: 18,971,300 ms)
+
+----------------
