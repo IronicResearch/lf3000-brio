@@ -39329,3 +39329,19 @@ By Dave Milici (dmilici@leapfrog.com) on 3/5/14 11:33 AM
 24,820 ms. (Cumulative: 19,046,696 ms)
 
 ----------------
+Revision 10,569 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,661 ms. (Cumulative: 19,071,451 ms)
+
+----------------
+Revision 10,570 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Extend USB camera V4L device enumeration checks for interface class to support Logitech cameras.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/5/14 1:01 PM
+1 changed, 0 added, 0 deleted.
+24,679 ms. (Cumulative: 19,096,130 ms)
+
+----------------

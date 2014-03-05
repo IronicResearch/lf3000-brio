@@ -89,6 +89,7 @@ Boolean EnumVideoCallback(const CPath& path, void* pctx)
 	CUSBCameraModule* pObj	= (CUSBCameraModule*)pctx;
 	CPath file = pObj->sysfs + "/device/product";
 	CPath name = path + "/name";
+	CPath devclass = path + "/device/bInterfaceClass";
 	char srcbuf[MAX_PATH] = "\0";
 	char dstbuf[MAX_PATH] = "\0";
 	FILE* fp = fopen(file.c_str(), "r");
@@ -105,6 +106,17 @@ Boolean EnumVideoCallback(const CPath& path, void* pctx)
 		pObj->devname = dstbuf;
 		pObj->devpath = path;
 		return false; // stop
+	}
+	fp = fopen(devclass.c_str(), "r");
+	if (fp) {
+		int interfaceclass = 0;
+		fscanf(fp, "%x", &interfaceclass);
+		fclose(fp);
+		if (interfaceclass == 0x0E) {
+			pObj->devname = dstbuf;
+			pObj->devpath = path;
+			return false; // stop
+		}
 	}
 
 	return true; // continue
