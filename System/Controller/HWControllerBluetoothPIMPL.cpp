@@ -6,6 +6,15 @@
 #include <iostream> //AJL Debug
 #include <dlfcn.h>
 
+// FIXME
+pFnInit	    		pBTIO_Init_;
+pFnExit 			pBTIO_Exit_;
+pFnSendCommand		pBTIO_SendCommand_;
+pFnQueryStatus		pBTIO_QueryStatus_;
+
+
+
+
 using namespace LeapFrog::Brio;
 
 namespace LF {
