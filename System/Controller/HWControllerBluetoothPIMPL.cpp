@@ -4,6 +4,7 @@
 #include <BluetopiaIO.h>
 #include <string.h>
 #include <iostream> //AJL Debug
+#include <stdio.h> // FIXME
 #include <dlfcn.h>
 
 // FIXME
@@ -11,9 +12,6 @@ pFnInit	    		pBTIO_Init_;
 pFnExit 			pBTIO_Exit_;
 pFnSendCommand		pBTIO_SendCommand_;
 pFnQueryStatus		pBTIO_QueryStatus_;
-
-
-
 
 using namespace LeapFrog::Brio;
 
@@ -38,7 +36,8 @@ namespace Hardware {
 		pBTIO_QueryStatus_	= (pFnQueryStatus)dlsym(dll_, "BTIO_QueryStatus");
 
 		// Connect to Bluetooth client service?
-		handle_ = BTIO_Init(NULL);
+		handle_ = BTIO_Init(this);
+		BTIO_SendCommand(handle_, kBTIOCmdSetInputCallback, (void*)&LocalCallback, sizeof(void*));
 	}
 	else {
 		std::cout << "dlopen failed to load libBluetopiaIO.so, error=\n" << dlerror();
@@ -77,6 +76,56 @@ namespace Hardware {
     analogStickData_.id = id_;
     analogStickData_.time.seconds = id_;
     analogStickData_.time.microSeconds = id_;    
+  }
+
+  void
+  HWControllerBluetoothPIMPL::LocalCallback(void* context, void* data, int length) {
+	  HWControllerBluetoothPIMPL* pModule = (HWControllerBluetoothPIMPL*)context;
+	  U8* packet = (U8*)data;
+
+	  for (int i = 0; i < length; i++) {
+		  printf("%02x ", packet[i]);
+	  }
+	  printf("\n");
+
+	  for (int i = 0; i < length; i++) {
+		  switch (i) {
+		  case 0:
+			  pModule->buttonData_.buttonTransition ^= (packet[i]) ? kButtonA : 0;
+			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonA : 0;
+			  break;
+		  case 1:
+			  pModule->buttonData_.buttonTransition ^= (packet[i]) ? kButtonB : 0;
+			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonB : 0;
+			  break;
+		  case 2:
+			  pModule->buttonData_.buttonTransition ^= (packet[i]) ? kButtonMenu : 0;
+			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonMenu : 0;
+			  break;
+		  case 3:
+			  pModule->buttonData_.buttonTransition ^= (packet[i]) ? kButtonHint : 0;
+			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonHint : 0;
+			  break;
+		  case 4:
+			  pModule->mode_ = kHWControllerWandMode;
+			  break;
+		  case 5:
+			  pModule->mode_ = kHWControllerMode;
+			  break;
+		  case 6:
+			  pModule->analogStickData_.x = packet[i];
+			  break;
+		  case 7:
+			  pModule->analogStickData_.y = packet[i];
+			  break;
+		  }
+	  }
+
+	  CButtonMessage bmsg(pModule->buttonData_);
+	  HWAnalogStickMessage amsg(pModule->analogStickData_);
+
+	  pModule->eventMPI_.PostEvent(amsg, 128);
+	  pModule->eventMPI_.PostEvent(bmsg, 128);
   }
 
   /*!
