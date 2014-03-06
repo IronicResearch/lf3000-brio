@@ -12,6 +12,8 @@ extern "C" {
 static unsigned int        DEVMCallbackID = 0;
 static unsigned int        GATMCallbackID = 0;
 
+static BTAddr*             device = NULL;
+
 // BTPM Server Un-Registration Callback function
 void BTPSAPI ServerUnRegistrationCallback(void *CallbackParameter)
 {
@@ -22,12 +24,54 @@ void BTPSAPI ServerUnRegistrationCallback(void *CallbackParameter)
 static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *CallbackParameter)
 {
 	printf("%s: %p, %p\n", __func__, EventData, CallbackParameter);
+
+	if (EventData) {
+		switch (EventData->EventType) {
+		case detDevicePoweredOn:
+			printf("Device Powered On\n");
+			break;
+		case detDevicePoweredOff:
+			printf("Device Powered Off\n");
+			break;
+		case detRemoteDeviceFound:
+			printf("Remote Device Found\n");
+			device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDeviceFoundEventData.RemoteDeviceProperties.BD_ADDR);
+			BTIO_ConnectToDevice(DEVMCallbackID, device);
+			break;
+		case detRemoteDeviceDeleted:
+			printf("Remote Device Deleted\n");
+			break;
+		case detRemoteDevicePropertiesChanged:
+			printf("Remote Device Properties Changed\n");
+			break;
+		default:
+			printf("%s: unhandled type %d, %p\n", __func__, EventData->EventType, CallbackParameter);
+			break;
+		}
+	}
 }
 
 // GATM Manager Callback Function
 static void BTPSAPI GATM_Event_Callback(GATM_Event_Data_t *EventData, void *CallbackParameter)
 {
 	printf("%s: %p, %p\n", __func__, EventData, CallbackParameter);
+
+	if (EventData) {
+		switch (EventData->EventType) {
+		case getGATTConnected:
+			printf("GATT Connection\n");
+			break;
+		case getGATTDisconnected:
+			printf("GATT Disconnect\n");
+			break;
+		case getGATTHandleValueData:
+			printf("GATT Handle Value Data\n");
+			break;
+		default:
+			printf("%s: unhandled type %d, %p\n", __func__, EventData->EventType, CallbackParameter);
+			break;
+		}
+	}
 }
 
 int BTIO_Init(void* callback)
@@ -39,14 +83,18 @@ int BTIO_Init(void* callback)
 
 	r = DEVM_RegisterEventCallback(DEVM_Event_Callback, NULL);
 	printf("DEVM_RegisterEventCallback() returned %d\n", r);
+	DEVMCallbackID = r;
 
 	r = GATM_RegisterEventCallback(GATM_Event_Callback, NULL);
 	printf("GATM_RegisterEventCallback() returned %d\n", r);
+	GATMCallbackID = r;
 
 	r = DEVM_PowerOnDevice();
 	printf("DEVM_PowerOnDevice() returned %d\n", r);
 
-	return r;
+	r = BTIO_ScanForDevices(DEVMCallbackID, 0);
+
+	return DEVMCallbackID;
 }
 
 int BTIO_Exit(int handle)

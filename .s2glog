@@ -39355,3 +39355,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/5/14 5:32 PM
 24,930 ms. (Cumulative: 19,121,169 ms)
 
 ----------------
+Revision 10,572 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Wire in event callbacks to Bluetopia lib for scanning devices.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/5/14 8:46 PM
+2 changed, 0 added, 0 deleted.
+26,274 ms. (Cumulative: 19,147,568 ms)
+
+----------------
