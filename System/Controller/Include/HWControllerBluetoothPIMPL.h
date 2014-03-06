@@ -8,6 +8,7 @@
 #include <Hardware/HWAnalogStickMPI.h>
 #include "HWControllerPIMPL.h"
 #include <BluetopiaIO.h>
+#include <EventMPI.h>
 
 namespace LF {
 namespace Hardware {
@@ -85,6 +86,10 @@ namespace Hardware {
     //pFnExit 			pBTIO_Exit_;
     //pFnSendCommand		pBTIO_SendCommand_;
     //pFnQueryStatus		pBTIO_QueryStatus_;
+
+    static void LocalCallback(void*, void*, int);
+    LeapFrog::Brio::CEventMPI eventMPI_;
+
   };
   
 }	// namespace Hardware
