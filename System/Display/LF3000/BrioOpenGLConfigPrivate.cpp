@@ -344,7 +344,7 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 	// Clear garbage pixels from previous OpenGL context (embedded target)
 	glEnableSpecialMode(GL_SPECIAL_MODE_LAST_TEXTURE_EN);
 	glEnableSpecialMode(GL_SPECIAL_MODE_PIXEL_FOG_EN);
-	glSetSpecialModeParam(GL_SPECIAL_MODE_PIXEL_FOG_EN, 5000);
+	glSetSpecialModeParam(GL_SPECIAL_MODE_PIXEL_FOG_EN, 3);
 
 	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);

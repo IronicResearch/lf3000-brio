@@ -39375,3 +39375,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/6/14 9:28 AM
 25,187 ms. (Cumulative: 19,172,864 ms)
 
 ----------------
+Revision 10,574 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Changing Special Fog parameter to 3, as per Jinho's instruction.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/6/14 11:37 AM
+1 changed, 0 added, 0 deleted.
+24,632 ms. (Cumulative: 19,197,590 ms)
+
+----------------
