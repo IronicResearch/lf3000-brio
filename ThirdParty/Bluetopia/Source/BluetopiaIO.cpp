@@ -26,12 +26,13 @@ void BTPSAPI ServerUnRegistrationCallback(void *CallbackParameter)
 // BTPM Local Device Manager Callback function
 static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *CallbackParameter)
 {
-	printf("%s: %p, %p\n", __func__, EventData, CallbackParameter);
+//	printf("%s: %p, %p\n", __func__, EventData, CallbackParameter);
 
 	if (EventData) {
 		switch (EventData->EventType) {
 		case detDevicePoweredOn:
 			printf("Device Powered On\n");
+			BTIO_ScanForDevices(DEVMCallbackID, 0);
 			break;
 		case detDevicePoweredOff:
 			printf("Device Powered Off\n");
@@ -52,12 +53,15 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 			break;
 		}
 	}
+	else {
+		printf("%s: invalid %p, %p\n", __func__, EventData, CallbackParameter);
+	}
 }
 
 // GATM Manager Callback Function
 static void BTPSAPI GATM_Event_Callback(GATM_Event_Data_t *EventData, void *CallbackParameter)
 {
-	printf("%s: %p, %p\n", __func__, EventData, CallbackParameter);
+//	printf("%s: %p, %p\n", __func__, EventData, CallbackParameter);
 
 	if (EventData) {
 		switch (EventData->EventType) {
@@ -80,6 +84,9 @@ static void BTPSAPI GATM_Event_Callback(GATM_Event_Data_t *EventData, void *Call
 			break;
 		}
 	}
+	else {
+		printf("%s: invalid %p, %p\n", __func__, EventData, CallbackParameter);
+	}
 }
 
 int BTIO_Init(void* callback)
@@ -100,7 +107,8 @@ int BTIO_Init(void* callback)
 	r = DEVM_PowerOnDevice();
 	printf("DEVM_PowerOnDevice() returned %d\n", r);
 
-	r = BTIO_ScanForDevices(DEVMCallbackID, 0);
+	if (0 == r || BTPM_ERROR_CODE_LOCAL_DEVICE_ALREADY_POWERED_UP == r)
+		r = BTIO_ScanForDevices(DEVMCallbackID, 0);
 
 	return DEVMCallbackID;
 }
@@ -108,6 +116,8 @@ int BTIO_Init(void* callback)
 int BTIO_Exit(int handle)
 {
 	printf("%s: %d\n", __func__, handle);
+
+	DEVM_PowerOffDevice();
 
 	if (DEVMCallbackID)
 		DEVM_UnRegisterEventCallback(DEVMCallbackID);
@@ -200,7 +210,7 @@ int BTIO_ScanForDevices(int handle, int scan_time)
 int BTIO_ConnectToDevice(int handle, const BTAddr* device)
 {
 	BD_ADDR_t     BD_ADDR;
-	unsigned long ConnectFlags = 0;
+	unsigned long ConnectFlags = DEVM_CONNECT_WITH_REMOTE_DEVICE_FORCE_LOW_ENERGY;
 
 	printf("%s: %d: %s\n", __func__, handle, device->toString().c_str());
 
