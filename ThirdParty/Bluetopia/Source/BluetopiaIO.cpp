@@ -14,6 +14,9 @@ static unsigned int        GATMCallbackID = 0;
 
 static BTAddr*             device = NULL;
 
+// Callback function to ControllerMPI client
+static pFnCallback         callbackfunc = NULL;
+
 // BTPM Server Un-Registration Callback function
 void BTPSAPI ServerUnRegistrationCallback(void *CallbackParameter)
 {
@@ -66,6 +69,11 @@ static void BTPSAPI GATM_Event_Callback(GATM_Event_Data_t *EventData, void *Call
 			break;
 		case getGATTHandleValueData:
 			printf("GATT Handle Value Data\n");
+			if (callbackfunc) {
+				(*callbackfunc)(CallbackParameter,
+						EventData->EventData.HandleValueDataEventData.AttributeValue,
+						EventData->EventData.HandleValueDataEventData.AttributeValueLength);
+			}
 			break;
 		default:
 			printf("%s: unhandled type %d, %p\n", __func__, EventData->EventType, CallbackParameter);
@@ -81,11 +89,11 @@ int BTIO_Init(void* callback)
 	int r = BTPM_Initialize(getpid(), NULL, NULL, NULL);
 	printf("BTPM_Initialize() returned %d\n", r);
 
-	r = DEVM_RegisterEventCallback(DEVM_Event_Callback, NULL);
+	r = DEVM_RegisterEventCallback(DEVM_Event_Callback, callback);
 	printf("DEVM_RegisterEventCallback() returned %d\n", r);
 	DEVMCallbackID = r;
 
-	r = GATM_RegisterEventCallback(GATM_Event_Callback, NULL);
+	r = GATM_RegisterEventCallback(GATM_Event_Callback, callback);
 	printf("GATM_RegisterEventCallback() returned %d\n", r);
 	GATMCallbackID = r;
 
@@ -121,6 +129,7 @@ int BTIO_SendCommand(int handle, int command, void* data, int length)
 	case kBTIOCmdSetDeviceCallback:
 		break;
 	case kBTIOCmdSetInputCallback:
+		callbackfunc = (pFnCallback)data;
 		break;
 	case kBTIOCmdSetUpdateRate:
 		break;

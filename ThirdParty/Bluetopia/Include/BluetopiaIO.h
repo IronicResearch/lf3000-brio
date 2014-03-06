@@ -12,6 +12,8 @@ typedef int (*pFnScanForDevices)( int, int );
 typedef int (*pFnConnectToDevice)( int, const BTAddr* );
 typedef BTAddr* (*pFnGetLocalAddress)( int ); 
 
+typedef void (*pFnCallback)( void*, void*, int );
+
 #ifdef USE_EXPORTS
 
 extern pFnInit					pBTIO_Init;
