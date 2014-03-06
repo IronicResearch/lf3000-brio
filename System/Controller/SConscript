@@ -29,7 +29,7 @@ myenv.Append(CPPPATH=['Include'])
 
 if not env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/Bluetopia/Include'])
-	myenv.Append(CPPDEFINES = ['USE_EXPORTS'])
+	#myenv.Append(CPPDEFINES = ['USE_EXPORTS'])
 else:
 	myenv.Append(CPPPATH = ['#ThirdParty/Bluetopia/Include'])
 	

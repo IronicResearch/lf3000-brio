@@ -81,10 +81,10 @@ namespace Hardware {
 
     void* dll_;
     int handle_;
-    pFnInit	    		pBTIO_Init_;
-    pFnExit 			pBTIO_Exit_;
-    pFnSendCommand		pBTIO_SendCommand_;
-    pFnQueryStatus		pBTIO_QueryStatus_;
+    //pFnInit	    		pBTIO_Init_;
+    //pFnExit 			pBTIO_Exit_;
+    //pFnSendCommand		pBTIO_SendCommand_;
+    //pFnQueryStatus		pBTIO_QueryStatus_;
   };
   
 }	// namespace Hardware
