@@ -39345,3 +39345,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/5/14 1:01 PM
 24,679 ms. (Cumulative: 19,096,130 ms)
 
 ----------------
+Revision 10,571 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Initial port of Bluetopia implementation based on their GATT client example.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/5/14 5:32 PM
+1 changed, 0 added, 0 deleted.
+24,930 ms. (Cumulative: 19,121,169 ms)
+
+----------------
