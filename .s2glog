@@ -39421,3 +39421,37 @@ By Dave Milici (dmilici@leapfrog.com) on 3/6/14 2:29 PM
 24,658 ms. (Cumulative: 19,296,854 ms)
 
 ----------------
+Revision 10,579 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,616 ms. (Cumulative: 19,321,564 ms)
+
+----------------
+Revision 10,580 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,775 ms. (Cumulative: 19,346,339 ms)
+
+----------------
+Revision 10,581 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,736 ms. (Cumulative: 19,371,075 ms)
+
+----------------
+Revision 10,582 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,413 ms. (Cumulative: 19,395,488 ms)
+
+----------------
+Revision 10,583 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Instantiate Bluetooth HW Controller implementation to enable callbacks to post button events. (FWSCRUM-1407)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/6/14 7:08 PM
+2 changed, 0 added, 0 deleted.
+24,609 ms. (Cumulative: 19,420,113 ms)
+
+----------------
