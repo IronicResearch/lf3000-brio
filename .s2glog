@@ -39455,3 +39455,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/6/14 7:08 PM
 24,609 ms. (Cumulative: 19,420,113 ms)
 
 ----------------
+Revision 10,584 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Compare incoming packets with cached packet to minimize callback events. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/6/14 7:27 PM
+2 changed, 0 added, 0 deleted.
+24,658 ms. (Cumulative: 19,444,865 ms)
+
+----------------
