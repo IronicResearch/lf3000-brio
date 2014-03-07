@@ -6,12 +6,22 @@
 #include <iostream> //AJL Debug
 #include <stdio.h> // FIXME
 #include <dlfcn.h>
+#include <sys/time.h>
 
 // FIXME
 pFnInit	    		pBTIO_Init_;
 pFnExit 			pBTIO_Exit_;
 pFnSendCommand		pBTIO_SendCommand_;
 pFnQueryStatus		pBTIO_QueryStatus_;
+
+#define BTIO_Init   			pBTIO_Init_
+#define BTIO_Exit   			pBTIO_Exit_
+#define BTIO_SendCommand		pBTIO_SendCommand_
+#define BTIO_QueryStatus		pBTIO_QueryStatus_
+
+inline float BYTE_TO_FLOAT(U8 byte) {
+	  return (float)((int)byte - 128) / 128.0;
+}
 
 using namespace LeapFrog::Brio;
 
@@ -83,27 +93,41 @@ namespace Hardware {
 	  HWControllerBluetoothPIMPL* pModule = (HWControllerBluetoothPIMPL*)context;
 	  U8* packet = (U8*)data;
 
+#if 0
 	  for (int i = 0; i < length; i++) {
 		  printf("%02x ", packet[i]);
 	  }
 	  printf("\n");
+#endif
 
 	  for (int i = 0; i < length; i++) {
 		  switch (i) {
 		  case 0:
-			  pModule->buttonData_.buttonTransition ^= (packet[i]) ? kButtonA : 0;
+			  pModule->buttonData_.buttonTransition &= ~kButtonA;
+			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonA : 0;
+			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonA);
+			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonA;
 			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonA : 0;
 			  break;
 		  case 1:
-			  pModule->buttonData_.buttonTransition ^= (packet[i]) ? kButtonB : 0;
+			  pModule->buttonData_.buttonTransition &= ~kButtonB;
+			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonB : 0;
+			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonB);
+			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonB;
 			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonB : 0;
 			  break;
 		  case 2:
-			  pModule->buttonData_.buttonTransition ^= (packet[i]) ? kButtonMenu : 0;
+			  pModule->buttonData_.buttonTransition &= ~kButtonMenu;
+			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonMenu : 0;
+			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonMenu);
+			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonMenu;
 			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonMenu : 0;
 			  break;
 		  case 3:
-			  pModule->buttonData_.buttonTransition ^= (packet[i]) ? kButtonHint : 0;
+			  pModule->buttonData_.buttonTransition &= ~kButtonHint;
+			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonHint : 0;
+			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonHint);
+			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonHint;
 			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonHint : 0;
 			  break;
 		  case 4:
@@ -113,13 +137,15 @@ namespace Hardware {
 			  pModule->mode_ = kHWControllerMode;
 			  break;
 		  case 6:
-			  pModule->analogStickData_.x = packet[i];
+			  pModule->analogStickData_.x = BYTE_TO_FLOAT(packet[i]);
 			  break;
 		  case 7:
-			  pModule->analogStickData_.y = packet[i];
+			  pModule->analogStickData_.y = BYTE_TO_FLOAT(packet[i]);
 			  break;
 		  }
 	  }
+
+	  gettimeofday((struct timeval*)&pModule->buttonData_.time, NULL);
 
 	  CButtonMessage bmsg(pModule->buttonData_);
 	  HWAnalogStickMessage amsg(pModule->analogStickData_);

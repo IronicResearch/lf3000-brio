@@ -1,6 +1,7 @@
 #include <Hardware/HWController.h>
 #include <EventMPI.h>
 #include "HWControllerPIMPL.h"
+#include "HWControllerBluetoothPIMPL.h"
 
 namespace LF {
 namespace Hardware {
@@ -8,6 +9,13 @@ namespace Hardware {
   
   HWController::HWController(void)  : 
     pimpl_(new HWControllerPIMPL()) {
+	  HWControllerBluetoothPIMPL* hwpimpl = new HWControllerBluetoothPIMPL();
+#if 0 // FIXME
+	  if (hwpimpl->IsConnected()) {
+		  pimpl_.reset();
+		  pimpl_ = boost::shared_ptr<HWControllerBluetoothPIMPL>(hwpimpl);
+	  }
+#endif
   }
   
   HWController::~HWController(void) {
