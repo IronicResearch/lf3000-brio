@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <BluetopiaIO.h>
 
@@ -13,6 +14,7 @@ static unsigned int        DEVMCallbackID = 0;
 static unsigned int        GATMCallbackID = 0;
 
 static BTAddr*             device = NULL;
+static unsigned char       packet[256] = {'\0'};
 
 // Callback function to ControllerMPI client
 static pFnCallback         callbackfunc = NULL;
@@ -72,7 +74,11 @@ static void BTPSAPI GATM_Event_Callback(GATM_Event_Data_t *EventData, void *Call
 			printf("GATT Disconnect\n");
 			break;
 		case getGATTHandleValueData:
-			printf("GATT Handle Value Data\n");
+//			printf("GATT Handle Value Data\n");
+			// Compare incoming packet with cached packet to minimize callbacks
+			if (0 == memcmp(packet, EventData->EventData.HandleValueDataEventData.AttributeValue, EventData->EventData.HandleValueDataEventData.AttributeValueLength))
+				break;
+			memcpy(packet, EventData->EventData.HandleValueDataEventData.AttributeValue, EventData->EventData.HandleValueDataEventData.AttributeValueLength);
 			if (callbackfunc) {
 				(*callbackfunc)(CallbackParameter,
 						EventData->EventData.HandleValueDataEventData.AttributeValue,
