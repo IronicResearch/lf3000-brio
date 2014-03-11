@@ -39465,3 +39465,26 @@ By Dave Milici (dmilici@leapfrog.com) on 3/6/14 7:27 PM
 24,658 ms. (Cumulative: 19,444,865 ms)
 
 ----------------
+Revision 10,585 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,586 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,587 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,275 ms. (Cumulative: 19,469,250 ms)
+
+----------------
+Revision 10,588 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,589 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,590 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,591 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Bind HWController instance to corresponding PIMPL instance for back-link.
+Need to register separate device callback from BTIO lib in order to create
+multiple HWController instances. (FWSCRUM-1551)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/10/14 6:42 PM
+7 changed, 0 added, 0 deleted.
+24,690 ms. (Cumulative: 19,493,972 ms)
+
+----------------

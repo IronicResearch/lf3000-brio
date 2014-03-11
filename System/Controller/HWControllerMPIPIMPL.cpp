@@ -3,6 +3,7 @@
 #include <HWControllerPIMPL.h>
 #include <Hardware/HWControllerEventMessage.h>
 #include <iostream> // AJL DEBUG
+#include <dlfcn.h>
 
 const LeapFrog::Brio::tEventType 
   kHWControllerListenerTypes[] = {LeapFrog::Brio::kAccelerometerDataChanged,
@@ -10,8 +11,8 @@ const LeapFrog::Brio::tEventType
 				  LeapFrog::Brio::kButtonStateChanged,
 				  LF::Hardware::kHWAnalogStickDataChanged};
 
-static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 0;
-static const LeapFrog::Brio::tEventPriority kHWControllerHighPriorityEvent = 255;
+static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 0; // FIXME
+static const LeapFrog::Brio::tEventPriority kHWControllerHighPriorityEvent = 255;  // FIXME
 
 namespace LF {
 namespace Hardware {
@@ -29,6 +30,7 @@ namespace Hardware {
 
   HWControllerMPIPIMPL::HWControllerMPIPIMPL(void) :
     IEventListener(kHWControllerListenerTypes, ArrayCount(kHWControllerListenerTypes)) {
+    // FIXME: Load BTIO interface lib here, not per controller instance
   }
   
   HWControllerMPIPIMPL::~HWControllerMPIPIMPL() {
@@ -36,8 +38,7 @@ namespace Hardware {
 
   void
   HWControllerMPIPIMPL::RegisterSelfAsListener(void) {
-    LeapFrog::Brio::CEventMPI eventMPI;
-    eventMPI.RegisterEventListener(this);
+    eventMPI_.RegisterEventListener(this);
   }
 
   LeapFrog::Brio::tEventStatus 
@@ -77,14 +78,15 @@ namespace Hardware {
       }	       
 
       HWControllerEventMessage newMsg(newType, controller);
-      LeapFrog::Brio::CEventMPI eventMPI;
-      eventMPI.PostEvent(newMsg, 0);
+      eventMPI_.PostEvent(newMsg, 0); // FIXME -- priority?
     } 
+    return LeapFrog::Brio::kEventStatusOK;
   }
 
   HWController* 
   HWControllerMPIPIMPL::GetControllerByID(LeapFrog::Brio::U32 id) {
     //TODO: handle multiple controllers
+	// FIXME -- multiple controller instances
     static HWController *theController_ = NULL;
     if (!theController_) {
       theController_ = new HWController();
