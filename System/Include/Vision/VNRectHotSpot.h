@@ -26,7 +26,8 @@ namespace Vision {
     /*!
      * \biref Constructor
      * \param rect the rectangle specifying the region of the framebuffer to monitor
-     * for trigger events
+     * for trigger events.  The coordinates of rect must be with respect to the display
+     * surface.
      */
     VNRectHotSpot(const LeapFrog::Brio::tRect& rect);
 
@@ -45,7 +46,9 @@ namespace Vision {
 
     /*!
      * \brief SetRect sets the rectangle for this hot spot to monitor
-     * \param rect the rectangle specifying the region of the framebuffer to monitor
+     * \param rect the rectangle specifying the region of the framebuffer to monitor.
+     * The coordinates of rect must be with respect to the display
+     * surface.
      */
     void SetRect(const LeapFrog::Brio::tRect& rect);
 

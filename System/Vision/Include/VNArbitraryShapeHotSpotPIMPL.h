@@ -26,8 +26,11 @@ namespace Vision {
     void SetFilterImage(const LeapFrog::Brio::tFontSurf &filterImage);
     cv::Mat GetFilterImage(void) const;
 
+    virtual void UpdateVisionCoordinates(void);
+
   protected:
     cv::Mat filterImage_;
+    cv::Mat origFilterImage_;
     cv::Mat tmpMat_;
   };
   

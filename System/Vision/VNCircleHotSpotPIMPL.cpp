@@ -11,11 +11,12 @@ namespace Vision {
   VNCircleHotSpotPIMPL::VNCircleHotSpotPIMPL(const VNPoint &center,
 					     float radius) :
     VNRectHotSpotPIMPL(),
-    center_(center),
     radius_(0),
-    r2_(0) {
-    
+    radiusX_(0),
+    radiusY_(0) {
+
     SetRadius(radius);
+    SetCenter(center);
   }
   
   VNCircleHotSpotPIMPL::~VNCircleHotSpotPIMPL(void) {
@@ -24,29 +25,64 @@ namespace Vision {
   
   void
   VNCircleHotSpotPIMPL::CreateMask(void) {
-    // create a mask image the size of our ROI
-    mask_ = cv::Mat::zeros(2*radius_,
-			   2*radius_,
-			   CV_8U);
-    // render a circle in the mask
-    circle(mask_, 
-	   cv::Point(radius_, radius_), 
-	   radius_, 
-	   cv::Scalar(255), 
-	   CV_FILLED);
+    if (radiusX_ > 0 && radiusY_ > 0) {
+      // create a mask image the size of our ROI
+      mask_ = cv::Mat::zeros(2*radiusY_, // number of rows - height
+			     2*radiusX_, // number of cols - width
+			     CV_8U);
+      // render an ellipse in the mask
+      ellipse(mask_, 
+	     cv::Point(radiusX_, radiusY_), 
+	     cv::Size(radiusX_, radiusY_),
+	     0,   // rotation angle of ellipse
+	     0,   // start angle of ellipse
+	     360, // end angle of ellipse
+	     cv::Scalar(255), 
+	     CV_FILLED);
+    }
+  }
+
+  void
+  VNCircleHotSpotPIMPL::UpdateVisionCoordinates(void) {
+    // there is some redundant behavior in calling UpdateVisionCoordinates on
+    // the parent class and then setting the rect (in the parent class) however
+    // we would miss another update if one gets added to the parent class 
+    //inside of UpdateVisionCoordinates
+    VNRectHotSpotPIMPL::UpdateVisionCoordinates();
+
+    // set rect in display coordinates...VNRectHotSpotPIMPL handles
+    // the transformation from display to vision coordinates
+    SetRect(center_.x - radius_, 
+	    center_.x + radius_,
+	    center_.y - radius_,
+	    center_.y + radius_);
+
+    visionCenter_ = translator_->FromDisplayToVision(center_);
+    radiusX_ = translator_->FromDisplayToVisionAlongX(radius_);
+    radiusY_ = translator_->FromDisplayToVisionAlongY(radius_);
+    
+    numPixels_ = static_cast<int>(M_PI*radiusX_*radiusY_);
+
+    CreateMask();
+  }
+
+  void
+  VNCircleHotSpotPIMPL::SetCenter(const VNPoint &c) {
+    center_ = c;
+    UpdateVisionCoordinates();
+  }
+
+  VNPoint
+  VNCircleHotSpotPIMPL::GetCenter(void) const {
+    return center_;
   }
 
   void
   VNCircleHotSpotPIMPL::SetRadius(float radius) {
     if (radius > 0) {
+      // store radius in display coordinates
       radius_ = radius;
-      r2_ = radius_*radius_;
-      numPixels_ = static_cast<int>(M_PI*r2_);
-      SetRect(center_.x - radius_, 
-	      center_.x + radius_,
-	      center_.y - radius_,
-	      center_.y + radius_);
-      CreateMask();
+      UpdateVisionCoordinates();
     }
   }
 
@@ -65,7 +101,7 @@ namespace Vision {
 
 	// we need a clipping rectangle for the mask with the appropriate origin and
 	// size based on the clippedRect.  To achieve this we will shift the clipped
-	// rect by the origin of the original rect	
+	// rect by the origin of the original rect
 	cv::Rect adjustedClippedRect = clippedRect - rect_.tl();
 
 	// clip the filtering image such that when we apply the filter
@@ -90,9 +126,9 @@ namespace Vision {
 
   bool
   VNCircleHotSpotPIMPL::ContainsPoint(const VNPoint &p) const {
-    float xd = p.x - center_.x;
-    float yd = p.y - center_.y;
-    return ((xd*xd + yd*yd) <= r2_);
+    float xd = p.x - visionCenter_.x;
+    float yd = p.y - visionCenter_.y;
+    return ((((xd*xd)/(radiusX_*radiusX_)) + ((yd*yd)/(radiusY_*radiusY_))) < 1.0f);
   }
 
   int

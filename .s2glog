@@ -39498,3 +39498,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/11/14 11:57 AM
 24,602 ms. (Cumulative: 19,518,668 ms)
 
 ----------------
+Revision 10,593 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+brio: Merge in -r10545:10590 from Flakasoft_SDK BRANCH. Had inconsistencies with Samples/lf-vision-test/Src/VTCHMainState.cpp and marked areas with FIXME tags.
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 3/11/14 12:46 PM
+30 changed, 3 added, 1 deleted.
+25,590 ms. (Cumulative: 19,544,351 ms)
+
+----------------

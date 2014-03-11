@@ -26,6 +26,11 @@ namespace Vision {
     // and sets the img to the triggering image
     virtual int GetTriggerImage(cv::Mat &img);
 
+    // This method is called when the vision algorithm starts processing to insure
+    // that the mapping between the vision coordinate system and the display 
+    // coordinate system is correct.
+    virtual void UpdateVisionCoordinates(void);
+
     VNTrigger* trigger_;
     LeapFrog::Brio::U32 tag_;
     bool isTriggered_;

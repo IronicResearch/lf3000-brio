@@ -3,6 +3,7 @@
 
 #include <DisplayTypes.h>
 #include <VNHotSpotPIMPL.h>
+#include <VNCoordinateTranslator.h>
 
 namespace LF {
 namespace Vision {
@@ -17,11 +18,18 @@ namespace Vision {
 
     virtual bool ContainsPoint(const VNPoint &p) const;
     virtual int GetTriggerImage(cv::Mat &img);
-
+    
+    // assumption is that all coordinates passed in to this method
+    // are relative to the display coordinate system
     void SetRect(const LeapFrog::Brio::tRect &rect);
     LeapFrog::Brio::tRect GetRect(void) const;
 
+    // translates the lfRect (in display coordinates) to rect_ in vision coordinates
+    virtual void UpdateVisionCoordinates(void);
+
   protected:
+    // assumption is that all coordinates passed in to this method
+    // are relative to the display coordinate system
     void SetRect(LeapFrog::Brio::S16 left,
 		 LeapFrog::Brio::S16 right,
 		 LeapFrog::Brio::S16 top,
@@ -29,9 +37,12 @@ namespace Vision {
     cv::Rect ClipRectToImage(cv::Mat &img) const;
     void UpdateNumberOfActivePixels(const cv::Mat &img);
 
+    // stored in vision coordinates
     cv::Rect rect_;
     
+    VNCoordinateTranslator *translator_;
   private:
+    // stored in display coordinates
     LeapFrog::Brio::tRect lfRect_;
   };
   

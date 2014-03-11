@@ -30,6 +30,7 @@ namespace Vision {
     /*!
      * GetLocation
      * \return a VNPoint representing the x,y position in the camera viewport
+     * with respect to the display surface coordinate system
      */
     VNPoint GetLocation(void) const;
 

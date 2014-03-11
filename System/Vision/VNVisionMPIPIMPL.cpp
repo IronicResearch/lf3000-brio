@@ -4,7 +4,10 @@
 #include <Vision/VNAlgorithm.h>
 #include <Vision/VNHotSpot.h>
 #include <DisplayTypes.h>
+#include <DisplayMPI.h>
 #include <Vision/VNWand.h>
+#include <VNHotSpotPIMPL.h>
+#include <VNCoordinateTranslator.h>
 #ifdef EMULATION
 #include <opencv2/highgui/highgui.hpp>
 #endif
@@ -14,16 +17,15 @@
 #include <KernelMPI.h>
 #include <Utility.h>
 
-#include <opencv2/opencv.hpp>
-
-#include <stdio.h>
-
 namespace LF {
 namespace Vision {
 
   static const double kVNMillisecondsInASecond = 1000.0;
   static const float kVNDefaultFrameProcessingRate = 0.03125; // 32 fps
   static const LeapFrog::Brio::U32 kVNDefaultStackSize = 134217728; // 128 MB in bytes
+  static const LeapFrog::Brio::U16 kVNVisionProcessingFrameWidth = 640;
+  static const LeapFrog::Brio::U16 kVNVisionProcessingFrameHeight = 480;
+
 
   VNVisionMPIPIMPL*
   VNVisionMPIPIMPL::Instance(void) {
@@ -39,7 +41,12 @@ namespace Vision {
     visionAlgorithmRunning_(false),
     frameProcessingRate_(kVNDefaultFrameProcessingRate),
     taskHndl_(LeapFrog::Brio::kInvalidTaskHndl),
-    algorithm_(NULL){
+    algorithm_(NULL),
+    dbg_(kGroupVision),
+    frameTime_(time(0)),
+    frameCount_(0) {
+    dbg_.SetDebugLevel(kDbgLvlVerbose);
+    dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [ctor]\n");
     dbg_.SetDebugLevel(kDbgLvlVerbose);
 
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [ctor]\n");
@@ -50,18 +57,103 @@ namespace Vision {
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [dtor]\n");
   }
   
-  void
+  LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::DeleteTask(void) {
-    cameraMPI_.StopVideoCapture(videoCapture_);
+    LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
+    if (videoCapture_ != kInvalidVidCapHndl)
+      result = cameraMPI_.StopVideoCapture(videoCapture_);
     visionAlgorithmRunning_ = false;
     if (taskHndl_ != LeapFrog::Brio::kInvalidTaskHndl) {
       LeapFrog::Brio::CKernelMPI kernel;
-      kernel.CancelTask(taskHndl_);
+      if (kernel.CancelTask(taskHndl_ != kNoErr))
+	  result = static_cast<LeapFrog::Brio::Boolean>(false);	  
+    }
+    return result;
+  }
+
+  LeapFrog::Brio::tErrType
+  VNVisionMPIPIMPL::SetCameraFormat(void) {
+    LeapFrog::Brio::tCaptureModes modeList;
+    LeapFrog::Brio::tErrType error = cameraMPI_.EnumFormats(modeList);
+    
+    if (error == kNoErr) {
+      error = kVNCameraDoesNotSupportRequiredVisionFormat;
+      for (tCaptureModes::iterator it = modeList.begin(); it != modeList.end(); ++it) {
+	LeapFrog::Brio::tCaptureMode* mode = *it;
+
+	if (mode->width  == kVNVisionProcessingFrameWidth &&
+	    mode->height == kVNVisionProcessingFrameHeight) {
+
+	  LeapFrog::Brio::tCaptureFormat useFormat = LeapFrog::Brio::kCaptureFormatError;
+	  if (GetPlatformName() == "CAMBO") {
+	    useFormat = LeapFrog::Brio::kCaptureFormatYUV420;
+	  } else if (GetPlatformName() == "GLASGOW") {
+	    useFormat = LeapFrog::Brio::kCaptureFormatRAWYUYV;
+	  }
+	  
+	  mode->pixelformat = useFormat;
+	  // Glasgow requires framerate setting
+	  mode->fps_numerator = 1;
+	  mode->fps_denominator = 30;
+
+	  cameraMPI_.SetCurrentFormat(mode);
+	  error = kNoErr;
+	  break;
+	}
+      }
+    }
+    return error;
+  }
+
+  LeapFrog::Brio::tErrType
+  VNVisionMPIPIMPL::DispatchVisionThread(void) {
+    LeapFrog::Brio::CKernelMPI kernel;
+    LeapFrog::Brio::tTaskProperties props;
+    props.TaskMainFcn = &VNVisionMPIPIMPL::CameraCaptureTask;
+    props.taskMainArgCount = 1;
+    props.pTaskMainArgValues = static_cast<LeapFrog::Brio::tPtr>(this);
+    props.stackSize = kVNDefaultStackSize;
+    return kernel.CreateTask(taskHndl_, props, NULL);
+  }
+
+  void
+  VNVisionMPIPIMPL::UpdateHotSpotVisionCoordinates(void) {
+    for (std::vector<const VNHotSpot*>::iterator it = hotSpots_.begin();
+	 it != hotSpots_.end(); ++it) {
+      (*it)->pimpl_->UpdateVisionCoordinates();
     }
   }
+
   void
-  VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf& surf,
+  VNVisionMPIPIMPL::SetCoordinateTranslatorFrames(void) {
+    VNCoordinateTranslator *translator = VNCoordinateTranslator::Instance();
+    LeapFrog::Brio::tRect visionFrame;
+    visionFrame.left = visionFrame.top = 0;
+    visionFrame.right = 640;
+    visionFrame.bottom = 480;
+    translator->SetVisionFrame(visionFrame);
+    
+    LeapFrog::Brio::tRect displayFrame;
+    displayFrame.left = displayFrame.top = 0;
+    if (videoSurf_) {
+      displayFrame.right = videoSurf_->width;
+      displayFrame.bottom = videoSurf_->height;
+    } else {
+      const LeapFrog::Brio::tDisplayScreenStats*
+	screenStats = LeapFrog::Brio::CDisplayMPI().GetScreenStats(0);
+      if (screenStats) {
+	displayFrame.right = screenStats->width;
+	displayFrame.bottom = screenStats->height;
+      }
+    }
+    translator->SetDisplayFrame(displayFrame);
+    UpdateHotSpotVisionCoordinates();
+  }
+
+  LeapFrog::Brio::tErrType
+  VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf* surf,
 			  bool dispatchSynchronously) {
+    LeapFrog::Brio::tErrType error = kNoErr;
     if (!visionAlgorithmRunning_) {
        frameCount_ = 0;
        frameTime_ = time(0);
@@ -80,58 +172,70 @@ namespace Vision {
 	  useFormat = LeapFrog::Brio::kCaptureFormatRAWYUYV;
 	  dbg_.DebugOut(kDbgLvlValuable, "selected default camera\n");
        }
+	if(GetPlatformName() == "CABO") {
+	  useCamera = LeapFrog::Brio::kCameraFront;
+	  dbg_.DebugOut(kDbgLvlValuable, "selected front facing camera\n");
+	} else if(GetPlatformName() == "GLASGOW") {
+	  useCamera = LeapFrog::Brio::kCameraDefault;
+	  dbg_.DebugOut(kDbgLvlValuable, "selected default camera\n");
+	}
 #endif      
-      if (cameraMPI_.SetCurrentCamera(useCamera) == kNoErr)
-      {
+      error = cameraMPI_.SetCurrentCamera(useCamera);
+      
+      if (error == kNoErr) {
 	videoSurf_ = surf;
-	LeapFrog::Brio::tCaptureMode* mode = cameraMPI_.GetCurrentFormat();
 
-	// The resolution of the camera
-	mode->width = surf.width;
-	mode->height = surf.height;
+	SetCoordinateTranslatorFrames();
+	error = SetCameraFormat();
 
-	// Must set some of these by default
-	mode->pixelformat = useFormat;
+	if (error == kNoErr) {
+	  videoCapture_ = cameraMPI_.StartVideoCapture(videoSurf_);
 
-	// Glasgow requires framerate setting
-	mode->fps_numerator = 1;
-	mode->fps_denominator = 30;
-	
-	tErrType err = cameraMPI_.SetCurrentFormat(mode);
-	
-	dbg_.Assert((err == kNoErr),
-		    "VNVision::SetCurrentFormat: failed to set requested camera format\n");
-	
-	if(err != kNoErr) return;
-	
-	videoCapture_ = cameraMPI_.StartVideoCapture(&videoSurf_, NULL, "");
+	  if (videoCapture_ == LeapFrog::Brio::kInvalidVidCapHndl) {
+	    error = kVNVideoCaptureFailed;
+	    dbg_.DebugOut(kDbgLvlCritical, "Failed to start vision video capture\n");
+	  } else {
+	    dbg_.DebugOut(kDbgLvlImportant, "VNVision [started video capture\\n");
 
-	dbg_.DebugOut(kDbgLvlImportant, "VNVision [started video capture]\n");
-	visionAlgorithmRunning_ = true;
+	    visionAlgorithmRunning_ = true;
+	  
+	    if (dispatchSynchronously) {
+	      error = DispatchVisionThread();
 
-	if (dispatchSynchronously) {
-	  LeapFrog::Brio::CKernelMPI kernel;
-	  LeapFrog::Brio::tTaskProperties props;
-	  props.TaskMainFcn = &VNVisionMPIPIMPL::CameraCaptureTask;
-	  props.taskMainArgCount = 1;
-	  props.pTaskMainArgValues = static_cast<LeapFrog::Brio::tPtr>(this);
-	  props.stackSize = kVNDefaultStackSize;
-	  kernel.CreateTask(taskHndl_, props, NULL);
+	      if (error != kNoErr) {
+		DeleteTask();
+	      }
+	    }
+	  }
 	}
       }
     } else {
       dbg_.DebugOut(kDbgLvlCritical, "Failed to set current camera\n");
     }
+    return error;
   }
   
-  void
+  LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::Stop(void) {
-    DeleteTask();
+    return DeleteTask();
   }
   
-  void
+  LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::Pause(void) {
+    LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
+    if (videoCapture_ != kInvalidVidCapHndl)
+      result = cameraMPI_.PauseVideoCapture(videoCapture_);
     visionAlgorithmRunning_ = false;
+    return result;
+  }
+
+  LeapFrog::Brio::Boolean
+  VNVisionMPIPIMPL::Resume(void) {
+    LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);    
+    if (videoCapture_ != kInvalidVidCapHndl)
+      result = cameraMPI_.ResumeVideoCapture(videoCapture_);
+    visionAlgorithmRunning_ = true;
+    return result;
   }
   
   void
@@ -182,120 +286,119 @@ namespace Vision {
   }
 
 #define CLIP8BIT(v)    v > 255 ? 255 : v < 0 ? 0 : v
-
-void YUV2RGB(cv::Mat src, cv::Mat dst)
-{
-   const int width = dst.cols;
-   const int height = dst.rows;
-   const int halfHeight = height / 2;
-   const int pitch = src.step;
-   const int halfPitch = pitch / 2;
-   
-   // Set all the plane starting points, UV lives out at the 2k boundry
-   const unsigned char* yData = src.ptr();
-   const unsigned char* uData = yData + halfPitch;
-   const unsigned char* vData = uData + halfHeight * pitch;
-   
-   // Grab the output pointer
-   unsigned char* rgbData = dst.ptr();
-   
-   // Each pair of 2 Y values share a single U & V
-   for(int j = 0; j < height; ++j) {
+  
+  void YUV2RGB(cv::Mat src, cv::Mat dst) {
+    const int width = dst.cols;
+    const int height = dst.rows;
+    const int halfHeight = height / 2;
+    const int pitch = src.step;
+    const int halfPitch = pitch / 2;
+    
+    // Set all the plane starting points, UV lives out at the 2k boundry
+    const unsigned char* yData = src.ptr();
+    const unsigned char* uData = yData + halfPitch;
+    const unsigned char* vData = uData + halfHeight * pitch;
+    
+    // Grab the output pointer
+    unsigned char* rgbData = dst.ptr();
+    
+    // Each pair of 2 Y values share a single U & V
+    for(int j = 0; j < height; ++j) {
       const unsigned char* y = yData + j * pitch;
-
+      
       // U V rows advance half as fast (note integer divide by 2)
       const unsigned char* u = uData + (j / 2) * pitch;
       const unsigned char* v = vData + (j / 2) * pitch;
-
+      
       // The output row
       unsigned char* c = rgbData + j * 3 * width;
-   
+      
       // Work on each pair of Ys (even & odd) at once
       for(int i = 0, k = 0; i < width; i += 2, ++k) {
-	 // U/V stays the same for each two pixels
-	 const short redUV = 1.13983f * (v[k] - 128);
-	 const short greenUV = - 0.39465 * (u[k] - 128) - 0.58060f * (v[k] - 128); 
-	 const short blueUV = 2.03211 * (u[k] - 128);
-
-	 for(int yi = 0; yi < 2; ++yi) {
-	    *c++ = CLIP8BIT(*y + redUV);
-	    *c++ = CLIP8BIT(*y + greenUV);
-	    *c++ = CLIP8BIT(*y + blueUV);
-	    ++y;
-	 }
+	// U/V stays the same for each two pixels
+	const short redUV = 1.13983f * (v[k] - 128);
+	const short greenUV = - 0.39465 * (u[k] - 128) - 0.58060f * (v[k] - 128); 
+	const short blueUV = 2.03211 * (u[k] - 128);
+	
+	for(int yi = 0; yi < 2; ++yi) {
+	  *c++ = CLIP8BIT(*y + redUV);
+	  *c++ = CLIP8BIT(*y + greenUV);
+	  *c++ = CLIP8BIT(*y + blueUV);
+	  ++y;
+	}
       }
-   }
-}
-
-static bool tableInited = false;
-static short rv[256];
-static short gu[256];
-static short gv[256];
-static short bu[256];
-
-void YUV2RGB_fast_table(cv::Mat src, cv::Mat dst)
-{
-   if(!tableInited) {
+    }
+  }
+  
+  static bool tableInited = false;
+  static short rv[256];
+  static short gu[256];
+  static short gv[256];
+  static short bu[256];
+  
+  void YUV2RGB_fast_table(cv::Mat src, cv::Mat dst) {
+    if(!tableInited) {
       for(int i = 0; i < 256; ++i) {
-	 rv[i] = 1.13983f * (i - 128);
-	 gu[i] = - 0.39465 * (i - 128);
-	 gv[i] = - 0.58060f * (i - 128);
-	 bu[i] = 2.03211f * (i - 128);
+	rv[i] = 1.13983f * (i - 128);
+	gu[i] = - 0.39465 * (i - 128);
+	gv[i] = - 0.58060f * (i - 128);
+	bu[i] = 2.03211f * (i - 128);
       }
       tableInited = true;
-   }
-   const int width = dst.cols;
-   const int tripleWidth = 3 * width;
-   const int height = dst.rows;
-   const int halfHeight = height / 2;
-   const int pitch = src.step;
-   const int halfPitch = pitch / 2;
-   
-   // Set all the plane starting points, UV lives out at the 2k boundry
-   const unsigned char* yData = src.ptr();
-   const unsigned char* uData = yData + halfPitch;
-   const unsigned char* vData = yData + halfHeight * pitch + halfPitch;
-   
-   // Grab the output pointer
-   unsigned char* rgbData = dst.ptr();
-   
-   // Each pair of 2 Y values share a single U & V
-   for(int j = 0; j < height; ++j) {
+    }
+    const int width = dst.cols;
+    const int tripleWidth = 3 * width;
+    const int height = dst.rows;
+    const int halfHeight = height / 2;
+    const int pitch = src.step;
+    const int halfPitch = pitch / 2;
+    
+    // Set all the plane starting points, UV lives out at the 2k boundry
+    const unsigned char* yData = src.ptr();
+    const unsigned char* uData = yData + halfPitch;
+    const unsigned char* vData = yData + halfHeight * pitch + halfPitch;
+    
+    // Grab the output pointer
+    unsigned char* rgbData = dst.ptr();
+    
+    // Each pair of 2 Y values share a single U & V
+    for(int j = 0; j < height; ++j) {
       const unsigned char* y = yData + j * pitch;
-
+      
       // U V rows advance half as fast (note integer divide by 2)
       const unsigned char* u = uData + (j / 2) * pitch;
       const unsigned char* v = vData + (j / 2) * pitch;
-
+      
       // The output row
       unsigned char* c = rgbData + j * tripleWidth;
-   
+      
       const unsigned char* yEnd = y + width;
       
       // Work on the whole line of Y values
       while(y < yEnd) {
-	 // U/V stays the same for each two pixels
-	 const short redUV = rv[*v];
-	 const short greenUV = gu[*u] + gv[*v];
-	 const short blueUV = bu[*u];
-
-	 // Even Y
-	 *c++ = CLIP8BIT(*y + redUV);
-	 *c++ = CLIP8BIT(*y + greenUV);
-	 *c++ = CLIP8BIT(*y + blueUV);
-	 ++y;
-
-	 // Odd Y
-	 *c++ = CLIP8BIT(*y + redUV);
-	 *c++ = CLIP8BIT(*y + greenUV);
-	 *c++ = CLIP8BIT(*y + blueUV);
-	 ++y;
-
-	 ++u;
-	 ++v;
+	// U/V stays the same for each two pixels
+	const short redUV = rv[*v];
+	const short greenUV = gu[*u] + gv[*v];
+	const short blueUV = bu[*u];
+	
+	// Even Y
+	*c++ = CLIP8BIT(*y + redUV);
+	*c++ = CLIP8BIT(*y + greenUV);
+	*c++ = CLIP8BIT(*y + blueUV);
+	++y;
+	
+	// Odd Y
+	*c++ = CLIP8BIT(*y + redUV);
+	*c++ = CLIP8BIT(*y + greenUV);
+	*c++ = CLIP8BIT(*y + blueUV);
+	++y;
+	
+	++u;
+	++v;
       }
-   }
-}
+    }
+  }
+
   void
   VNVisionMPIPIMPL::Update(void) {
     if (visionAlgorithmRunning_) {
@@ -303,28 +406,24 @@ void YUV2RGB_fast_table(cv::Mat src, cv::Mat dst)
 
       if (!cameraMPI_.IsVideoCapturePaused(videoCapture_) ) {
 
-	 if (cameraMPI_.LockCaptureVideoSurface(videoCapture_))
-	    {
+	if (cameraMPI_.LockCaptureVideoSurface(videoCapture_)) {
 	  LeapFrog::Brio::tVideoSurf *surf = cameraMPI_.GetCaptureVideoSurface(videoCapture_);
-
 	  dbg_.Assert(surf != 0, "VNVisionMPIPIMPL::Update - failed getting video surface.\n");
-	  if(!surf) return;
+	  if (!surf) return;
 	  
-	  unsigned char *buffer = surf->buffer; 
+	  unsigned char *buffer = surf->buffer;
 
-	  dbg_.Assert(buffer && algorithm_,
-		      "VNVisionMPIPIMPL::Update - invalid buffer or algorithm.\n");
+	  dbg_.Assert(buffer && algorithm_, "VNVisionMPIPIMPL::Update - invalid buffer or algorithm.\n");
 	  if (buffer && algorithm_) {
-	    cv::Mat img(cv::Size(videoSurf_.width, 
-				 videoSurf_.height), 
+	    cv::Mat img(cv::Size(kVNVisionProcessingFrameWidth, 
+				 kVNVisionProcessingFrameHeight), 
 			CV_8U, 
 			buffer,
-			surf->pitch); //4096); // FIXME
-	    cv::Mat rgbMat(cv::Size(videoSurf_.width, 
-				    videoSurf_.height), 
+			surf->pitch); //4096); //FIXME: what is this magic number???
+	    cv::Mat rgbMat(cv::Size(kVNVisionProcessingFrameWidth,
+				    kVNVisionProcessingFrameHeight),
 			   CV_8UC3);
 	    YUV2RGB_fast_table(img, rgbMat);
-	    //cv::cvtColor(img, rgbMat, CV_YUV2RGB_YUYV);
 	    algorithm_->Execute(rgbMat, outputImg_);
 
 #ifdef EMULATION
@@ -333,14 +432,14 @@ void YUV2RGB_fast_table(cv::Mat src, cv::Mat dst)
 
 	    TriggerHotSpots();
 	    ++frameCount_;
-	    if(frameCount_ % 30 == 0) {
-	       printf("FPS = %.2f\n", frameCount_ / (float)(time(0) - frameTime_));
+	    if (frameCount_ % 30 == 0) {
+	      std::cout << "FPS = " << frameCount_ / ((float)(time(0) - frameTime_)) << std::endl;
 	    }
 	  }
 	}
 	cameraMPI_.UnLockCaptureVideoSurface(videoCapture_);
       } else {
-	dbg_.DebugOut(kDbgLvlCritical, "No frame.\n");
+	dbg_.DebugOut(kDbgLvlCritical, "VNVisionMPIPIMPL - no frame.\n");
       }
       EndFrameProcessing();
     }

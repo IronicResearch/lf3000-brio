@@ -4,20 +4,20 @@
 #include <boost/timer.hpp>
 
 namespace LF {
-  namespace Vision {
+namespace Vision {
+  
+  class VNIntervalTriggerPIMPL {
+  public:
+    VNIntervalTriggerPIMPL(float interval);
+    virtual ~VNIntervalTriggerPIMPL(void);
     
-    class VNIntervalTriggerPIMPL {
-    public:
-      VNIntervalTriggerPIMPL(float interval);
-      virtual ~VNIntervalTriggerPIMPL(void);
-
-      bool Triggered(bool spatiallyTriggered);
-      
-      float interval_;
-
-      bool firstTrigger_;
-      boost::timer timer_;
-    };
+    bool Triggered(bool spatiallyTriggered);
+    
+    float interval_;
+    
+    bool firstTrigger_;
+    boost::timer timer_;
+  };
     
 } // namespace Vision
 } // namespace LF

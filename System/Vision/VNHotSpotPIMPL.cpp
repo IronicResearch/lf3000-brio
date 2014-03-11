@@ -44,5 +44,9 @@ namespace Vision {
     return 0;
   }
 
+  void
+  VNHotSpotPIMPL::UpdateVisionCoordinates(void) {
+    // do nothing
+  }
 } // namespace Vision
 } // namespace LF

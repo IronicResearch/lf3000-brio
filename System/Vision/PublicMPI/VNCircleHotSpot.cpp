@@ -28,12 +28,12 @@ namespace Vision {
   
   void
   VNCircleHotSpot::SetCenter(const VNPoint &center) {
-    pimpl_->center_ = center;
+    pimpl_->SetCenter(center);
   }
   
   VNPoint
   VNCircleHotSpot::GetCenter(void) const {
-    return pimpl_->center_;
+    return pimpl_->GetCenter();
   }
 
   void

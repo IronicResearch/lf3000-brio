@@ -2,6 +2,7 @@
 #define __VISION_INCLUDE_VNWANDPIMPL_H__
 
 #include <Vision/VNVisionTypes.h>
+#include <VNCoordinateTranslator.h>
 #include <opencv2/opencv.hpp>
 
 namespace LF {
@@ -23,7 +24,9 @@ namespace Vision {
 
   protected:
     bool visible_;
-    VNPoint location_;   
+    VNPoint location_;
+
+    VNCoordinateTranslator *translator_;
   };
 }
 }

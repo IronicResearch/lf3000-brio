@@ -3,16 +3,16 @@
 
 namespace LF {
 namespace Vision {
-	class VNHotSpot;
-
-	class VNHotSpotEventMessagePIMPL {
-	public:
-		VNHotSpotEventMessagePIMPL(const VNHotSpot* hotSpot);
-
-		~VNHotSpotEventMessagePIMPL(void);
-
-		const VNHotSpot* hotSpot_;
-	};
+  class VNHotSpot;
+  
+  class VNHotSpotEventMessagePIMPL {
+  public:
+    VNHotSpotEventMessagePIMPL(const VNHotSpot* hotSpot);
+    
+    ~VNHotSpotEventMessagePIMPL(void);
+    
+    const VNHotSpot* hotSpot_;
+  };
 
 }
 }

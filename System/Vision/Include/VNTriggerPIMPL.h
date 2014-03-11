@@ -7,7 +7,6 @@
 namespace LF {
 namespace Vision {
 
-
   class VNTriggerPIMPL {
   public:
     VNTriggerPIMPL(void);

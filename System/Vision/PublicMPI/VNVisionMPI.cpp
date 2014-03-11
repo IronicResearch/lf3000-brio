@@ -122,10 +122,10 @@ namespace Vision {
   /*!
    * Controls the execution of frame processing
    */
-  void
-  VNVisionMPI::Start(LeapFrog::Brio::tVideoSurf& surf,
+  LeapFrog::Brio::tErrType
+  VNVisionMPI::Start(LeapFrog::Brio::tVideoSurf* surf,
 		     bool dispatchSynchronously) {
-    pimpl_->Start(surf, dispatchSynchronously);
+    return pimpl_->Start(surf, dispatchSynchronously);
   }
   
   void
@@ -133,16 +133,21 @@ namespace Vision {
     pimpl_->Update();
   }
 
-  void
+  LeapFrog::Brio::Boolean
   VNVisionMPI::Stop(void) {
-    pimpl_->Stop();
+    return pimpl_->Stop();
   }
   
-  void
+  LeapFrog::Brio::Boolean
   VNVisionMPI::Pause(void) {
-    pimpl_->Pause();
+    return pimpl_->Pause();
   }
   
+  LeapFrog::Brio::Boolean
+  VNVisionMPI::Resume(void) {
+    return pimpl_->Resume();
+  }
+
   bool
   VNVisionMPI::IsRunning(void) const {
     return pimpl_->visionAlgorithmRunning_;

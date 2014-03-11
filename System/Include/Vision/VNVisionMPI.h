@@ -99,14 +99,18 @@ namespace Vision {
 
     /*!
      * \brief Start begins the video capture process necessary for video processing
-     * \param videoSurf the video surface from which the camera capture is taken
+     * \param videoSurf Is an optional parameter.  If a video surface is passed in the
+     * video capture will be displayed to this surfae with the appropriate scaling.  If
+     * this parameter is NULL, the default, the video capture session used for vision processing
+     * does not render the captured framebuffer.
      * \param dispatchSynchronously when set to true, the vision algorithm will be 
      * dispatched on a separate thread to allow image processing to occur synchronously.
      * The default behavior is asynchronous updates with the developer manually calling
      * the VNVisionMPI::Update method once per state update. 
+     * \return kNoErr if started successfully, the appropriate error otherwise
      */
-    void Start(LeapFrog::Brio::tVideoSurf& videoSurf,
-	       bool dispatchSynchronously = false);
+    LeapFrog::Brio::tErrType Start(LeapFrog::Brio::tVideoSurf* videoSurf = NULL,
+				   bool dispatchSynchronously = false);
 
     /*!
      * \breif Update performs one iteration of the current algorithm allowing
@@ -116,16 +120,26 @@ namespace Vision {
     void Update(void);
 
     /*!
-     * \brief Stop terminates image processing and destroys the current thread
+     * \brief Stop terminates image processing and destroys the current thread, if one exists
+     * \return true if successful
      */
-    void Stop(void);
+    LeapFrog::Brio::Boolean Stop(void);
 
     /*!
-     * \brief Pause will pause the current thread from processing images.  This call does
-     * not destroy the current thread and therefore the thread is still alive and active
-     * it's just not processing the framebuffers
+     * \brief Pause will pause the vision processing video capture. If Start was called 
+     * with dispatchSynchronously set to true this call will not destroy the current 
+     * thread and therefore the thread is still alive and active it's just not processing 
+     * the framebuffers
+     * \return true if successful
      */
-    void Pause(void);
+    LeapFrog::Brio::Boolean Pause(void);
+
+    /*!
+     * \brief Resume will resume the video capture process.  If the vision processing is
+     * in it's own thread, the thread will now start processing images again.
+     * \return true if successful
+     */
+    LeapFrog::Brio::Boolean Resume(void);
 
     /*!
      * \brief IsRunning
