@@ -138,16 +138,42 @@ namespace Hardware {
 		  case 7:
 			  pModule->analogStickData_.y = BYTE_TO_FLOAT(packet[i]);
 			  break;
+		  case 8:
+			  break;
+		  case 9:
+			  break;
+		  case 10:
+			  pModule->accelerometerData_.accelX = packet[i];
+			  break;
+		  case 11:
+			  pModule->accelerometerData_.accelX |= (packet[i] << 8);
+			  break;
+		  case 12:
+			  pModule->accelerometerData_.accelY = packet[i];
+			  break;
+		  case 13:
+			  pModule->accelerometerData_.accelY |= (packet[i] << 8);
+			  break;
+		  case 14:
+			  pModule->accelerometerData_.accelZ = packet[i];
+			  break;
+		  case 15:
+			  pModule->accelerometerData_.accelZ |= (packet[i] << 8);
+			  break;
 		  }
 	  }
 
 	  gettimeofday((struct timeval*)&pModule->buttonData_.time, NULL);
+	  pModule->accelerometerData_.time.seconds = pModule->analogStickData_.time.seconds = pModule->buttonData_.time.seconds;
+	  pModule->accelerometerData_.time.microSeconds = pModule->analogStickData_.time.microSeconds = pModule->buttonData_.time.microSeconds;
 
 	  CButtonMessage bmsg(pModule->buttonData_);
 	  HWAnalogStickMessage amsg(pModule->analogStickData_);
+	  CAccelerometerMessage xmsg(pModule->accelerometerData_);
 
 	  pModule->eventMPI_.PostEvent(amsg, 128);
 	  pModule->eventMPI_.PostEvent(bmsg, 128);
+	  pModule->eventMPI_.PostEvent(xmsg, 128);
   }
 
   /*!
