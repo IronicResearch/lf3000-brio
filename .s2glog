@@ -39508,3 +39508,19 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 3/11/14 12:46 PM
 25,590 ms. (Cumulative: 19,544,351 ms)
 
 ----------------
+Revision 10,594 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,690 ms. (Cumulative: 19,570,166 ms)
+
+----------------
+Revision 10,595 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Scale accelerometer x,y,z data into +/-32 range used by AcceleometerMPI devices. (FWSCRUM-1604)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/11/14 2:09 PM
+1 changed, 0 added, 0 deleted.
+25,033 ms. (Cumulative: 19,595,199 ms)
+
+----------------
