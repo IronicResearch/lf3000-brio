@@ -8,12 +8,6 @@
 #include <dlfcn.h>
 #include <sys/time.h>
 
-// FIXME
-pFnInit	    		pBTIO_Init_;
-pFnExit 			pBTIO_Exit_;
-pFnSendCommand		pBTIO_SendCommand_;
-pFnQueryStatus		pBTIO_QueryStatus_;
-
 #define BTIO_Init   			pBTIO_Init_
 #define BTIO_Exit   			pBTIO_Exit_
 #define BTIO_SendCommand		pBTIO_SendCommand_
@@ -28,7 +22,9 @@ using namespace LeapFrog::Brio;
 namespace LF {
 namespace Hardware {
 
-  HWControllerBluetoothPIMPL::HWControllerBluetoothPIMPL(void) :
+  HWControllerBluetoothPIMPL::HWControllerBluetoothPIMPL(HWController* controller) :
+    HWControllerPIMPL(controller),
+    controller_(controller),
     id_(kHWDefaultControllerID),
     mode_(kHWControllerMode) { //,
     //    updateRate_(accelerometerMPI_.GetAccelerometerRate()) {

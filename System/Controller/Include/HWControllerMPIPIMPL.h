@@ -3,6 +3,8 @@
 
 #include <Hardware/HWControllerTypes.h>
 #include <EventListener.h>
+#include <EventMPI.h>
+#include <BluetopiaIO.h>
 #include <vector>
 
 namespace LF {
@@ -28,7 +30,10 @@ namespace Hardware {
   private:
     HWControllerMPIPIMPL(void);
     HWControllerMPIPIMPL(const HWControllerMPIPIMPL&);
-    HWControllerMPIPIMPL& operator=(const HWControllerMPIPIMPL&);   
+    HWControllerMPIPIMPL& operator=(const HWControllerMPIPIMPL&);
+
+    LeapFrog::Brio::CEventMPI eventMPI_;
+
   };
   
 }	// namespace Hardware

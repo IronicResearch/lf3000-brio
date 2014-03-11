@@ -12,7 +12,7 @@ namespace Hardware {
   
   class HWControllerPIMPL {
   public:
-    HWControllerPIMPL(void);
+    HWControllerPIMPL(HWController* controller);
     virtual ~HWControllerPIMPL(void);
     
     /*!
@@ -65,6 +65,7 @@ namespace Hardware {
     LeapFrog::Brio::CButtonMPI buttonMPI_;
     Hardware::HWAnalogStickMPI analogStickMPI_;
 
+    HWController* controller_;
     LeapFrog::Brio::U8 id_;
     HWControllerMode mode_;
     LeapFrog::Brio::U32 updateRate_;

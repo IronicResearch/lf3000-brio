@@ -13,9 +13,9 @@
 namespace LF {
 namespace Hardware {
   
-  class HWControllerBluetoothPIMPL : HWControllerPIMPL {
+  class HWControllerBluetoothPIMPL : public HWControllerPIMPL {
   public:
-    HWControllerBluetoothPIMPL(void);
+    HWControllerBluetoothPIMPL(HWController* controller);
     virtual ~HWControllerBluetoothPIMPL(void);
     
     /*!
@@ -63,11 +63,13 @@ namespace Hardware {
     LeapFrog::Brio::tErrType SetAccelerometerMode(const LeapFrog::Brio::tAccelerometerMode mode);
     
   private:
+    // FIXME -- subclass?
     Vision::VNVisionMPI visionMPI_;
     LeapFrog::Brio::CAccelerometerMPI accelerometerMPI_;
     LeapFrog::Brio::CButtonMPI buttonMPI_;
     Hardware::HWAnalogStickMPI analogStickMPI_;
 
+    HWController* controller_;
     LeapFrog::Brio::U8 id_;
     HWControllerMode mode_;
     LeapFrog::Brio::U32 updateRate_;
@@ -82,10 +84,10 @@ namespace Hardware {
 
     void* dll_;
     int handle_;
-    //pFnInit	    		pBTIO_Init_;
-    //pFnExit 			pBTIO_Exit_;
-    //pFnSendCommand		pBTIO_SendCommand_;
-    //pFnQueryStatus		pBTIO_QueryStatus_;
+    pFnInit	    		pBTIO_Init_;
+    pFnExit 			pBTIO_Exit_;
+    pFnSendCommand		pBTIO_SendCommand_;
+    pFnQueryStatus		pBTIO_QueryStatus_;
 
     static void LocalCallback(void*, void*, int);
     LeapFrog::Brio::CEventMPI eventMPI_;

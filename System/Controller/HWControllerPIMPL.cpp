@@ -9,7 +9,8 @@ using namespace LeapFrog::Brio;
 namespace LF {
 namespace Hardware {
 
-  HWControllerPIMPL::HWControllerPIMPL(void) :
+  HWControllerPIMPL::HWControllerPIMPL(HWController* controller) :
+    controller_(controller),
     id_(kHWDefaultControllerID),
     mode_(kHWControllerMode) { //,
     //    updateRate_(accelerometerMPI_.GetAccelerometerRate()) {
