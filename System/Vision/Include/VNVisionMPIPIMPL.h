@@ -22,38 +22,44 @@ namespace Vision {
     static VNVisionMPIPIMPL* Instance(void);
     virtual ~VNVisionMPIPIMPL(void);
     
-    void DeleteTask(void);
+    LeapFrog::Brio::Boolean DeleteTask(void);
     
-    void Start(LeapFrog::Brio::tVideoSurf& surf,
-	       bool dispatchSynchronously);
+    LeapFrog::Brio::tErrType Start(LeapFrog::Brio::tVideoSurf* surf,
+				   bool dispatchSynchronously);
     void Update(void);
-    void Stop(void);
-    void Pause(void);
+    LeapFrog::Brio::Boolean Stop(void);
+    LeapFrog::Brio::Boolean Pause(void);
+    LeapFrog::Brio::Boolean Resume(void);
     
     void TriggerHotSpots(void);
     
-    void BeginFrameProcessing(void);
-    void EndFrameProcessing(void) const;
-    void Wait(double secondsToWait) const;
-    void CreateRGBImage(LeapFrog::Brio::tVideoSurf &surf,
-			cv::Mat &img) const;
-    
-    static void* CameraCaptureTask(void* args);
-
-#ifdef EMULATION
-    void OpenCVDebug(void);
-#endif
-
     bool visionAlgorithmRunning_;
     float frameProcessingRate_;
     std::vector<const VNHotSpot*> hotSpots_;
     LeapFrog::Brio::tTaskHndl taskHndl_;
     VNAlgorithm* algorithm_;
-    LeapFrog::Brio::tVideoSurf videoSurf_;
+    LeapFrog::Brio::tVideoSurf* videoSurf_;
     LeapFrog::Brio::tVidCapHndl videoCapture_;
     LeapFrog::Brio::CCameraMPI  cameraMPI_;
     cv::Mat outputImg_;
     boost::timer timer_;
+
+  protected:
+    LeapFrog::Brio::tErrType SetCameraFormat(void);
+    LeapFrog::Brio::tErrType DispatchVisionThread(void);
+    void SetCoordinateTranslatorFrames(void);
+    void BeginFrameProcessing(void);
+    void EndFrameProcessing(void) const;
+    void Wait(double secondsToWait) const;
+    void CreateRGBImage(LeapFrog::Brio::tVideoSurf &surf,
+			cv::Mat &img) const;
+    void UpdateHotSpotVisionCoordinates(void);
+
+    static void* CameraCaptureTask(void* args);
+
+#ifdef EMULATION
+    void OpenCVDebug(void);
+#endif
 
   private:
     VNVisionMPIPIMPL(void);

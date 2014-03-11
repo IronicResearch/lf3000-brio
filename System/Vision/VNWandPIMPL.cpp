@@ -17,19 +17,20 @@ namespace Vision {
   static const VNPixelType kVNWandBrightnessMin = kVNMinPixelValue;
   static const VNPixelType kVNWandBrightnessMax = kVNMaxPixelValue;
 
-  static const float kVNNoWandLocationX = -10000;
-  static const float kVNNoWandLocationY = -10000;
+  static const LeapFrog::Brio::S16 kVNNoWandLocationX = -10000;
+  static const LeapFrog::Brio::S16 kVNNoWandLocationY = -10000;
 
 
   VNWandPIMPL::VNWandPIMPL(void) :
     visible_(false),
-    location_(VNPoint()),
+    location_(VNPoint(kVNNoWandLocationX, kVNNoWandLocationY)),
     hsvMin_(kVNWandHueDefault-0.5*kVNWandHueWidthDefault,
 	    kVNWandSaturationDefault,
 	    kVNWandBrightnessDefault),
     hsvMax_(kVNWandHueDefault+0.5*kVNWandHueWidthDefault,
 	    kVNMaxPixelValue,
-	    kVNMaxPixelValue) {
+	    kVNMaxPixelValue),
+    translator_(VNCoordinateTranslator::Instance()) {
   }
 
   VNWandPIMPL::~VNWandPIMPL(void) {
@@ -44,8 +45,8 @@ namespace Vision {
 
   void
   VNWandPIMPL::VisibleOnScreen(const cv::Point &p) {
-    location_.x = p.x;
-    location_.y = p.y;
+    location_.x = static_cast<LeapFrog::Brio::S16>(p.x);
+    location_.y = static_cast<LeapFrog::Brio::S16>(p.y);
     visible_ = true;
   }
 
@@ -56,7 +57,10 @@ namespace Vision {
 
   VNPoint
   VNWandPIMPL::GetLocation(void) const {
-    return location_;
+    if (location_.x == kVNNoWandLocationX &&
+	location_.y == kVNNoWandLocationY)
+      return location_;
+    return translator_->FromVisionToDisplay(location_);
   }
 
 } // namespace Vision

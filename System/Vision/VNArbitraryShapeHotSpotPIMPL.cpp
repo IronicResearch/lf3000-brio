@@ -26,15 +26,41 @@ namespace Vision {
   
   VNArbitraryShapeHotSpotPIMPL::~VNArbitraryShapeHotSpotPIMPL(void) {
   }
+
+  void
+  VNArbitraryShapeHotSpotPIMPL::UpdateVisionCoordinates(void) {
+    // there is some redundant behavior in calling UpdateVisionCoordinates on
+    // the parent class and then setting the rect (in the parent class) however
+    // we would miss another update if one gets added to the parent class 
+    //inside of UpdateVisionCoordinates
+    VNRectHotSpotPIMPL::UpdateVisionCoordinates();
+   
+    filterImage_.create(rect_.height, // number of rows - height
+			rect_.width,  // number of cols - width
+			CV_8U);
+    
+    float sfx = translator_->GetDisplayToVisionXSF();
+    float sfy = translator_->GetDisplayToVisionYSF();
+    float relativeScale = sqrtf(sfx*sfx + sfy*sfy);
+
+    // set interpolation based on if the image is (generally speaking)
+    // enlarging or shrinking when going from display to vision coordinates
+    int interpolation = (relativeScale > 1.0f) ? cv::INTER_CUBIC : cv::INTER_AREA;
+
+    cv::resize(origFilterImage_, 
+	       filterImage_, 
+	       filterImage_.size(), 
+	       0, // scales to the size already set
+	       0, // scales to the size already set
+	       interpolation);
+    UpdateNumberOfActivePixels(filterImage_);
+  }
   
   void
   VNArbitraryShapeHotSpotPIMPL::SetFilterImage(const cv::Mat &filterImage) {
     assert(filterImage.type() == CV_8U);
-    assert(filterImage.cols == (int)(rect_.width));
-    assert(filterImage.rows == (int)(rect_.height));
-    //TODO: issue a warning???
-    filterImage.copyTo(filterImage_);
-    UpdateNumberOfActivePixels(filterImage_);
+    filterImage.copyTo(origFilterImage_);
+    UpdateVisionCoordinates();
   }
 
   void
@@ -65,7 +91,7 @@ namespace Vision {
 
   cv::Mat
   VNArbitraryShapeHotSpotPIMPL::GetFilterImage(void) const {
-    return filterImage_;
+    return origFilterImage_;
   }
 
   void

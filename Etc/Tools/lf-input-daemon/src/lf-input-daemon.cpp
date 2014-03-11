@@ -48,7 +48,7 @@ void cwiid_callback(cwiid_wiimote_t *wiimote, int mesg_count,
 
 	int* input_fds = (int*)cwiid_get_data( wiimote );
 
-	uint16_t previous_buttons = 0;
+	static uint16_t previous_buttons = 0;
 
 	for (i=0; i < mesg_count; i++) {
 
@@ -134,6 +134,7 @@ void cwiid_callback(cwiid_wiimote_t *wiimote, int mesg_count,
 				ev.code = KEY_A;
 				ev.value = 1;
 				write( input_fds[BUTTON_FD_INDEX], &ev, sizeof(ev));
+
 			}
 			if( mesg[i].btn_mesg.buttons & CWIID_BTN_B ) {
 				struct input_event ev;
@@ -143,6 +144,7 @@ void cwiid_callback(cwiid_wiimote_t *wiimote, int mesg_count,
 				ev.code = KEY_B;
 				ev.value = 1;
 				write( input_fds[BUTTON_FD_INDEX], &ev, sizeof(ev));
+
 			}
 			if( mesg[i].btn_mesg.buttons & CWIID_BTN_1 ) {
 				struct input_event ev;
@@ -238,7 +240,8 @@ void cwiid_callback(cwiid_wiimote_t *wiimote, int mesg_count,
 				memset( &ev, 0, sizeof(ev) );
 				gettimeofday( &ev.time, NULL );
 				ev.type = EV_SYN;
-				write( input_fds[BUTTON_FD_INDEX], &ev, sizeof(struct input_event) );
+				ev.code = SYN_REPORT;
+				write( input_fds[BUTTON_FD_INDEX], &ev, sizeof(ev) );
 
 			}
 
@@ -309,13 +312,13 @@ void cwiid_callback(cwiid_wiimote_t *wiimote, int mesg_count,
 			ev.type = EV_SYN;
 			write( input_fds[ANALOG_STICK_FD_INDEX], &ev, sizeof(struct input_event) );
 
-			printf("Nunchuk Report: btns=%.2X stick=(%d,%d) acc.x=%d acc.y=%d "
-			       "acc.z=%d\n", mesg[i].nunchuk_mesg.buttons,
-			       mesg[i].nunchuk_mesg.stick[CWIID_X],
-			       mesg[i].nunchuk_mesg.stick[CWIID_Y],
-			       mesg[i].nunchuk_mesg.acc[CWIID_X],
-			       mesg[i].nunchuk_mesg.acc[CWIID_Y],
-			       mesg[i].nunchuk_mesg.acc[CWIID_Z]);
+			//printf("Nunchuk Report: btns=%.2X stick=(%d,%d) acc.x=%d acc.y=%d "
+			 //      "acc.z=%d\n", mesg[i].nunchuk_mesg.buttons,
+			 //      mesg[i].nunchuk_mesg.stick[CWIID_X],
+			 //      mesg[i].nunchuk_mesg.stick[CWIID_Y],
+			 //      mesg[i].nunchuk_mesg.acc[CWIID_X],
+			 //      mesg[i].nunchuk_mesg.acc[CWIID_Y],
+			 //      mesg[i].nunchuk_mesg.acc[CWIID_Z]);
 		}
 			break;
 		case CWIID_MESG_CLASSIC:
@@ -500,7 +503,7 @@ int setup_accelerometer_userdevice() {
 }
 
 int setup_button_userdevice() {
-	int fd = open( "/dev/uinput", O_WRONLY | O_NONBLOCK );
+	int fd = open( "/dev/uinput", O_WRONLY | O_NDELAY);
 	if( fd < 0 ) {
 		fprintf(stderr, "Could not open /dev/uinput.  Check the /dev/uinput group and make sure you are a group member or run as root\n" );
 		return fd;

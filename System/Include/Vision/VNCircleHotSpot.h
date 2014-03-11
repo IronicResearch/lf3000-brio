@@ -32,8 +32,8 @@ namespace Vision {
 
     /*!
      * \biref Constructor
-     * \param center The center of the circle in framebuffer coordinates
-     * \param radius the radius of the circle
+     * \param center The center of the circle in coordinates relative to the display surface
+     * \param radius the radius of the circle with respect to the display surface size
      */
     VNCircleHotSpot(const VNPoint &center,
 		    float radius);
@@ -53,7 +53,7 @@ namespace Vision {
 
     /*!
      * \brief SetCenter sets the center of the circle
-     * \param center the center of the circle
+     * \param center the center of the circle with respect to the display surface
      */
     void SetCenter(const VNPoint &center);
 
@@ -65,7 +65,7 @@ namespace Vision {
 
     /*!
      * \brief SetRadius set the radius of the circle
-     * \param radius the radius of the circle
+     * \param radius the radius of the circle with respect to the display surface
      */
     void SetRadius(float radius);
 

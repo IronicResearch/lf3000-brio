@@ -15,6 +15,7 @@ namespace Vision {
   class VNRectHotSpot;
   class VNCircleHotSpot;
   class VNArbitraryShapeHotSpot;
+  class VNVisionMPIPIMPL;
   class VNHotSpotPIMPL;
 
   /*!
@@ -117,6 +118,7 @@ namespace Vision {
     friend class VNRectHotSpot;
     friend class VNCircleHotSpot;
     friend class VNArbitraryShapeHotSpot;
+    friend class VNVisionMPIPIMPL;
   };
 
 } // namespace Vision

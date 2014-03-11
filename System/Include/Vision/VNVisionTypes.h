@@ -3,6 +3,7 @@
 
 #include <SystemTypes.h>
 #include <SystemEvents.h>
+#include <SystemErrors.h>
 #include <GroupEnumeration.h>
 
 // Need to include this for event types
@@ -20,6 +21,12 @@ namespace Vision {
   (kVNHotSpotTriggerChangeEvent)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, LeapFrog::Brio::FirstEvent(LeapFrog::Brio::kGroupVision), VN_VISION_EVENTS)
+
+#define VN_VISION_ERRORS			\
+  (kVNCameraDoesNotSupportRequiredVisionFormat)	\
+  (kVNVideoCaptureFailed)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupVision), VN_VISION_ERRORS)
 
   /*!
    * All possible vision events that can trigger an event message
@@ -64,17 +71,17 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, LeapFrog::Brio::FirstEvent(LeapFrog::Bri
      * \param x_ the x value of the point
      * \param y_ the y value of the point
      */
-    VNPoint(float x_, float y_):
+  VNPoint(LeapFrog::Brio::S16 x_, LeapFrog::Brio::S16 y_):
       x(x_), y(y_) { }
     
     /*!
      * The x value of the point, publicly available
      */
-    float x;
+      LeapFrog::Brio::S16 x;
     /*!
      * The y value of the point, publicly available
      */
-    float y;
+      LeapFrog::Brio::S16 y;
   };
 
 }

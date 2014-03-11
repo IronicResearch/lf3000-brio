@@ -21,7 +21,7 @@ else:
 modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp')) + Glob('*.cpp') + Glob(os.path.join('Private', '*.cpp'))
 modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI'] + emulibs
-mpilibs		= ['ModuleMPI', 'KernelMPI', 'CameraMPI'] + ocvlibs2_4_6
+mpilibs		= ['ModuleMPI', 'KernelMPI', 'CameraMPI', 'DisplayMPI', 'EventMPI', 'Utility'] + ocvlibs2_4_6
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
