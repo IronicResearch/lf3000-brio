@@ -42,7 +42,6 @@ namespace Vision {
     frameProcessingRate_(kVNDefaultFrameProcessingRate),
     taskHndl_(LeapFrog::Brio::kInvalidTaskHndl),
     algorithm_(NULL),
-    dbg_(kGroupVision),
     frameTime_(time(0)),
     frameCount_(0) {
     dbg_.SetDebugLevel(kDbgLvlVerbose);
