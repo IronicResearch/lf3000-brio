@@ -34,6 +34,16 @@ namespace Hardware {
 
     LeapFrog::Brio::CEventMPI eventMPI_;
 
+    void* dll_;
+    int handle_;
+    pFnInit	    		pBTIO_Init_;
+    pFnExit 			pBTIO_Exit_;
+    pFnSendCommand		pBTIO_SendCommand_;
+    pFnQueryStatus		pBTIO_QueryStatus_;
+
+    static void DeviceCallback(void*, void*, int);
+    static void InputCallback(void*, void*, int);
+
   };
   
 }	// namespace Hardware
