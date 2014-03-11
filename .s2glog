@@ -39524,3 +39524,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/11/14 2:09 PM
 25,033 ms. (Cumulative: 19,595,199 ms)
 
 ----------------
+Revision 10,596 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+brio: Remove extra dbg call.
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 3/11/14 2:57 PM
+1 changed, 0 added, 0 deleted.
+24,376 ms. (Cumulative: 19,619,669 ms)
+
+----------------
