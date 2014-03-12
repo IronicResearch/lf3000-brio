@@ -39560,3 +39560,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/11/14 5:46 PM
 24,290 ms. (Cumulative: 19,692,893 ms)
 
 ----------------
+Revision 10,600 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Swizzle accelerometer x,y,z axes for compatibility with emulation controller. (FWSCRUM-1604)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/11/14 6:08 PM
+1 changed, 0 added, 0 deleted.
+24,489 ms. (Cumulative: 19,717,507 ms)
+
+----------------
