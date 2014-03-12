@@ -18,7 +18,7 @@ inline float BYTE_TO_FLOAT(U8 byte) {
 }
 
 inline S32 WORD_TO_SIGNED(U16 word) {
-	  return (S32)((int)word - 128) >> 3;
+	  return (S32)((int)word - 128) >> 2;
 }
 
 using namespace LeapFrog::Brio;
@@ -143,27 +143,23 @@ namespace Hardware {
 			  pModule->analogStickData_.y = BYTE_TO_FLOAT(packet[i]);
 			  break;
 		  case 8:
-			  break;
-		  case 9:
-			  break;
-		  case 10:
 			  pModule->accelerometerData_.accelX = packet[i];
 			  break;
-		  case 11:
+		  case 9:
 			  pModule->accelerometerData_.accelX |= (packet[i] << 8);
 			  pModule->accelerometerData_.accelX = WORD_TO_SIGNED(pModule->accelerometerData_.accelX);
 			  break;
-		  case 12:
+		  case 10:
 			  pModule->accelerometerData_.accelY = packet[i];
 			  break;
-		  case 13:
+		  case 11:
 			  pModule->accelerometerData_.accelY |= (packet[i] << 8);
 			  pModule->accelerometerData_.accelY = WORD_TO_SIGNED(pModule->accelerometerData_.accelY);
 			  break;
-		  case 14:
+		  case 12:
 			  pModule->accelerometerData_.accelZ = packet[i];
 			  break;
-		  case 15:
+		  case 13:
 			  pModule->accelerometerData_.accelZ |= (packet[i] << 8);
 			  pModule->accelerometerData_.accelZ = WORD_TO_SIGNED(pModule->accelerometerData_.accelZ);
 			  break;
