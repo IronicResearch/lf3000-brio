@@ -147,6 +147,7 @@ void* CameraTaskMain(void* arg)
 	tDisplayHandle		aHndl[2];
 	int					ibuf = 0;
 	bool				bDoubleBuffered = false;
+	bool				bNoDoubleBuffering = ("GLASGOW" == GetPlatformName());
 
 	JPEG_METHOD			method = JPEG_FAST;
 	
@@ -238,7 +239,7 @@ void* CameraTaskMain(void* arg)
 		}
 
 		// Support double buffering by replicating YUV planar video contexts
-		if (pSurf->format == kPixelFormatYUV420 && pSurf->pitch == 4096)
+		if (pSurf->format == kPixelFormatYUV420 && pSurf->pitch == 4096 && !bNoDoubleBuffering)
 		{
 			aSurf[0] = aSurf[1] = *pSurf;
 			aSurf[1].buffer += 1024;
@@ -358,7 +359,7 @@ void* CameraTaskMain(void* arg)
 		}
 
 		if(bScreen && !pCtx->bVPaused
-				&& (!pCtx->bAudio || ++viewframe % 2))
+				&& (!pCtx->bAudio || ++viewframe % 2 || bNoDoubleBuffering))
 		{
 #if USE_RENDER_THREAD
 			// Add frame to be rendered into CameraTaskRender() queue
