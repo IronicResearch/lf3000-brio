@@ -18,7 +18,7 @@ inline float BYTE_TO_FLOAT(U8 byte) {
 }
 
 inline S32 WORD_TO_SIGNED(U16 word) {
-	  return (S32)((int)word - 128) >> 2;
+	  return (S32)((word > 127) ? (int)word - 256 : (int)word) >> 2;
 }
 
 using namespace LeapFrog::Brio;
