@@ -39570,3 +39570,31 @@ By Dave Milici (dmilici@leapfrog.com) on 3/11/14 6:08 PM
 24,489 ms. (Cumulative: 19,717,507 ms)
 
 ----------------
+Revision 10,601 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,374 ms. (Cumulative: 19,741,974 ms)
+
+----------------
+Revision 10,602 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,257 ms. (Cumulative: 19,766,237 ms)
+
+----------------
+Revision 10,603 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,177 ms. (Cumulative: 19,790,414 ms)
+
+----------------
+Revision 10,604 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Disable camera viewfinder double-buffering on Glasgow device for VisionMPI support. (FWSCRUM-1329)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/12/14 12:04 PM
+1 changed, 0 added, 0 deleted.
+24,482 ms. (Cumulative: 19,814,896 ms)
+
+----------------
