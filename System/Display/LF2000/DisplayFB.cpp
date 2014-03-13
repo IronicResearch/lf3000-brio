@@ -1090,9 +1090,6 @@ void CDisplayFB::UpdateOpenGL(void* pCtx)
 			}
 		}
 	} else {
-		//TODO FWSCRUM-1063 Quickfix unblank the OpenGL layer every frame.
-		//Camera app is disabling the layer in a manner that leaves fbviz true
-		SetVisible(pOglCtx->hndlDisplay, true);
 		if (pOglCtx->hndlDisplay != NULL && !fbviz[OGLFB])
 		{
 			tDisplayContext *dcogl = (tDisplayContext*)pOglCtx->hndlDisplay;
