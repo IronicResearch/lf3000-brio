@@ -1,5 +1,6 @@
 #include "HWControllerBluetoothPIMPL.h"
 #include <Hardware/HWControllerTypes.h>
+#include <Hardware/HWController.h>
 #include <Vision/VNWand.h>
 #include <BluetopiaIO.h>
 #include <string.h>
@@ -46,8 +47,9 @@ namespace Hardware {
 		pBTIO_QueryStatus_	= (pFnQueryStatus)dlsym(dll_, "BTIO_QueryStatus");
 
 		// Connect to Bluetooth client service?
-		handle_ = BTIO_Init(this);
+//		handle_ = BTIO_Init(this);
 		BTIO_SendCommand(handle_, kBTIOCmdSetInputCallback, (void*)&LocalCallback, sizeof(void*));
+		BTIO_SendCommand(handle_, kBTIOCmdSetInputContext, this, sizeof(void*));
 	}
 	else {
 		std::cout << "dlopen failed to load libBluetopiaIO.so, error=\n" << dlerror();
@@ -57,7 +59,7 @@ namespace Hardware {
   HWControllerBluetoothPIMPL::~HWControllerBluetoothPIMPL(void) {
 	  // Close Bluetooth client lib connection
 	  if (dll_) {
-		  BTIO_Exit(handle_);
+//		  BTIO_Exit(handle_);
 		  dlclose(dll_);
 	  }
   }
