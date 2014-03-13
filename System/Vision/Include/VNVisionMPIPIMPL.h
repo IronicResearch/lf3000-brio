@@ -48,10 +48,12 @@ namespace Vision {
     LeapFrog::Brio::tErrType SetCameraFormat(void);
     LeapFrog::Brio::tErrType DispatchVisionThread(void);
     void SetCoordinateTranslatorFrames(void);
+    void SetCameraControls(void);
+    LeapFrog::Brio::tErrType SetCurrentCamera(void);
     void BeginFrameProcessing(void);
     void EndFrameProcessing(void) const;
     void Wait(double secondsToWait) const;
-    void CreateRGBImage(LeapFrog::Brio::tVideoSurf &surf,
+    void CreateRGBImage(LeapFrog::Brio::tVideoSurf *surf,
 			cv::Mat &img) const;
     void UpdateHotSpotVisionCoordinates(void);
 
