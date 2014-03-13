@@ -39,9 +39,9 @@ namespace Hardware {
 			pBTIO_QueryStatus_	= (pFnQueryStatus)dlsym(dll_, "BTIO_QueryStatus");
 
 			// Connect to Bluetooth client service?
-//			handle_ = pBTIO_Init_(this);
-//			pBTIO_SendCommand_(handle_, kBTIOCmdSetDeviceCallback, (void*)&DeviceCallback, sizeof(void*));
-//			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputCallback, (void*)&InputCallback, sizeof(void*));
+			handle_ = pBTIO_Init_(this);
+			pBTIO_SendCommand_(handle_, kBTIOCmdSetDeviceCallback, (void*)&DeviceCallback, sizeof(void*));
+			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputCallback, (void*)&InputCallback, sizeof(void*));
 		}
 		else {
 			std::cout << "dlopen failed to load libBluetopiaIO.so, error=\n" << dlerror();
@@ -60,6 +60,7 @@ namespace Hardware {
   HWControllerMPIPIMPL::DeviceCallback(void* context, void* data, int length) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       std::cout << "DeviceCallback: data=" << data << "length=" << length << "\n";
+ //     HWControllerMPIPIMPL::Instance()->GetControllerByID(kHWDefaultControllerID);
   }
 
   void

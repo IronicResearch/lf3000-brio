@@ -12,6 +12,7 @@ enum {
 	kBTIOCmdSetAccelerometerMode,
 	kBTIOCmdSetAnalogStickMode,
 	kBTIOCmdSetAnalogStickDeadZone,
+	kBTIOCmdSetInputContext,
 };
 
 ///< Enumerated commands for BTIO_QueryStatus()

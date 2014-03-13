@@ -39635,3 +39635,16 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 3/12/14 5:22 PM
 24,348 ms. (Cumulative: 19,912,336 ms)
 
 ----------------
+Revision 10,611 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,612 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,613 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Enable BTIO device callback to ControllerMPI for remote device connections,
+and use separate BTIO input callbacks per HWController instance. (FWSCRUM-1551) 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/12/14 9:06 PM
+6 changed, 0 added, 0 deleted.
+24,596 ms. (Cumulative: 19,937,041 ms)
+
+----------------

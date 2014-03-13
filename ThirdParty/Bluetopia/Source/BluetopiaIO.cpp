@@ -18,6 +18,7 @@ static unsigned char       packet[256] = {'\0'};
 
 // Callback function to ControllerMPI client
 static pFnCallback         callbackfunc = NULL;
+static pFnCallback         callbackmain = NULL;
 
 // BTPM Server Un-Registration Callback function
 void BTPSAPI ServerUnRegistrationCallback(void *CallbackParameter)
@@ -43,6 +44,11 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 			printf("Remote Device Found\n");
 			device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDeviceFoundEventData.RemoteDeviceProperties.BD_ADDR);
 			BTIO_ConnectToDevice(DEVMCallbackID, device);
+			if (callbackmain) {
+				(*callbackmain)(CallbackParameter,
+						device,
+						sizeof(device));
+			}
 			break;
 		case detRemoteDeviceDeleted:
 			printf("Remote Device Deleted\n");
@@ -106,9 +112,11 @@ int BTIO_Init(void* callback)
 	printf("DEVM_RegisterEventCallback() returned %d\n", r);
 	DEVMCallbackID = r;
 
+#if 0
 	r = GATM_RegisterEventCallback(GATM_Event_Callback, callback);
 	printf("GATM_RegisterEventCallback() returned %d\n", r);
 	GATMCallbackID = r;
+#endif
 
 	r = DEVM_PowerOnDevice();
 	printf("DEVM_PowerOnDevice() returned %d\n", r);
@@ -123,7 +131,8 @@ int BTIO_Exit(int handle)
 {
 	printf("%s: %d\n", __func__, handle);
 
-	DEVM_PowerOffDevice();
+//	DEVM_PowerOffDevice();
+	DEVM_StopDeviceScan();
 
 	if (DEVMCallbackID)
 		DEVM_UnRegisterEventCallback(DEVMCallbackID);
@@ -143,10 +152,15 @@ int BTIO_SendCommand(int handle, int command, void* data, int length)
 	case kBTIOCmdSetScanCallback:
 		break;
 	case kBTIOCmdSetDeviceCallback:
+		callbackmain = (pFnCallback)data;
 		break;
 	case kBTIOCmdSetInputCallback:
 		callbackfunc = (pFnCallback)data;
 		break;
+	case kBTIOCmdSetInputContext:
+		GATMCallbackID = GATM_RegisterEventCallback(GATM_Event_Callback, data);
+		printf("GATM_RegisterEventCallback() returned %d\n", GATMCallbackID);
+		return GATMCallbackID;
 	case kBTIOCmdSetUpdateRate:
 		break;
 	case kBTIOCmdSetLEDState:
