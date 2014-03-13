@@ -44,10 +44,8 @@ namespace Vision {
     algorithm_(NULL),
     frameTime_(time(0)),
     frameCount_(0) {
-    dbg_.SetDebugLevel(kDbgLvlVerbose);
-    dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [ctor]\n");
-    dbg_.SetDebugLevel(kDbgLvlVerbose);
 
+    dbg_.SetDebugLevel(kDbgLvlVerbose);
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [ctor]\n");
   }
   
@@ -84,7 +82,7 @@ namespace Vision {
 	    mode->height == kVNVisionProcessingFrameHeight) {
 
 	  LeapFrog::Brio::tCaptureFormat useFormat = LeapFrog::Brio::kCaptureFormatError;
-	  if (GetPlatformName() == "CAMBO") {
+	  if (GetPlatformName() == "CABO") {
 	    useFormat = LeapFrog::Brio::kCaptureFormatYUV420;
 	  } else if (GetPlatformName() == "GLASGOW") {
 	    useFormat = LeapFrog::Brio::kCaptureFormatRAWYUYV;
@@ -124,12 +122,73 @@ namespace Vision {
   }
 
   void
+  VNVisionMPIPIMPL::SetCameraControls(void) {
+    if(0) {
+      tCameraControls controls;
+      
+      dbg_.Assert(cameraMPI_.GetCameraControls(controls), "VNVision could get camera controls\n");
+      
+      bool setExposure = false;
+      bool setWhiteBlaance = false;
+      
+      for(tCameraControls::iterator i = controls.begin();
+	  i != controls.end();
+	  ++i) {
+	tControlInfo* c = *i;
+	
+	if(!c) {
+	  dbg_.DebugOut(kDbgLvlCritical, "null camera control (tControlInfo)\n");
+	  continue;
+	} else {
+	  printf("Control type: %i\n", c->type);
+	}
+	
+	switch(c->type) {
+	case kControlTypeAutoWhiteBalance:
+	  printf("AutoWhiteBalance: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	  cameraMPI_.SetCameraControl(c, 0);
+	  printf("New AutoWhiteBalance: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	  break;
+	case kControlTypeAutoExposure:
+	  printf("New Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	  cameraMPI_.SetCameraControl(c, 0);
+	  printf("New Auto Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	  break;
+	case kControlTypeExposure:
+	  printf("Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	  cameraMPI_.SetCameraControl(c, 9000);
+	  printf("New Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	  break;
+	}
+      }
+    }
+  }
+
+  LeapFrog::Brio::tErrType
+  VNVisionMPIPIMPL::SetCurrentCamera(void) {
+    LeapFrog::Brio::tCameraDevice useCamera = LeapFrog::Brio::kCameraDefault;
+#ifdef EMULATION
+    // do nothing
+#else
+    if(GetPlatformName() == "CABO") {
+      useCamera = LeapFrog::Brio::kCameraFront;
+    } 
+#endif 
+    if (useCamera == LeapFrog::Brio::kCameraDefault)
+      dbg_.DebugOut(kDbgLvlValuable, "VNVisionMPIPIMPL: selected default camera\n");
+    else if (useCamera == LeapFrog::Brio::kCameraFront)
+      dbg_.DebugOut(kDbgLvlValuable, "VNVisionMPIPIMPL: selected front camera\n");
+    
+    return cameraMPI_.SetCurrentCamera(useCamera);
+  }
+
+  void
   VNVisionMPIPIMPL::SetCoordinateTranslatorFrames(void) {
     VNCoordinateTranslator *translator = VNCoordinateTranslator::Instance();
     LeapFrog::Brio::tRect visionFrame;
     visionFrame.left = visionFrame.top = 0;
-    visionFrame.right = 640;
-    visionFrame.bottom = 480;
+    visionFrame.right = kVNVisionProcessingFrameWidth;
+    visionFrame.bottom = kVNVisionProcessingFrameHeight;
     translator->SetVisionFrame(visionFrame);
     
     LeapFrog::Brio::tRect displayFrame;
@@ -154,34 +213,14 @@ namespace Vision {
 			  bool dispatchSynchronously) {
     LeapFrog::Brio::tErrType error = kNoErr;
     if (!visionAlgorithmRunning_) {
-       frameCount_ = 0;
-       frameTime_ = time(0);
-       
-       LeapFrog::Brio::tCameraDevice useCamera = LeapFrog::Brio::kCameraDefault;
-       LeapFrog::Brio::tCaptureFormat useFormat = LeapFrog::Brio::kCaptureFormatError;
-#ifdef EMULATION
-       dbg_.DebugOut(kDbgLvlValuable, "selected default camera\n");
-#else
-       if(GetPlatformName() == "CABO") {
-	  useCamera = LeapFrog::Brio::kCameraFront;
-	  useFormat = LeapFrog::Brio::kCaptureFormatYUV420;
-	  dbg_.DebugOut(kDbgLvlValuable, "selected front facing camera\n");
-       } else if(GetPlatformName() == "GLASGOW") {
-	  useCamera = LeapFrog::Brio::kCameraDefault;
-	  useFormat = LeapFrog::Brio::kCaptureFormatRAWYUYV;
-	  dbg_.DebugOut(kDbgLvlValuable, "selected default camera\n");
-       }
-	if(GetPlatformName() == "CABO") {
-	  useCamera = LeapFrog::Brio::kCameraFront;
-	  dbg_.DebugOut(kDbgLvlValuable, "selected front facing camera\n");
-	} else if(GetPlatformName() == "GLASGOW") {
-	  useCamera = LeapFrog::Brio::kCameraDefault;
-	  dbg_.DebugOut(kDbgLvlValuable, "selected default camera\n");
-	}
-#endif      
-      error = cameraMPI_.SetCurrentCamera(useCamera);
+      frameCount_ = 0;
+      frameTime_ = time(0);
       
-      if (error == kNoErr) {
+      SetCameraControls();
+      
+      error = SetCurrentCamera();
+       
+       if (error == kNoErr) {
 	videoSurf_ = surf;
 
 	SetCoordinateTranslatorFrames();
@@ -194,7 +233,7 @@ namespace Vision {
 	    error = kVNVideoCaptureFailed;
 	    dbg_.DebugOut(kDbgLvlCritical, "Failed to start vision video capture\n");
 	  } else {
-	    dbg_.DebugOut(kDbgLvlImportant, "VNVision [started video capture\\n");
+	    dbg_.DebugOut(kDbgLvlImportant, "VNVision [started video capture.\n");
 
 	    visionAlgorithmRunning_ = true;
 	  
@@ -268,22 +307,6 @@ namespace Vision {
     }
   }
   
-  void
-  VNVisionMPIPIMPL::CreateRGBImage(LeapFrog::Brio::tVideoSurf& surf,
-				   cv::Mat& img) const {
-
-    LeapFrog::Brio::U32 width = surf.width;
-    LeapFrog::Brio::U32 height = surf.height;
-
-    if (surf.format == LeapFrog::Brio::kPixelFormatYUV420) {
-      
-
-    } else if (surf.format == LeapFrog::Brio::kPixelFormatRGB888) {
-      img = cv::Mat(cv::Size(width, height), CV_8UC3, surf.buffer);
-    }
-    
-  }
-
 #define CLIP8BIT(v)    v > 255 ? 255 : v < 0 ? 0 : v
   
   void YUV2RGB(cv::Mat src, cv::Mat dst) {
@@ -399,6 +422,30 @@ namespace Vision {
   }
 
   void
+  VNVisionMPIPIMPL::CreateRGBImage(LeapFrog::Brio::tVideoSurf* surf,
+				   cv::Mat& img) const {
+
+    LeapFrog::Brio::U32 width = surf->width;
+    LeapFrog::Brio::U32 height = surf->height;
+    
+    if (surf->format == LeapFrog::Brio::kPixelFormatYUV420) {
+      cv::Mat tmp(cv::Size(width,
+			   height),
+		  CV_8U, 
+		  surf->buffer,
+		  surf->pitch); //4096); //FIXME: what is this magic number???
+      YUV2RGB_fast_table(tmp, img);
+      
+    } else if (surf->format == LeapFrog::Brio::kPixelFormatRGB888) {
+      img = cv::Mat(cv::Size(width, 
+			     height), 
+		    CV_8UC3, 
+		    surf->buffer);
+    } else if (surf->format == LeapFrog::Brio::kPixelFormatYUYV422) {
+    }   
+  }
+
+  void
   VNVisionMPIPIMPL::Update(void) {
     if (visionAlgorithmRunning_) {
       BeginFrameProcessing();
@@ -414,15 +461,11 @@ namespace Vision {
 
 	  dbg_.Assert(buffer && algorithm_, "VNVisionMPIPIMPL::Update - invalid buffer or algorithm.\n");
 	  if (buffer && algorithm_) {
-	    cv::Mat img(cv::Size(kVNVisionProcessingFrameWidth, 
-				 kVNVisionProcessingFrameHeight), 
-			CV_8U, 
-			buffer,
-			surf->pitch); //4096); //FIXME: what is this magic number???
-	    cv::Mat rgbMat(cv::Size(kVNVisionProcessingFrameWidth,
-				    kVNVisionProcessingFrameHeight),
+	    cv::Mat rgbMat(cv::Size(surf->width,
+				    surf->height),
 			   CV_8UC3);
-	    YUV2RGB_fast_table(img, rgbMat);
+	    CreateRGBImage(surf,
+			   rgbMat);
 	    algorithm_->Execute(rgbMat, outputImg_);
 
 #ifdef EMULATION
