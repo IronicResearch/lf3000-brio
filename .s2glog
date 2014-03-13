@@ -39663,3 +39663,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/13/14 2:13 PM
 24,491 ms. (Cumulative: 19,961,641 ms)
 
 ----------------
+Revision 10,615 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-1063 Quickfix unblank the OpenGL layer every frame.
+
+Camera app is disabling the layer in a manner that leaves fbviz true
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/13/14 2:40 PM
+1 changed, 0 added, 0 deleted.
+24,254 ms. (Cumulative: 19,985,989 ms)
+
+----------------
