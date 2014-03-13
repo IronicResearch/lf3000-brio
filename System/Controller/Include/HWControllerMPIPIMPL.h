@@ -32,6 +32,9 @@ namespace Hardware {
     HWControllerMPIPIMPL(const HWControllerMPIPIMPL&);
     HWControllerMPIPIMPL& operator=(const HWControllerMPIPIMPL&);
 
+    int numControllers_;
+    std::vector<HWController*> listControllers_;
+
     LeapFrog::Brio::CEventMPI eventMPI_;
 
     void* dll_;

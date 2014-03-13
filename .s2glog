@@ -39648,3 +39648,18 @@ By Dave Milici (dmilici@leapfrog.com) on 3/12/14 9:06 PM
 24,596 ms. (Cumulative: 19,937,041 ms)
 
 ----------------
+Revision 10,614 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Link BTIO device callback to create HWController instances per remote device discovery event.
+Note HWController instances have to be deferred as asynchronous event for safe object handling.
+Note initial HWController still has to be created for BTIO devices already discovered, and
+for emulation compatibility. (FWSCRUM-1551)
+
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/13/14 2:13 PM
+5 changed, 0 added, 0 deleted.
+24,491 ms. (Cumulative: 19,961,641 ms)
+
+----------------
