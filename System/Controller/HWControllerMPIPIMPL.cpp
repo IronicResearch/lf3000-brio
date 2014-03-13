@@ -11,8 +11,8 @@ const LeapFrog::Brio::tEventType
 				  LeapFrog::Brio::kButtonStateChanged,
 				  LF::Hardware::kHWAnalogStickDataChanged};
 
-static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 0; // FIXME
-static const LeapFrog::Brio::tEventPriority kHWControllerHighPriorityEvent = 255;  // FIXME
+static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 128; // async
+static const LeapFrog::Brio::tEventPriority kHWControllerHighPriorityEvent = 0;  // immediate
 
 namespace LF {
 namespace Hardware {
@@ -30,6 +30,9 @@ namespace Hardware {
 
   HWControllerMPIPIMPL::HWControllerMPIPIMPL(void) :
     IEventListener(kHWControllerListenerTypes, ArrayCount(kHWControllerListenerTypes)) {
+	    numControllers_ = 0;
+	    listControllers_.clear();
+
 	    // Dynamically load Bluetooth client lib
 		dll_ = dlopen("libBluetopiaIO.so", RTLD_LAZY);
 		if (dll_ != NULL) {
@@ -41,7 +44,7 @@ namespace Hardware {
 			// Connect to Bluetooth client service?
 			handle_ = pBTIO_Init_(this);
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetDeviceCallback, (void*)&DeviceCallback, sizeof(void*));
-			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputCallback, (void*)&InputCallback, sizeof(void*));
+//			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputCallback, (void*)&InputCallback, sizeof(void*));
 		}
 		else {
 			std::cout << "dlopen failed to load libBluetopiaIO.so, error=\n" << dlerror();
@@ -60,7 +63,11 @@ namespace Hardware {
   HWControllerMPIPIMPL::DeviceCallback(void* context, void* data, int length) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       std::cout << "DeviceCallback: data=" << data << "length=" << length << "\n";
- //     HWControllerMPIPIMPL::Instance()->GetControllerByID(kHWDefaultControllerID);
+//      HWController* controller = new HWController();
+//      HWControllerMPIPIMPL::Instance()->listControllers_.push_back(controller);
+//      HWControllerMPIPIMPL::Instance()->numControllers_++;
+      HWControllerEventMessage qmsg(kHWControllerModeChanged, NULL);
+      HWControllerMPIPIMPL::Instance()->eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
   }
 
   void
@@ -79,6 +86,17 @@ namespace Hardware {
     LeapFrog::Brio::tEventType type = msgIn.GetEventType();
     LeapFrog::Brio::tEventPriority priority = kHWControllerDefaultEventPriority;
     HWController *controller = this->GetControllerByID(kHWDefaultControllerID);
+
+    // Internally generated event for creating new controllers
+    if (type == kHWControllerModeChanged) {
+        const HWControllerEventMessage& hwmsg = reinterpret_cast<const HWControllerEventMessage&>(msgIn);
+        if (hwmsg.GetController() == NULL) {
+            HWController* controller = new HWController();
+            HWControllerMPIPIMPL::Instance()->listControllers_.push_back(controller);
+            HWControllerMPIPIMPL::Instance()->numControllers_++;
+            return LeapFrog::Brio::kEventStatusOKConsumed;            
+        }
+    }
 
     if (type == LeapFrog::Brio::kAccelerometerDataChanged ||
 	type == LeapFrog::Brio::kOrientationChanged ||
@@ -119,10 +137,12 @@ namespace Hardware {
   HWController* 
   HWControllerMPIPIMPL::GetControllerByID(LeapFrog::Brio::U32 id) {
     //TODO: handle multiple controllers
-	// FIXME -- multiple controller instances
+    // FIXME -- emulation controller instance
     static HWController *theController_ = NULL;
     if (!theController_) {
       theController_ = new HWController();
+      numControllers_++;
+      listControllers_.push_back(theController_);
     }
     return theController_;
   }
@@ -130,13 +150,14 @@ namespace Hardware {
   void 
   HWControllerMPIPIMPL::GetAllControllers(std::vector<HWController*> &controller) {
     //TODO: fill all controllers
-    controller.push_back(this->GetControllerByID(kHWDefaultControllerID));
+    // controller.push_back(this->GetControllerByID(kHWDefaultControllerID));
+    controller = listControllers_;
   }
   
   LeapFrog::Brio::U8 
   HWControllerMPIPIMPL::GetNumberOfConnectedControllers(void) const {
     //TODO: determine number of connected controllers
-    return 1;
+    return numControllers_; //1;
   }
 
 }	// namespace Hardware

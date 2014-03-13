@@ -49,7 +49,7 @@ namespace Hardware {
 		// Connect to Bluetooth client service?
 //		handle_ = BTIO_Init(this);
 		BTIO_SendCommand(handle_, kBTIOCmdSetInputCallback, (void*)&LocalCallback, sizeof(void*));
-		BTIO_SendCommand(handle_, kBTIOCmdSetInputContext, this, sizeof(void*));
+		id_ = BTIO_SendCommand(handle_, kBTIOCmdSetInputContext, this, sizeof(void*));
 	}
 	else {
 		std::cout << "dlopen failed to load libBluetopiaIO.so, error=\n" << dlerror();
