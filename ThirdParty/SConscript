@@ -104,6 +104,7 @@ if env['install_dir']:
 		libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], '*.so'))
 		libs += glob.glob(os.path.join('LibJPEG', 'Libs', env['cpu'], '*.so'))
 		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], '*.so'))
+		libs += glob.glob(os.path.join('Bluetopia', 'Libs', env['cpu'], 'libBluetopiaIO.so'))
 		targets += env.Install(lib_install_dir, libs)
 
 #-----------------------------------------------------------------------------
