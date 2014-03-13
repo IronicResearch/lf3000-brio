@@ -39674,3 +39674,16 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/13/14 2:40 PM
 24,254 ms. (Cumulative: 19,985,989 ms)
 
 ----------------
+Revision 10,616 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Moving quickfix from LF2000 to LF3000.
+
+FWSCRUM-1063 Quickfix unblank the OpenGL layer every frame.
+
+Camera app is disabling the layer in a manner that leaves fbviz true
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/13/14 2:43 PM
+2 changed, 0 added, 0 deleted.
+24,396 ms. (Cumulative: 20,010,478 ms)
+
+----------------
