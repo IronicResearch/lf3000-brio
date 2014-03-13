@@ -39598,3 +39598,40 @@ By Dave Milici (dmilici@leapfrog.com) on 3/12/14 12:04 PM
 24,482 ms. (Cumulative: 19,814,896 ms)
 
 ----------------
+Revision 10,605 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,606 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,494 ms. (Cumulative: 19,839,500 ms)
+
+----------------
+Revision 10,607 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,175 ms. (Cumulative: 19,863,691 ms)
+
+----------------
+Revision 10,608 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,609 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,282 ms. (Cumulative: 19,887,988 ms)
+
+----------------
+Revision 10,610 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+====================================
+r10608 | cmiller | 2014-03-12 15:31:48 -0700 (Wed, 12 Mar 2014) | 1 line
+Changed paths:
+   M /BRANCHES/Flakasoft_SDK/System/Include/CameraMPI.h
+
+fixed an error in the documentation (a word was repeated).
+====================================
+
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 3/12/14 5:22 PM
+1 changed, 0 added, 0 deleted.
+24,348 ms. (Cumulative: 19,912,336 ms)
+
+----------------

@@ -176,7 +176,7 @@ public:
 	/// NULL parameter means don't render the capture.  pSurf should reference
 	/// a tDisplayHandle created with CDisplayMPI::CreateHandle() using
 	/// kPixelFormatYUV420. If the passed in surface width and height are different
-	/// from the created surface dimensions, the YUV layer's HW scaler will 
+	/// from the created surface dimensions, the YUV layer's HW scaler will
 	/// scale up (or down) the pSurf parameter's size to the surface size.
 	///
 	/// \param	pListener	Pointer to Event listener for callbacks from the
@@ -219,7 +219,7 @@ public:
 
 	/// GetFrame() takes a snapshot from the stream being captured in a separate
 	/// thread via StartVideoCapture().
-	/// This snapshot is automatically automatically decompressed from JPEG
+	/// This snapshot is automatically decompressed from JPEG
 	/// to an RGB bitmap and saved to the memory location provided by the caller.
 	/// GetFrame() can be called while video capturing (the viewfinder) is paused.
 	///
@@ -326,11 +326,11 @@ public:
 	/// means unlimited recording.
 	///
 	/// \param	paused		Start audio capture in paused state. If set true,
-	/// the application *must* call \ref ResumeAudioCapture() to begin recording 
+	/// the application *must* call \ref ResumeAudioCapture() to begin recording
 	/// audio when ready. Otherwise recording begins immediately.
 	///
 	/// \return kInvalidAudCapHndl on failure.
-	tAudCapHndl	StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength = 0, 
+	tAudCapHndl	StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength = 0,
 			const Boolean paused = false);
 
 	/// PauseAudioCapture() pause an active capture.
