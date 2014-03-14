@@ -39722,3 +39722,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/13/14 7:48 PM
 24,497 ms. (Cumulative: 20,107,926 ms)
 
 ----------------
+Revision 10,622 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-1063 & 744.  Part 1 of 2.  Removing QuickFix.  Re-reverting xvn 10236.  Turning off fb1 on Brio Init prevents returning to OpenGL from Camera Widget.
+
+Technical Details - Dave was turning the layer off to fix FWSCRUM-744, logo visible behind CameraWidget's viewfinder.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/14/14 1:28 PM
+2 changed, 0 added, 0 deleted.
+24,346 ms. (Cumulative: 20,132,381 ms)
+
+----------------
