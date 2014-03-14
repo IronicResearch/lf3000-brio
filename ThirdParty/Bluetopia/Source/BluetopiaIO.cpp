@@ -44,17 +44,35 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 			printf("Remote Device Found\n");
 			device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDeviceFoundEventData.RemoteDeviceProperties.BD_ADDR);
 			BTIO_ConnectToDevice(DEVMCallbackID, device);
-			if (callbackmain) {
-				(*callbackmain)(CallbackParameter,
-						device,
-						sizeof(device));
-			}
+			break;
+		case detLocalDevicePropertiesChanged:
+			printf("Local Device Properties Changed\n");
 			break;
 		case detRemoteDeviceDeleted:
 			printf("Remote Device Deleted\n");
 			break;
 		case detRemoteDevicePropertiesChanged:
 			printf("Remote Device Properties Changed\n");
+			device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.BD_ADDR);
+			BTIO_ConnectToDevice(DEVMCallbackID, device);
+			break;
+		case detRemoteDevicePropertiesStatus:
+			printf("Remote Device Properties Status\n");
+			break;
+		case detRemoteDeviceConnectionStatus:
+			printf("Remote Device Connection Status\n");
+			device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDeviceConnectionStatusEventData.RemoteDeviceAddress);
+			if (callbackmain) {
+				(*callbackmain)(CallbackParameter,
+						device,
+						sizeof(device));
+			}
+			break;
+		case detDeviceScanStarted:
+			printf("Device Scan Started\n");
+			break;
+		case detDeviceScanStopped:
+			printf("Device Scan Stopped\n");
 			break;
 		default:
 			printf("%s: unhandled type %d, %p\n", __func__, EventData->EventType, CallbackParameter);
@@ -218,12 +236,45 @@ int BTIO_QueryStatus(int handle, int command, void* data, int length)
 	return 0;
 }
 
+int BTIO_QueryForDevices(int handle)
+{
+	BD_ADDR_t         *BD_ADDRList;
+	unsigned int       Filter = 0; //DEVM_QUERY_REMOTE_DEVICE_LIST_CURRENTLY_CONNECTED;
+	unsigned int       TotalNumberDevices = 0;
+	Class_of_Device_t  ClassOfDevice = { 0, 0, 0 };
+
+	int r = DEVM_QueryRemoteDeviceList(Filter, ClassOfDevice, 0, NULL, &TotalNumberDevices);
+	printf("DEVM_QueryRemoteDeviceList() returned %d, devices = %d\n", r, TotalNumberDevices);
+	if (r < 0)
+		return r;
+
+	BD_ADDRList = (BD_ADDR_t *)BTPS_AllocateMemory(sizeof(BD_ADDR_t) * TotalNumberDevices);
+
+	r = DEVM_QueryRemoteDeviceList(Filter, ClassOfDevice, TotalNumberDevices, BD_ADDRList, NULL);
+
+	for (unsigned int i = 0; i < TotalNumberDevices; i++) {
+		DEVM_Remote_Device_Properties_t prop;
+		unsigned int flags = DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_FORCE_UPDATE;
+		BTAddr* addr = BTAddr::fromByteArray((const char*)&BD_ADDRList[i]);
+		DEVM_QueryRemoteDeviceProperties(BD_ADDRList[i], flags, &prop);
+		printf("%s: %d: %s, stats=%08x\n", __func__, i, addr->toString().c_str(), prop.RemoteDeviceFlags);
+		delete addr;
+	}
+
+	BTPS_FreeMemory(BD_ADDRList);
+
+	return r;
+}
+
 int BTIO_ScanForDevices(int handle, int scan_time)
 {
 	printf("%s: %d: %d\n", __func__, handle, scan_time);
 
 	int r = DEVM_StartDeviceScan(scan_time);
 	printf("DEVM_StartDeviceScan() returned %d\n", r);
+
+	if (BTPM_ERROR_CODE_DEVICE_DISCOVERY_IN_PROGRESS == r)
+		return BTIO_QueryForDevices(handle);
 	return r;
 }
 

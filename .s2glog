@@ -39711,3 +39711,14 @@ By Alex Lindblad (alindblad@leapfrog.com) on 3/13/14 3:13 PM
 24,159 ms. (Cumulative: 20,083,320 ms)
 
 ----------------
+Revision 10,620 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,621 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Query remote device connections on re-init and post device callbacks to ControllerMPI whenever connection events are updated. (FWSCRUM-1551)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/13/14 7:48 PM
+2 changed, 0 added, 0 deleted.
+24,497 ms. (Cumulative: 20,107,926 ms)
+
+----------------
