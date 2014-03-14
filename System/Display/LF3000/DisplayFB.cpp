@@ -147,12 +147,13 @@ void CDisplayFB::InitModule()
 		{
 			if (n == YUVFB && ((stat("/tmp/trans_anim", &stbuf) != 0) || (stat("/tmp/vdaemon_play", &stbuf) != 0)))
 				r = ioctl(fbdev[n], FBIOBLANK, 1);
-			if (n == OGLFB)
-				r = ioctl(fbdev[n], FBIOBLANK, 1);
+			//if (n == OGLFB)
+			//	r = ioctl(fbdev[n], FBIOBLANK, 1);
 		}
 		else if (stat("/flags/main_app", &stbuf) == 0)
 		{
 			r = ioctl(fbdev[n], FBIOBLANK, 1);
+			dbg_.DebugOut(kDbgLvlImportant, "%s:%s:%d n=%d visible=0\n", __FILE__, __FUNCTION__, __LINE__, n);
 		}
 
 		// Map framebuffer into userspace
@@ -1079,9 +1080,6 @@ void CDisplayFB::UpdateOpenGL(void* pCtx)
 			}
 		}
 	} else {
-		//TODO FWSCRUM-1063 Quickfix unblank the OpenGL layer every frame.
-		//Camera app is disabling the layer in a manner that leaves fbviz true
-		SetVisible(pOglCtx->hndlDisplay, true);
 		if (pOglCtx->hndlDisplay != NULL && !fbviz[OGLFB])
 		{
 			tDisplayContext *dcogl = (tDisplayContext*)pOglCtx->hndlDisplay;

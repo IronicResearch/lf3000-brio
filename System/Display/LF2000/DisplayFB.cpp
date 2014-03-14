@@ -148,8 +148,8 @@ void CDisplayFB::InitModule()
 		{
 			if (n == YUVFB && ((stat("/tmp/trans_anim", &stbuf) != 0) || (stat("/tmp/vdaemon_play", &stbuf) != 0)))
 				r = ioctl(fbdev[n], FBIOBLANK, 1);
-			if (n == OGLFB)
-				r = ioctl(fbdev[n], FBIOBLANK, 1);
+			//if (n == OGLFB)
+			//	r = ioctl(fbdev[n], FBIOBLANK, 1);
 		}
 		else if (stat("/flags/main_app", &stbuf) == 0)
 		{
