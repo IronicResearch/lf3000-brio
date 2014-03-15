@@ -53,20 +53,33 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 			break;
 		case detRemoteDevicePropertiesChanged:
 			printf("Remote Device Properties Changed\n");
-			device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.BD_ADDR);
-			BTIO_ConnectToDevice(DEVMCallbackID, device);
+			if (EventData->EventData.RemoteDevicePropertiesChangedEventData.ChangedMemberMask & DEVM_REMOTE_DEVICE_PROPERTIES_CHANGED_LE_CONNECTION_STATE) {
+				if (EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE) {
+					device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.BD_ADDR);
+					if (callbackmain) {
+						(*callbackmain)(CallbackParameter,
+								device,
+								sizeof(device));
+					}
+				}
+			}
 			break;
 		case detRemoteDevicePropertiesStatus:
 			printf("Remote Device Properties Status\n");
+			if (EventData->EventData.RemoteDevicePropertiesStatusEventData.Success) {
+				if (EventData->EventData.RemoteDevicePropertiesStatusEventData.RemoteDeviceProperties.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE) {
+					device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDevicePropertiesStatusEventData.RemoteDeviceProperties.BD_ADDR);
+					if (callbackmain) {
+						(*callbackmain)(CallbackParameter,
+								device,
+								sizeof(device));
+					}
+				}
+			}
 			break;
 		case detRemoteDeviceConnectionStatus:
 			printf("Remote Device Connection Status\n");
 			device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDeviceConnectionStatusEventData.RemoteDeviceAddress);
-			if (callbackmain) {
-				(*callbackmain)(CallbackParameter,
-						device,
-						sizeof(device));
-			}
 			break;
 		case detDeviceScanStarted:
 			printf("Device Scan Started\n");
