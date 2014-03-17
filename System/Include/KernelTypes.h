@@ -361,7 +361,12 @@ struct tTaskProperties {
 	U32					schedulingInterval;     // 9
     int                 inheritSched;           // 10
     // Default ctor that initializes all values to defaults
-    tTaskProperties() : priority(0), stackAddr(0), stackSize(PTHREAD_STACK_MIN),
+    tTaskProperties() : priority(0), stackAddr(0),
+#ifdef LF1000
+    				stackSize(PTHREAD_STACK_MIN),
+#else
+    				stackSize(PTHREAD_STACK_MIN << 2),
+#endif
     				TaskMainFcn(NULL), taskMainArgCount(0), 
     				pTaskMainArgValues(NULL), startupMode(0),
     				schedulingPolicy(SCHED_OTHER), schedulingInterval(0),

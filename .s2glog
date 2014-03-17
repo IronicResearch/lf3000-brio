@@ -39779,3 +39779,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/17/14 10:00 AM
 24,577 ms. (Cumulative: 20,256,780 ms)
 
 ----------------
+Revision 10,629 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally default thread stack size up to 64K on non-LF1000 platforms.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/17/14 10:15 AM
+2 changed, 0 added, 0 deleted.
+24,410 ms. (Cumulative: 20,281,299 ms)
+
+----------------
