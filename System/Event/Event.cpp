@@ -215,6 +215,7 @@ public:
 		properties.TaskMainFcn = CEventManagerImpl::EventDispatchTask;
 		properties.taskMainArgCount = 1;
 		properties.pTaskMainArgValues = this;
+		properties.stackSize = 1 << 16; // FIXME
 		err = kernel_.CreateTask(g_hThread_, properties, NULL);
 		
 		debug_.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create EventDispatchTask!\n" );

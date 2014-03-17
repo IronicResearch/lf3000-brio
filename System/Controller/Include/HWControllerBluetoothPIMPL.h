@@ -89,6 +89,7 @@ namespace Hardware {
     pFnSendCommand		pBTIO_SendCommand_;
     pFnQueryStatus		pBTIO_QueryStatus_;
 
+  public:
     static void LocalCallback(void*, void*, int);
     LeapFrog::Brio::CEventMPI eventMPI_;
 

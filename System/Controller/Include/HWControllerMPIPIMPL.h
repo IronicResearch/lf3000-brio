@@ -6,6 +6,7 @@
 #include <EventMPI.h>
 #include <BluetopiaIO.h>
 #include <vector>
+#include <map>
 
 namespace LF {
 namespace Hardware {
@@ -32,8 +33,13 @@ namespace Hardware {
     HWControllerMPIPIMPL(const HWControllerMPIPIMPL&);
     HWControllerMPIPIMPL& operator=(const HWControllerMPIPIMPL&);
 
+    void ScanForDevices(void);
+    void AddController(void* link);
+
     int numControllers_;
     std::vector<HWController*> listControllers_;
+    std::map<void*, HWController*> mapControllers_;
+    bool isScanning_;
 
     LeapFrog::Brio::CEventMPI eventMPI_;
 
@@ -43,10 +49,13 @@ namespace Hardware {
     pFnExit 			pBTIO_Exit_;
     pFnSendCommand		pBTIO_SendCommand_;
     pFnQueryStatus		pBTIO_QueryStatus_;
+    pFnScanForDevices	pBTIO_ScanDevices_;
 
     static void DeviceCallback(void*, void*, int);
     static void InputCallback(void*, void*, int);
+    static void ScanCallback(void*, void*, int);
 
+    friend class HWControllerBluetoothPIMPL;
   };
   
 }	// namespace Hardware

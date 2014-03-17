@@ -19,6 +19,9 @@ static unsigned char       packet[256] = {'\0'};
 // Callback function to ControllerMPI client
 static pFnCallback         callbackfunc = NULL;
 static pFnCallback         callbackmain = NULL;
+static pFnCallback         callbackscan = NULL;
+static void*               callbackobj  = NULL;
+
 
 // BTPM Server Un-Registration Callback function
 void BTPSAPI ServerUnRegistrationCallback(void *CallbackParameter)
@@ -61,6 +64,10 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 								device,
 								sizeof(device));
 					}
+				}
+				else {
+					device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.BD_ADDR);
+					BTIO_ConnectToDevice(DEVMCallbackID, device);
 				}
 			}
 			break;
@@ -152,6 +159,7 @@ int BTIO_Init(void* callback)
 	r = DEVM_PowerOnDevice();
 	printf("DEVM_PowerOnDevice() returned %d\n", r);
 
+	callbackobj = callback;
 	if (0 == r || BTPM_ERROR_CODE_LOCAL_DEVICE_ALREADY_POWERED_UP == r)
 		r = BTIO_ScanForDevices(DEVMCallbackID, 0);
 
@@ -163,7 +171,7 @@ int BTIO_Exit(int handle)
 	printf("%s: %d\n", __func__, handle);
 
 //	DEVM_PowerOffDevice();
-	DEVM_StopDeviceScan();
+//	DEVM_StopDeviceScan();
 
 	if (DEVMCallbackID)
 		DEVM_UnRegisterEventCallback(DEVMCallbackID);
@@ -181,6 +189,8 @@ int BTIO_SendCommand(int handle, int command, void* data, int length)
 
 	switch (command) {
 	case kBTIOCmdSetScanCallback:
+		callbackscan = (pFnCallback)data;
+//		BTIO_ScanForDevices(DEVMCallbackID, 0);
 		break;
 	case kBTIOCmdSetDeviceCallback:
 		callbackmain = (pFnCallback)data;
@@ -267,10 +277,20 @@ int BTIO_QueryForDevices(int handle)
 
 	for (unsigned int i = 0; i < TotalNumberDevices; i++) {
 		DEVM_Remote_Device_Properties_t prop;
-		unsigned int flags = DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_FORCE_UPDATE;
+		unsigned int flags = DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_LOW_ENERGY;
 		BTAddr* addr = BTAddr::fromByteArray((const char*)&BD_ADDRList[i]);
 		DEVM_QueryRemoteDeviceProperties(BD_ADDRList[i], flags, &prop);
 		printf("%s: %d: %s, stats=%08x\n", __func__, i, addr->toString().c_str(), prop.RemoteDeviceFlags);
+		if (!(prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE)) {
+			flags |= DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_FORCE_UPDATE;
+			DEVM_QueryRemoteDeviceProperties(BD_ADDRList[i], flags, &prop);
+//			BTIO_ConnectToDevice(handle, addr);
+		}
+		else {
+			if (callbackscan) {
+				(*callbackscan)(callbackobj, addr, sizeof(addr));
+			}
+		}
 		delete addr;
 	}
 
