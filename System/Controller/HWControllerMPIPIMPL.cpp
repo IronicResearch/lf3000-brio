@@ -1,6 +1,7 @@
 #include "HWControllerMPIPIMPL.h"
 #include <Hardware/HWController.h>
 #include <HWControllerPIMPL.h>
+#include <HWControllerBluetoothPIMPL.h>
 #include <Hardware/HWControllerEventMessage.h>
 #include <iostream> // AJL DEBUG
 #include <dlfcn.h>
@@ -9,6 +10,7 @@ const LeapFrog::Brio::tEventType
   kHWControllerListenerTypes[] = {LeapFrog::Brio::kAccelerometerDataChanged,
 				  LeapFrog::Brio::kOrientationChanged,
 				  LeapFrog::Brio::kButtonStateChanged,
+				  LF::Hardware::kHWAllControllerEvents,
 				  LF::Hardware::kHWAnalogStickDataChanged};
 
 static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 128; // async
@@ -32,6 +34,8 @@ namespace Hardware {
     IEventListener(kHWControllerListenerTypes, ArrayCount(kHWControllerListenerTypes)) {
 	    numControllers_ = 0;
 	    listControllers_.clear();
+	    mapControllers_.clear();
+	    isScanning_ = false;
 
 	    // Dynamically load Bluetooth client lib
 		dll_ = dlopen("libBluetopiaIO.so", RTLD_LAZY);
@@ -40,11 +44,13 @@ namespace Hardware {
 			pBTIO_Exit_			= (pFnExit)dlsym(dll_, "BTIO_Exit");
 			pBTIO_SendCommand_ 	= (pFnSendCommand)dlsym(dll_, "BTIO_SendCommand");
 			pBTIO_QueryStatus_	= (pFnQueryStatus)dlsym(dll_, "BTIO_QueryStatus");
+			pBTIO_ScanDevices_	= (pFnScanForDevices)dlsym(dll_, "BTIO_ScanForDevices");
 
 			// Connect to Bluetooth client service?
 			handle_ = pBTIO_Init_(this);
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetDeviceCallback, (void*)&DeviceCallback, sizeof(void*));
-//			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputCallback, (void*)&InputCallback, sizeof(void*));
+			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputCallback, (void*)&InputCallback, sizeof(void*));
+			pBTIO_SendCommand_(handle_, kBTIOCmdSetScanCallback, (void*)&ScanCallback, sizeof(void*));
 		}
 		else {
 			std::cout << "dlopen failed to load libBluetopiaIO.so, error=\n" << dlerror();
@@ -60,32 +66,76 @@ namespace Hardware {
   }  
 
   void
+  HWControllerMPIPIMPL::ScanCallback(void* context, void* data, int length) {
+	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
+      std::cout << "ScanCallback: data=" << data << "length=" << length << "\n";
+      pModule->AddController(data);
+      std::cout << "ScanCallback: numControllers= " << pModule->numControllers_ << "\n";
+  }
+
+  void
   HWControllerMPIPIMPL::DeviceCallback(void* context, void* data, int length) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       std::cout << "DeviceCallback: data=" << data << "length=" << length << "\n";
-//      HWController* controller = new HWController();
-//      HWControllerMPIPIMPL::Instance()->listControllers_.push_back(controller);
-//      HWControllerMPIPIMPL::Instance()->numControllers_++;
-      HWControllerEventMessage qmsg(kHWControllerModeChanged, NULL);
-      HWControllerMPIPIMPL::Instance()->eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
+      pModule->AddController(data);
+      std::cout << "DeviceCallback: numControllers= " << pModule->numControllers_ << "\n";
   }
 
   void
   HWControllerMPIPIMPL::InputCallback(void* context, void* data, int length) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       std::cout << "InputCallback: data=" << data << "length=" << length << "\n";
+      HWController* controller = pModule->GetControllerByID(kHWDefaultControllerID); // FIXME
+      HWControllerBluetoothPIMPL* device = dynamic_cast<HWControllerBluetoothPIMPL*>(controller->pimpl_.get());
+      if (device)
+    	  device->LocalCallback(device, data, length);
+  }
+
+  void
+  HWControllerMPIPIMPL::ScanForDevices(void) {
+	  if (!isScanning_) {
+	      HWControllerEventMessage qmsg(kHWControllerLowBattery, NULL);
+	   	  eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority, this);
+  	  }
+  }
+
+  void
+  HWControllerMPIPIMPL::AddController(void* link) {
+      HWController* controller = new HWController();
+      listControllers_.push_back(controller);
+      mapControllers_.insert(std::pair<void*, HWController*>(link, controller));
+      numControllers_++;
+      HWControllerEventMessage qmsg(kHWControllerModeChanged, controller);
+      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority, this);
   }
 
   void
   HWControllerMPIPIMPL::RegisterSelfAsListener(void) {
     eventMPI_.RegisterEventListener(this);
+    if (!isScanning_)
+    	ScanForDevices();
   }
+
 
   LeapFrog::Brio::tEventStatus 
   HWControllerMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msgIn) {
     LeapFrog::Brio::tEventType type = msgIn.GetEventType();
     LeapFrog::Brio::tEventPriority priority = kHWControllerDefaultEventPriority;
     HWController *controller = this->GetControllerByID(kHWDefaultControllerID);
+
+    // Internally generated event to start scanning for controllers
+    if (type == kHWControllerLowBattery) {
+        const HWControllerEventMessage& hwmsg = reinterpret_cast<const HWControllerEventMessage&>(msgIn);
+        if (!isScanning_) {
+            std::cout << "Notify: ScanCallback\n";
+            pBTIO_SendCommand_(handle_, kBTIOCmdSetScanCallback, (void*)&ScanCallback, sizeof(void*));
+            pBTIO_ScanDevices_(handle_, 0);
+			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputContext, this, sizeof(void*));
+            isScanning_ = true;
+            return LeapFrog::Brio::kEventStatusOKConsumed;
+        }
+       	return LeapFrog::Brio::kEventStatusOK;
+    }
 
     // Internally generated event for creating new controllers
     if (type == kHWControllerModeChanged) {
@@ -94,9 +144,14 @@ namespace Hardware {
             HWController* controller = new HWController();
             HWControllerMPIPIMPL::Instance()->listControllers_.push_back(controller);
             HWControllerMPIPIMPL::Instance()->numControllers_++;
+            std::cout << "Notify: HWController=" << controller << " , count=" << numControllers_ << "\n";
             return LeapFrog::Brio::kEventStatusOKConsumed;            
         }
+       	return LeapFrog::Brio::kEventStatusOK;
     }
+
+    if (!controller)
+    	return LeapFrog::Brio::kEventStatusOK;
 
     if (type == LeapFrog::Brio::kAccelerometerDataChanged ||
 	type == LeapFrog::Brio::kOrientationChanged ||
@@ -138,6 +193,7 @@ namespace Hardware {
   HWControllerMPIPIMPL::GetControllerByID(LeapFrog::Brio::U32 id) {
     //TODO: handle multiple controllers
     // FIXME -- emulation controller instance
+#ifdef EMULATION
     static HWController *theController_ = NULL;
     if (!theController_) {
       theController_ = new HWController();
@@ -145,18 +201,34 @@ namespace Hardware {
       listControllers_.push_back(theController_);
     }
     return theController_;
+#else
+    HWController* controller = NULL;
+    std::vector<HWController*>::iterator it;
+	if (listControllers_.empty())
+		ScanForDevices();
+    for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
+    	controller = *(it);
+    	if (controller->GetID() == id)
+    		break;
+    }
+    return controller;
+#endif
   }
   
   void 
   HWControllerMPIPIMPL::GetAllControllers(std::vector<HWController*> &controller) {
     //TODO: fill all controllers
     // controller.push_back(this->GetControllerByID(kHWDefaultControllerID));
+	if (listControllers_.empty())
+		ScanForDevices();
     controller = listControllers_;
   }
   
   LeapFrog::Brio::U8 
   HWControllerMPIPIMPL::GetNumberOfConnectedControllers(void) const {
     //TODO: determine number of connected controllers
+//	if (numControllers_ == 0)
+//		ScanForDevices();
     return numControllers_; //1;
   }
 

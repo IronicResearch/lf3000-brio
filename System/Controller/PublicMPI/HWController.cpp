@@ -2,17 +2,20 @@
 #include <EventMPI.h>
 #include "HWControllerPIMPL.h"
 #include "HWControllerBluetoothPIMPL.h"
+#include <dlfcn.h>
+#include <sys/stat.h>
 
 namespace LF {
 namespace Hardware {
 
   
-  HWController::HWController(void)  : 
-    pimpl_(new HWControllerPIMPL(this)) {
-	  HWControllerBluetoothPIMPL* hwpimpl = new HWControllerBluetoothPIMPL(this);
-	  if (hwpimpl->IsConnected()) {
-		  pimpl_.reset();
-		  pimpl_ = boost::shared_ptr<HWControllerBluetoothPIMPL>(hwpimpl);
+  HWController::HWController(void)  {
+	  struct stat stbuf;
+	  if (0 == stat("/LF/Base/Brio/lib/libBluetopiaIO.so", &stbuf)) {
+		  pimpl_ = boost::shared_ptr<HWControllerBluetoothPIMPL>(new HWControllerBluetoothPIMPL(this));
+	  }
+	  else {
+		  pimpl_ = boost::shared_ptr<HWControllerPIMPL>(new HWControllerPIMPL(this));
 	  }
   }
   

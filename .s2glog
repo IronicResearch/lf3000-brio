@@ -39744,3 +39744,38 @@ By Dave Milici (dmilici@leapfrog.com) on 3/14/14 8:22 PM
 25,028 ms. (Cumulative: 20,157,518 ms)
 
 ----------------
+Revision 10,625 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,944 ms. (Cumulative: 20,183,571 ms)
+
+----------------
+Revision 10,626 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,370 ms. (Cumulative: 20,207,941 ms)
+
+----------------
+Revision 10,627 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,262 ms. (Cumulative: 20,232,203 ms)
+
+----------------
+Revision 10,628 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Rework ControllerMPI to create controller instances in response to BTIO
+scan device callbacks, and use single input event callback to handle multiple
+BT packet streams. (FWSCRUM-1551)
+
+Need to bind BT device to HW controller by address, not container object.
+Need to pre-emptively create first controller instance, like emulation case.
+Need more stack size for EventMPI asynchronous message thread.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/17/14 10:00 AM
+8 changed, 0 added, 0 deleted.
+24,577 ms. (Cumulative: 20,256,780 ms)
+
+----------------
