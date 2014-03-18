@@ -39822,3 +39822,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/17/14 6:31 PM
 24,556 ms. (Cumulative: 20,354,549 ms)
 
 ----------------
+Revision 10,633 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Suppress tracers on BT input packets to reduce spam.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/17/14 7:32 PM
+2 changed, 0 added, 0 deleted.
+24,273 ms. (Cumulative: 20,378,932 ms)
+
+----------------
