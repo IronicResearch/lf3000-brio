@@ -17,7 +17,7 @@ static BTAddr*             device = NULL;
 static unsigned char       packet[256] = {'\0'};
 
 // Callback function to ControllerMPI client
-static pFnCallback         callbackfunc = NULL;
+static pFnCallback2        callbackfunc = NULL;
 static pFnCallback         callbackmain = NULL;
 static pFnCallback         callbackscan = NULL;
 static void*               callbackobj  = NULL;
@@ -60,9 +60,10 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 				if (EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE) {
 					device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.BD_ADDR);
 					if (callbackmain) {
-						(*callbackmain)(CallbackParameter,
-								device,
-								sizeof(device));
+						char buf[7] = {'\0'};
+						device->toByteArray(buf);
+						buf[6] = '\0';
+						(*callbackmain)(CallbackParameter, buf, sizeof(buf));
 					}
 				}
 				else {
@@ -77,9 +78,10 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 				if (EventData->EventData.RemoteDevicePropertiesStatusEventData.RemoteDeviceProperties.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE) {
 					device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDevicePropertiesStatusEventData.RemoteDeviceProperties.BD_ADDR);
 					if (callbackmain) {
-						(*callbackmain)(CallbackParameter,
-								device,
-								sizeof(device));
+						char buf[7] = {'\0'};
+						device->toByteArray(buf);
+						buf[6] = '\0';
+						(*callbackmain)(CallbackParameter, buf, sizeof(buf));
 					}
 				}
 			}
@@ -124,9 +126,13 @@ static void BTPSAPI GATM_Event_Callback(GATM_Event_Data_t *EventData, void *Call
 				break;
 			memcpy(packet, EventData->EventData.HandleValueDataEventData.AttributeValue, EventData->EventData.HandleValueDataEventData.AttributeValueLength);
 			if (callbackfunc) {
+				char buf[7] = {'\0'};
+				memcpy(&buf, &EventData->EventData.HandleValueDataEventData.RemoteDeviceAddress, 6);
+				buf[6] = '\0';
 				(*callbackfunc)(CallbackParameter,
 						EventData->EventData.HandleValueDataEventData.AttributeValue,
-						EventData->EventData.HandleValueDataEventData.AttributeValueLength);
+						EventData->EventData.HandleValueDataEventData.AttributeValueLength,
+						buf);
 			}
 			break;
 		default:
@@ -196,7 +202,7 @@ int BTIO_SendCommand(int handle, int command, void* data, int length)
 		callbackmain = (pFnCallback)data;
 		break;
 	case kBTIOCmdSetInputCallback:
-		callbackfunc = (pFnCallback)data;
+		callbackfunc = (pFnCallback2)data;
 		break;
 	case kBTIOCmdSetInputContext:
 		GATMCallbackID = GATM_RegisterEventCallback(GATM_Event_Callback, data);
@@ -288,7 +294,10 @@ int BTIO_QueryForDevices(int handle)
 		}
 		else {
 			if (callbackscan) {
-				(*callbackscan)(callbackobj, addr, sizeof(addr));
+				char buf[7] = {'\0'};
+				addr->toByteArray(buf);
+				buf[6] = '\0';
+				(*callbackscan)(callbackobj, buf, sizeof(buf));
 			}
 		}
 		delete addr;

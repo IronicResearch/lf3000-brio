@@ -13,6 +13,7 @@ typedef int (*pFnConnectToDevice)( int, const BTAddr* );
 typedef BTAddr* (*pFnGetLocalAddress)( int ); 
 
 typedef void (*pFnCallback)( void*, void*, int );
+typedef void (*pFnCallback2)( void*, void*, int, char* );
 
 #ifdef USE_EXPORTS
 

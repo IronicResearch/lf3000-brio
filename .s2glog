@@ -39812,3 +39812,13 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 3/17/14 6:12 PM
 24,298 ms. (Cumulative: 20,329,915 ms)
 
 ----------------
+Revision 10,632 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Bind BT device address to controller instance for routing BT input packets. (FWSCRUM-1551)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/17/14 6:31 PM
+5 changed, 0 added, 0 deleted.
+24,556 ms. (Cumulative: 20,354,549 ms)
+
+----------------
