@@ -5,6 +5,7 @@
 #include <Hardware/HWControllerEventMessage.h>
 #include <iostream> // AJL DEBUG
 #include <dlfcn.h>
+#include <string.h>
 
 const LeapFrog::Brio::tEventType 
   kHWControllerListenerTypes[] = {LeapFrog::Brio::kAccelerometerDataChanged,
@@ -69,7 +70,7 @@ namespace Hardware {
   HWControllerMPIPIMPL::ScanCallback(void* context, void* data, int length) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       std::cout << "ScanCallback: data=" << data << "length=" << length << "\n";
-      pModule->AddController(data);
+      pModule->AddController((char*)data);
       std::cout << "ScanCallback: numControllers= " << pModule->numControllers_ << "\n";
   }
 
@@ -77,15 +78,20 @@ namespace Hardware {
   HWControllerMPIPIMPL::DeviceCallback(void* context, void* data, int length) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       std::cout << "DeviceCallback: data=" << data << "length=" << length << "\n";
-      pModule->AddController(data);
+      pModule->AddController((char*)data);
       std::cout << "DeviceCallback: numControllers= " << pModule->numControllers_ << "\n";
   }
 
   void
-  HWControllerMPIPIMPL::InputCallback(void* context, void* data, int length) {
+  HWControllerMPIPIMPL::InputCallback(void* context, void* data, int length, char* addr) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       std::cout << "InputCallback: data=" << data << "length=" << length << "\n";
       HWController* controller = pModule->GetControllerByID(kHWDefaultControllerID); // FIXME
+      std::string key(addr);
+      if (pModule->mapControllers_.count(key) > 0)
+    	  controller = pModule->mapControllers_.at(key);
+      if (!controller)   
+    	  return;
       HWControllerBluetoothPIMPL* device = dynamic_cast<HWControllerBluetoothPIMPL*>(controller->pimpl_.get());
       if (device)
     	  device->LocalCallback(device, data, length);
@@ -100,10 +106,10 @@ namespace Hardware {
   }
 
   void
-  HWControllerMPIPIMPL::AddController(void* link) {
+  HWControllerMPIPIMPL::AddController(char* link) {
       HWController* controller = new HWController();
       listControllers_.push_back(controller);
-      mapControllers_.insert(std::pair<void*, HWController*>(link, controller));
+      mapControllers_.insert(std::pair<std::string, HWController*>(std::string(link), controller));
       numControllers_++;
       HWControllerEventMessage qmsg(kHWControllerModeChanged, controller);
       eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority, this);

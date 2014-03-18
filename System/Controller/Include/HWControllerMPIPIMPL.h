@@ -34,11 +34,11 @@ namespace Hardware {
     HWControllerMPIPIMPL& operator=(const HWControllerMPIPIMPL&);
 
     void ScanForDevices(void);
-    void AddController(void* link);
+    void AddController(char* link);
 
     int numControllers_;
     std::vector<HWController*> listControllers_;
-    std::map<void*, HWController*> mapControllers_;
+    std::map<std::string, HWController*> mapControllers_;
     bool isScanning_;
 
     LeapFrog::Brio::CEventMPI eventMPI_;
@@ -52,7 +52,7 @@ namespace Hardware {
     pFnScanForDevices	pBTIO_ScanDevices_;
 
     static void DeviceCallback(void*, void*, int);
-    static void InputCallback(void*, void*, int);
+    static void InputCallback(void*, void*, int, char*);
     static void ScanCallback(void*, void*, int);
 
     friend class HWControllerBluetoothPIMPL;
