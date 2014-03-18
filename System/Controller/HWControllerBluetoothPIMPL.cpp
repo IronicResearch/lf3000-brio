@@ -1,6 +1,7 @@
 #include "HWControllerBluetoothPIMPL.h"
 #include <Hardware/HWControllerTypes.h>
 #include <Hardware/HWController.h>
+#include <Hardware/HWControllerEventMessage.h>
 #include <Vision/VNWand.h>
 #include <BluetopiaIO.h>
 #include <string.h>
@@ -22,6 +23,8 @@ inline S32 WORD_TO_SIGNED(U16 word) {
 	  return (S32)((word > 127) ? (int)word - 256 : (int)word) >> 2;
 }
 
+static int counter_ = 0;
+
 using namespace LeapFrog::Brio;
 
 namespace LF {
@@ -37,6 +40,8 @@ namespace Hardware {
     ZeroAccelerometerData();
     ZeroButtonData();
     ZeroAnalogStickData();
+
+    id_ = counter_++; // FIXME
 
     // Dynamically load Bluetooth client lib
 	dll_ = dlopen("libBluetopiaIO.so", RTLD_LAZY);
@@ -171,6 +176,13 @@ namespace Hardware {
 	  gettimeofday((struct timeval*)&pModule->buttonData_.time, NULL);
 	  pModule->accelerometerData_.time.seconds = pModule->analogStickData_.time.seconds = pModule->buttonData_.time.seconds;
 	  pModule->accelerometerData_.time.microSeconds = pModule->analogStickData_.time.microSeconds = pModule->buttonData_.time.microSeconds;
+
+	  // Compatibility events posted only for default controller
+	  if (pModule->id_ > 0) {
+	      HWControllerEventMessage cmsg(kHWControllerDataChanged, pModule->controller_);
+		  pModule->eventMPI_.PostEvent(cmsg, 128);
+		  return;
+	  }
 
 	  CButtonMessage bmsg(pModule->buttonData_);
 	  HWAnalogStickMessage amsg(pModule->analogStickData_);

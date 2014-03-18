@@ -39832,3 +39832,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/17/14 7:32 PM
 24,273 ms. (Cumulative: 20,378,932 ms)
 
 ----------------
+Revision 10,634 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Post compatibility events only for default controller. (FWSCRUM-1551)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/18/14 9:58 AM
+3 changed, 0 added, 0 deleted.
+24,542 ms. (Cumulative: 20,403,568 ms)
+
+----------------
