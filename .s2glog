@@ -39789,3 +39789,26 @@ By Dave Milici (dmilici@leapfrog.com) on 3/17/14 10:15 AM
 24,410 ms. (Cumulative: 20,281,299 ms)
 
 ----------------
+Revision 10,630 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,225 ms. (Cumulative: 20,305,617 ms)
+
+----------------
+Revision 10,631 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+====================================
+r10623 | cmiller | 2014-03-14 16:32:54 -0700 (Fri, 14 Mar 2014) | 1 line
+Changed paths:
+   M /BRANCHES/Flakasoft_SDK/Brio2.doxyfile
+
+Updated to keep ProfileDsc out of Doxygen documentation
+====================================
+
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 3/17/14 6:12 PM
+1 changed, 0 added, 0 deleted.
+24,298 ms. (Cumulative: 20,329,915 ms)
+
+----------------
