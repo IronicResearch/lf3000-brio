@@ -20,6 +20,10 @@ elif env['platform'] == 'LF2000':
 	emulibs		= ['ustring', 'iconv', 'intl', 'sigc-2.0']
 	ogllibs		= ['EGL', 'GLESv1_CM', 'GLESv2']
 	modsrcs		= Glob('*.cpp') + Glob( os.path.join(env['platform'], '*.cpp') )
+elif env['platform'] == 'LF3000':
+	emulibs		= ['ustring', 'iconv', 'intl', 'sigc-2.0']
+	ogllibs		= ['EGL', 'GLESv1_CM', 'GLESv2']
+	modsrcs		= Glob('*.cpp') + Glob( os.path.join(env['platform'], '*.cpp') )
 else:
 	emulibs		= []
 	ogllibs		= ['opengles_lite']
