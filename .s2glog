@@ -39842,3 +39842,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/18/14 9:58 AM
 24,542 ms. (Cumulative: 20,403,568 ms)
 
 ----------------
+Revision 10,635 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Pre-emptively create default controller for late scanned devices.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/18/14 10:17 AM
+1 changed, 0 added, 0 deleted.
+24,378 ms. (Cumulative: 20,428,040 ms)
+
+----------------

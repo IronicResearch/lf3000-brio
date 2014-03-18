@@ -103,6 +103,10 @@ namespace Hardware {
 	      HWControllerEventMessage qmsg(kHWControllerLowBattery, NULL);
 	   	  eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority, this);
   	  }
+	  if (numControllers_ == 0) {
+		  std::string placeholder("DEFAUL");
+		  AddController((char*)placeholder.c_str());
+	  }
   }
 
   void
