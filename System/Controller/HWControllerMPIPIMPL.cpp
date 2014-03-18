@@ -107,9 +107,12 @@ namespace Hardware {
 
   void
   HWControllerMPIPIMPL::AddController(char* link) {
+	  std::string key(link);
+	  if (mapControllers_.count(key) > 0)
+		  return;
       HWController* controller = new HWController();
       listControllers_.push_back(controller);
-      mapControllers_.insert(std::pair<std::string, HWController*>(std::string(link), controller));
+      mapControllers_.insert(std::pair<std::string, HWController*>(key, controller));
       numControllers_++;
       HWControllerEventMessage qmsg(kHWControllerModeChanged, controller);
       eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority, this);
