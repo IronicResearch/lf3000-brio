@@ -274,6 +274,7 @@ namespace Hardware {
   
   void 
   HWControllerBluetoothPIMPL::SetLEDColor(HWControllerLEDColor color) {
+	printf("HWControllerBluetoothPIMPL::%s: %02x\n", __func__, (int)color);
 	if (dll_)
 		BTIO_SendCommand(handle_, kBTIOCmdSetLEDState, &color, sizeof(color));
     //TODO: for now we are only using one color
