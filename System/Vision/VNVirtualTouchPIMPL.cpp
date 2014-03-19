@@ -1,10 +1,13 @@
 #include <VNVirtualTouchPIMPL.h>
+#include "VNRGB2Gray.h"
 
 namespace LF {
 namespace Vision {
 
   static const int kVNDefaultVirtualTouchThreshold = 10;
-  
+  static const float kVNDownScale = 0.5f;
+  static const float kVNUpScale = 1.0f/kVNDownScale;
+
   VNVirtualTouchPIMPL::VNVirtualTouchPIMPL(float learningRate) :
     learningRate_(learningRate),
     threshold_(kVNDefaultVirtualTouchThreshold) {
@@ -17,8 +20,12 @@ namespace Vision {
   
   void
   VNVirtualTouchPIMPL::Execute(cv::Mat &input, cv::Mat &output) {
-    cv::cvtColor(input, gray_, CV_RGB2GRAY);
     
+    // scale down to half size
+    static cv::Mat resizedInput;
+    cv::resize(input, resizedInput, cv::Size(), kVNDownScale, kVNDownScale, cv::INTER_LINEAR);
+    
+    fast_rgb_to_gray( resizedInput, gray_ );
     // initialize background to first frame
     if (background_.empty())
       gray_.convertTo(background_, CV_32F);
@@ -34,8 +41,9 @@ namespace Vision {
     
     // accumulate the background
     cv::accumulateWeighted(gray_, background_, learningRate_);
-    
-  }
 
+    // scale output back to fullsize
+    cv::resize(output, output, cv::Size(), kVNUpScale, kVNUpScale, cv::INTER_LINEAR);    
+  }
 }
 }
