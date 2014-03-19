@@ -56,6 +56,10 @@ int main(void)
 {
 	int r =
 	BTIO_Init(NULL);
+	sleep(1);
+	BTIO_SendCommand(r, kBTIOCmdSetInputContext, NULL, sizeof(void*));
+	sleep(1);
+	BTIO_SendCommand(r, kBTIOCmdSetLEDState, &r, sizeof(int));
 	BTIO_Exit(r);
 
 	return 0;
