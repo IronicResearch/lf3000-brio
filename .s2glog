@@ -39861,3 +39861,22 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/18/14 11:04 AM
 24,211 ms. (Cumulative: 20,452,345 ms)
 
 ----------------
+Revision 10,637 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,115 ms. (Cumulative: 20,476,554 ms)
+
+----------------
+Revision 10,638 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Initial pass at dispatching LED commands to BT controller. (FWSCRUM-1406)
+
+Rough working version needed to use some hacks for waiting on remote device services
+callback for the active device, which incurs noticeable delays of several seconds.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/19/14 11:54 AM
+1 changed, 0 added, 0 deleted.
+24,190 ms. (Cumulative: 20,500,760 ms)
+
+----------------
