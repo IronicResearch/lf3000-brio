@@ -21,7 +21,8 @@ static pFnCallback2        callbackfunc = NULL;
 static pFnCallback         callbackmain = NULL;
 static pFnCallback         callbackscan = NULL;
 static void*               callbackobj  = NULL;
-volatile bool              services = false; // FIXME
+
+int BTIO_QueryForServices(int handle, BTAddr* device, bool update);
 
 // BTPM Server Un-Registration Callback function
 void BTPSAPI ServerUnRegistrationCallback(void *CallbackParameter)
@@ -65,6 +66,7 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 						buf[6] = '\0';
 						(*callbackmain)(CallbackParameter, buf, sizeof(buf));
 					}
+					BTIO_QueryForServices(DEVMCallbackID, device, true);
 				}
 				else {
 					device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.BD_ADDR);
@@ -87,7 +89,9 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 			}
 			break;
 		case detRemoteDeviceServicesStatus:
-			services = true; // FIXME
+			printf("Remote Device Services Status\n");
+			device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDeviceServicesStatusEventData.RemoteDeviceAddress);
+			BTIO_QueryForServices(DEVMCallbackID, device, false);
 			break;
 		case detRemoteDeviceConnectionStatus:
 			printf("Remote Device Connection Status\n");
@@ -198,45 +202,37 @@ int BTIO_Exit(int handle)
 	return 0;
 }
 
-int BTIO_QueryForServices(int handle)
+int BTIO_QueryForServices(int handle, BTAddr* device, bool update)
 {
 	BD_ADDR_t       BDADDR;
 	unsigned int    TotalServiceSize = 0;
 	unsigned int    ServiceSize;
 	unsigned char*  ServiceData = NULL;
 	unsigned long   QueryFlags = DEVM_QUERY_REMOTE_DEVICE_SERVICES_FLAGS_LOW_ENERGY; // | DEVM_QUERY_REMOTE_DEVICE_SERVICES_FLAGS_FORCE_UPDATE;
-	static bool     once = false;
     int r;
-
-	if (once)
-		return 0;
-	once = true;
 
 	if (!device)
 		return -1;
 	device->toByteArray((char*)&BDADDR);
 
-//	r = DEVM_QueryRemoteDeviceServices(BDADDR, QueryFlags, 0, NULL, &TotalServiceSize);
-//	printf("DEVM_QueryRemoteDeviceServices() returned %d, size=%d\n", r, TotalServiceSize);
+	// 1st pass needs to force update before 2nd pass queries services
+	if (update)
+		QueryFlags |= DEVM_QUERY_REMOTE_DEVICE_SERVICES_FLAGS_FORCE_UPDATE;
+	r = DEVM_QueryRemoteDeviceServices(BDADDR, QueryFlags, 0, NULL, &TotalServiceSize);
+	printf("DEVM_QueryRemoteDeviceServices() returned %d, size=%d\n", r, TotalServiceSize);
+	if (update)
+		return r;
 
 	if (TotalServiceSize == 0)
 		TotalServiceSize = 5000;
 	ServiceSize = TotalServiceSize;
 	ServiceData = (unsigned char *)BTPS_AllocateMemory(ServiceSize);
 
-	QueryFlags |= DEVM_QUERY_REMOTE_DEVICE_SERVICES_FLAGS_FORCE_UPDATE;
-	r = DEVM_QueryRemoteDeviceServices(BDADDR, QueryFlags, 0, ServiceData, &TotalServiceSize);
-	printf("DEVM_QueryRemoteDeviceServices() returned %d, size=%d\n", r, ServiceSize);
-
-    // FIXME
-	int timeout = 10;
-	while (!services && --timeout > 0)
-		sleep(1);
-
 	QueryFlags &= ~DEVM_QUERY_REMOTE_DEVICE_SERVICES_FLAGS_FORCE_UPDATE;
 	r = DEVM_QueryRemoteDeviceServices(BDADDR, QueryFlags, ServiceSize, ServiceData, &TotalServiceSize);
 	printf("DEVM_QueryRemoteDeviceServices() returned %d, size=%d\n", r, ServiceSize);
 
+	// TODO: Parse GATT services for magic attribute handle 0x0029
 	DEVM_Parsed_Services_Data_t  ParsedGATTData;
 	DEVM_ConvertRawServicesStreamToParsedServicesData(r, ServiceData, &ParsedGATTData);
 	DEVM_FreeParsedServicesData(&ParsedGATTData);
@@ -248,20 +244,16 @@ int BTIO_QueryForServices(int handle)
 
 int BTIO_WriteValue(int handle, int command, void* data, int length)
 {
-	char cmdbuf[16];
 	BD_ADDR_t BDADDR;
-//	int value = *(int*)data;
 	Byte_t value = *(Byte_t*)data;
 
 	if (!device)
 		return -1;
 
-	BTIO_QueryForServices(handle);
+//	BTIO_QueryForServices(handle, device, true);
 
 	device->toByteArray((char*)&BDADDR);
-	sprintf(cmdbuf, "0x%02x", value);
 
-//	int r = GATM_WriteValue(GATMCallbackID, BDADDR, command, strlen(cmdbuf), (Byte_t*)cmdbuf);
 	int r = GATM_WriteValue(GATMCallbackID, BDADDR, command, sizeof(value), (Byte_t*)&value);
 	printf("GATM_WriteValue() returned %d for %02x\n", r, value);
 	return r;

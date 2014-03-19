@@ -39880,3 +39880,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/19/14 11:54 AM
 24,190 ms. (Cumulative: 20,500,760 ms)
 
 ----------------
+Revision 10,639 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Re-order BT remote services queries to be called in event callbacks for faster LED command response. (FWSCRUM-1406)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/19/14 2:00 PM
+3 changed, 0 added, 0 deleted.
+24,426 ms. (Cumulative: 20,525,311 ms)
+
+----------------
