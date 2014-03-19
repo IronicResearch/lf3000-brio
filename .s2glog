@@ -39910,3 +39910,13 @@ By Alex Lindblad (alindblad@leapfrog.com) on 3/19/14 2:30 PM
 24,499 ms. (Cumulative: 20,574,455 ms)
 
 ----------------
+Revision 10,643 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Replace default placeholder controller with first connected BT device.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/19/14 2:53 PM
+2 changed, 0 added, 0 deleted.
+24,366 ms. (Cumulative: 20,598,915 ms)
+
+----------------
