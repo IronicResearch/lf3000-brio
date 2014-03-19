@@ -114,6 +114,17 @@ namespace Hardware {
 	  std::string key(link);
 	  if (mapControllers_.count(key) > 0)
 		  return;
+
+	  // Replace placeholder controller with real BT device link
+	  std::string placeholder("DEFAUL");
+	  if (mapControllers_.count(placeholder) > 0) {
+		  HWController* controller = mapControllers_.at(placeholder);
+		  mapControllers_.erase(placeholder);
+		  listControllers_.pop_back();
+		  numControllers_--;
+//		  delete controller;
+	  }
+
       HWController* controller = new HWController();
       listControllers_.push_back(controller);
       mapControllers_.insert(std::pair<std::string, HWController*>(key, controller));
@@ -134,7 +145,7 @@ namespace Hardware {
   HWControllerMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msgIn) {
     LeapFrog::Brio::tEventType type = msgIn.GetEventType();
     LeapFrog::Brio::tEventPriority priority = kHWControllerDefaultEventPriority;
-    HWController *controller = this->GetControllerByID(kHWDefaultControllerID);
+//    HWController *controller = this->GetControllerByID(kHWDefaultControllerID);
 
     // Internally generated event to start scanning for controllers
     if (type == kHWControllerLowBattery) {
@@ -154,15 +165,16 @@ namespace Hardware {
     if (type == kHWControllerModeChanged) {
         const HWControllerEventMessage& hwmsg = reinterpret_cast<const HWControllerEventMessage&>(msgIn);
         if (hwmsg.GetController() == NULL) {
-            HWController* controller = new HWController();
-            HWControllerMPIPIMPL::Instance()->listControllers_.push_back(controller);
-            HWControllerMPIPIMPL::Instance()->numControllers_++;
-            std::cout << "Notify: HWController=" << controller << " , count=" << numControllers_ << "\n";
+ //           HWController* controller = new HWController();
+ //           HWControllerMPIPIMPL::Instance()->listControllers_.push_back(controller);
+ //           HWControllerMPIPIMPL::Instance()->numControllers_++;
+ //           std::cout << "Notify: HWController=" << controller << " , count=" << numControllers_ << "\n";
             return LeapFrog::Brio::kEventStatusOKConsumed;            
         }
        	return LeapFrog::Brio::kEventStatusOK;
     }
 
+    HWController *controller = this->GetControllerByID(kHWDefaultControllerID);
     if (!controller)
     	return LeapFrog::Brio::kEventStatusOK;
 

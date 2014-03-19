@@ -62,6 +62,8 @@ namespace Hardware {
   }
 
   HWControllerBluetoothPIMPL::~HWControllerBluetoothPIMPL(void) {
+	  counter_--;
+
 	  // Close Bluetooth client lib connection
 	  if (dll_) {
 //		  BTIO_Exit(handle_);
