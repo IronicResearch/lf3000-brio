@@ -115,6 +115,7 @@ namespace Hardware {
   void 
   HWControllerPIMPL::SetLEDColor(HWControllerLEDColor color) {
     //TODO: for now we are only using one color
+	std::cout << "HWControllerPIMPL::SetLEDColor" << color << "\n";
   }
   
   Vision::VNPoint 

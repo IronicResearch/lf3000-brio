@@ -64,6 +64,10 @@ namespace Hardware {
 
   void 
   HWController::SetLEDColor(HWControllerLEDColor color) {
+      // FIXME 
+	  HWControllerBluetoothPIMPL* hwimpl = dynamic_cast<HWControllerBluetoothPIMPL*>(pimpl_.get());
+	  if (hwimpl)
+		  return hwimpl->SetLEDColor(color);
     pimpl_->SetLEDColor(color);
   }
 
