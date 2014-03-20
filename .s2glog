@@ -39983,3 +39983,18 @@ By Dave Milici (dmilici@leapfrog.com) on 3/20/14 10:28 AM
 25,166 ms. (Cumulative: 20,725,452 ms)
 
 ----------------
+Revision 10,649 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,229 ms. (Cumulative: 20,749,774 ms)
+
+----------------
+Revision 10,650 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+BrioOpenGL only sets special flags on 1.1 and not 2.0.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/20/14 2:14 PM
+1 changed, 0 added, 0 deleted.
+24,174 ms. (Cumulative: 20,773,964 ms)
+
+----------------
