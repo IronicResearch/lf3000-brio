@@ -31,10 +31,10 @@ namespace LF {
 namespace Hardware {
 
   HWControllerBluetoothPIMPL::HWControllerBluetoothPIMPL(HWController* controller) :
-    HWControllerPIMPL(controller),
-    controller_(controller),
-    id_(kHWDefaultControllerID),
-    mode_(kHWControllerMode) { //,
+    HWControllerPIMPL(controller) {
+//    controller_(controller),
+//    id_(kHWDefaultControllerID),
+//    mode_(kHWControllerMode) { //,
     //    updateRate_(accelerometerMPI_.GetAccelerometerRate()) {
     std::cout << "AJL: Inside HWControllerBluetoothPIMPL constructor\n";
     ZeroAccelerometerData();
@@ -101,6 +101,7 @@ namespace Hardware {
   HWControllerBluetoothPIMPL::LocalCallback(void* context, void* data, int length) {
 	  HWControllerBluetoothPIMPL* pModule = (HWControllerBluetoothPIMPL*)context;
 	  U8* packet = (U8*)data;
+	  HWControllerMode mode = pModule->mode_;
 
 #if 0
 	  for (int i = 0; i < length; i++) {
@@ -140,10 +141,12 @@ namespace Hardware {
 			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonHint : 0;
 			  break;
 		  case 4:
-			  pModule->mode_ = kHWControllerWandMode;
+			  if (packet[i])
+				  pModule->mode_ = kHWControllerWandMode;
 			  break;
 		  case 5:
-			  pModule->mode_ = kHWControllerMode;
+			  if (packet[i])
+				  pModule->mode_ = kHWControllerMode;
 			  break;
 		  case 6:
 			  pModule->analogStickData_.x = BYTE_TO_FLOAT(packet[i]);
@@ -178,6 +181,11 @@ namespace Hardware {
 	  gettimeofday((struct timeval*)&pModule->buttonData_.time, NULL);
 	  pModule->accelerometerData_.time.seconds = pModule->analogStickData_.time.seconds = pModule->buttonData_.time.seconds;
 	  pModule->accelerometerData_.time.microSeconds = pModule->analogStickData_.time.microSeconds = pModule->buttonData_.time.microSeconds;
+
+	  if (mode != pModule->mode_) {
+	      HWControllerEventMessage cmsg(kHWControllerModeChanged, pModule->controller_);
+		  pModule->eventMPI_.PostEvent(cmsg, 128);
+	  }
 
 	  // Compatibility events posted only for default controller
 	  if (pModule->id_ > 0) {

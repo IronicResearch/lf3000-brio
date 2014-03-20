@@ -12,7 +12,7 @@ namespace Hardware {
   HWController::HWController(void)  {
 	  struct stat stbuf;
 	  if (0 == stat("/LF/Base/Brio/lib/libBluetopiaIO.so", &stbuf)) {
-		  pimpl_ = boost::shared_ptr<HWControllerBluetoothPIMPL>(new HWControllerBluetoothPIMPL(this));
+		  pimpl_ = boost::shared_ptr<HWControllerPIMPL>(new HWControllerBluetoothPIMPL(this));
 	  }
 	  else {
 		  pimpl_ = boost::shared_ptr<HWControllerPIMPL>(new HWControllerPIMPL(this));

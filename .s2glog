@@ -39920,3 +39920,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/19/14 2:53 PM
 24,366 ms. (Cumulative: 20,598,915 ms)
 
 ----------------
+Revision 10,644 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added event message posted for controller mode changes. (FWSCRUM-1702)
+Fixed controller subclass to use data records in base controller class.  
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/19/14 5:58 PM
+3 changed, 0 added, 0 deleted.
+24,472 ms. (Cumulative: 20,623,481 ms)
+
+----------------
