@@ -39998,3 +39998,19 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/20/14 2:14 PM
 24,174 ms. (Cumulative: 20,773,964 ms)
 
 ----------------
+Revision 10,651 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,313 ms. (Cumulative: 20,798,370 ms)
+
+----------------
+Revision 10,652 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Bind BT device to controller command packet when dispatching LED commands. (FWSCRUM-1406)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/20/14 3:58 PM
+3 changed, 0 added, 0 deleted.
+24,647 ms. (Cumulative: 20,823,017 ms)
+
+----------------
