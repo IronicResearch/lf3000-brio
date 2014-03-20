@@ -345,6 +345,7 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 	glEnableSpecialMode(GL_SPECIAL_MODE_LAST_TEXTURE_EN);
 	glEnableSpecialMode(GL_SPECIAL_MODE_PIXEL_FOG_EN);
 	glSetSpecialModeParam(GL_SPECIAL_MODE_PIXEL_FOG_EN, 3);
+	glEnableSpecialMode(2);//glEnableSpecialMode(GL_SPECIAL_MODE_TEX_FILTER_OFF);
 
 	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
