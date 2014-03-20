@@ -1,13 +1,14 @@
 #ifndef __VISION_INCLUDE_VNCOORDINATETRANSLATOR_H__
 #define __VISION_INCLUDE_VNCOORDINATETRANSLATOR_H__
 
-#include <Vision/VNVisionTypes.h>
+
+#include <VNTranslatorBase.h>
 #include <DisplayTypes.h>
 
 namespace LF {
 namespace Vision {
 
-  class VNCoordinateTranslator {
+  class VNCoordinateTranslator : public VNTranslatorBase {
   public:
     static VNCoordinateTranslator* Instance(void);
     virtual ~VNCoordinateTranslator(void);
@@ -37,14 +38,6 @@ namespace Vision {
     VNCoordinateTranslator(void);
     VNCoordinateTranslator(const VNCoordinateTranslator&);
     VNCoordinateTranslator& operator =(const VNCoordinateTranslator&);
-
-    void InitRects(void);
-    void UpdateScaleFactors(void);
-
-    LeapFrog::Brio::tRect visionFrame_;
-    LeapFrog::Brio::tRect displayFrame_;
-    float visionToDisplayWidthSF_;
-    float visionToDisplayHeightSF_;
   };
 
 } // namespace Vision

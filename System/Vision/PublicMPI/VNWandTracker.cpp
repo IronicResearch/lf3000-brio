@@ -9,8 +9,9 @@ namespace LF {
 namespace Vision {
 
 
-  VNWandTracker::VNWandTracker(void) :
-    pimpl_(new VNWandTrackerPIMPL(&*(VNVisionMPI().GetWandByID()->pimpl_))) {
+  VNWandTracker::VNWandTracker(VNInputParameters *params) :
+    pimpl_(new VNWandTrackerPIMPL(&*(VNVisionMPI().GetWandByID()->pimpl_),
+				  params)) {
   }
   
   VNWandTracker::~VNWandTracker(void) {  
@@ -19,6 +20,16 @@ namespace Vision {
   void
   VNWandTracker::Execute(cv::Mat &input, cv::Mat &output) {
     pimpl_->Execute(input, output);
+  }
+
+  void
+  VNWandTracker::SetAutomaticWandScaling(bool autoScale) {
+    pimpl_->SetAutomaticWandScaling(autoScale);
+  }
+
+  bool
+  VNWandTracker::GetAutomaticWandScaling(void) const {
+    return pimpl_->GetAutomaticWandScaling();
   }
 
 } // namespace Vision
