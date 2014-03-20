@@ -722,7 +722,7 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 
 		if((ret = ioctl(pCamCtx->fd, VIDIOC_G_CTRL, &ctrl)) < 0)
 		{
-			bRet = false;
+		        bRet = false;
 			break;
 		}
 
@@ -1065,6 +1065,7 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 	struct v4l2_format		fmt;
 	struct v4l2_streamparm	fps;
 
+	printf("1\n");
 	/* format and resolution */
 	memset(&fmt, 0, sizeof(struct v4l2_format));
 	fmt.type				= V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -1088,6 +1089,7 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
     if(ioctl(camCtx_.fd, VIDIOC_S_FMT, &fmt) < 0)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::SetCameraMode: mode selection failed for %s, %d\n", camCtx_.file, errno);
+		printf("2\n");
 		return false;
 	}
 
@@ -1103,6 +1105,7 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 	if(ioctl(camCtx_.fd, VIDIOC_S_PARM, &fps) < 0)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::SetCameraMode: fps selection failed for %s\n", camCtx_.file);
+		printf("3\n");
 		return false;
 	}
 
@@ -3191,6 +3194,7 @@ tVideoSurf* 	CCameraModule::GetCaptureVideoSurface(const tVidCapHndl hndl)
 #if 0 	// FIXME: pending VisionMPI update
 	// FIXME: return surface describing most recent captured frame
 	if (camCtx_.frame) {
+	  printf("camCtx_ has a frame\n");
 		static tVideoSurf surf; // FIXME
 		surf.format = (camCtx_.frame->pixelformat == kCaptureFormatRAWYUYV) ? kPixelFormatYUYV422 : kPixelFormatYUV420;
 		surf.width  = camCtx_.frame->width;
@@ -3199,6 +3203,7 @@ tVideoSurf* 	CCameraModule::GetCaptureVideoSurface(const tVidCapHndl hndl)
 		surf.pitch  = camCtx_.frame->size / surf.height;
 		return &surf;
 	}
+	printf("Returning NULL\n");
 	return NULL;
 #else
 	return camCtx_.surf;

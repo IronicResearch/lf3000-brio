@@ -559,7 +559,7 @@ private:
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf,\
 													IEventListener * pListener, const U32 maxLength, const Boolean audio);
 
-	tVideoSurf	videoSurface_;
+	tVideoSurf	*videoSurface_;
 };
 
 LF_END_BRIO_NAMESPACE()

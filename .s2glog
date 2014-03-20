@@ -39940,3 +39940,19 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/19/14 6:09 PM
 24,299 ms. (Cumulative: 20,647,879 ms)
 
 ----------------
+Revision 10,646 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+added ability to scale wand input based on relative wand distance
+
+* Update lf-wand-demo to reflect input changes for turning on scaling
+* Added a new coordinate translator base class used in both wand scaling
+and for translating coordinates between display and vision domains.
+* Added more unit tests for the base translator class
+* Fixed bug in CameraEmul that caused seg-fault when starting a video
+  capture session with a NULL video surface
+
+By Alex Lindblad (alindblad@leapfrog.com) on 3/19/14 10:53 PM
+12 changed, 3 added, 0 deleted.
+25,526 ms. (Cumulative: 20,673,502 ms)
+
+----------------

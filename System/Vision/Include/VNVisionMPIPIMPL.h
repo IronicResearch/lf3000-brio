@@ -13,6 +13,9 @@
 namespace LF {
 namespace Vision {
 
+  static const LeapFrog::Brio::U16 kVNVisionProcessingFrameWidth = 640;
+  static const LeapFrog::Brio::U16 kVNVisionProcessingFrameHeight = 480;  
+
   class VNHotSpot;
   class VNAlgorithm;
   class VNWand;
@@ -48,7 +51,6 @@ namespace Vision {
     LeapFrog::Brio::tErrType SetCameraFormat(void);
     LeapFrog::Brio::tErrType DispatchVisionThread(void);
     void SetCoordinateTranslatorFrames(void);
-    void SetCameraControls(void);
     LeapFrog::Brio::tErrType SetCurrentCamera(void);
     void BeginFrameProcessing(void);
     void EndFrameProcessing(void) const;

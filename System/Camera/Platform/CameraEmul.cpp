@@ -51,12 +51,12 @@ tVidCapHndl CEmulCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* 
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
 	tVidCapHndl hndl = kInvalidVidCapHndl;
-	videoSurface_ = *pSurf;
+	videoSurface_ = pSurf;
 	// Re-init V4L device, as needed per instance
 	if (camCtx_.fd == -1)
 		InitCameraInt(&camCtx_.mode, true);
 
-	hndl = CCameraModule::StartVideoCapture(path, &videoSurface_, pListener, maxLength, bAudio);
+	hndl = CCameraModule::StartVideoCapture(path, videoSurface_, pListener, maxLength, bAudio);
 
 	return hndl;
 }

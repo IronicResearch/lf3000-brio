@@ -5,6 +5,8 @@
 #include <SystemEvents.h>
 #include <SystemErrors.h>
 #include <GroupEnumeration.h>
+#include <StringTypes.h>
+#include <vector>
 
 // Need to include this for event types
 using namespace LeapFrog::Brio;
@@ -52,6 +54,11 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupVision), VN_VISION_ERRORS)
    * The maximum value a pixel can take on
    */
   static const VNPixelType kVNMaxPixelValue = 255;
+
+  /*!
+   * A list of key-value pairs representing ptoential input for vision classes
+   */
+  typedef std::vector<std::pair<LeapFrog::Brio::CString, float> > VNInputParameters;
   
   /*!
    * \class VNPoint

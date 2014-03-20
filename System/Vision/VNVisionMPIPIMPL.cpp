@@ -23,9 +23,6 @@ namespace Vision {
   static const double kVNMillisecondsInASecond = 1000.0;
   static const float kVNDefaultFrameProcessingRate = 0.03125; // 32 fps
   static const LeapFrog::Brio::U32 kVNDefaultStackSize = 134217728; // 128 MB in bytes
-  static const LeapFrog::Brio::U16 kVNVisionProcessingFrameWidth = 640;
-  static const LeapFrog::Brio::U16 kVNVisionProcessingFrameHeight = 480;
-
 
   VNVisionMPIPIMPL*
   VNVisionMPIPIMPL::Instance(void) {
@@ -75,26 +72,32 @@ namespace Vision {
     
     if (error == kNoErr) {
       error = kVNCameraDoesNotSupportRequiredVisionFormat;
+      std::cout << "Number of modes is " << modeList.size() << std::endl;
       for (tCaptureModes::iterator it = modeList.begin(); it != modeList.end(); ++it) {
 	LeapFrog::Brio::tCaptureMode* mode = *it;
 
+	std::cout << "Capture mode to:\n"
+		  << "      pixelformat = " << mode->pixelformat << std::endl
+		  << "            width = " << mode->width << std::endl
+		  << "           height = " << mode->height << std::endl
+		  << "    fps_numerator = " << mode->fps_numerator << std::endl
+		  << "  fps_denominator = " << mode->fps_denominator << std::endl;
+	
+	// Glasgow camera only has three settings, and only one with the correct size
 	if (mode->width  == kVNVisionProcessingFrameWidth &&
 	    mode->height == kVNVisionProcessingFrameHeight) {
 
-	  LeapFrog::Brio::tCaptureFormat useFormat = LeapFrog::Brio::kCaptureFormatError;
-	  if (GetPlatformName() == "CABO") {
-	    useFormat = LeapFrog::Brio::kCaptureFormatYUV420;
-	  } else if (GetPlatformName() == "GLASGOW") {
-	    useFormat = LeapFrog::Brio::kCaptureFormatRAWYUYV;
-	  }
-	  
-	  mode->pixelformat = useFormat;
-	  // Glasgow requires framerate setting
+	  // the pixel format supported by the glasgow camera is RAWYUYV
+	  mode->pixelformat = LeapFrog::Brio::kCaptureFormatRAWYUYV;
 	  mode->fps_numerator = 1;
 	  mode->fps_denominator = 30;
-
-	  cameraMPI_.SetCurrentFormat(mode);
-	  error = kNoErr;
+	  std::cout << "Setting capture mode to:\n"
+		    << "    pixelformat = " << mode->pixelformat << std::endl
+		    << "          width = " << mode->width << std::endl
+		    << "         height = " << mode->height << std::endl
+		    << "  fps_numerator = " << mode->fps_numerator << std::endl
+		    << "fps_denominator = " << mode->fps_denominator << std::endl;
+	  error = cameraMPI_.SetCurrentFormat(mode);
 	  break;
 	}
       }
@@ -118,49 +121,6 @@ namespace Vision {
     for (std::vector<const VNHotSpot*>::iterator it = hotSpots_.begin();
 	 it != hotSpots_.end(); ++it) {
       (*it)->pimpl_->UpdateVisionCoordinates();
-    }
-  }
-
-  void
-  VNVisionMPIPIMPL::SetCameraControls(void) {
-    if(0) {
-      tCameraControls controls;
-      
-      dbg_.Assert(cameraMPI_.GetCameraControls(controls), "VNVision could get camera controls\n");
-      
-      bool setExposure = false;
-      bool setWhiteBlaance = false;
-      
-      for(tCameraControls::iterator i = controls.begin();
-	  i != controls.end();
-	  ++i) {
-	tControlInfo* c = *i;
-	
-	if(!c) {
-	  dbg_.DebugOut(kDbgLvlCritical, "null camera control (tControlInfo)\n");
-	  continue;
-	} else {
-	  printf("Control type: %i\n", c->type);
-	}
-	
-	switch(c->type) {
-	case kControlTypeAutoWhiteBalance:
-	  printf("AutoWhiteBalance: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	  cameraMPI_.SetCameraControl(c, 0);
-	  printf("New AutoWhiteBalance: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	  break;
-	case kControlTypeAutoExposure:
-	  printf("New Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	  cameraMPI_.SetCameraControl(c, 0);
-	  printf("New Auto Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	  break;
-	case kControlTypeExposure:
-	  printf("Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	  cameraMPI_.SetCameraControl(c, 9000);
-	  printf("New Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	  break;
-	}
-      }
     }
   }
 
@@ -212,11 +172,10 @@ namespace Vision {
   VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf* surf,
 			  bool dispatchSynchronously) {
     LeapFrog::Brio::tErrType error = kNoErr;
+
     if (!visionAlgorithmRunning_) {
       frameCount_ = 0;
       frameTime_ = time(0);
-      
-      SetCameraControls();
       
       error = SetCurrentCamera();
        
@@ -343,9 +302,9 @@ namespace Vision {
 	const short blueUV = 2.03211 * (u[k] - 128);
 	
 	for(int yi = 0; yi < 2; ++yi) {
-	  *c++ = CLIP8BIT(*y + redUV);
-	  *c++ = CLIP8BIT(*y + greenUV);
 	  *c++ = CLIP8BIT(*y + blueUV);
+	  *c++ = CLIP8BIT(*y + greenUV);
+	  *c++ = CLIP8BIT(*y + redUV);
 	  ++y;
 	}
       }
@@ -404,15 +363,15 @@ namespace Vision {
 	const short blueUV = bu[*u];
 	
 	// Even Y
-	*c++ = CLIP8BIT(*y + redUV);
-	*c++ = CLIP8BIT(*y + greenUV);
 	*c++ = CLIP8BIT(*y + blueUV);
+	*c++ = CLIP8BIT(*y + greenUV);
+	*c++ = CLIP8BIT(*y + redUV);
 	++y;
 	
 	// Odd Y
-	*c++ = CLIP8BIT(*y + redUV);
-	*c++ = CLIP8BIT(*y + greenUV);
 	*c++ = CLIP8BIT(*y + blueUV);
+	*c++ = CLIP8BIT(*y + greenUV);
+	*c++ = CLIP8BIT(*y + redUV);
 	++y;
 	
 	++u;
@@ -442,11 +401,14 @@ namespace Vision {
 		    CV_8UC3, 
 		    surf->buffer);
     } else if (surf->format == LeapFrog::Brio::kPixelFormatYUYV422) {
-    }   
+    } else {
+      //some other format
+    }
   }
 
   void
   VNVisionMPIPIMPL::Update(void) {
+
     if (visionAlgorithmRunning_) {
       BeginFrameProcessing();
 
@@ -466,6 +428,10 @@ namespace Vision {
 			   CV_8UC3);
 	    CreateRGBImage(surf,
 			   rgbMat);
+#ifdef EMULATION
+	    cv::namedWindow("input");
+	    cv::imshow("input", rgbMat);
+#endif
 	    algorithm_->Execute(rgbMat, outputImg_);
 
 #ifdef EMULATION
