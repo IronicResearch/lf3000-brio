@@ -64,6 +64,7 @@ namespace Hardware {
     
   private:
     // FIXME -- subclass?
+#if 0
     Vision::VNVisionMPI visionMPI_;
     LeapFrog::Brio::CAccelerometerMPI accelerometerMPI_;
     LeapFrog::Brio::CButtonMPI buttonMPI_;
@@ -77,6 +78,7 @@ namespace Hardware {
     LeapFrog::Brio::tAccelerometerData accelerometerData_;
     LeapFrog::Brio::tButtonData2 buttonData_;
     LF::Hardware::tHWAnalogStickData analogStickData_;
+#endif
 
     void ZeroAccelerometerData(void);
     void ZeroButtonData(void);
