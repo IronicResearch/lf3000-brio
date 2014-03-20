@@ -39931,3 +39931,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/19/14 5:58 PM
 24,472 ms. (Cumulative: 20,623,481 ms)
 
 ----------------
+Revision 10,645 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-1693.  Adding GL_SPECIAL_MODE_TEX_FILTER_OFF.  Using "2", until toolchain update to prevent breaking build.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/19/14 6:09 PM
+1 changed, 0 added, 0 deleted.
+24,299 ms. (Cumulative: 20,647,879 ms)
+
+----------------
