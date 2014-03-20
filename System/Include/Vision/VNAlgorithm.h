@@ -24,6 +24,13 @@ namespace Vision {
   class VNAlgorithm {
   public:
     /*!
+     * \brief an optional initialization method that gets called during
+     * VNVisionMPI::Start after the camera is setup but before the capture 
+     * session is started.
+     */
+    virtual void Initialize(void);
+
+    /*!
      * \brief Execute the virtual method called to execute the algorithm
      * \param input a reference to the input image in cv::Mat format
      * \param output a reference to the output binary image, used to determine

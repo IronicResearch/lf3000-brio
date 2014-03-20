@@ -39956,3 +39956,19 @@ By Alex Lindblad (alindblad@leapfrog.com) on 3/19/14 10:53 PM
 25,526 ms. (Cumulative: 20,673,502 ms)
 
 ----------------
+Revision 10,647 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add camera control setting in wand tracker algorithm
+
+* Turn off auto-whitebalance via CameraMPI
+* Turn off auto-exposure via CameraMPI
+* Set exposure to min value via CameraMPI
+** Currently changing these settings via the CameraMPI do nothing to
+   the resulting output image from the camera.  This is being
+   investigated by others.
+
+By Alex Lindblad (alindblad@leapfrog.com) on 3/19/14 11:20 PM
+6 changed, 1 added, 0 deleted.
+26,519 ms. (Cumulative: 20,700,161 ms)
+
+----------------

@@ -1,6 +1,10 @@
 #include <VNWandTrackerPIMPL.h>
 #include <VNVisionMPIPIMPL.h>
 #include <opencv2/imgproc/types_c.h>
+#include <CameraMPI.h>
+#include <DebugMPI.h>
+#include <GroupEnumeration.h>
+#include <stdio.h>
 
 namespace LF {
 namespace Vision {
@@ -63,9 +67,52 @@ namespace Vision {
   }
   
   VNWandTrackerPIMPL::~VNWandTrackerPIMPL(void) {
-   
   }
   
+  void
+  VNWandTrackerPIMPL::Initialize(void) {
+    LeapFrog::Brio::tCameraControls controls;
+    LeapFrog::Brio::CCameraMPI cameraMPI;
+    LeapFrog::Brio::CDebugMPI dbg(kGroupVision);
+
+    LeapFrog::Brio::Boolean err = cameraMPI.GetCameraControls(controls);
+    dbg.Assert(err, "VNWandTracker could get camera controls\n");
+    
+    bool setExposure = false;
+    bool setWhiteBlaance = false;
+    
+    for(LeapFrog::Brio::tCameraControls::iterator i = controls.begin();
+	i != controls.end();
+	++i) {
+      tControlInfo* c = *i;
+      
+      if(!c) {
+	dbg.DebugOut(kDbgLvlCritical, "null camera control (tControlInfo)\n");
+	continue;
+      } else {
+	printf("Control type: %i\n", c->type);
+      }
+      
+      switch(c->type) {
+      case kControlTypeAutoWhiteBalance:
+	printf("AutoWhiteBalance: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	cameraMPI.SetCameraControl(c, 0);
+	printf("New AutoWhiteBalance: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	break;
+      case kControlTypeAutoExposure:
+	printf("New Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	cameraMPI.SetCameraControl(c, 0);
+	printf("New Auto Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	break;
+      case kControlTypeExposure:
+	printf("Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	cameraMPI.SetCameraControl(c, c->min);
+	printf("New Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
+	break;
+      }
+    }
+  }
+
   void
   VNWandTrackerPIMPL::ComputeLargestContour(cv::Mat &img, 
 					    std::vector<std::vector<cv::Point> > &contours,

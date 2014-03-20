@@ -18,6 +18,11 @@ namespace Vision {
   }
   
   void
+  VNWandTracker::Initialize(void) {
+    pimpl_->Initialize();
+  }
+
+  void
   VNWandTracker::Execute(cv::Mat &input, cv::Mat &output) {
     pimpl_->Execute(input, output);
   }
