@@ -92,7 +92,7 @@ namespace Hardware {
     	  controller = pModule->mapControllers_.at(key);
       if (!controller)   
     	  return;
-      HWControllerBluetoothPIMPL* device = dynamic_cast<HWControllerBluetoothPIMPL*>(controller->pimpl_.get());
+      HWControllerPIMPL* device = dynamic_cast<HWControllerPIMPL*>(controller->pimpl_.get());
       if (device)
     	  device->LocalCallback(device, data, length);
   }
@@ -131,6 +131,17 @@ namespace Hardware {
       numControllers_++;
       HWControllerEventMessage qmsg(kHWControllerModeChanged, controller);
       eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority, this);
+  }
+
+
+  int
+  HWControllerMPIPIMPL::SendCommand(HWController* controller, int command, void* data, int length) {
+	  return pBTIO_SendCommand_(handle_, command, data, length);
+  }
+
+  int
+  HWControllerMPIPIMPL::QueryStatus(HWController* controller, int command, void* data, int length) {
+	  return pBTIO_QueryStatus_(handle_, command, data, length);
   }
 
   void

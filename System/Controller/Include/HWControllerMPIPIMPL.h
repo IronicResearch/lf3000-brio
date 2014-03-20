@@ -27,7 +27,10 @@ namespace Hardware {
     void RegisterSelfAsListener(void);
 
     virtual LeapFrog::Brio::tEventStatus Notify(const LeapFrog::Brio::IEventMessage &msg);
-    
+
+    int SendCommand(HWController*, int command, void* data, int length);
+    int QueryStatus(HWController*, int command, void* data, int length);
+
   private:
     HWControllerMPIPIMPL(void);
     HWControllerMPIPIMPL(const HWControllerMPIPIMPL&);
