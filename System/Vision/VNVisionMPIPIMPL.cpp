@@ -177,8 +177,9 @@ namespace Vision {
       frameCount_ = 0;
       frameTime_ = time(0);
       
-      error = SetCurrentCamera();
-       
+      if (algorithm_)
+	algorithm_->Initialize();
+
        if (error == kNoErr) {
 	videoSurf_ = surf;
 

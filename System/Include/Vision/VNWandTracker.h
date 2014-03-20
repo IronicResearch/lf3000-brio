@@ -41,12 +41,19 @@ namespace Vision {
     virtual ~VNWandTracker(void);
 
     /*!
+     * Virtual method to perform algorithm specific initialization
+     * The wand tracking algorithm adjusts camera settings to better
+     * optimize the ability to track the wand.
+     */
+    virtual void Initialize(void);
+
+    /*!
      * Virtual method to execute wand tracking algorithm
      * \param input a cv::Mat reference, the current frame from the camera
      * \param output a cv::Mat reference, the output image used for detecting
      *        change.  Must be of type CV_8U
      */
-    void Execute(cv::Mat &input, cv::Mat &output);
+    virtual void Execute(cv::Mat &input, cv::Mat &output);
 
     /*!
      * \brief Wand Scaling refers to the mechanism that allows the WandTracker algorithm

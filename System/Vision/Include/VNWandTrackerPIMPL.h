@@ -15,6 +15,7 @@ namespace Vision {
 		       VNInputParameters *params);
     virtual ~VNWandTrackerPIMPL(void);
     
+    void Initialize(void);
     void Execute(cv::Mat &input, cv::Mat &output);
     
     void SetAutomaticWandScaling(bool autoScale);
