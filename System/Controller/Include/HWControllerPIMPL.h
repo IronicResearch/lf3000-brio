@@ -59,15 +59,19 @@ namespace Hardware {
     LeapFrog::Brio::tAccelerometerMode GetAccelerometerMode(void) const;
     LeapFrog::Brio::tErrType SetAccelerometerMode(const LeapFrog::Brio::tAccelerometerMode mode);
     
-  private:
+    void LocalCallback(void*, void*, int);
+
+ private:
     Vision::VNVisionMPI visionMPI_;
     LeapFrog::Brio::CAccelerometerMPI accelerometerMPI_;
     LeapFrog::Brio::CButtonMPI buttonMPI_;
     Hardware::HWAnalogStickMPI analogStickMPI_;
+    LeapFrog::Brio::CEventMPI eventMPI_;
 
     HWController* controller_;
     LeapFrog::Brio::U8 id_;
     HWControllerMode mode_;
+    HWControllerLEDColor color_;
     LeapFrog::Brio::U32 updateRate_;
 
     LeapFrog::Brio::tAccelerometerData accelerometerData_;

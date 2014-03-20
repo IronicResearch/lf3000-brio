@@ -1,8 +1,11 @@
 #include "HWControllerPIMPL.h"
+#include "HWControllerMPIPIMPL.h"
 #include <Hardware/HWControllerTypes.h>
+#include <Hardware/HWControllerEventMessage.h>
 #include <Vision/VNWand.h>
 #include <string.h>
 #include <iostream> //AJL Debug
+#include <sys/time.h>
 
 using namespace LeapFrog::Brio;
 
@@ -12,8 +15,9 @@ namespace Hardware {
   HWControllerPIMPL::HWControllerPIMPL(HWController* controller) :
     controller_(controller),
     id_(kHWDefaultControllerID),
-    mode_(kHWControllerMode) { //,
-    //    updateRate_(accelerometerMPI_.GetAccelerometerRate()) {
+    mode_(kHWControllerMode),
+    color_(kHWControllerLEDGreen),
+    updateRate_(50) {
     std::cout << "AJL: Inside HWControllerPIMPL constructor\n";
     ZeroAccelerometerData();
     ZeroButtonData();
@@ -107,15 +111,14 @@ namespace Hardware {
   
   HWControllerLEDColor 
   HWControllerPIMPL::GetLEDColor(void) const {
-    //TODO: programmatically get color
-    // for now just one color
-    return kHWControllerLEDGreen;
+    return color_;
   }
   
   void 
   HWControllerPIMPL::SetLEDColor(HWControllerLEDColor color) {
-    //TODO: for now we are only using one color
 	std::cout << "HWControllerPIMPL::SetLEDColor" << color << "\n";
+	HWControllerMPIPIMPL::Instance()->SendCommand(controller_, kBTIOCmdSetLEDState, &color, sizeof(color));
+	color_ = color;
   }
   
   Vision::VNPoint 
@@ -207,5 +210,119 @@ namespace Hardware {
     accelerometerMPI_.SetAccelerometerMode(mode);
   }
   
+  inline float BYTE_TO_FLOAT(U8 byte) {
+  	  return (float)((int)byte - 128) / 128.0;
+  }
+
+  inline S32 WORD_TO_SIGNED(U16 word) {
+  	  return (S32)((word > 127) ? (int)word - 256 : (int)word) >> 2;
+  }
+
+  void
+  HWControllerPIMPL::LocalCallback(void* context, void* data, int length) {
+	  HWControllerPIMPL* pModule = this; //(HWControllerBluetoothPIMPL*)context;
+	  U8* packet = (U8*)data;
+	  HWControllerMode mode = pModule->mode_;
+
+#if 0
+	  for (int i = 0; i < length; i++) {
+		  printf("%02x ", packet[i]);
+	  }
+	  printf("\n");
+#endif
+
+	  for (int i = 0; i < length; i++) {
+		  switch (i) {
+		  case 0:
+			  pModule->buttonData_.buttonTransition &= ~kButtonA;
+			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonA : 0;
+			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonA);
+			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonA;
+			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonA : 0;
+			  break;
+		  case 1:
+			  pModule->buttonData_.buttonTransition &= ~kButtonB;
+			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonB : 0;
+			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonB);
+			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonB;
+			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonB : 0;
+			  break;
+		  case 2:
+			  pModule->buttonData_.buttonTransition &= ~kButtonMenu;
+			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonMenu : 0;
+			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonMenu);
+			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonMenu;
+			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonMenu : 0;
+			  break;
+		  case 3:
+			  pModule->buttonData_.buttonTransition &= ~kButtonHint;
+			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonHint : 0;
+			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonHint);
+			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonHint;
+			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonHint : 0;
+			  break;
+		  case 4:
+			  if (packet[i])
+				  pModule->mode_ = kHWControllerWandMode;
+			  break;
+		  case 5:
+			  if (packet[i])
+				  pModule->mode_ = kHWControllerMode;
+			  break;
+		  case 6:
+			  pModule->analogStickData_.x = BYTE_TO_FLOAT(packet[i]);
+			  break;
+		  case 7:
+			  pModule->analogStickData_.y = BYTE_TO_FLOAT(packet[i]);
+			  break;
+		  case 8:
+			  pModule->accelerometerData_.accelX = packet[i];
+			  break;
+		  case 9:
+			  pModule->accelerometerData_.accelX |= (packet[i] << 8);
+			  pModule->accelerometerData_.accelX = - WORD_TO_SIGNED(pModule->accelerometerData_.accelX);
+			  break;
+		  case 10:
+			  pModule->accelerometerData_.accelZ = packet[i];
+			  break;
+		  case 11:
+			  pModule->accelerometerData_.accelZ |= (packet[i] << 8);
+			  pModule->accelerometerData_.accelZ = WORD_TO_SIGNED(pModule->accelerometerData_.accelZ);
+			  break;
+		  case 12:
+			  pModule->accelerometerData_.accelY = packet[i];
+			  break;
+		  case 13:
+			  pModule->accelerometerData_.accelY |= (packet[i] << 8);
+			  pModule->accelerometerData_.accelY = - WORD_TO_SIGNED(pModule->accelerometerData_.accelY);
+			  break;
+		  }
+	  }
+
+	  gettimeofday((struct timeval*)&pModule->buttonData_.time, NULL);
+	  pModule->accelerometerData_.time.seconds = pModule->analogStickData_.time.seconds = pModule->buttonData_.time.seconds;
+	  pModule->accelerometerData_.time.microSeconds = pModule->analogStickData_.time.microSeconds = pModule->buttonData_.time.microSeconds;
+
+	  if (mode != pModule->mode_) {
+	      HWControllerEventMessage cmsg(kHWControllerModeChanged, pModule->controller_);
+		  pModule->eventMPI_.PostEvent(cmsg, 128);
+	  }
+
+	  // Compatibility events posted only for default controller
+	  if (pModule->id_ > 0) {
+	      HWControllerEventMessage cmsg(kHWControllerDataChanged, pModule->controller_);
+		  pModule->eventMPI_.PostEvent(cmsg, 128);
+		  return;
+	  }
+
+	  CButtonMessage bmsg(pModule->buttonData_);
+	  HWAnalogStickMessage amsg(pModule->analogStickData_);
+	  CAccelerometerMessage xmsg(pModule->accelerometerData_);
+
+	  pModule->eventMPI_.PostEvent(amsg, 128);
+	  pModule->eventMPI_.PostEvent(bmsg, 128);
+	  pModule->eventMPI_.PostEvent(xmsg, 128);
+  }
+
 }	// namespace Hardware
 }	// namespace LF

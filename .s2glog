@@ -39972,3 +39972,14 @@ By Alex Lindblad (alindblad@leapfrog.com) on 3/19/14 11:20 PM
 26,519 ms. (Cumulative: 20,700,161 ms)
 
 ----------------
+Revision 10,648 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Relocate LED dispatch command to ControllerMPI in order to remove controller subclass dependency. (FWSCRUM-1406)
+Cached controller data was accessed from base class by default, so subclass not useful anymore. (ARIA-287)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/20/14 10:28 AM
+5 changed, 0 added, 0 deleted.
+25,166 ms. (Cumulative: 20,725,452 ms)
+
+----------------
