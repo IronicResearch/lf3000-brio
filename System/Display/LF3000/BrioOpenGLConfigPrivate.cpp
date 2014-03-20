@@ -342,10 +342,13 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 
 	surface_context_map[eglSurface] = &brioopenglconfig_context_map[this];
 	// Clear garbage pixels from previous OpenGL context (embedded target)
-	glEnableSpecialMode(GL_SPECIAL_MODE_LAST_TEXTURE_EN);
-	glEnableSpecialMode(GL_SPECIAL_MODE_PIXEL_FOG_EN);
-	glSetSpecialModeParam(GL_SPECIAL_MODE_PIXEL_FOG_EN, 3);
-	glEnableSpecialMode(2);//glEnableSpecialMode(GL_SPECIAL_MODE_TEX_FILTER_OFF);
+	if(brioOpenGLVersion == kBrioOpenGL11)
+	{
+		glEnableSpecialMode(GL_SPECIAL_MODE_LAST_TEXTURE_EN);
+		glEnableSpecialMode(GL_SPECIAL_MODE_PIXEL_FOG_EN);
+		glSetSpecialModeParam(GL_SPECIAL_MODE_PIXEL_FOG_EN, 3);
+		glEnableSpecialMode(2);//glEnableSpecialMode(GL_SPECIAL_MODE_TEX_FILTER_OFF);
+	}
 
 	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
