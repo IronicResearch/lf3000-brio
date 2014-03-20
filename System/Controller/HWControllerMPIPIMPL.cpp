@@ -136,7 +136,22 @@ namespace Hardware {
 
   int
   HWControllerMPIPIMPL::SendCommand(HWController* controller, int command, void* data, int length) {
-	  return pBTIO_SendCommand_(handle_, command, data, length);
+	  std::string link;
+	  std::map<std::string, HWController*>::iterator it;
+	  for (it = mapControllers_.begin(); it != mapControllers_.end(); it++) {
+		  if ((it)->second == controller) {
+			  link = (it)->first;
+			  break;
+		  }
+	  }
+	  if (link.empty())
+		  return -1;
+	  char code[2];
+	  code[0] = *(char*)data;
+	  code[1] = '\0';
+	  std::string packet(code);
+	  packet += link;
+	  return pBTIO_SendCommand_(handle_, command, (void*)packet.c_str(), packet.length());
   }
 
   int

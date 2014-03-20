@@ -247,12 +247,14 @@ int BTIO_WriteValue(int handle, int command, void* data, int length)
 	BD_ADDR_t BDADDR;
 	Byte_t value = *(Byte_t*)data;
 
-	if (!device)
-		return -1;
-
-//	BTIO_QueryForServices(handle, device, true);
-
-	device->toByteArray((char*)&BDADDR);
+	if (length > sizeof(BDADDR)) {
+		Byte_t* ptr = (Byte_t*)data;
+		ptr++;
+		memcpy(&BDADDR, ptr, sizeof(BDADDR));
+	}
+	else if (device) {
+		device->toByteArray((char*)&BDADDR);
+	}
 
 	int r = GATM_WriteValue(GATMCallbackID, BDADDR, command, sizeof(value), (Byte_t*)&value);
 	printf("GATM_WriteValue() returned %d for %02x\n", r, value);
@@ -281,7 +283,7 @@ int BTIO_SendCommand(int handle, int command, void* data, int length)
 	case kBTIOCmdSetUpdateRate:
 		break;
 	case kBTIOCmdSetLEDState:
-		return BTIO_WriteValue(GATMCallbackID, 0x0029, data, length);
+		return BTIO_WriteValue(handle, 0x0029, data, length);
 		break;
 	case kBTIOCmdSetControllerMode:
 		break;
