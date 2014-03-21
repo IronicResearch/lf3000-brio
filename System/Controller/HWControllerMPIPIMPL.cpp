@@ -86,7 +86,7 @@ namespace Hardware {
   HWControllerMPIPIMPL::InputCallback(void* context, void* data, int length, char* addr) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
 //      std::cout << "InputCallback: data=" << data << "length=" << length << "\n";
-      HWController* controller = pModule->GetControllerByID(kHWDefaultControllerID); // FIXME
+      HWController* controller = NULL; // = pModule->GetControllerByID(kHWDefaultControllerID); // FIXME
       std::string key(addr);
       if (pModule->mapControllers_.count(key) > 0)
     	  controller = pModule->mapControllers_.at(key);
@@ -126,6 +126,7 @@ namespace Hardware {
 	  }
 
       HWController* controller = new HWController();
+      controller->pimpl_->SetID(numControllers_);
       listControllers_.push_back(controller);
       mapControllers_.insert(std::pair<std::string, HWController*>(key, controller));
       numControllers_++;
