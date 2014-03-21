@@ -5,6 +5,11 @@
 #include <DebugMPI.h>
 #include <GroupEnumeration.h>
 #include <stdio.h>
+#include <VNRGB2HSV.h>
+//#define LF_PROFILE 1
+#undef LF_PROFILE
+#include <VNProfiler.h>
+#include <VNInRange3.h>
 
 namespace LF {
 namespace Vision {
@@ -200,38 +205,50 @@ namespace Vision {
 
   void
   VNWandTrackerPIMPL::Execute(cv::Mat &input, cv::Mat &output) {
+    PROF_BLOCK_START("VNWandTrackerPIMPL::Execute");  		  
     // switch to HSV color spave
-    cv::cvtColor(input, hsv_, CV_BGR2HSV);
-
+    PROF_BLOCK_START("RGBToHSV");
+    RGBToHSV(input, hsv_);    
+    PROF_BLOCK_END();
     // filter out the valid pixels based on hue, saturation and intensity
-    cv::inRange(hsv_, 
-		wand_->hsvMin_,
-		wand_->hsvMax_,
-		output);
+    PROF_BLOCK_START("inRange");
+    inRange3( hsv_, wand_->hsvMin_, wand_->hsvMax_, output );
+    PROF_BLOCK_END();
 
+    PROF_BLOCK_START("threshold");
     cv::threshold(output, 
 		  output, 
 		  kVNMinPixelValue, 
 		  kVNMaxPixelValue, 
 		  cv::THRESH_BINARY);
+    PROF_BLOCK_END();
 
+    PROF_BLOCK_START("ComputeLargestContour");
     std::vector<std::vector<cv::Point> > contours;
     int index = kVNNoContourIndex;
     ComputeLargestContour(output, contours, index);
+    PROF_BLOCK_END();
 
     if (index != kVNNoContourIndex) {
       cv::Point p(0,0);
       float r = 0.f;
+
+      PROF_BLOCK_START("FitCircleToContour");
       FitCircleToContour(contours[index], p, r);
+      PROF_BLOCK_END();
 
       bool inFrame = true;
       if (scaleInput_) {
 	// insure the size of the input image matches the translator source frame size
 	assert(SameSize(translator_.GetSourceFrame(), cv::Rect(0,0,input.cols,input.rows)));
 	
+	PROF_BLOCK_START("ScaleSubFrame");
 	ScaleSubFrame(input,p,r);
+	PROF_BLOCK_END();
 	
-        inFrame = ScaleWandPoint(p);
+	PROF_BLOCK_START("ScaleWandPoint");
+	inFrame = ScaleWandPoint(p);
+	PROF_BLOCK_END();
       }
       // insure we have at least a minimum circle area
       if (inFrame && M_PI*r*r > minArea_) {
@@ -241,7 +258,9 @@ namespace Vision {
       }
     } else {
       wand_->NotVisibleOnScreen();
-    }    
+    }
+    
+    PROF_BLOCK_END();	
   }
 
   void
