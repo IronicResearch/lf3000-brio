@@ -40014,3 +40014,15 @@ By Dave Milici (dmilici@leapfrog.com) on 3/20/14 3:58 PM
 24,647 ms. (Cumulative: 20,823,017 ms)
 
 ----------------
+Revision 10,653 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,654 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,655 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Assign controller ID per instance. Forgot ID support when migrating from subclass. (FWSCRUM-1551)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/20/14 7:27 PM
+2 changed, 0 added, 0 deleted.
+24,316 ms. (Cumulative: 20,847,443 ms)
+
+----------------

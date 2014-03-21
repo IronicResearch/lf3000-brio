@@ -60,6 +60,7 @@ namespace Hardware {
     LeapFrog::Brio::tErrType SetAccelerometerMode(const LeapFrog::Brio::tAccelerometerMode mode);
     
     void LocalCallback(void*, void*, int);
+    void SetID(LeapFrog::Brio::U8 id) { id_ = id; };
 
  private:
     Vision::VNVisionMPI visionMPI_;
