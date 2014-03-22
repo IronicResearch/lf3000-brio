@@ -59,7 +59,6 @@ namespace Hardware {
     static void ScanCallback(void*, void*, int);
 
     friend class HWControllerPIMPL;
-    friend class HWControllerBluetoothPIMPL;
   };
   
 }	// namespace Hardware
