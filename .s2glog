@@ -40059,3 +40059,19 @@ By Dave Milici (dmilici@leapfrog.com) on 3/21/14 5:56 PM
 24,503 ms. (Cumulative: 20,920,814 ms)
 
 ----------------
+Revision 10,663 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,133 ms. (Cumulative: 20,945,041 ms)
+
+----------------
+Revision 10,664 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added ControllerMPI core unit test.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/21/14 7:51 PM
+2 changed, 1 added, 0 deleted.
+24,362 ms. (Cumulative: 20,969,418 ms)
+
+----------------
