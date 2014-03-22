@@ -60,7 +60,7 @@ namespace Hardware {
   HWControllerMPIPIMPL::~HWControllerMPIPIMPL() {
 	  // Close Bluetooth client lib connection
 	  if (dll_) {
-		  BTIO_Exit(handle_);
+		  pBTIO_Exit_(handle_);
 		  dlclose(dll_);
 	  }
   }  

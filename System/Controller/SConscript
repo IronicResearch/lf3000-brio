@@ -43,6 +43,6 @@ targets = mympi or []
 #-----------------------------------------------------------------------------
 
 if env['buildtests']:
-	targets.append(RunMyTests(module_name, [], mpilibs + ['EventMPI'], myenv))
+	targets.append(RunMyTests(module_name, [], mpilibs + ['EventMPI', 'Utility'], myenv))
 
 Return('targets')
