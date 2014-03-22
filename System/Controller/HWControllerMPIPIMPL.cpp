@@ -1,7 +1,6 @@
 #include "HWControllerMPIPIMPL.h"
 #include <Hardware/HWController.h>
 #include <HWControllerPIMPL.h>
-#include <HWControllerBluetoothPIMPL.h>
 #include <Hardware/HWControllerEventMessage.h>
 #include <iostream> // AJL DEBUG
 #include <dlfcn.h>

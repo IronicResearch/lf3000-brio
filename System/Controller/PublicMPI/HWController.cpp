@@ -1,7 +1,6 @@
 #include <Hardware/HWController.h>
 #include <EventMPI.h>
 #include "HWControllerPIMPL.h"
-#include "HWControllerBluetoothPIMPL.h"
 #include <dlfcn.h>
 #include <sys/stat.h>
 

@@ -83,7 +83,6 @@ namespace Hardware {
     void ZeroButtonData(void);
     void ZeroAnalogStickData(void);
 
-    friend class HWControllerBluetoothPIMPL;
   };
   
 }	// namespace Hardware
