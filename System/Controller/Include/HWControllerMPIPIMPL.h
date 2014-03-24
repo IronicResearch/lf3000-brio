@@ -38,6 +38,8 @@ namespace Hardware {
 
     void ScanForDevices(void);
     void AddController(char* link);
+    HWController* FindController(char* link);
+    char* FindControllerLink(HWController* controller);
 
     int numControllers_;
     std::vector<HWController*> listControllers_;

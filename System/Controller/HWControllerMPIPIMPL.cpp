@@ -48,9 +48,9 @@ namespace Hardware {
 
 			// Connect to Bluetooth client service?
 			handle_ = pBTIO_Init_(this);
-			pBTIO_SendCommand_(handle_, kBTIOCmdSetDeviceCallback, (void*)&DeviceCallback, sizeof(void*));
-			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputCallback, (void*)&InputCallback, sizeof(void*));
-			pBTIO_SendCommand_(handle_, kBTIOCmdSetScanCallback, (void*)&ScanCallback, sizeof(void*));
+			pBTIO_SendCommand_(handle_, kBTIOCmdSetDeviceCallback, (void*)&DeviceCallback, sizeof(void*), NULL);
+			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputCallback, (void*)&InputCallback, sizeof(void*), NULL);
+			pBTIO_SendCommand_(handle_, kBTIOCmdSetScanCallback, (void*)&ScanCallback, sizeof(void*), NULL);
 		}
 		else {
 			std::cout << "dlopen failed to load libBluetopiaIO.so, error=\n" << dlerror();
@@ -133,9 +133,17 @@ namespace Hardware {
       eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority, this);
   }
 
+  HWController*
+  HWControllerMPIPIMPL::FindController(char* link) {
+	  HWController* controller = NULL;
+	  std::string key(link);
+      if (mapControllers_.count(key) > 0)
+    	  controller = mapControllers_.at(key);
+	  return controller;
+  }
 
-  int
-  HWControllerMPIPIMPL::SendCommand(HWController* controller, int command, void* data, int length) {
+  char*
+  HWControllerMPIPIMPL::FindControllerLink(HWController* controller) {
 	  std::string link;
 	  std::map<std::string, HWController*>::iterator it;
 	  for (it = mapControllers_.begin(); it != mapControllers_.end(); it++) {
@@ -145,18 +153,18 @@ namespace Hardware {
 		  }
 	  }
 	  if (link.empty())
-		  return -1;
-	  char code[2];
-	  code[0] = *(char*)data;
-	  code[1] = '\0';
-	  std::string packet(code);
-	  packet += link;
-	  return pBTIO_SendCommand_(handle_, command, (void*)packet.c_str(), packet.length());
+		  return NULL;
+	  return (char*)link.c_str();
+  }
+
+  int
+  HWControllerMPIPIMPL::SendCommand(HWController* controller, int command, void* data, int length) {
+	  return pBTIO_SendCommand_(handle_, command, data, length, FindControllerLink(controller));
   }
 
   int
   HWControllerMPIPIMPL::QueryStatus(HWController* controller, int command, void* data, int length) {
-	  return pBTIO_QueryStatus_(handle_, command, data, length);
+	  return pBTIO_QueryStatus_(handle_, command, data, length, FindControllerLink(controller));
   }
 
   void
@@ -178,9 +186,9 @@ namespace Hardware {
         const HWControllerEventMessage& hwmsg = reinterpret_cast<const HWControllerEventMessage&>(msgIn);
         if (!isScanning_) {
             std::cout << "Notify: ScanCallback\n";
-            pBTIO_SendCommand_(handle_, kBTIOCmdSetScanCallback, (void*)&ScanCallback, sizeof(void*));
+            pBTIO_SendCommand_(handle_, kBTIOCmdSetScanCallback, (void*)&ScanCallback, sizeof(void*), NULL);
             pBTIO_ScanDevices_(handle_, 0);
-			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputContext, this, sizeof(void*));
+			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputContext, this, sizeof(void*), NULL);
             isScanning_ = true;
             return LeapFrog::Brio::kEventStatusOKConsumed;
         }

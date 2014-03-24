@@ -242,15 +242,13 @@ int BTIO_QueryForServices(int handle, BTAddr* device, bool update)
 	return r;
 }
 
-int BTIO_WriteValue(int handle, int command, void* data, int length)
+int BTIO_WriteValue(int handle, int command, void* data, int length, char* addr)
 {
 	BD_ADDR_t BDADDR;
 	Byte_t value = *(Byte_t*)data;
 
-	if (length > sizeof(BDADDR)) {
-		Byte_t* ptr = (Byte_t*)data;
-		ptr++;
-		memcpy(&BDADDR, ptr, sizeof(BDADDR));
+	if (addr) {
+		memcpy(&BDADDR, addr, sizeof(BDADDR));
 	}
 	else if (device) {
 		device->toByteArray((char*)&BDADDR);
@@ -261,7 +259,7 @@ int BTIO_WriteValue(int handle, int command, void* data, int length)
 	return r;
 }
 
-int BTIO_SendCommand(int handle, int command, void* data, int length)
+int BTIO_SendCommand(int handle, int command, void* data, int length, char* addr)
 {
 	printf("%s: %d: %d, %p, %d\n", __func__, handle, command, data, length);
 
@@ -283,7 +281,7 @@ int BTIO_SendCommand(int handle, int command, void* data, int length)
 	case kBTIOCmdSetUpdateRate:
 		break;
 	case kBTIOCmdSetLEDState:
-		return BTIO_WriteValue(handle, 0x0029, data, length);
+		return BTIO_WriteValue(handle, 0x0029, data, length, addr);
 		break;
 	case kBTIOCmdSetControllerMode:
 		break;
@@ -300,7 +298,7 @@ int BTIO_SendCommand(int handle, int command, void* data, int length)
 	return 0;
 }
 
-int BTIO_QueryStatus(int handle, int command, void* data, int length)
+int BTIO_QueryStatus(int handle, int command, void* data, int length, char* addr)
 {
 	printf("%s: %d: %d, %p, %d\n", __func__, handle, command, data, length);
 

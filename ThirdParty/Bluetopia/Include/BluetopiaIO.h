@@ -6,8 +6,8 @@
 
 typedef int (*pFnInit)( void* );
 typedef int (*pFnExit)( int );
-typedef int (*pFnSendCommand)( int, int, void*, int );
-typedef int (*pFnQueryStatus)( int, int, void*, int );
+typedef int (*pFnSendCommand)( int, int, void*, int, char* );
+typedef int (*pFnQueryStatus)( int, int, void*, int, char* );
 typedef int (*pFnScanForDevices)( int, int );
 typedef int (*pFnConnectToDevice)( int, const BTAddr* );
 typedef BTAddr* (*pFnGetLocalAddress)( int ); 
@@ -39,8 +39,8 @@ extern "C" {
 
 int BTIO_Init(void* callback);
 int BTIO_Exit(int handle);
-int BTIO_SendCommand(int handle, int command, void* data, int length);
-int BTIO_QueryStatus(int handle, int command, void* data, int length);
+int BTIO_SendCommand(int handle, int command, void* data, int length, char* addr);
+int BTIO_QueryStatus(int handle, int command, void* data, int length, char* addr);
 int BTIO_ScanForDevices(int handle, int scan_time);
 int BTIO_ConnectToDevice(int handle, const BTAddr* device);
 BTAddr* BTIO_GetLocalAddress(int handle);

@@ -40075,3 +40075,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/21/14 7:51 PM
 24,362 ms. (Cumulative: 20,969,418 ms)
 
 ----------------
+Revision 10,665 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Extend SendCommand parameters to include BT device address, instead of packing into data payload.
+Note BT device address is not able to be passed via BTAddr* object unless its class is imported.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/14 3:14 PM
+5 changed, 0 added, 0 deleted.
+24,572 ms. (Cumulative: 20,994,083 ms)
+
+----------------
