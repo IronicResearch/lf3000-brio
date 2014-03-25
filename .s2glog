@@ -40086,3 +40086,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/24/14 3:14 PM
 24,572 ms. (Cumulative: 20,994,083 ms)
 
 ----------------
+Revision 10,666 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify AudioMPI Mixer base rate to 44.1KHz for Glasgow platform. (FWGLAS-60 1:2)
+Note audio rate changed from constant to run-time var needs careful assignment order. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/14 7:26 PM
+3 changed, 0 added, 0 deleted.
+24,676 ms. (Cumulative: 21,018,868 ms)
+
+----------------

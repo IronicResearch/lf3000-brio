@@ -96,7 +96,7 @@ static int set_hwparams(snd_pcm_t *handle,
 		return err;
 	}
 	// set the stream rate 
-	rrate = rate;
+	rrate = rate = kAudioSampleRate;
 	err = snd_pcm_hw_params_set_rate_near(handle, params, &rrate, 0);
 	if (err < 0) {
 		pDebugMPI_->DebugOut(kDbgLvlImportant, "Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
@@ -106,6 +106,7 @@ static int set_hwparams(snd_pcm_t *handle,
 		pDebugMPI_->DebugOut(kDbgLvlImportant, "Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
 		return -EINVAL;
 	}
+	pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: sample rate=%d\n", __FUNCTION__, rrate);
 	// set the buffer time 
 	period_time = (unsigned int)(1000000ULL * kAudioFramesPerBuffer / kAudioSampleRate); // period time in us
 	buffer_time = 4 * period_time;  // ring buffer length in us
