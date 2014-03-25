@@ -40144,3 +40144,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/25/14 3:08 PM
 24,351 ms. (Cumulative: 21,118,804 ms)
 
 ----------------
+Revision 10,671 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add emulation env var support for Brio GetPlatform*(), like BaseUtils. (FWGLAS-86) 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/25/14 3:42 PM
+1 changed, 0 added, 0 deleted.
+24,331 ms. (Cumulative: 21,143,228 ms)
+
+----------------

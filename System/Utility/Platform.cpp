@@ -43,6 +43,13 @@ U32 GetPlatformID()
 //----------------------------------------------------------------------------
 CString GetPlatformFamily()
 {
+#ifdef EMULATION
+	char* platformstr = getenv("ARIA_EMU_PLATFORM");
+	if (platformstr)
+		return CString(platformstr);
+	return "Unknown";
+#endif
+
 	FILE* 	fd = fopen( "/sys/devices/system/board/platform_family", "r" );
 	if (fd)
 	{
@@ -65,6 +72,13 @@ CString GetPlatformFamily()
 //----------------------------------------------------------------------------
 CString GetPlatformName()
 {
+#ifdef EMULATION
+	char* platform = getenv("ARIA_EMU_PLATFORM");
+	if (platform)
+		return CString(platform);
+	return "Unknown";
+#endif
+
 	FILE* 	fd = fopen( "/sys/devices/system/board/platform", "r" );
 	if (fd)
 	{
