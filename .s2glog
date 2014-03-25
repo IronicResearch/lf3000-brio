@@ -40135,3 +40135,12 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 3/25/14 2:35 PM
 24,467 ms. (Cumulative: 21,094,359 ms)
 
 ----------------
+Revision 10,670 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-1297.  Changing OpenGL's default GL_UNPACK_ALIGNMENT from the official default of 4 to 1.  This should straighten diagonal textures cause by texture sizes that are not multiples of 4.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/25/14 3:08 PM
+1 changed, 0 added, 0 deleted.
+24,351 ms. (Cumulative: 21,118,804 ms)
+
+----------------
