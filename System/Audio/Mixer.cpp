@@ -87,6 +87,7 @@
 #define kMixer_SoftClipper_PreGainDB   3 
 #define kMixer_SoftClipper_PostGainDB  0
 
+int kAudioSampleRate     = 32000; // formerly constant
 int kAudioFramesPerBuffer = 1024; // formerly constant
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -252,6 +253,10 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	long i, j, ch;
 	const tMutexAttr	attr = {0};
 
+	// Set base mixer rate for platform (formerly constant)
+	if ("GLASGOW" == GetPlatformName())
+		kAudioSampleRate = 44100;
+
 	numInStreams_ = inStreams;
 	
 	samplingFrequency_ = kAudioSampleRate;
@@ -282,8 +287,8 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	}
 	size = kAudioFramesPerBuffer;
 	if (InitAudioOutputAlsa(NULL, NULL) == kNoErr) {
-		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: Change audio buffer size from %d to %d frames per ALSA\n",
-				__FUNCTION__, size, kAudioFramesPerBuffer);
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: Change audio buffer size from %d to %d frames per ALSA rate %d Hz\n",
+				__FUNCTION__, size, kAudioFramesPerBuffer, kAudioSampleRate);
 	}
 
 	pStreamBuf_ = new S16[kAudioOutBufSizeInWords];
@@ -698,19 +703,12 @@ long CAudioMixer::GetMixBinIndex( long samplingFrequency )
 	
 	// FIXXX: currently matches numbers.  In the future, should assign mix bin
 	// with closest sampling frequency and do conversion
-	switch (samplingFrequency)
-	{
-	default:
-	case kAudioSampleRate :
+	if (samplingFrequency >= kAudioSampleRate)
 		index = kAudioMixer_MixBin_Index_FsDiv1;
-		break;
-	case kAudioSampleRate_Div2 :
+	else if (samplingFrequency >= kAudioSampleRate>>1)
 		index = kAudioMixer_MixBin_Index_FsDiv2;
-		break;
-	case kAudioSampleRate_Div4 :
+	else
 		index = kAudioMixer_MixBin_Index_FsDiv4;
-		break;
-	}
 	
 	return (index);
 }
@@ -723,19 +721,12 @@ long CAudioMixer::GetSamplingRateDivisor( long samplingFrequency )
 {
 	long div =	1;
 	
-	switch (samplingFrequency)
-	{
-	default:
-	case kAudioSampleRate :
+	if (samplingFrequency >= kAudioSampleRate)
 		div = 1;
-		break;
-	case kAudioSampleRate_Div2 :
+	else if (samplingFrequency >= kAudioSampleRate>>1)
 		div = 2;
-		break;
-	case kAudioSampleRate_Div4 :
+	else
 		div = 4;
-		break;
-	}
 
 	return (div);
 }
@@ -1010,7 +1001,7 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 		goto error;
 	} 
 
-#ifdef USE_44KHZ
+#if 0 //def USE_44KHZ
 	// External stream handling if 44KHz MP3 player
 	external = ((pPlayer->GetSampleRate() == 44100
 				|| pPlayer->GetSampleRate() == 22050

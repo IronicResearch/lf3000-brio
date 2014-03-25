@@ -30,7 +30,7 @@
 #define kAudioNumOutputChannels		2		// stereo output
 #define kAudioBytesPerSample		(sizeof(short))	// 16 bit
 
-#define	kAudioSampleRate			32000	
+extern "C" int kAudioSampleRate; // 32000
 #define	kAudioSampleRate_Div1		kAudioSampleRate	
 #define	kAudioSampleRate_Div2		(kAudioSampleRate/2)	
 #define	kAudioSampleRate_Div4		(kAudioSampleRate/4)	
