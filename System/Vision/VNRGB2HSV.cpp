@@ -1,6 +1,6 @@
 #include "VNRGB2HSV.h"
 #include <stdio.h>
-#if !defined(EMULATION)
+#if !defined(EMULATION) && defined(LF3000)
 #include <arm_neon.h>
 #endif
 
@@ -66,7 +66,7 @@ void c_int_rgb2hsv( uint8_t* dest, const uint8_t* source, int cnt ) {
 	}
 }
 
-#if !defined(EMULATION)
+#if !defined(EMULATION) && defined(LF3000)
 void neon_int_rgb2hsv( uint8_t * __restrict dest, uint8_t * __restrict source, int cnt ) {
 	
 	float float_constants[] = { 255.0f, 43.0f };	// d8 {0,1}
@@ -282,7 +282,7 @@ void RGBToHSV( const cv::Mat& input, cv::Mat& output ) {
 	uint8_t * __restrict dest = output.data;
 	uint8_t * __restrict source = input.data;
 	int cnt = input.total();
-#if defined(EMULATION)
+#if defined(EMULATION) || !defined(LF3000)
 	c_int_rgb2hsv( dest, source, cnt );
 #else // EMULATION
 	neon_int_rgb2hsv( dest, source, cnt );

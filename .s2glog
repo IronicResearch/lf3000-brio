@@ -40107,3 +40107,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/24/14 7:46 PM
 25,692 ms. (Cumulative: 21,044,654 ms)
 
 ----------------
+Revision 10,668 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified Conditionals for ARM NEON routines for LF3000 platform, to fix compiling with LF2000 option. (FWGLAS-184)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/25/14 2:14 PM
+3 changed, 0 added, 0 deleted.
+25,034 ms. (Cumulative: 21,069,798 ms)
+
+----------------
