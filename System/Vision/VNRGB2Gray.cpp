@@ -1,9 +1,9 @@
 #include "VNRGB2Gray.h"
-#if !defined(EMULATION)
+#if !defined(EMULATION) && defined(LF3000)
 #include <arm_neon.h>
 #endif
 
-#if defined(EMULATION)  
+#if defined(EMULATION) || !defined(LF3000)
 void fast_rgb_to_gray(const cv::Mat& input, cv::Mat& output) {
 	cv::cvtColor(input, output, CV_RGB2GRAY);
 }

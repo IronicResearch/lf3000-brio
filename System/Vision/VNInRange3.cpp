@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "VNInRange3.h"
-#if !defined(EMULATION)
+#if !defined(EMULATION) && defined(LF3000)
 #include <arm_neon.h>
 #endif
 
@@ -11,7 +11,7 @@ namespace LF {
 			if ( dst.empty() ) {
 				dst.create( src.size(), CV_8U );
 			}
-#if defined(EMULATION)
+#if defined(EMULATION) || !defined(LF3000)
 			cv::inRange(src, min, max, dst);
 	
 #else
