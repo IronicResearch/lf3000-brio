@@ -114,6 +114,11 @@ inline bool IS_PCM(char* sExt)
 	return (sExt && (!strcasecmp(sExt, "wav") || !strcasecmp(sExt, "raw") || !strcasecmp(sExt, "brio")));
 }
 
+inline bool IS_RATE_SUPPORTED(U32 rate)
+{
+	return ((rate == kAudioSampleRate) || (rate == kAudioSampleRate>>1) || (rate == kAudioSampleRate>>2));
+}
+
 //==============================================================================
 // Global variables
 //==============================================================================
@@ -1001,12 +1006,9 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 		goto error;
 	} 
 
-#if 0 //def USE_44KHZ
+#ifdef USE_44KHZ
 	// External stream handling if 44KHz MP3 player
-	external = ((pPlayer->GetSampleRate() == 44100
-				|| pPlayer->GetSampleRate() == 22050
-				|| pPlayer->GetSampleRate() == 11025
-				|| pPlayer->GetSampleRate() == 48000)
+	external = (!IS_RATE_SUPPORTED(pPlayer->GetSampleRate())
 			&& sExt
 			&& ((!IS_PCM(sExt) && !IS_OGG(sExt))
 	#ifdef UNIT_TESTING

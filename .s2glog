@@ -40097,3 +40097,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/24/14 7:26 PM
 24,676 ms. (Cumulative: 21,018,868 ms)
 
 ----------------
+Revision 10,667 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify AudioMPI external player conditional to check against any supported rates. (FWGLAS-60 2:2)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/14 7:46 PM
+1 changed, 0 added, 0 deleted.
+25,692 ms. (Cumulative: 21,044,654 ms)
+
+----------------
