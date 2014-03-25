@@ -34,15 +34,14 @@
 #define O_BINARY 0
 #endif 
 
-using namespace std;
 LF_BEGIN_BRIO_NAMESPACE()
 
 //============================================================================
 // Constants
 //============================================================================
-const string kDirSeparatorString("\\");	
+const std::string kDirSeparatorString("\\");	
 
-typedef vector<U32>  PointerOffsets;
+typedef std::vector<U32>  PointerOffsets;
 
 typedef struct tagAppRsrcDataSet {
 		tVersion	fmtVersion;	
@@ -84,20 +83,20 @@ struct app_message {
  * 						 and returns a pointer to the dataset.	            *
  * **************************************************************************/
 //----------------------------------------------------------------------------
-string StripTrailing( const string& in, const string& remove);
+std::string StripTrailing( const std::string& in, const std::string& remove);
 
 //----------------------------------------------------------------------------
-size_t FileSize( const string& file );
+std::size_t FileSize( const std::string& file );
 
 //----------------------------------------------------------------------------
-string GetFileExtension(const string& file);
+std::string GetFileExtension(const std::string& file);
 
 //----------------------------------------------------------------------------
 void OffsetsToPtrs( U8* pData, const PointerOffsets& ptr_offsets );
 
 //----------------------------------------------------------------------------
 //tAppRsrcDataSet* 
-boost::shared_array<U8> LoadDataset(const string& binPath, const string& relinkPath);
+boost::shared_array<U8> LoadDataset(const std::string& binPath, const std::string& relinkPath);
 
 
 //----------------------------------------------------------------------------

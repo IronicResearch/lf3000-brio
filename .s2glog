@@ -40117,3 +40117,21 @@ By Dave Milici (dmilici@leapfrog.com) on 3/25/14 2:14 PM
 25,034 ms. (Cumulative: 21,069,798 ms)
 
 ----------------
+Revision 10,669 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+====================================
+r10641 | ppan | 2014-03-19 14:04:09 -0700 (Wed, 19 Mar 2014) | 1 line
+Changed paths:
+   M /BRANCHES/Flakasoft_SDK/System/Include/Timer.h
+   M /BRANCHES/Flakasoft_SDK/System/Include/Utility.h
+
+fixed namespace issue
+====================================
+
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 3/25/14 2:35 PM
+2 changed, 0 added, 0 deleted.
+24,467 ms. (Cumulative: 21,094,359 ms)
+
+----------------
