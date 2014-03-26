@@ -40154,3 +40154,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/25/14 3:42 PM
 24,331 ms. (Cumulative: 21,143,228 ms)
 
 ----------------
+Revision 10,672 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Pre-emptively bypass GrabFrame() if capture mode is same as GetFrame() surface. (FWGLAS-8)
+Somehow GrabFrame() is not able to restart another capture session with another mode (code rot?).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/26/14 2:06 PM
+1 changed, 0 added, 0 deleted.
+24,423 ms. (Cumulative: 21,167,776 ms)
+
+----------------

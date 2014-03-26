@@ -2660,6 +2660,23 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColo
 	tFrameInfo frame	= {kCaptureFormatMJPEG, pSurf->width, pSurf->height, 0, NULL, 0};
 	tBitmapInfo bmp 	= {kBitmapFormatRGB888, pSurf->width, pSurf->height, 3, pSurf->buffer, 3 * pSurf->width * pSurf->height, NULL};
 
+	if (camCtx_.mode.pixelformat != kCaptureFormatMJPEG
+			&& camCtx_.mode.width == pSurf->width
+			&& camCtx_.mode.height == pSurf->height) {
+		THREAD_LOCK;
+
+		frame.pixelformat = camCtx_.mode.pixelformat;
+		ret = PollFrame(camCtx_.hndl);
+		ret = GetFrame(camCtx_.hndl, &frame);
+		if (ret) {
+			RenderFrame(frame, pSurf, color_order);
+			ReturnFrame(camCtx_.hndl, &frame);
+		}
+
+		THREAD_UNLOCK;
+		return ret;
+	}
+
 	ret = GrabFrame(hndl, &frame);
 	if(ret)
 	{
