@@ -40165,3 +40165,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/26/14 2:06 PM
 24,423 ms. (Cumulative: 21,167,776 ms)
 
 ----------------
+Revision 10,673 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert conditional for non-NULL viewfinder surface as prereq for capture thread. (VisionMPI support) 
+
+By Dave Milici (dmilici@leapfrog.com) on 3/26/14 2:11 PM
+1 changed, 0 added, 0 deleted.
+24,217 ms. (Cumulative: 21,192,087 ms)
+
+----------------
