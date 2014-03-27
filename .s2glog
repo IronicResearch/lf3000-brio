@@ -40174,3 +40174,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/26/14 2:11 PM
 24,217 ms. (Cumulative: 21,192,087 ms)
 
 ----------------
+Revision 10,674 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix for releasing V4L UVC driver buffers to allow mode setting in general GrabFrame() case. (FWGLAS-8)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/26/14 5:12 PM
+1 changed, 0 added, 0 deleted.
+24,269 ms. (Cumulative: 21,216,450 ms)
+
+----------------

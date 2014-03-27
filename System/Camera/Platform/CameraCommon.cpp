@@ -376,7 +376,7 @@ Boolean CCameraModule::DeinitCameraBufferInt(tCameraContext *pCamCtx)
         }
 	}
 
-#ifdef LF1000 // FIXME: VIP	
+    // V4L UVC driver *must* call to release buffers
 	memset(&rb, 0, sizeof(struct v4l2_requestbuffers));
 
 	rb.count  = 0;
@@ -389,7 +389,6 @@ Boolean CCameraModule::DeinitCameraBufferInt(tCameraContext *pCamCtx)
 		ret = false;
 		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: VIDIOC_REQBUFS failed, errno=%d\n", __FUNCTION__, errno);
 	}
-#endif
 
 	delete[] pCamCtx->bufs;
 	pCamCtx->bufs = NULL;
@@ -2774,8 +2773,9 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		}
 	}
 
+    // Changing camera mode *may* fail for some V4L drivers
 	if (newmode.width != oldmode.width || newmode.height != oldmode.height)
-	if(!SetCameraMode(&newmode))
+		if(!SetCameraMode(&newmode))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to set resolution %s\n", camCtx_.file);
 		if (newmode.width != oldmode.width || newmode.height != oldmode.height)
