@@ -796,6 +796,7 @@ skip_usb_socket:
 						case ABS_PRESSURE:
 							touch_data.touchState = ev.value;
 							break;
+#ifndef LF1000
 						case ABS_MT_SLOT:
 							if (ev.value >= 0 && ev.value <= 1)
 								touch_slot = ev.value;
@@ -808,6 +809,7 @@ skip_usb_socket:
 						case ABS_MT_TOUCH_MAJOR:
 							mtd[touch_slot].touchHeight = ev.value;
 							break;
+#endif //!LF1000
 						}
 						break;
 					}
