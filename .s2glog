@@ -40211,3 +40211,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/27/14 12:57 PM
 24,317 ms. (Cumulative: 21,289,793 ms)
 
 ----------------
+Revision 10,678 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Sanity check default control settings, else force current control setting if out of range. (FWGLAS-7)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/27/14 3:38 PM
+1 changed, 0 added, 0 deleted.
+24,408 ms. (Cumulative: 21,314,311 ms)
+
+----------------
