@@ -40221,3 +40221,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/27/14 3:38 PM
 24,408 ms. (Cumulative: 21,314,311 ms)
 
 ----------------
+Revision 10,679 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified VIP controls unit test to use control's nominal min/max range. (FWGLAS-7)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/27/14 4:14 PM
+1 changed, 0 added, 0 deleted.
+24,346 ms. (Cumulative: 21,338,751 ms)
+
+----------------
