@@ -40183,3 +40183,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/26/14 5:12 PM
 24,269 ms. (Cumulative: 21,216,450 ms)
 
 ----------------
+Revision 10,675 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Disable MT records when building Event module for LF1000 (Lightning) platform.
+
+By dlazzari (dlazzari@leapfrog.com) on 3/26/14 6:09 PM
+1 changed, 0 added, 0 deleted.
+24,299 ms. (Cumulative: 21,240,843 ms)
+
+----------------
