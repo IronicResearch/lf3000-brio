@@ -40192,3 +40192,12 @@ By dlazzari (dlazzari@leapfrog.com) on 3/26/14 6:09 PM
 24,299 ms. (Cumulative: 21,240,843 ms)
 
 ----------------
+Revision 10,676 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Don't build Wireless module for LF1000 (Lightning) platform. The toolchain for the original GM versions of LEX and LPAD doesn't seem to have the ifaddrs.h header.
+
+By dlazzari (dlazzari@leapfrog.com) on 3/26/14 6:09 PM
+1 changed, 0 added, 0 deleted.
+24,445 ms. (Cumulative: 21,265,382 ms)
+
+----------------

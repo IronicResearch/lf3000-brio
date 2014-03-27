@@ -28,9 +28,12 @@ myenv.Append(LIBPATH = ['#ThirdParty/DBusC++/Libs/' + env['cpu']])
 myenv.Append(CPPPATH=['Include'])
 
 myenv.Append(CPPFLAGS = ['-fno-omit-frame-pointer'])
-mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
-Depends(mympi, mymodule)
+
+#Don't build Wireless Module for LF1000
+if myenv['platform'] != 'Lightning':
+	mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
+	Depends(mympi, mymodule)
 
 targets = mympi or []
 
