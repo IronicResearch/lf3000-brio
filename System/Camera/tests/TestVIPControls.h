@@ -30,7 +30,7 @@ const char* capture_path = "/LF/Bulk/Data/Local/All/";
 
 #define WIDTH 	400
 #define HEIGHT	300
-#define DELAY	20
+#define DELAY	200
 
 inline U32 GetFrameCount()
 {
@@ -224,6 +224,8 @@ public:
 		tControlInfo				ctrl;
 		tControlType				types[3] = { kControlTypeBrightness, kControlTypeContrast, kControlTypeSaturation };
 		tCaptureMode*				mode;
+		tCameraControls				controls;
+		tCameraControls::iterator	it;
 
 		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
@@ -246,6 +248,9 @@ public:
 		err = pCameraMPI_->SetCurrentFormat(mode);
 		TS_ASSERT_EQUALS( err, kNoErr );
 
+		bRet = pCameraMPI_->GetCameraControls(controls);
+		TS_ASSERT_EQUALS( bRet, true );
+
 		if ( pCameraMPI_->IsValid() )
 		{
 			capture = pCameraMPI_->StartVideoCapture(&surf);
@@ -253,20 +258,30 @@ public:
 
 			for (int j = 0; j < 3; j++)
 			{
-				ctrl.type = types[j]; // kControlTypeBrightness;
-				for (int i = 128; i <= 255; i++)
+				for (it = controls.begin(); it != controls.end(); it++)
+				{
+					tControlInfo* ctrlx = *it;
+					if (ctrlx->type == types[j])
+					{
+						ctrl = *ctrlx;
+						break;
+					}
+				}
+				if (ctrl.type != types[j])
+					continue;
+				for (S32 i = ctrl.preset; i <= ctrl.max; i++)
 				{
 					bRet = pCameraMPI_->SetCameraControl(&ctrl, i);
 					TS_ASSERT_EQUALS( bRet, true );
 					pKernelMPI_->TaskSleep(DELAY);
 				}
-				for (int i = 255; i >= 0; i--)
+				for (S32 i = ctrl.max; i >= ctrl.min; i--)
 				{
 					bRet = pCameraMPI_->SetCameraControl(&ctrl, i);
 					TS_ASSERT_EQUALS( bRet, true );
 					pKernelMPI_->TaskSleep(DELAY);
 				}
-				for (int i = 0; i <= 128; i++)
+				for (S32 i = ctrl.min; i <= ctrl.preset; i++)
 				{
 					bRet = pCameraMPI_->SetCameraControl(&ctrl, i);
 					TS_ASSERT_EQUALS( bRet, true );
