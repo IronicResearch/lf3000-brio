@@ -795,6 +795,13 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 			delete control;
 			continue;
 		}
+
+		// Sanity check default settings
+		if (control->preset > control->max || control->preset < control->min) {
+			SetControlInt(pCamCtx->fd, &ctrl);
+			control->preset = control->current;
+		}
+
 		pCamCtx->dbg->DebugOut(kDbgLvlVerbose, "%s: v4l2 cid %08x: ctl=%d, min=%d, max=%d, def=%d, cur=%d, name=%s\n", __FUNCTION__, query.id, (int)control->type, (int)control->min, (int)control->max, (int)control->preset, (int)control->current, query.name);
 
 		pCamCtx->controls->push_back(control);
