@@ -74,6 +74,8 @@ namespace Hardware {
     HWControllerMode mode_;
     HWControllerLEDColor color_;
     LeapFrog::Brio::U32 updateRate_;
+    LeapFrog::Brio::U32 updateDivider_;
+    LeapFrog::Brio::U32 updateCounter_;
 
     LeapFrog::Brio::tAccelerometerData accelerometerData_;
     LeapFrog::Brio::tButtonData2 buttonData_;
