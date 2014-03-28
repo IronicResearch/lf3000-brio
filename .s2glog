@@ -40231,3 +40231,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/27/14 4:14 PM
 24,346 ms. (Cumulative: 21,338,751 ms)
 
 ----------------
+Revision 10,680 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove error condition on controls which cannot query state, and just discard them from control list. (FWGLAS-5)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/28/14 9:07 AM
+1 changed, 0 added, 0 deleted.
+24,377 ms. (Cumulative: 21,363,222 ms)
+
+----------------

@@ -721,8 +721,7 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 
 		if((ret = ioctl(pCamCtx->fd, VIDIOC_G_CTRL, &ctrl)) < 0)
 		{
-		        bRet = false;
-			break;
+			continue;
 		}
 
 		control				= new tControlInfo;
