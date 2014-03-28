@@ -40241,3 +40241,20 @@ By Dave Milici (dmilici@leapfrog.com) on 3/28/14 9:07 AM
 24,377 ms. (Cumulative: 21,363,222 ms)
 
 ----------------
+Revision 10,681 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified Controller event messages to be posted conditionally on data record changes.
+
+Note fewer event messages could be posted if caller could choose between
+composite controller event message (disabled) or ala-carte event messages (legacy).
+
+Also added update rate divider to handle events less frequently than incoming 
+BT packet rate fixed at 50Hz.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/28/14 12:01 PM
+2 changed, 0 added, 0 deleted.
+24,352 ms. (Cumulative: 21,387,668 ms)
+
+----------------

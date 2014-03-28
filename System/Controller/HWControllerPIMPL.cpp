@@ -9,6 +9,8 @@
 
 using namespace LeapFrog::Brio;
 
+static const U32 kHWControllerDefaultRate = 50;
+
 namespace LF {
 namespace Hardware {
 
@@ -17,7 +19,9 @@ namespace Hardware {
     id_(kHWDefaultControllerID),
     mode_(kHWControllerMode),
     color_(kHWControllerLEDGreen),
-    updateRate_(50) {
+    updateRate_(kHWControllerDefaultRate),
+    updateDivider_(1),
+    updateCounter_(0) {
     std::cout << "AJL: Inside HWControllerPIMPL constructor\n";
     ZeroAccelerometerData();
     ZeroButtonData();
@@ -79,8 +83,17 @@ namespace Hardware {
   
   LeapFrog::Brio::tErrType 
   HWControllerPIMPL::SetControllerUpdateRate(LeapFrog::Brio::U32 rate) {
-    //TODO: error checking
-    updateRate_ = rate;
+    // error checking
+    if (rate >= kHWControllerDefaultRate) {
+    	updateRate_ = kHWControllerDefaultRate;
+    	updateDivider_ = 1;
+    }
+    else if (rate > 0) {
+    	updateDivider_ = kHWControllerDefaultRate / rate;
+    	updateRate_ = kHWControllerDefaultRate / updateDivider_;
+    }
+    else
+    	return kInvalidParamErr;
 
     return kNoErr;
   }
@@ -88,9 +101,9 @@ namespace Hardware {
   HWControllerFunctionalityMask 
   HWControllerPIMPL::GetFunctionality(void) const {
     // TOOD: prgrammatically check
-    return (kHWControllerHasAccelerometer & 
-	    kHWControllerHasAnalogStick &
-	    kHWControllerHasButtons &
+    return (kHWControllerHasAccelerometer |
+	    kHWControllerHasAnalogStick |
+	    kHWControllerHasButtons |
 	    kHWControllerHasLED);
   }
   
@@ -100,12 +113,12 @@ namespace Hardware {
   HWControllerLEDColorMask 
   HWControllerPIMPL::GetAvailableLEDColors(void) const {
     //TODO: programmatically check
-    return (kHWControllerLEDGreen    &
-	    kHWControllerLEDRed      &
-	    kHWControllerLEDBlue     &
-	    kHWControllerLEDOrange   &
-	    kHWControllerLEDTurqoise &
-	    kHWControllerLEDPurple   &
+    return (kHWControllerLEDGreen    |
+	    kHWControllerLEDRed      |
+	    kHWControllerLEDBlue     |
+	    kHWControllerLEDOrange   |
+	    kHWControllerLEDTurqoise |
+	    kHWControllerLEDPurple   |
 	    kHWControllerLEDWhite);
   }
   
@@ -223,6 +236,16 @@ namespace Hardware {
 	  HWControllerPIMPL* pModule = this; //(HWControllerBluetoothPIMPL*)context;
 	  U8* packet = (U8*)data;
 	  HWControllerMode mode = pModule->mode_;
+	  tHWAnalogStickData stick = pModule->analogStickData_;
+	  tAccelerometerData accel = pModule->accelerometerData_;
+	  struct timeval time;
+
+	  // Moderate device update rate fixed at 50Hz
+	  updateCounter_++;
+	  if (updateCounter_ % updateDivider_)
+		  return;
+
+	  gettimeofday(&time, NULL);
 
 #if 0
 	  for (int i = 0; i < length; i++) {
@@ -299,29 +322,58 @@ namespace Hardware {
 		  }
 	  }
 
-	  gettimeofday((struct timeval*)&pModule->buttonData_.time, NULL);
-	  pModule->accelerometerData_.time.seconds = pModule->analogStickData_.time.seconds = pModule->buttonData_.time.seconds;
-	  pModule->accelerometerData_.time.microSeconds = pModule->analogStickData_.time.microSeconds = pModule->buttonData_.time.microSeconds;
-
 	  if (mode != pModule->mode_) {
 	      HWControllerEventMessage cmsg(kHWControllerModeChanged, pModule->controller_);
 		  pModule->eventMPI_.PostEvent(cmsg, 128);
 	  }
 
+#if 0 // FIXME -- distinguish composite event message from ala-carte event messages?
 	  // Compatibility events posted only for default controller
 	  if (pModule->id_ > 0) {
 	      HWControllerEventMessage cmsg(kHWControllerDataChanged, pModule->controller_);
 		  pModule->eventMPI_.PostEvent(cmsg, 128);
 		  return;
 	  }
+#endif
 
-	  CButtonMessage bmsg(pModule->buttonData_);
-	  HWAnalogStickMessage amsg(pModule->analogStickData_);
-	  CAccelerometerMessage xmsg(pModule->accelerometerData_);
+	  if (memcmp(&stick, &analogStickData_, sizeof(tHWAnalogStickData)) != 0) {
+		  pModule->analogStickData_.time.seconds = time.tv_sec;
+		  pModule->analogStickData_.time.microSeconds = time.tv_usec;
+		  if (pModule->id_ > 0) {
+		      HWControllerEventMessage cmsg(kHWControllerAnalogStickDataChanged, pModule->controller_);
+			  pModule->eventMPI_.PostEvent(cmsg, 128);
+		  }
+		  else {
+			  HWAnalogStickMessage amsg(pModule->analogStickData_);
+			  pModule->eventMPI_.PostEvent(amsg, 128);
+		  }
+	  }
 
-	  pModule->eventMPI_.PostEvent(amsg, 128);
-	  pModule->eventMPI_.PostEvent(bmsg, 128);
-	  pModule->eventMPI_.PostEvent(xmsg, 128);
+	  if (memcmp(&accel, &accelerometerData_, sizeof(tAccelerometerData)) != 0) {
+		  pModule->accelerometerData_.time.seconds = time.tv_sec;
+		  pModule->accelerometerData_.time.microSeconds = time.tv_usec;
+		  if (pModule->id_ > 0) {
+		      HWControllerEventMessage cmsg(kHWControllerAccelerometerDataChanged, pModule->controller_);
+			  pModule->eventMPI_.PostEvent(cmsg, 128);
+		  }
+		  else {
+			  CAccelerometerMessage xmsg(pModule->accelerometerData_);
+			  pModule->eventMPI_.PostEvent(xmsg, 128);
+		  }
+	  }
+
+	  if (pModule->buttonData_.buttonTransition) {
+		  pModule->buttonData_.time.seconds = time.tv_sec;
+		  pModule->buttonData_.time.microSeconds = time.tv_usec;
+		  if (pModule->id_ > 0) {
+		      HWControllerEventMessage cmsg(kHWControllerButtonStateChanged, pModule->controller_);
+			  pModule->eventMPI_.PostEvent(cmsg, 128);
+		  }
+		  else {
+			  CButtonMessage bmsg(pModule->buttonData_);
+			  pModule->eventMPI_.PostEvent(bmsg, 128);
+		  }
+	  }
   }
 
 }	// namespace Hardware
