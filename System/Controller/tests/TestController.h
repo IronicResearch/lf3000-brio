@@ -37,20 +37,45 @@ public:
 	{
 		U16 size = msg.GetSizeInBytes();
 		type_    = msg.GetEventType();
+
+		// Only listening for HWControllerEventMessage types
+		TS_ASSERT_EQUALS( size, sizeof(HWControllerEventMessage) );
+		const HWControllerEventMessage& cmsg = reinterpret_cast<const HWControllerEventMessage&>(msg);
+		const HWController* controller = cmsg.GetController();
+
+		if (type_ == kHWControllerConnected)
+		{
+			printf("kHWControllerConnected %p: %d\n", controller, controller ? controller->GetID() : 0);
+			return kEventStatusOKConsumed;
+		}
+		if (type_ == kHWControllerDisconnected)
+		{
+			printf("kHWControllerDisconnected %p: %d\n", controller, controller ? controller->GetID() : 0);
+			return kEventStatusOKConsumed;
+		}
 		if (type_ == kHWControllerDataChanged)
 		{
-			TS_ASSERT_EQUALS( size, sizeof(HWControllerEventMessage) );
-			const HWControllerEventMessage& cmsg = reinterpret_cast<const HWControllerEventMessage&>(msg);
-			const HWController* controller = cmsg.GetController();
 			printf("kHWControllerDataChanged %p: %d\n", controller, controller ? controller->GetID() : 0);
 			return kEventStatusOKConsumed;
 		}
 		if (type_ == kHWControllerModeChanged)
 		{
-			TS_ASSERT_EQUALS( size, sizeof(HWControllerEventMessage) );
-			const HWControllerEventMessage& cmsg = reinterpret_cast<const HWControllerEventMessage&>(msg);
-			const HWController* controller = cmsg.GetController();
 			printf("kHWControllerModeChanged %p: %d\n", controller, controller ? controller->GetID() : 0);
+			return kEventStatusOKConsumed;
+		}
+		if (type_ == kHWControllerAnalogStickDataChanged)
+		{
+			printf("kHWControllerAnalogStickDataChanged %p: %d\n", controller, controller ? controller->GetID() : 0);
+			return kEventStatusOKConsumed;
+		}
+		if (type_ == kHWControllerAccelerometerDataChanged)
+		{
+			printf("kHWControllerAccelerometerDataChanged %p: %d\n", controller, controller ? controller->GetID() : 0);
+			return kEventStatusOKConsumed;
+		}
+		if (type_ == kHWControllerButtonStateChanged)
+		{
+			printf("kHWControllerButtonStateChanged %p: %d\n", controller, controller ? controller->GetID() : 0);
 			return kEventStatusOKConsumed;
 		}
 		return kEventStatusOK;
@@ -81,11 +106,10 @@ public:
 	void tearDown( )
 	{
 		delete pControllerMPI_;
-		sleep(1);
 	}
 	
 	//------------------------------------------------------------------------
-	void testWasCreated( )
+	void XXXXtestWasCreated( )
 	{
 		PRINT_TEST_NAME();
 		
@@ -94,7 +118,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testCoreMPI( )
+	void XXXXtestCoreMPI( )
 	{
 		PRINT_TEST_NAME();
 		
@@ -131,7 +155,9 @@ public:
 
 		for (it = controllers.begin(); it != controllers.end(); it++) {
 			HWController* controller = *(it);
-			printf("%s: controller %p = %d\n", __func__, controller, controller->GetID());
+			printf("%s: controller %p = %d, caps=%08x\n", __func__, controller, controller->GetID(), (unsigned int)controller->GetFunctionality());
 		}
+
+		sleep(1); // async events?
 	}
 };

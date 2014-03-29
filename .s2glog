@@ -40258,3 +40258,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/28/14 12:01 PM
 24,352 ms. (Cumulative: 21,387,668 ms)
 
 ----------------
+Revision 10,682 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Cleanup ControllerMPI hacks deferring initial device scans as async events.
+Explicitly scanning for devices after all callbacks are setup is way more reliable. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/28/14 7:35 PM
+4 changed, 0 added, 0 deleted.
+25,927 ms. (Cumulative: 21,413,688 ms)
+
+----------------

@@ -51,6 +51,7 @@ namespace Hardware {
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetDeviceCallback, (void*)&DeviceCallback, sizeof(void*), NULL);
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputCallback, (void*)&InputCallback, sizeof(void*), NULL);
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetScanCallback, (void*)&ScanCallback, sizeof(void*), NULL);
+			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputContext, this, sizeof(void*), NULL);
 		}
 		else {
 			std::cout << "dlopen failed to load libBluetopiaIO.so, error=\n" << dlerror();
@@ -99,8 +100,9 @@ namespace Hardware {
   void
   HWControllerMPIPIMPL::ScanForDevices(void) {
 	  if (!isScanning_) {
-	      HWControllerEventMessage qmsg(kHWControllerLowBattery, NULL);
-	   	  eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority, this);
+			std::cout << "ScanForDevices\n";
+			pBTIO_ScanDevices_(handle_, 0);
+			isScanning_ = true;
   	  }
 	  if (numControllers_ == 0) {
 		  std::string placeholder("DEFAUL");
@@ -184,30 +186,16 @@ namespace Hardware {
     // Internally generated event to start scanning for controllers
     if (type == kHWControllerLowBattery) {
         const HWControllerEventMessage& hwmsg = reinterpret_cast<const HWControllerEventMessage&>(msgIn);
-        if (!isScanning_) {
-            std::cout << "Notify: ScanCallback\n";
-            pBTIO_SendCommand_(handle_, kBTIOCmdSetScanCallback, (void*)&ScanCallback, sizeof(void*), NULL);
-            pBTIO_ScanDevices_(handle_, 0);
-			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputContext, this, sizeof(void*), NULL);
-            isScanning_ = true;
-            return LeapFrog::Brio::kEventStatusOKConsumed;
-        }
        	return LeapFrog::Brio::kEventStatusOK;
     }
 
     // Internally generated event for creating new controllers
     if (type == kHWControllerModeChanged) {
         const HWControllerEventMessage& hwmsg = reinterpret_cast<const HWControllerEventMessage&>(msgIn);
-        if (hwmsg.GetController() == NULL) {
- //           HWController* controller = new HWController();
- //           HWControllerMPIPIMPL::Instance()->listControllers_.push_back(controller);
- //           HWControllerMPIPIMPL::Instance()->numControllers_++;
- //           std::cout << "Notify: HWController=" << controller << " , count=" << numControllers_ << "\n";
-            return LeapFrog::Brio::kEventStatusOKConsumed;            
-        }
        	return LeapFrog::Brio::kEventStatusOK;
     }
 
+    // Legacy event message handling for incoming Buttons, Accelerometer, and AnalogStick events
     HWController *controller = this->GetControllerByID(kHWDefaultControllerID);
     if (!controller)
     	return LeapFrog::Brio::kEventStatusOK;
