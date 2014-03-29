@@ -169,18 +169,11 @@ int BTIO_Init(void* callback)
 	printf("DEVM_RegisterEventCallback() returned %d\n", r);
 	DEVMCallbackID = r;
 
-#if 0
-	r = GATM_RegisterEventCallback(GATM_Event_Callback, callback);
-	printf("GATM_RegisterEventCallback() returned %d\n", r);
-	GATMCallbackID = r;
-#endif
-
 	r = DEVM_PowerOnDevice();
 	printf("DEVM_PowerOnDevice() returned %d\n", r);
 
 	callbackobj = callback;
-	if (0 == r || BTPM_ERROR_CODE_LOCAL_DEVICE_ALREADY_POWERED_UP == r)
-		r = BTIO_ScanForDevices(DEVMCallbackID, 0);
+	// Wait until callbacks are all set before scanning for devices
 
 	return DEVMCallbackID;
 }
@@ -266,7 +259,6 @@ int BTIO_SendCommand(int handle, int command, void* data, int length, char* addr
 	switch (command) {
 	case kBTIOCmdSetScanCallback:
 		callbackscan = (pFnCallback)data;
-//		BTIO_ScanForDevices(DEVMCallbackID, 0);
 		break;
 	case kBTIOCmdSetDeviceCallback:
 		callbackmain = (pFnCallback)data;
