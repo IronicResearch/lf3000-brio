@@ -182,6 +182,10 @@ int BTIO_Exit(int handle)
 {
 	printf("%s: %d\n", __func__, handle);
 
+	// Disable further callbacks
+	callbackfunc = NULL;
+	callbackmain = NULL;
+
 //	DEVM_PowerOffDevice();
 //	DEVM_StopDeviceScan();
 
