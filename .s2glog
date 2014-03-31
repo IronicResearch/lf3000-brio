@@ -40269,3 +40269,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/28/14 7:35 PM
 25,927 ms. (Cumulative: 21,413,688 ms)
 
 ----------------
+Revision 10,683 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Disable futher callbacks at BTIO exit to avoid invalid calls.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/31/14 9:40 AM
+2 changed, 0 added, 0 deleted.
+25,373 ms. (Cumulative: 21,439,186 ms)
+
+----------------
