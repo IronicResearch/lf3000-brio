@@ -40279,3 +40279,24 @@ By Dave Milici (dmilici@leapfrog.com) on 3/31/14 9:40 AM
 25,373 ms. (Cumulative: 21,439,186 ms)
 
 ----------------
+Revision 10,684 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,751 ms. (Cumulative: 21,464,047 ms)
+
+----------------
+Revision 10,685 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,686 ms. (Cumulative: 21,488,749 ms)
+
+----------------
+Revision 10,686 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add ControllerMPI unit test for cycling LEDs per controller. (FWGLAS-64)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/31/14 7:08 PM
+1 changed, 0 added, 0 deleted.
+24,767 ms. (Cumulative: 21,513,516 ms)
+
+----------------
