@@ -57,8 +57,8 @@ std::string BTAddr::toString() const
 {
 	char str[18];
 	sprintf(str, "%0X:%0X:%0X:%0X:%0X:%0X",
-	        mAddress[0], mAddress[1], mAddress[2],
-	        mAddress[3], mAddress[4], mAddress[5]);
+	        mAddress[5], mAddress[4], mAddress[3],
+	        mAddress[2], mAddress[1], mAddress[0]);
 	return std::string(str);
 }
 
