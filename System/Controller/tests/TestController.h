@@ -140,9 +140,11 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testCaps( )
+	void XXXXtestCaps( )
 	{
 		PRINT_TEST_NAME();
+
+		sleep(1); // async events?
 		
 		U8 n = pControllerMPI_->GetNumberOfConnectedControllers();
 		printf("%s: number of controllers = %d\n", __func__, n);
@@ -160,4 +162,41 @@ public:
 
 		sleep(1); // async events?
 	}
+
+	//------------------------------------------------------------------------
+	void testLEDs( )
+	{
+		PRINT_TEST_NAME();
+
+		for (int i = 0; i < 5; i++) {
+			sleep(1); // async events?
+			if (pControllerMPI_->GetNumberOfConnectedControllers() > 1)
+				break;
+		}
+
+		std::vector<HWController*> controllers;
+		std::vector<HWController*>::iterator it;
+		pControllerMPI_->GetAllControllers(controllers);
+
+		for (it = controllers.begin(); it != controllers.end(); it++) {
+			HWController* controller = *(it);
+			U8 colors = controller->GetAvailableLEDColors();
+			printf("%s: controller %p = %d, LED caps=%08x\n", __func__, controller, controller->GetID(), (unsigned int)colors);
+
+			for (int i = 0; i < 8; i++) {
+				HWControllerRGBLEDColor color = U8(1<<i);
+				if (!(color & colors))
+					continue;
+				controller->SetLEDColor(color);
+				TS_ASSERT_EQUALS( color , controller->GetLEDColor() );
+				sleep(1);
+				controller->SetLEDColor(kHWControllerLEDOff);
+				TS_ASSERT_EQUALS( color , controller->GetLEDColor() );
+				sleep(1);
+			}
+		}
+
+		sleep(1); // async events?
+	}
+
 };
