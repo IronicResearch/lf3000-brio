@@ -40309,3 +40309,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/1/14 11:21 AM
 24,914 ms. (Cumulative: 21,538,540 ms)
 
 ----------------
+Revision 10,688 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Correcting reading flags version of ogl_texfilteroff.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/1/14 12:12 PM
+1 changed, 0 added, 0 deleted.
+24,883 ms. (Cumulative: 21,563,522 ms)
+
+----------------

@@ -349,7 +349,7 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		glSetSpecialModeParam(GL_SPECIAL_MODE_PIXEL_FOG_EN, 3);
 		FILE *flag = fopen("/tmp/ogl_texfilteroff", "r");
 		if(!flag)
-			fopen("/flag/ogl_texfilteroff", "r");
+			flag = fopen("/flags/ogl_texfilteroff", "r");
 		if(flag)
 		{
 			glEnableSpecialMode(2);//glEnableSpecialMode(GL_SPECIAL_MODE_TEX_FILTER_OFF);
