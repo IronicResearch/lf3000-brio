@@ -40318,3 +40318,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/1/14 12:12 PM
 24,883 ms. (Cumulative: 21,563,522 ms)
 
 ----------------
+Revision 10,689 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix byte order of printable BT device address.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/1/14 12:45 PM
+2 changed, 0 added, 0 deleted.
+25,067 ms. (Cumulative: 21,588,683 ms)
+
+----------------
