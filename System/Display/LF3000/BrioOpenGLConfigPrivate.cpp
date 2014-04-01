@@ -347,7 +347,14 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		glEnableSpecialMode(GL_SPECIAL_MODE_LAST_TEXTURE_EN);
 		glEnableSpecialMode(GL_SPECIAL_MODE_PIXEL_FOG_EN);
 		glSetSpecialModeParam(GL_SPECIAL_MODE_PIXEL_FOG_EN, 3);
-		glEnableSpecialMode(2);//glEnableSpecialMode(GL_SPECIAL_MODE_TEX_FILTER_OFF);
+		FILE *flag = fopen("/tmp/ogl_texfilteroff", "r");
+		if(!flag)
+			fopen("/flag/ogl_texfilteroff", "r");
+		if(flag)
+		{
+			glEnableSpecialMode(2);//glEnableSpecialMode(GL_SPECIAL_MODE_TEX_FILTER_OFF);
+			fclose(flag);
+		}
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	}
 
