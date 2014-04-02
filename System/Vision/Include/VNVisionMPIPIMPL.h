@@ -74,6 +74,11 @@ namespace Vision {
     
     time_t frameTime_;
     int frameCount_;
+
+#if defined(EMULATION)
+    bool showOCVDebugOutput_;
+#endif
+
   };
 
 }
