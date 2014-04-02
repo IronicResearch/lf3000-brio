@@ -40351,3 +40351,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/1/14 7:53 PM
 25,255 ms. (Cumulative: 21,639,305 ms)
 
 ----------------
+Revision 10,692 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Update lying about the ScreenSize, now lies with scale up as well as scale down.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/2/14 10:59 AM
+1 changed, 0 added, 0 deleted.
+24,737 ms. (Cumulative: 21,664,136 ms)
+
+----------------

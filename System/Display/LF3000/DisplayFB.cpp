@@ -196,7 +196,7 @@ U32	CDisplayFB::GetScreenSize()
 {
 	// Adjust effective screen size coordinates if viewport active
 	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres, oxres, oyres);
-	if ((oxres > 0 && oxres < xres) || (oyres > 0 && oyres < yres))
+	if ((oxres > 0 && oxres != xres) || (oyres > 0 && oyres != yres))
 		return (oyres << 16) | (oxres);
 	return (yres << 16) | (xres);
 }
