@@ -31,7 +31,8 @@ namespace Hardware {
   
 
   HWControllerMPIPIMPL::HWControllerMPIPIMPL(void) :
-    IEventListener(kHWControllerListenerTypes, ArrayCount(kHWControllerListenerTypes)) {
+    IEventListener(kHWControllerListenerTypes, ArrayCount(kHWControllerListenerTypes)),
+    debugMPI_(kGroupController) {
 	    numControllers_ = 0;
 	    listControllers_.clear();
 	    mapControllers_.clear();
@@ -54,7 +55,7 @@ namespace Hardware {
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputContext, this, sizeof(void*), NULL);
 		}
 		else {
-			std::cout << "dlopen failed to load libBluetopiaIO.so, error=\n" << dlerror();
+			debugMPI_.DebugOut(kDbgLvlImportant, "%s: dlopen failed to load libBluetopiaIO.so, error=%s\n", __func__, dlerror());
 		}
   }
   
@@ -69,24 +70,21 @@ namespace Hardware {
   void
   HWControllerMPIPIMPL::ScanCallback(void* context, void* data, int length) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
-      std::cout << "ScanCallback: data=" << data << "length=" << length << "\n";
       pModule->AddController((char*)data);
-      std::cout << "ScanCallback: numControllers= " << pModule->numControllers_ << "\n";
+      pModule->debugMPI_.DebugOut(kDbgLvlImportant, "ScanCallback: numControllers=%d\n", pModule->numControllers_);
   }
 
   void
   HWControllerMPIPIMPL::DeviceCallback(void* context, void* data, int length) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
-      std::cout << "DeviceCallback: data=" << data << "length=" << length << "\n";
       pModule->AddController((char*)data);
-      std::cout << "DeviceCallback: numControllers= " << pModule->numControllers_ << "\n";
+      pModule->debugMPI_.DebugOut(kDbgLvlImportant, "DeviceCallback: numControllers=%d\n", pModule->numControllers_);
   }
 
   void
   HWControllerMPIPIMPL::InputCallback(void* context, void* data, int length, char* addr) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
-//      std::cout << "InputCallback: data=" << data << "length=" << length << "\n";
-      HWController* controller = NULL; // = pModule->GetControllerByID(kHWDefaultControllerID); // FIXME
+      HWController* controller = NULL;
       std::string key(addr);
       if (pModule->mapControllers_.count(key) > 0)
     	  controller = pModule->mapControllers_.at(key);
@@ -100,9 +98,9 @@ namespace Hardware {
   void
   HWControllerMPIPIMPL::ScanForDevices(void) {
 	  if (!isScanning_) {
-			std::cout << "ScanForDevices\n";
-			pBTIO_ScanDevices_(handle_, 0);
+			debugMPI_.DebugOut(kDbgLvlImportant, "ScanForDevices\n");
 			isScanning_ = true;
+			pBTIO_ScanDevices_(handle_, 0);
   	  }
 	  if (numControllers_ == 0) {
 		  std::string placeholder("DEFAUL");

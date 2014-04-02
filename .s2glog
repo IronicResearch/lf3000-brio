@@ -40340,3 +40340,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/1/14 5:26 PM
 25,147 ms. (Cumulative: 21,613,940 ms)
 
 ----------------
+Revision 10,691 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Replace console tracers with DebugMPI support.
+Remove unused event message implementation.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/1/14 7:53 PM
+7 changed, 0 added, 0 deleted.
+25,255 ms. (Cumulative: 21,639,305 ms)
+
+----------------

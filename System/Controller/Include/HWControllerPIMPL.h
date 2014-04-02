@@ -6,6 +6,7 @@
 #include <ButtonMPI.h>
 #include <AccelerometerMPI.h>
 #include <Hardware/HWAnalogStickMPI.h>
+#include <DebugMPI.h>
 
 namespace LF {
 namespace Hardware {
@@ -68,6 +69,7 @@ namespace Hardware {
     LeapFrog::Brio::CButtonMPI buttonMPI_;
     Hardware::HWAnalogStickMPI analogStickMPI_;
     LeapFrog::Brio::CEventMPI eventMPI_;
+    LeapFrog::Brio::CDebugMPI debugMPI_;
 
     HWController* controller_;
     LeapFrog::Brio::U8 id_;

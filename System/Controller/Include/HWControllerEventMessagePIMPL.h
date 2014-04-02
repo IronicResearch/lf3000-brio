@@ -11,12 +11,9 @@ namespace Hardware {
   class HWControllerEventMessagePIMPL {
   public:
     HWControllerEventMessagePIMPL(const HWController* controller);
-    HWControllerEventMessagePIMPL(const LeapFrog::Brio::U8* address);
-    
     ~HWControllerEventMessagePIMPL(void);
     
     const HWController* controller_;
-    LeapFrog::Brio::U8 address_[6];
   };
 
 }
