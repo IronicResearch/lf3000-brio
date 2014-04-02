@@ -5,6 +5,7 @@
 #include <Hardware/HWController.h>
 #include <Hardware/HWControllerMPI.h>
 #include <Hardware/HWControllerEventMessage.h>
+#include <DebugMPI.h>
 #include <EventMPI.h>
 #include <EventListener.h>
 #include <SystemErrors.h>
@@ -31,7 +32,7 @@ const tEventType kMyHandledTypes[] = { kHWAllControllerEvents };
 class MyControllerEventListener : public IEventListener
 {
 public:
-	MyControllerEventListener( ) : IEventListener(kMyHandledTypes, ArrayCount(kMyHandledTypes)) {}
+	MyControllerEventListener( ) : IEventListener(kMyHandledTypes, ArrayCount(kMyHandledTypes)), debug_(kGroupController) {}
 	
 	virtual tEventStatus Notify( const IEventMessage &msg )
 	{
@@ -42,40 +43,48 @@ public:
 		TS_ASSERT_EQUALS( size, sizeof(HWControllerEventMessage) );
 		const HWControllerEventMessage& cmsg = reinterpret_cast<const HWControllerEventMessage&>(msg);
 		const HWController* controller = cmsg.GetController();
+		if (!controller)
+		{
+			debug_.DebugOut(kDbgLvlCritical, "No controller bound to message type %08x\n", (unsigned int)type_);
+			return kEventStatusOKConsumed;
+		}
 
 		if (type_ == kHWControllerConnected)
 		{
-			printf("kHWControllerConnected %p: %d\n", controller, controller ? controller->GetID() : 0);
+			debug_.DebugOut(kDbgLvlValuable, "kHWControllerConnected %p: %d\n", controller, controller ? controller->GetID() : 0);
 			return kEventStatusOKConsumed;
 		}
 		if (type_ == kHWControllerDisconnected)
 		{
-			printf("kHWControllerDisconnected %p: %d\n", controller, controller ? controller->GetID() : 0);
+			debug_.DebugOut(kDbgLvlValuable, "kHWControllerDisconnected %p: %d\n", controller, controller ? controller->GetID() : 0);
 			return kEventStatusOKConsumed;
 		}
 		if (type_ == kHWControllerDataChanged)
 		{
-			printf("kHWControllerDataChanged %p: %d\n", controller, controller ? controller->GetID() : 0);
+			debug_.DebugOut(kDbgLvlValuable, "kHWControllerDataChanged %p: %d\n", controller, controller ? controller->GetID() : 0);
 			return kEventStatusOKConsumed;
 		}
 		if (type_ == kHWControllerModeChanged)
 		{
-			printf("kHWControllerModeChanged %p: %d\n", controller, controller ? controller->GetID() : 0);
+			debug_.DebugOut(kDbgLvlValuable, "kHWControllerModeChanged %p: %d: %08x\n", controller, controller->GetID(), (unsigned int)controller->GetCurrentMode());
 			return kEventStatusOKConsumed;
 		}
 		if (type_ == kHWControllerAnalogStickDataChanged)
 		{
-			printf("kHWControllerAnalogStickDataChanged %p: %d\n", controller, controller ? controller->GetID() : 0);
+			tHWAnalogStickData data = controller->GetAnalogStickData();
+			debug_.DebugOut(kDbgLvlValuable, "kHWControllerAnalogStickDataChanged %p: %d: %f,%f\n", controller, controller->GetID(), data.x, data.y);
 			return kEventStatusOKConsumed;
 		}
 		if (type_ == kHWControllerAccelerometerDataChanged)
 		{
-			printf("kHWControllerAccelerometerDataChanged %p: %d\n", controller, controller ? controller->GetID() : 0);
+			tAccelerometerData data = controller->GetAccelerometerData();
+			debug_.DebugOut(kDbgLvlValuable, "kHWControllerAccelerometerDataChanged %p: %d: %d,%d,%d\n", controller, controller->GetID(), (int)data.accelX, (int)data.accelY, (int)data.accelZ);
 			return kEventStatusOKConsumed;
 		}
 		if (type_ == kHWControllerButtonStateChanged)
 		{
-			printf("kHWControllerButtonStateChanged %p: %d\n", controller, controller ? controller->GetID() : 0);
+			tButtonData2 data = controller->GetButtonData();
+			debug_.DebugOut(kDbgLvlValuable, "kHWControllerButtonStateChanged %p: %d: %08x\n", controller, controller->GetID(), (unsigned int)data.buttonState);
 			return kEventStatusOKConsumed;
 		}
 		return kEventStatusOK;
@@ -83,6 +92,7 @@ public:
 
 private:
 	tEventType	type_;
+	CDebugMPI   debug_;
 };
 
 

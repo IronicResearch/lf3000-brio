@@ -4,7 +4,7 @@
 #include <Hardware/HWControllerEventMessage.h>
 #include <Vision/VNWand.h>
 #include <string.h>
-#include <iostream> //AJL Debug
+#include <stdio.h>
 #include <sys/time.h>
 
 using namespace LeapFrog::Brio;
@@ -21,8 +21,12 @@ namespace Hardware {
     color_(kHWControllerLEDGreen),
     updateRate_(kHWControllerDefaultRate),
     updateDivider_(1),
-    updateCounter_(0) {
-    std::cout << "AJL: Inside HWControllerPIMPL constructor\n";
+    updateCounter_(0),
+    debugMPI_(kGroupController) {
+#ifdef DEBUG
+	debugMPI_.SetDebugLevel(kDbgLvlVerbose);
+#endif
+    debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL constructor\n");
     ZeroAccelerometerData();
     ZeroButtonData();
     ZeroAnalogStickData();
@@ -129,7 +133,7 @@ namespace Hardware {
   
   void 
   HWControllerPIMPL::SetLEDColor(HWControllerLEDColor color) {
-	std::cout << "HWControllerPIMPL::SetLEDColor" << color << "\n";
+	debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::SetLEDColor %08x\n", (unsigned int)color);
 	HWControllerMPIPIMPL::Instance()->SendCommand(controller_, kBTIOCmdSetLEDState, &color, sizeof(color));
 	color_ = color;
   }
@@ -247,11 +251,13 @@ namespace Hardware {
 
 	  gettimeofday(&time, NULL);
 
-#if 0
+#ifdef DEBUG
+	  char str[8], buf[256] = {'\0'};
 	  for (int i = 0; i < length; i++) {
-		  printf("%02x ", packet[i]);
+		  sprintf(str, "%02x ", packet[i]);
+		  strcat(buf, str);
 	  }
-	  printf("\n");
+	  debugMPI_.DebugOut(kDbgLvlVerbose, "%s\n", buf);
 #endif
 
 	  for (int i = 0; i < length; i++) {

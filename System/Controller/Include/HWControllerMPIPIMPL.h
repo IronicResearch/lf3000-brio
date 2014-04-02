@@ -4,6 +4,7 @@
 #include <Hardware/HWControllerTypes.h>
 #include <EventListener.h>
 #include <EventMPI.h>
+#include <DebugMPI.h>
 #include <BluetopiaIO.h>
 #include <vector>
 #include <map>
@@ -47,6 +48,7 @@ namespace Hardware {
     bool isScanning_;
 
     LeapFrog::Brio::CEventMPI eventMPI_;
+    LeapFrog::Brio::CDebugMPI debugMPI_;
 
     void* dll_;
     int handle_;
