@@ -17,7 +17,7 @@ namespace Hardware {
 
   /*!
    * HW_CONTROLLER_EVENTS
-   * \brief the events that can cause a HWAnalaogStickMessage to fire
+   * \brief the events that can cause a \ref HWControllerEventMessage to fire
    */
 #define HW_CONTROLLER_EVENTS						\
   (kHWControllerDataChanged)						\
@@ -27,7 +27,8 @@ namespace Hardware {
   (kHWControllerButtonStateChanged)					\
   (kHWControllerModeChanged)						\
   (kHWControllerLowBattery)						\
-  (kHWControllerDisconnected)						
+  (kHWControllerDisconnected)					\
+  (kHWControllerConnected)
     
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, LeapFrog::Brio::FirstEvent(LeapFrog::Brio::kGroupController), HW_CONTROLLER_EVENTS)
 
