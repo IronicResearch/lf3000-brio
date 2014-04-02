@@ -164,7 +164,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testLEDs( )
+	void XXXXtestLEDs( )
 	{
 		PRINT_TEST_NAME();
 
@@ -197,6 +197,30 @@ public:
 		}
 
 		sleep(1); // async events?
+	}
+
+	//------------------------------------------------------------------------
+	void testEvents( )
+	{
+		PRINT_TEST_NAME();
+
+		pControllerMPI_->RegisterEventListener(&listener_);
+
+		for (int i = 0; i < 5; i++) {
+			sleep(1); // async events?
+			if (pControllerMPI_->GetNumberOfConnectedControllers() > 1)
+				break;
+		}
+
+		std::vector<HWController*> controllers;
+		std::vector<HWController*>::iterator it;
+		pControllerMPI_->GetAllControllers(controllers);
+
+		for (int i = 0; i < 30; i++) {
+			sleep(1);
+		}
+
+		pControllerMPI_->UnregisterEventListener(&listener_);
 	}
 
 };

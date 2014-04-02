@@ -353,13 +353,14 @@ int BTIO_QueryForDevices(int handle)
 		unsigned int flags = DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_LOW_ENERGY;
 		BTAddr* addr = BTAddr::fromByteArray((const char*)&BD_ADDRList[i]);
 		DEVM_QueryRemoteDeviceProperties(BD_ADDRList[i], flags, &prop);
-		printf("%s: %d: %s, stats=%08x\n", __func__, i, addr->toString().c_str(), prop.RemoteDeviceFlags);
+		printf("%s: %d: %s, stats=%08x, name=%s\n", __func__, i, addr->toString().c_str(), (unsigned int)prop.RemoteDeviceFlags, prop.DeviceName);
+		if (!strstr(prop.DeviceName, "Simple"))
+			continue;
 		if (!(prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE)) {
 			flags |= DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_FORCE_UPDATE;
 			DEVM_QueryRemoteDeviceProperties(BD_ADDRList[i], flags, &prop);
-//			BTIO_ConnectToDevice(handle, addr);
 		}
-		else {
+		if ((prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE)) {
 			if (callbackscan) {
 				char buf[7] = {'\0'};
 				addr->toByteArray(buf);
@@ -402,7 +403,15 @@ int BTIO_ConnectToDevice(int handle, const BTAddr* device)
 
 BTAddr* BTIO_GetLocalAddress(int handle)
 {
+	BTAddr* addr = NULL;
+	DEVM_Local_Device_Properties_t prop;
+
 	printf("%s: %d\n", __func__, handle);
+	int r = DEVM_QueryLocalDeviceProperties(&prop);
+	if (0 == r) {
+		addr = BTAddr::fromByteArray((const char*)&prop.BD_ADDR);
+		return addr;
+	}
 	return NULL;
 }
 

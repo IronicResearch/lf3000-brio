@@ -10,7 +10,7 @@ const LeapFrog::Brio::tEventType
   kHWControllerListenerTypes[] = {LeapFrog::Brio::kAccelerometerDataChanged,
 				  LeapFrog::Brio::kOrientationChanged,
 				  LeapFrog::Brio::kButtonStateChanged,
-				  LF::Hardware::kHWAllControllerEvents,
+//				  LF::Hardware::kHWAllControllerEvents,
 				  LF::Hardware::kHWAnalogStickDataChanged};
 
 static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 128; // async
@@ -131,8 +131,8 @@ namespace Hardware {
       listControllers_.push_back(controller);
       mapControllers_.insert(std::pair<std::string, HWController*>(key, controller));
       numControllers_++;
-      HWControllerEventMessage qmsg(kHWControllerModeChanged, controller);
-      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority, this);
+      HWControllerEventMessage qmsg(kHWControllerConnected, controller);
+      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
   }
 
   HWController*
