@@ -40360,3 +40360,15 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/2/14 10:59 AM
 24,737 ms. (Cumulative: 21,664,136 ms)
 
 ----------------
+Revision 10,693 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge branch 'develop'
+
+vision mpi now checks for the showocv flag in emulation to determine
+if it should show the opencv debug output windows
+
+By Alex Lindblad (alindblad@leapfrog.com) on 4/2/14 3:39 PM
+3 changed, 0 added, 0 deleted.
+24,968 ms. (Cumulative: 21,689,198 ms)
+
+----------------

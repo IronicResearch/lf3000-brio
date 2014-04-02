@@ -23,6 +23,18 @@ namespace Vision {
   static const double kVNMillisecondsInASecond = 1000.0;
   static const float kVNDefaultFrameProcessingRate = 0.03125; // 32 fps
   static const LeapFrog::Brio::U32 kVNDefaultStackSize = 134217728; // 128 MB in bytes
+  static const std::string kVNDebugOCVFlagPath = "/flags/showocv";
+  
+  bool 
+  FlagExists(const char *fileName) {
+    struct stat buf;
+    // checking for file status, will return 0 if file exists and all is well
+    // returns -1 if file does not exist or there is an error getting it's stats
+    // simple means to test for file existence
+    int i = stat(fileName, &buf);
+    if (i == 0) return true;
+    return false;
+  }
 
   VNVisionMPIPIMPL*
   VNVisionMPIPIMPL::Instance(void) {
@@ -41,6 +53,12 @@ namespace Vision {
     algorithm_(NULL),
     frameTime_(time(0)),
     frameCount_(0) {
+
+#if defined(EMULATION)
+    showOCVDebugOutput_ = false;      
+    if (FlagExists(kVNDebugOCVFlagPath.c_str()))
+      showOCVDebugOutput_ = true;
+#endif
 
     dbg_.SetDebugLevel(kDbgLvlVerbose);
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [ctor]\n");
@@ -436,7 +454,8 @@ namespace Vision {
 	    algorithm_->Execute(rgbMat, outputImg_);
 
 #ifdef EMULATION
-	    OpenCVDebug();
+	    if (showOCVDebugOutput_)
+	      OpenCVDebug();
 #endif
 
 	    TriggerHotSpots();

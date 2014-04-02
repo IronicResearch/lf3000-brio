@@ -23,7 +23,15 @@ namespace Vision {
    * and process them.  The thread is active after the first call to \sa {Start}, and image processing
    * continues until \sa {Pause} or \sa {Stop} is called.  In between calls to \sa {Pause} and \sa {Start} the 
    * thread is active, using compute cycles, just not processing images.  A call to \sa {Stop} will destroy
-   * the thread and stop all image processing.  
+   * the thread and stop all image processing.
+   *
+   * To turn on OpenCV debug output in emulation follow these steps on your development machine:
+   *  1) sudo mkdir /flags
+   *  2) sudo touch /flags/showocv
+   *  3) run you app as normal
+   * By adding this flag VNVisionMPI will display both the input image to the vision algorithm as well
+   * as the image used to trigger hot spots.  If you'd like to turn this off in emulation then simply
+   * remove the file /flags/showocv
    */
   class VNVisionMPIPIMPL;
   class VNVisionMPI : public LeapFrog::Brio::ICoreMPI {
