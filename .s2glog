@@ -40386,3 +40386,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/2/14 7:33 PM
 25,038 ms. (Cumulative: 21,714,361 ms)
 
 ----------------
+Revision 10,695 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove placeholder default controller and post initial connection event on 1st data. (FWGLAS-65)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/2/14 8:45 PM
+2 changed, 0 added, 0 deleted.
+25,033 ms. (Cumulative: 21,739,504 ms)
+
+----------------

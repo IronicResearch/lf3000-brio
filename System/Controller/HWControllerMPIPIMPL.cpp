@@ -104,10 +104,6 @@ namespace Hardware {
 			isScanning_ = true;
 			pBTIO_ScanDevices_(handle_, 0);
   	  }
-	  if (numControllers_ == 0) {
-		  std::string placeholder("DEFAUL");
-		  AddController((char*)placeholder.c_str());
-	  }
   }
 
   void
@@ -115,16 +111,6 @@ namespace Hardware {
 	  std::string key(link);
 	  if (mapControllers_.count(key) > 0)
 		  return;
-
-	  // Replace placeholder controller with real BT device link
-	  std::string placeholder("DEFAUL");
-	  if (mapControllers_.count(placeholder) > 0) {
-		  HWController* controller = mapControllers_.at(placeholder);
-		  mapControllers_.erase(placeholder);
-		  listControllers_.pop_back();
-		  numControllers_--;
-//		  delete controller;
-	  }
 
       HWController* controller = new HWController();
       controller->pimpl_->SetID(numControllers_);
