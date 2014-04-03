@@ -26,7 +26,7 @@ namespace Hardware {
 #ifdef DEBUG
 	debugMPI_.SetDebugLevel(kDbgLvlVerbose);
 #endif
-    debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL constructor\n");
+    debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL constructor for %p\n", controller_);
     ZeroAccelerometerData();
     ZeroButtonData();
     ZeroAnalogStickData();

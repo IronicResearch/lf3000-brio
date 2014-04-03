@@ -40372,3 +40372,17 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/2/14 3:39 PM
 24,968 ms. (Cumulative: 21,689,198 ms)
 
 ----------------
+Revision 10,694 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified HWControllerEventMessage class to cache HWController instance directly
+instead of via PIMPL object payload. Otherwise invalid HWController instances 
+were returned from GetController(), especially when multiple controllers active. 
+(FWGLAS-62)
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/2/14 7:33 PM
+5 changed, 0 added, 0 deleted.
+25,038 ms. (Cumulative: 21,714,361 ms)
+
+----------------

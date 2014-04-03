@@ -16,6 +16,8 @@ const LeapFrog::Brio::tEventType
 static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 128; // async
 static const LeapFrog::Brio::tEventPriority kHWControllerHighPriorityEvent = 0;  // immediate
 
+static LeapFrog::Brio::tMutex lock = PTHREAD_MUTEX_INITIALIZER;
+
 namespace LF {
 namespace Hardware {
 
@@ -195,8 +197,10 @@ namespace Hardware {
 
     // Legacy event message handling for incoming Buttons, Accelerometer, and AnalogStick events
     HWController *controller = this->GetControllerByID(kHWDefaultControllerID);
-    if (!controller)
+    if (!controller) {
+        debugMPI_.DebugOut(kDbgLvlImportant, "Notify: controller=%p for event type %08x\n", controller, (unsigned)type);
     	return LeapFrog::Brio::kEventStatusOK;
+    }
 
     if (type == LeapFrog::Brio::kAccelerometerDataChanged ||
 	type == LeapFrog::Brio::kOrientationChanged ||

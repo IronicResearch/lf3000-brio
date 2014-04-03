@@ -46,7 +46,7 @@ namespace Hardware {
     LeapFrog::Brio::U16 GetSizeInBytes(void) const;
 
   private:
-    boost::shared_ptr<HWControllerEventMessagePIMPL> pimpl_;
+    const HWController* controller_;
 
     /*!
      * Explicitly disable copy semantics

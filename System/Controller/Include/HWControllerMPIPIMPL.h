@@ -5,6 +5,7 @@
 #include <EventListener.h>
 #include <EventMPI.h>
 #include <DebugMPI.h>
+#include <KernelMPI.h>
 #include <BluetopiaIO.h>
 #include <vector>
 #include <map>
@@ -49,6 +50,7 @@ namespace Hardware {
 
     LeapFrog::Brio::CEventMPI eventMPI_;
     LeapFrog::Brio::CDebugMPI debugMPI_;
+    LeapFrog::Brio::CKernelMPI kernelMPI_;
 
     void* dll_;
     int handle_;
