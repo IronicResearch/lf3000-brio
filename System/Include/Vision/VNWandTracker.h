@@ -44,8 +44,13 @@ namespace Vision {
      * Virtual method to perform algorithm specific initialization
      * The wand tracking algorithm adjusts camera settings to better
      * optimize the ability to track the wand.
+     * \param frameProcessingWidth the width of the frame size the vision mpi
+     * uses for processing
+     * \param frameProcessingHeight the height of the frame size the vision mpi
+     * uses for processing
      */
-    virtual void Initialize(void);
+    virtual void Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
+			    LeapFrog::Brio::U16 frameProcessingHeight);
 
     /*!
      * Virtual method to execute wand tracking algorithm

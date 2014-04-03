@@ -25,7 +25,8 @@ namespace Vision {
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, LeapFrog::Brio::FirstEvent(LeapFrog::Brio::kGroupVision), VN_VISION_EVENTS)
 
 #define VN_VISION_ERRORS			\
-  (kVNCameraDoesNotSupportRequiredVisionFormat)	\
+  (kVNCameraDoesNotSupportRequiredVisionFormat)		\
+  (kVNVideoSurfaceNotOfCorrectSizeForVisionCapture)	\
   (kVNVideoCaptureFailed)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupVision), VN_VISION_ERRORS)
@@ -90,6 +91,14 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupVision), VN_VISION_ERRORS)
      */
       LeapFrog::Brio::S16 y;
   };
+
+  /*!
+   * Frame size constants
+   */
+  static const LeapFrog::Brio::U16 kVNVGAWidth   = 640;
+  static const LeapFrog::Brio::U16 kVNVGAHeight  = 480;
+  static const LeapFrog::Brio::U16 kVNQVGAWidth  = 320;
+  static const LeapFrog::Brio::U16 kVNQVGAHeight = 240;
 
 }
 }

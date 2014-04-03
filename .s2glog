@@ -40406,3 +40406,15 @@ By Dave Milici (dmilici@leapfrog.com) on 4/2/14 8:57 PM
 24,871 ms. (Cumulative: 21,764,469 ms)
 
 ----------------
+Revision 10,697 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge branch 'develop'
+
+add ability to use qvga mode for vision processing via
+the qvga_vision_mode flag
+
+By Alex Lindblad (alindblad@leapfrog.com) on 4/2/14 11:44 PM
+16 changed, 0 added, 0 deleted.
+25,692 ms. (Cumulative: 21,790,255 ms)
+
+----------------

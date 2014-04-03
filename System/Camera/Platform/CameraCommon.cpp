@@ -667,7 +667,7 @@ static Boolean SetControlInt(int fd, v4l2_control *ctrl)
 
 	if(0 != ioctl(fd, VIDIOC_S_CTRL, ctrl))
 	{
-		bRet = false;
+	    bRet = false;
 	}
 
 	return bRet;
@@ -3223,7 +3223,7 @@ tVideoSurf* 	CCameraModule::GetCaptureVideoSurface(const tVidCapHndl hndl)
 		surf.width  = camCtx_.frame->width;
 		surf.height = camCtx_.frame->height;
 		surf.buffer = (U8*)camCtx_.frame->data;
-		surf.pitch  = camCtx_.frame->size / surf.height;
+		surf.pitch  = (surf.height > 0) ? camCtx_.frame->size / surf.height : 0;
 		return &surf;
 	}
 	printf("Returning NULL\n");

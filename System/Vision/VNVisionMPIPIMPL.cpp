@@ -11,11 +11,11 @@
 #ifdef EMULATION
 #include <opencv2/highgui/highgui.hpp>
 #endif
-
 #include <DisplayTypes.h>
 #include <GroupEnumeration.h>
 #include <KernelMPI.h>
 #include <Utility.h>
+#include <sys/stat.h>
 
 namespace LF {
 namespace Vision {
@@ -23,6 +23,7 @@ namespace Vision {
   static const double kVNMillisecondsInASecond = 1000.0;
   static const float kVNDefaultFrameProcessingRate = 0.03125; // 32 fps
   static const LeapFrog::Brio::U32 kVNDefaultStackSize = 134217728; // 128 MB in bytes
+  static const std::string kVNQVGAFlagPath = "/flags/qvga_vision_mode";
   static const std::string kVNDebugOCVFlagPath = "/flags/showocv";
   
   bool 
@@ -45,6 +46,18 @@ namespace Vision {
     return sharedInstance;
   }
   
+  void
+  VNVisionMPIPIMPL::SetFrameProcessingSize(void) {
+    // check for qvga flag and set size base don this    
+    if (FlagExists(kVNQVGAFlagPath.c_str())) {
+      frameProcessingWidth_ = kVNQVGAWidth;
+      frameProcessingHeight_ = kVNQVGAHeight;
+    } else {
+      frameProcessingWidth_ = kVNVGAWidth;
+      frameProcessingHeight_ = kVNVGAHeight;
+    }
+  }
+
   VNVisionMPIPIMPL::VNVisionMPIPIMPL(void) :
     dbg_(kGroupVision),
     visionAlgorithmRunning_(false),
@@ -52,13 +65,17 @@ namespace Vision {
     taskHndl_(LeapFrog::Brio::kInvalidTaskHndl),
     algorithm_(NULL),
     frameTime_(time(0)),
-    frameCount_(0) {
+    frameCount_(0),
+    frameProcessingWidth_(kVNDefaultProcessingFrameWidth),
+    frameProcessingHeight_(kVNDefaultProcessingFrameHeight) {
 
 #if defined(EMULATION)
     showOCVDebugOutput_ = false;      
     if (FlagExists(kVNDebugOCVFlagPath.c_str()))
       showOCVDebugOutput_ = true;
 #endif
+
+    SetFrameProcessingSize();
 
     dbg_.SetDebugLevel(kDbgLvlVerbose);
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [ctor]\n");
@@ -90,25 +107,20 @@ namespace Vision {
     
     if (error == kNoErr) {
       error = kVNCameraDoesNotSupportRequiredVisionFormat;
-      std::cout << "Number of modes is " << modeList.size() << std::endl;
+      std::cout << "Number of camera modes is " << modeList.size() << std::endl;
       for (tCaptureModes::iterator it = modeList.begin(); it != modeList.end(); ++it) {
 	LeapFrog::Brio::tCaptureMode* mode = *it;
 
-	std::cout << "Capture mode to:\n"
-		  << "      pixelformat = " << mode->pixelformat << std::endl
-		  << "            width = " << mode->width << std::endl
-		  << "           height = " << mode->height << std::endl
-		  << "    fps_numerator = " << mode->fps_numerator << std::endl
-		  << "  fps_denominator = " << mode->fps_denominator << std::endl;
-	
-	// Glasgow camera only has three settings, and only one with the correct size
-	if (mode->width  == kVNVisionProcessingFrameWidth &&
-	    mode->height == kVNVisionProcessingFrameHeight) {
+	// Glasgow camera only has three settings
+	if (mode->width  == frameProcessingWidth_ &&
+	    mode->height == frameProcessingHeight_) {
 
 	  // the pixel format supported by the glasgow camera is RAWYUYV
 	  mode->pixelformat = LeapFrog::Brio::kCaptureFormatRAWYUYV;
 	  mode->fps_numerator = 1;
-	  mode->fps_denominator = 30;
+	  // if we are in VGA mode set the fps to 30, if in QVGA mode set it to 60
+	  mode->fps_denominator = (frameProcessingWidth_ == kVNVGAWidth) ? 30 : 60;
+
 	  std::cout << "Setting capture mode to:\n"
 		    << "    pixelformat = " << mode->pixelformat << std::endl
 		    << "          width = " << mode->width << std::endl
@@ -145,13 +157,10 @@ namespace Vision {
   LeapFrog::Brio::tErrType
   VNVisionMPIPIMPL::SetCurrentCamera(void) {
     LeapFrog::Brio::tCameraDevice useCamera = LeapFrog::Brio::kCameraDefault;
-#ifdef EMULATION
-    // do nothing
-#else
     if(GetPlatformName() == "CABO") {
       useCamera = LeapFrog::Brio::kCameraFront;
     } 
-#endif 
+
     if (useCamera == LeapFrog::Brio::kCameraDefault)
       dbg_.DebugOut(kDbgLvlValuable, "VNVisionMPIPIMPL: selected default camera\n");
     else if (useCamera == LeapFrog::Brio::kCameraFront)
@@ -165,8 +174,8 @@ namespace Vision {
     VNCoordinateTranslator *translator = VNCoordinateTranslator::Instance();
     LeapFrog::Brio::tRect visionFrame;
     visionFrame.left = visionFrame.top = 0;
-    visionFrame.right = kVNVisionProcessingFrameWidth;
-    visionFrame.bottom = kVNVisionProcessingFrameHeight;
+    visionFrame.right = frameProcessingWidth_;
+    visionFrame.bottom = frameProcessingHeight_;
     translator->SetVisionFrame(visionFrame);
     
     LeapFrog::Brio::tRect displayFrame;
@@ -195,8 +204,18 @@ namespace Vision {
       frameCount_ = 0;
       frameTime_ = time(0);
       
+      // make sure the surface size is at least as big as the processing size
+      // TODO: This may/should go away once we resolve issues around different
+      // sized between processing and display
+      if (surf &&
+	  (surf->width < frameProcessingWidth_ ||
+	   surf->height < frameProcessingHeight_)) {
+	return kVNVideoSurfaceNotOfCorrectSizeForVisionCapture;
+      }
+
       if (algorithm_)
-	algorithm_->Initialize();
+	algorithm_->Initialize(frameProcessingWidth_,
+			       frameProcessingHeight_);
 
        if (error == kNoErr) {
 	videoSurf_ = surf;
@@ -409,7 +428,7 @@ namespace Vision {
     if (surf->format == LeapFrog::Brio::kPixelFormatYUV420) {
       cv::Mat tmp(cv::Size(width,
 			   height),
-		  CV_8U, 
+		  CV_8UC2, 
 		  surf->buffer,
 		  surf->pitch); //4096); //FIXME: what is this magic number???
       YUV2RGB_fast_table(tmp, img);
@@ -420,6 +439,12 @@ namespace Vision {
 		    CV_8UC3, 
 		    surf->buffer);
     } else if (surf->format == LeapFrog::Brio::kPixelFormatYUYV422) {
+      cv::Mat tmp(cv::Size(width,
+			   height),
+		  CV_8UC2,
+		  surf->buffer,
+		  surf->pitch);
+      cv::cvtColor(tmp, img, CV_YUV2RGB_YUYV);
     } else {
       //some other format
     }

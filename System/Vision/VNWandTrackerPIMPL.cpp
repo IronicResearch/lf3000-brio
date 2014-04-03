@@ -63,19 +63,27 @@ namespace Vision {
     minPercentToScale_(kVNDefaultMinPercentToScale),
     minArea_(kVNWandMinAreaDefault) {
 
-    // the assumption is that the input frames to Execute are of this size
-    translator_.SetSourceFrame(cv::Rect(0,
-					0,
-					kVNVisionProcessingFrameWidth,
-					kVNVisionProcessingFrameHeight));
     SetParams(params);
   }
   
   VNWandTrackerPIMPL::~VNWandTrackerPIMPL(void) {
   }
   
+
   void
-  VNWandTrackerPIMPL::Initialize(void) {
+  VNWandTrackerPIMPL::SetProcessingFrameSize(LeapFrog::Brio::U16 width,
+					     LeapFrog::Brio::U16 height) {
+    translator_.SetSourceFrame(cv::Rect(0,
+					0,
+					width,
+					height));
+  }
+
+  void
+  VNWandTrackerPIMPL::Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
+				 LeapFrog::Brio::U16 frameProcessingHeight) {
+    SetProcessingFrameSize(frameProcessingWidth,
+			   frameProcessingHeight);
     LeapFrog::Brio::tCameraControls controls;
     LeapFrog::Brio::CCameraMPI cameraMPI;
     LeapFrog::Brio::CDebugMPI dbg(kGroupVision);
@@ -212,7 +220,8 @@ namespace Vision {
     PROF_BLOCK_END();
     // filter out the valid pixels based on hue, saturation and intensity
     PROF_BLOCK_START("inRange");
-    inRange3( hsv_, wand_->hsvMin_, wand_->hsvMax_, output );
+    cv::inRange(hsv_, wand_->hsvMin_, wand_->hsvMax_, output);
+    //    inRange3( hsv_, wand_->hsvMin_, wand_->hsvMax_, output );
     PROF_BLOCK_END();
 
     PROF_BLOCK_START("threshold");

@@ -1,6 +1,7 @@
 #ifndef __VISION_INCLUDE_VNVIRTUALTOUCHPIMPL_H__
 #define __VISION_INCLUDE_VNVIRTUALTOUCHPIMPL_H__
 
+#include <CoreTypes.h>
 #include <opencv2/opencv.hpp>
 
 namespace LF {

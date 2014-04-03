@@ -32,11 +32,17 @@ namespace Vision {
    * By adding this flag VNVisionMPI will display both the input image to the vision algorithm as well
    * as the image used to trigger hot spots.  If you'd like to turn this off in emulation then simply
    * remove the file /flags/showocv
+   *
+   * It is possible to enable the use of qVGA mode for vision processing as a means to more rapidly test
+   * out game mechanics that use vision.  To do this you must add the qvga_vision_mode flag to the flags
+   * directory.  Keep in mind, this reduction in resolution will decrease the fidelity of the vision
+   * algorithm output and this potentially have a negative impact on the game itself.  The intention of
+   * this flag is for use during on device debugging.
    */
   class VNVisionMPIPIMPL;
   class VNVisionMPI : public LeapFrog::Brio::ICoreMPI {
   public:
-    
+
     /*!
      * \brief Constructor
      */
