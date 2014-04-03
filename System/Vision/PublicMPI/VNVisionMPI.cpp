@@ -123,8 +123,9 @@ namespace Vision {
    */
   LeapFrog::Brio::tErrType
   VNVisionMPI::Start(LeapFrog::Brio::tVideoSurf* surf,
-		     bool dispatchSynchronously) {
-    return pimpl_->Start(surf, dispatchSynchronously);
+		     bool dispatchSynchronously,
+		     const LeapFrog::Brio::tRect *displayRect) {
+    return pimpl_->Start(surf, dispatchSynchronously, displayRect);
   }
   
   void

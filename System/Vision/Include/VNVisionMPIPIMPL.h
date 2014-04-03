@@ -28,8 +28,9 @@ namespace Vision {
     
     LeapFrog::Brio::Boolean DeleteTask(void);
     
-    LeapFrog::Brio::tErrType Start(LeapFrog::Brio::tVideoSurf* surf,
-				   bool dispatchSynchronously);
+    LeapFrog::Brio::tErrType Start(LeapFrog::Brio::tVideoSurf *surf,
+				   bool dispatchSynchronously,
+				   const LeapFrog::Brio::tRect *displayRect);
     void Update(void);
     LeapFrog::Brio::Boolean Stop(void);
     LeapFrog::Brio::Boolean Pause(void);
@@ -51,7 +52,7 @@ namespace Vision {
   protected:
     LeapFrog::Brio::tErrType SetCameraFormat(void);
     LeapFrog::Brio::tErrType DispatchVisionThread(void);
-    void SetCoordinateTranslatorFrames(void);
+    void SetCoordinateTranslatorFrames(const LeapFrog::Brio::tRect *displayRect);
     LeapFrog::Brio::tErrType SetCurrentCamera(void);
     void BeginFrameProcessing(void);
     void EndFrameProcessing(void) const;

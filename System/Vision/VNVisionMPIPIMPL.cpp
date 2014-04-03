@@ -170,20 +170,33 @@ namespace Vision {
   }
 
   void
-  VNVisionMPIPIMPL::SetCoordinateTranslatorFrames(void) {
+  VNVisionMPIPIMPL::SetCoordinateTranslatorFrames(const LeapFrog::Brio::tRect *displayRect) {
     VNCoordinateTranslator *translator = VNCoordinateTranslator::Instance();
     LeapFrog::Brio::tRect visionFrame;
     visionFrame.left = visionFrame.top = 0;
     visionFrame.right = frameProcessingWidth_;
     visionFrame.bottom = frameProcessingHeight_;
     translator->SetVisionFrame(visionFrame);
-    
+
+    //initialize frame    
     LeapFrog::Brio::tRect displayFrame;
-    displayFrame.left = displayFrame.top = 0;
-    if (videoSurf_) {
+    displayFrame.left = 0;
+    displayFrame.top = 0;
+    displayFrame.right = 0;
+    displayFrame.bottom = 0;
+
+    if (displayRect) {
+      std::cout << "Setting scaling based on dispayRect\n";
+      displayFrame.left = displayRect->left;
+      displayFrame.right = displayRect->right;
+      displayFrame.top = displayRect->top;
+      displayFrame.bottom = displayRect->bottom;
+    } else if (videoSurf_) {
+      std::cout << "Setting scaling based on videoSurf\n";
       displayFrame.right = videoSurf_->width;
       displayFrame.bottom = videoSurf_->height;
     } else {
+      std::cout << "Setting scaling based on screen size\n";
       const LeapFrog::Brio::tDisplayScreenStats*
 	screenStats = LeapFrog::Brio::CDisplayMPI().GetScreenStats(0);
       if (screenStats) {
@@ -196,8 +209,9 @@ namespace Vision {
   }
 
   LeapFrog::Brio::tErrType
-  VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf* surf,
-			  bool dispatchSynchronously) {
+  VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf *surf,
+			  bool dispatchSynchronously,
+			  const LeapFrog::Brio::tRect *displayRect) {
     LeapFrog::Brio::tErrType error = kNoErr;
 
     if (!visionAlgorithmRunning_) {
@@ -220,7 +234,7 @@ namespace Vision {
        if (error == kNoErr) {
 	videoSurf_ = surf;
 
-	SetCoordinateTranslatorFrames();
+	SetCoordinateTranslatorFrames(displayRect);
 	error = SetCameraFormat();
 
 	if (error == kNoErr) {
