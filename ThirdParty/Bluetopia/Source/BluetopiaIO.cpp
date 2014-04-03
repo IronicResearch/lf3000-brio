@@ -353,9 +353,13 @@ int BTIO_QueryForDevices(int handle)
 		unsigned int flags = DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_LOW_ENERGY;
 		BTAddr* addr = BTAddr::fromByteArray((const char*)&BD_ADDRList[i]);
 		DEVM_QueryRemoteDeviceProperties(BD_ADDRList[i], flags, &prop);
-		printf("%s: %d: %s, stats=%08x, name=%s\n", __func__, i, addr->toString().c_str(), (unsigned int)prop.RemoteDeviceFlags, prop.DeviceName);
 		if (!strstr(prop.DeviceName, "Simple"))
 			continue;
+#if USE_PAIRED_MODE
+		if (!(prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_PAIRED_OVER_LE))
+			continue;
+#endif
+		printf("%s: %d: %s, stats=%08x, name=%s\n", __func__, i, addr->toString().c_str(), (unsigned int)prop.RemoteDeviceFlags, prop.DeviceName);
 		if (!(prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE)) {
 			flags |= DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_FORCE_UPDATE;
 			DEVM_QueryRemoteDeviceProperties(BD_ADDRList[i], flags, &prop);
@@ -383,7 +387,7 @@ int BTIO_ScanForDevices(int handle, int scan_time)
 	int r = DEVM_StartDeviceScan(scan_time);
 	printf("DEVM_StartDeviceScan() returned %d\n", r);
 
-	if (BTPM_ERROR_CODE_DEVICE_DISCOVERY_IN_PROGRESS == r)
+//	if (BTPM_ERROR_CODE_DEVICE_DISCOVERY_IN_PROGRESS == r)
 		return BTIO_QueryForDevices(handle);
 	return r;
 }
@@ -394,6 +398,23 @@ int BTIO_ConnectToDevice(int handle, const BTAddr* device)
 	unsigned long ConnectFlags = DEVM_CONNECT_WITH_REMOTE_DEVICE_FORCE_LOW_ENERGY;
 
 	printf("%s: %d: %s\n", __func__, handle, device->toString().c_str());
+
+#if USE_PAIRED_MODE
+	device->toByteArray((char*)&BD_ADDR);
+	DEVM_Remote_Device_Properties_t prop;
+	unsigned int flags = DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_LOW_ENERGY;
+	int q = DEVM_QueryRemoteDeviceProperties(BD_ADDR, flags, &prop);
+	if (0 == q) {
+		if (!strstr(prop.DeviceName, "Simple")) {
+			printf("DEVM_QueryRemoteDeviceProperties() returned %d for %s\n", q, prop.DeviceName);
+			return q;
+		}
+		if (!(prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_PAIRED_OVER_LE)) {
+			printf("DEVM_QueryRemoteDeviceProperties() returned %d for %s, unpaired=%08x\n", q, prop.DeviceName, (unsigned)prop.RemoteDeviceFlags);
+			return q;
+		}
+	}
+#endif
 
 	device->toByteArray((char*)&BD_ADDR);
 	int r = DEVM_ConnectWithRemoteDevice(BD_ADDR, ConnectFlags);
