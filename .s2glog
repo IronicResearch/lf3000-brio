@@ -40396,3 +40396,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/2/14 8:45 PM
 25,033 ms. (Cumulative: 21,739,504 ms)
 
 ----------------
+Revision 10,696 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Limit max number of connected controllers to 2. (FWGLAS-66)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/2/14 8:57 PM
+2 changed, 0 added, 0 deleted.
+24,871 ms. (Cumulative: 21,764,469 ms)
+
+----------------
