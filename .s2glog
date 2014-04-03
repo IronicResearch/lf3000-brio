@@ -40440,3 +40440,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/3/14 2:12 PM
 25,423 ms. (Cumulative: 21,842,436 ms)
 
 ----------------
+Revision 10,702 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added one-shot timer to detect if BT callbacks stop, and post disconnect event. (FWGLAS-24)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/3/14 3:00 PM
+1 changed, 0 added, 0 deleted.
+24,877 ms. (Cumulative: 21,867,422 ms)
+
+----------------
