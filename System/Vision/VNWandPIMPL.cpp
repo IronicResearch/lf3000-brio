@@ -6,7 +6,7 @@ namespace Vision {
   static const VNPixelType kVNWandHueDefault = 79; //112; //79;
   static const VNPixelType kVNWandSaturationDefault = 0;
   static const VNPixelType kVNWandBrightnessDefault = 77;
-  static const VNPixelType kVNWandHueWidthDefault = 35; //50; //35;
+  static const VNPixelType kVNWandHueWidthDefault = 35; //50;
 
   static const VNPixelType kVNWandHueMin = kVNMinPixelValue;
   static const VNPixelType kVNWandHueMax = kVNMaxPixelValue;
