@@ -11,6 +11,10 @@
 #include <VNProfiler.h>
 #include <VNInRange3.h>
 
+#if defined(EMULATION)
+#include <opencv2/highgui/highgui.hpp>
+#endif
+
 namespace LF {
 namespace Vision {
   
@@ -220,8 +224,7 @@ namespace Vision {
     PROF_BLOCK_END();
     // filter out the valid pixels based on hue, saturation and intensity
     PROF_BLOCK_START("inRange");
-    cv::inRange(hsv_, wand_->hsvMin_, wand_->hsvMax_, output);
-    //    inRange3( hsv_, wand_->hsvMin_, wand_->hsvMax_, output );
+    inRange3( hsv_, wand_->hsvMin_, wand_->hsvMax_, output );
     PROF_BLOCK_END();
 
     PROF_BLOCK_START("threshold");
@@ -231,6 +234,11 @@ namespace Vision {
 		  kVNMaxPixelValue, 
 		  cv::THRESH_BINARY);
     PROF_BLOCK_END();
+
+#if defined(EMULATION)
+    cv::namedWindow("threshold");
+    cv::imshow("threshold", output);
+#endif
 
     PROF_BLOCK_START("ComputeLargestContour");
     std::vector<std::vector<cv::Point> > contours;

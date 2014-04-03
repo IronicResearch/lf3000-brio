@@ -276,8 +276,6 @@ void neon_int_rgb2hsv( uint8_t * __restrict dest, uint8_t * __restrict source, i
 
 
 void RGBToHSV( const cv::Mat& input, cv::Mat& output ) {
-  cv::cvtColor(input, output, CV_RGB2HSV);
-  /*
 	if( output.empty() ) {
 		output.create(input.size(), CV_8UC3);
 	}
@@ -289,7 +287,6 @@ void RGBToHSV( const cv::Mat& input, cv::Mat& output ) {
 #else // EMULATION
 	neon_int_rgb2hsv( dest, source, cnt );
 #endif // EMULATION
-  */
 }
 
 } 	// namespace Vision
