@@ -2,6 +2,7 @@
 #include <Hardware/HWController.h>
 #include <HWControllerPIMPL.h>
 #include <Hardware/HWControllerEventMessage.h>
+#include <Timer.h>
 #include <iostream> // AJL DEBUG
 #include <dlfcn.h>
 #include <string.h>
@@ -10,6 +11,7 @@ const LeapFrog::Brio::tEventType
   kHWControllerListenerTypes[] = {LeapFrog::Brio::kAccelerometerDataChanged,
 				  LeapFrog::Brio::kOrientationChanged,
 				  LeapFrog::Brio::kButtonStateChanged,
+				  LeapFrog::Brio::kTimerFiredEvent,
 //				  LF::Hardware::kHWAllControllerEvents,
 				  LF::Hardware::kHWAnalogStickDataChanged};
 
@@ -17,6 +19,11 @@ static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 
 static const LeapFrog::Brio::tEventPriority kHWControllerHighPriorityEvent = 0;  // immediate
 
 static LeapFrog::Brio::tMutex lock = PTHREAD_MUTEX_INITIALIZER;
+
+static LeapFrog::Brio::COneShotTimer* timer = NULL;
+static const LeapFrog::Brio::tTimerProperties props = {TIMER_RELATIVE_SET,
+										 	{{0, 0}, {1, 0}},
+	                                    };
 
 namespace LF {
 namespace Hardware {
@@ -59,9 +66,12 @@ namespace Hardware {
 		else {
 			debugMPI_.DebugOut(kDbgLvlImportant, "%s: dlopen failed to load libBluetopiaIO.so, error=%s\n", __func__, dlerror());
 		}
+
+		timer = new COneShotTimer(props);
   }
   
   HWControllerMPIPIMPL::~HWControllerMPIPIMPL() {
+	  delete timer;
 	  // Close Bluetooth client lib connection
 	  if (dll_) {
 		  pBTIO_Exit_(handle_);
@@ -95,6 +105,8 @@ namespace Hardware {
       HWControllerPIMPL* device = dynamic_cast<HWControllerPIMPL*>(controller->pimpl_.get());
       if (device)
     	  device->LocalCallback(device, data, length);
+      if (timer)
+		  timer->Start(props);
   }
 
   void
@@ -191,6 +203,14 @@ namespace Hardware {
     if (!controller) {
         debugMPI_.DebugOut(kDbgLvlImportant, "Notify: controller=%p for event type %08x\n", controller, (unsigned)type);
     	return LeapFrog::Brio::kEventStatusOK;
+    }
+
+    // Internally generated timer event
+    if (type == LeapFrog::Brio::kTimerFiredEvent) {
+        debugMPI_.DebugOut(kDbgLvlImportant, "Notify: timer event type %08x\n", (unsigned)type);
+        HWControllerEventMessage qmsg(kHWControllerDisconnected, controller);
+        eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
+       	return LeapFrog::Brio::kEventStatusOKConsumed;
     }
 
     if (type == LeapFrog::Brio::kAccelerometerDataChanged ||
