@@ -7,8 +7,7 @@ namespace Hardware {
   HWControllerEventMessage::HWControllerEventMessage(LeapFrog::Brio::tEventType type,
 						     const HWController* controller) :
     LeapFrog::Brio::IEventMessage(type),
-    pimpl_(new HWControllerEventMessagePIMPL(controller)) {
-    
+    controller_(controller) {
   }
   
   HWControllerEventMessage::~HWControllerEventMessage(void) {
@@ -17,7 +16,7 @@ namespace Hardware {
   
   const HWController*
   HWControllerEventMessage::GetController(void) const {
-    return pimpl_->controller_;
+    return controller_;
   }
   
   LeapFrog::Brio::U16
