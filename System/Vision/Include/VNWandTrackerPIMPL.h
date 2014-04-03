@@ -15,7 +15,8 @@ namespace Vision {
 		       VNInputParameters *params);
     virtual ~VNWandTrackerPIMPL(void);
     
-    void Initialize(void);
+    virtual void Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
+			    LeapFrog::Brio::U16 frameProcessingHeight);
     void Execute(cv::Mat &input, cv::Mat &output);
     
     void SetAutomaticWandScaling(bool autoScale);
@@ -43,6 +44,8 @@ namespace Vision {
 		       const cv::Point &p,
 		       const float radius);
     bool ScaleWandPoint(cv::Point &p) const;
+    void SetProcessingFrameSize(LeapFrog::Brio::U16 width,
+				LeapFrog::Brio::U16 height);
   };
 }
 }

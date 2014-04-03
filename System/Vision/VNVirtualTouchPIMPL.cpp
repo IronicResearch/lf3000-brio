@@ -3,6 +3,11 @@
 #undef LF_PROFILE 
 #include <VNProfiler.h>
 
+#include <GroupEnumeration.h>
+#include <CameraMPI.h>
+#include <DebugMPI.h>
+#include <stdio.h>
+
 namespace LF {
 namespace Vision {
 
@@ -19,7 +24,7 @@ namespace Vision {
   VNVirtualTouchPIMPL::~VNVirtualTouchPIMPL(void) {
     
   }
-  
+
   void
   VNVirtualTouchPIMPL::Execute(cv::Mat &input, cv::Mat &output) {
 

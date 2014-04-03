@@ -1,6 +1,7 @@
 #ifndef __INCLUDE_VISION_VNALGORITHM_H__
 #define __INCLUDE_VISION_VNALGORITHM_H__
 
+#include <CoreTypes.h>
 #include <opencv2/opencv.hpp>
 
 namespace LF {
@@ -27,8 +28,13 @@ namespace Vision {
      * \brief an optional initialization method that gets called during
      * VNVisionMPI::Start after the camera is setup but before the capture 
      * session is started.
+     * \param frameProcessingWidth the width of the frame size the vision mpi
+     * uses for processing
+     * \param frameProcessingHeight the height of the frame size the vision mpi
+     * uses for processing
      */
-    virtual void Initialize(void);
+    virtual void Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
+			    LeapFrog::Brio::U16 frameProcessingHeight);
 
     /*!
      * \brief Execute the virtual method called to execute the algorithm

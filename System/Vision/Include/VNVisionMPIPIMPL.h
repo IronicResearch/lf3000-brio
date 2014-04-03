@@ -5,6 +5,7 @@
 #include <KernelTypes.h>
 #include <CameraMPI.h>
 #include <DebugMPI.h>
+#include <Vision/VNVisionTypes.h>
 
 #include <vector>
 #include <opencv2/opencv.hpp>
@@ -13,8 +14,8 @@
 namespace LF {
 namespace Vision {
 
-  static const LeapFrog::Brio::U16 kVNVisionProcessingFrameWidth = 640;
-  static const LeapFrog::Brio::U16 kVNVisionProcessingFrameHeight = 480;  
+  static const LeapFrog::Brio::U16 kVNDefaultProcessingFrameWidth = kVNVGAWidth;
+  static const LeapFrog::Brio::U16 kVNDefaultProcessingFrameHeight = kVNVGAHeight;  
 
   class VNHotSpot;
   class VNAlgorithm;
@@ -58,6 +59,7 @@ namespace Vision {
     void CreateRGBImage(LeapFrog::Brio::tVideoSurf *surf,
 			cv::Mat &img) const;
     void UpdateHotSpotVisionCoordinates(void);
+    void SetFrameProcessingSize(void);
 
     static void* CameraCaptureTask(void* args);
 
@@ -70,15 +72,16 @@ namespace Vision {
     VNVisionMPIPIMPL(const VNVisionMPIPIMPL&);
     VNVisionMPIPIMPL& operator=(const VNVisionMPIPIMPL&);
     
-    LF_ADD_BRIO_NAMESPACE(CDebugMPI) dbg_;
+    LeapFrog::Brio::CDebugMPI dbg_;
     
     time_t frameTime_;
     int frameCount_;
+    LeapFrog::Brio::U16 frameProcessingWidth_;
+    LeapFrog::Brio::U16 frameProcessingHeight_;
 
 #if defined(EMULATION)
     bool showOCVDebugOutput_;
 #endif
-
   };
 
 }

@@ -17,8 +17,7 @@ namespace Vision {
    * Constructor and Destructor
    */
   VNVisionMPI::VNVisionMPI(void) :
-    pimpl_(VNVisionMPIPIMPL::Instance()){
-    
+    pimpl_(VNVisionMPIPIMPL::Instance()) {
   }
   
   VNVisionMPI::~VNVisionMPI(void) {

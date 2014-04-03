@@ -18,8 +18,10 @@ namespace Vision {
   }
   
   void
-  VNWandTracker::Initialize(void) {
-    pimpl_->Initialize();
+  VNWandTracker::Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
+			    LeapFrog::Brio::U16 frameProcessingHeight) {
+    pimpl_->Initialize(frameProcessingWidth,
+		       frameProcessingHeight);
   }
 
   void
