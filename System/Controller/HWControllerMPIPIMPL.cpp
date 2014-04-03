@@ -112,6 +112,11 @@ namespace Hardware {
 	  if (mapControllers_.count(key) > 0)
 		  return;
 
+	  if (numControllers_ >= kHWMaximumNumberOfControllers) {
+		  debugMPI_.DebugOut(kDbgLvlImportant, "AddController maxed out at %d\n", numControllers_);
+		  return;
+	  }
+
       HWController* controller = new HWController();
       controller->pimpl_->SetID(numControllers_);
       listControllers_.push_back(controller);
