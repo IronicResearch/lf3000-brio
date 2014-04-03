@@ -3,8 +3,8 @@
 #include <cmath>
 #include <assert.h>
 
-#define VN_COORDINATETRANSLATOR_DEBUG 0
-#if VN_COORDINATETRANSLATOR_DEBUG
+#define VN_TRANSLATOR_DEBUG 0
+#if VN_TRANSLATOR_DEBUG
 #include <iostream>
 #endif
 
@@ -43,7 +43,7 @@ namespace Vision {
     if (RectHeight(destFrame_) > 0 && RectHeight(sourceFrame_) > 0) {
       destToSourceHeightSF_ = static_cast<float>(RectHeight(sourceFrame_))/static_cast<float>(RectHeight(destFrame_));
     }
-#if VN_COORDINATETRANSLATOR_DEBUG
+#if VN_TRANSLATOR_DEBUG
     std::cout << "CT UpdateSF: destToSourceWidthSF_ = " << destToSourceWidthSF_ << ", destToSourceHeightSF_ = " << destToSourceHeightSF_ << std::endl;
 #endif
 
@@ -89,7 +89,7 @@ namespace Vision {
     destFrame_.bottom = r.bottom;
     UpdateScaleFactors();
 
-#if VN_COORDINATETRANSLATOR_DEBUG
+#if VN_TRANSLATOR_DEBUG
     std::cout << "CT SetDestFrame: " << destFrame_.left << ", " 
 	      << destFrame_.top << ", " 
 	      << destFrame_.right << ", " 
@@ -114,7 +114,7 @@ namespace Vision {
     sourceFrame_.bottom = r.bottom;
     UpdateScaleFactors();
 
-#if VN_COORDINATETRANSLATOR_DEBUG
+#if VN_TRANSLATOR_DEBUG
     std::cout << "CT SetSourceFrame: " << sourceFrame_.left << ", " 
 	      << sourceFrame_.top << ", " 
 	      << sourceFrame_.right << ", " 
@@ -144,7 +144,7 @@ namespace Vision {
     result.x = (1.0f/destToSourceWidthSF_)*(p.x-sourceFrame_.left) + destFrame_.left;
     result.y = (1.0f/destToSourceHeightSF_)*(p.y-sourceFrame_.top) + destFrame_.top;    
 
-#if VN_COORDINATETRANSLATOR_DEBUG
+#if VN_TRANSLATOR_DEBUG
     std::cout << "CT Point StoD->p = " << p.x << ", " << p.y << ", result = " << result.x << ", " << result.y << std::endl;
 #endif
 
@@ -167,7 +167,7 @@ namespace Vision {
     result.x = destToSourceWidthSF_*(p.x-destFrame_.left) + sourceFrame_.left;
     result.y = destToSourceHeightSF_*(p.y-destFrame_.top) + sourceFrame_.top;
 
-#if VN_COORDINATETRANSLATOR_DEBUG
+#if VN_TRANSLATOR_DEBUG
     std::cout << "CT Point DtoS->p = " << p.x << ", " << p.y << ", result = " << result.x << ", " << result.y << std::endl;
 #endif
 
@@ -198,7 +198,7 @@ namespace Vision {
     p = FromSourceToDest(p);
     result.right = p.x; result.bottom = p.y;
 
-#if VN_COORDINATETRANSLATOR_DEBUG
+#if VN_TRANSLATOR_DEBUG
     std::cout << "CT Rect StoD: r =" << r.left << ", " 
 	      << r.top << ", " 
 	      << r.right << ", " 
@@ -226,7 +226,7 @@ namespace Vision {
     p = FromDestToSource(p);
     result.right = p.x; result.bottom = p.y;
 
-#if VN_COORDINATETRANSLATOR_DEBUG
+#if VN_TRANSLATOR_DEBUG
     std::cout << "CT Rect DtoS: r =" << r.left << ", " 
 	      << r.top << ", " 
 	      << r.right << ", " 

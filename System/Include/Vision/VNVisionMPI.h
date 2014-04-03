@@ -114,17 +114,21 @@ namespace Vision {
     /*!
      * \brief Start begins the video capture process necessary for video processing
      * \param videoSurf Is an optional parameter.  If a video surface is passed in the
-     * video capture will be displayed to this surfae with the appropriate scaling.  If
-     * this parameter is NULL, the default, the video capture session used for vision processing
-     * does not render the captured framebuffer.
+     * video capture will be displayed to this surfae
      * \param dispatchSynchronously when set to true, the vision algorithm will be 
      * dispatched on a separate thread to allow image processing to occur synchronously.
      * The default behavior is asynchronous updates with the developer manually calling
      * the VNVisionMPI::Update method once per state update. 
+     * \param displayRect an optional parameter that specifies the display rectangle the application
+     * code intends to use.  If pass in, the vision library will use this as the basis for
+     * scaling between the vision processing coordinate system and the display coordinate
+     * system.  If this is not passed in VNVisionMPI will use the full screen resolution
+     * as the display frame to scale to.
      * \return kNoErr if started successfully, the appropriate error otherwise
      */
     LeapFrog::Brio::tErrType Start(LeapFrog::Brio::tVideoSurf* videoSurf = NULL,
-				   bool dispatchSynchronously = false);
+				   bool dispatchSynchronously = false,
+				   const LeapFrog::Brio::tRect *displayRect = NULL);
 
     /*!
      * \breif Update performs one iteration of the current algorithm allowing

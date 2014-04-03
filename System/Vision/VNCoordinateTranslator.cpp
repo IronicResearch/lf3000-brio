@@ -3,11 +3,6 @@
 #include <cmath>
 #include <assert.h>
 
-#define VN_COORDINATETRANSLATOR_DEBUG 0
-#if VN_COORDINATETRANSLATOR_DEBUG
-#include <iostream>
-#endif
-
 namespace LF {
 namespace Vision {
 
