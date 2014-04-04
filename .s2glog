@@ -40459,3 +40459,13 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/3/14 3:00 PM
 25,011 ms. (Cumulative: 21,892,527 ms)
 
 ----------------
+Revision 10,704 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,705 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Removing CABO and GLASGOW check to turn LF2000 framebuffer to 32 bit mode in InitOpenGL.  CABO and GLASGOW should now be building with platform=LF3000.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/4/14 1:43 PM
+1 changed, 0 added, 0 deleted.
+24,912 ms. (Cumulative: 21,917,548 ms)
+
+----------------
