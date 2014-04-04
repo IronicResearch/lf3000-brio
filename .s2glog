@@ -40469,3 +40469,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/4/14 1:43 PM
 24,912 ms. (Cumulative: 21,917,548 ms)
 
 ----------------
+Revision 10,706 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Changing MultiTouch caps check for Cabo from GetPlatformFamily to GetPlatformName.  Cabo is in the LPAD family.  Also removed Cabo from Escape button caps check, as it's already covered by the LPAD family check.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/4/14 1:46 PM
+1 changed, 0 added, 0 deleted.
+24,937 ms. (Cumulative: 21,942,594 ms)
+
+----------------
