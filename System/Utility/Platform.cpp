@@ -150,7 +150,7 @@ bool HasPlatformCapability(tPlatformCaps caps)
 		return (0 == stat("/sys/class/video4linux/video1", &stbuf));
 	case kCapsMultiTouch:
 		return ("RIO" == GetPlatformFamily() ||
-				"CABO" == GetPlatformFamily()); // FIXME: query input device?
+				"CABO" == GetPlatformName()); // FIXME: query input device?
 	case kCapsAnalogController:
 		return ("GLASGOW" == GetPlatformFamily()); // FIXME
 	case kCapsButtonMask(kButtonUp):
@@ -175,7 +175,6 @@ bool HasPlatformCapability(tPlatformCaps caps)
 		return true;
 	case kCapsButtonMask(kButtonEscape):
 		return ("LPAD" == GetPlatformFamily() ||
-				"CABO" == GetPlatformFamily() ||
 				"RIO" == GetPlatformFamily());
 	case kCapsButtonMask(kButtonSync):
 		return ("GLASGOW" == GetPlatformFamily()); // FIXME
