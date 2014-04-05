@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <BluetopiaIO.h>
 
 extern "C" {
@@ -21,6 +22,18 @@ static pFnCallback2        callbackfunc = NULL;
 static pFnCallback         callbackmain = NULL;
 static pFnCallback         callbackscan = NULL;
 static void*               callbackobj  = NULL;
+
+static bool                nopairing = true;
+
+bool BTIO_IgnorePairing(void)
+{
+#if USE_PAIRED_MODE
+	struct stat stbuf;
+	return (0 == stat("/flags/nopairing", &stbuf));
+#else
+	return true;
+#endif
+}
 
 int BTIO_QueryForServices(int handle, BTAddr* device, bool update);
 
@@ -174,6 +187,8 @@ int BTIO_Init(void* callback)
 
 	callbackobj = callback;
 	// Wait until callbacks are all set before scanning for devices
+
+	nopairing = BTIO_IgnorePairing();
 
 	return DEVMCallbackID;
 }
@@ -357,7 +372,8 @@ int BTIO_QueryForDevices(int handle)
 			continue;
 #if USE_PAIRED_MODE
 		if (!(prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_PAIRED_OVER_LE))
-			continue;
+			if (!nopairing)
+				continue;
 #endif
 		printf("%s: %d: %s, stats=%08x, name=%s\n", __func__, i, addr->toString().c_str(), (unsigned int)prop.RemoteDeviceFlags, prop.DeviceName);
 		if (!(prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE)) {
@@ -411,7 +427,8 @@ int BTIO_ConnectToDevice(int handle, const BTAddr* device)
 		}
 		if (!(prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_PAIRED_OVER_LE)) {
 			printf("DEVM_QueryRemoteDeviceProperties() returned %d for %s, unpaired=%08x\n", q, prop.DeviceName, (unsigned)prop.RemoteDeviceFlags);
-			return q;
+			if (!nopairing)
+				return q;
 		}
 	}
 #endif

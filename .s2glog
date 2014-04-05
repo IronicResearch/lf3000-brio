@@ -40478,3 +40478,17 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/4/14 1:46 PM
 24,937 ms. (Cumulative: 21,942,594 ms)
 
 ----------------
+Revision 10,707 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Enabled support for connecting controllers paired with console.
+
+Controllers must be paired with console using LinuxGATM command or DFTP command.
+Overridden by /flags/nopairing option for any controller, as previously.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/4/14 7:45 PM
+3 changed, 0 added, 0 deleted.
+25,042 ms. (Cumulative: 21,967,730 ms)
+
+----------------
