@@ -15,6 +15,16 @@ namespace Hardware {
   HWController::~HWController(void) {
   }
  
+  LeapFrog::Brio::U8
+  HWController::GetHwVersion(void) const {
+	  return pimpl_->GetHwVersion();
+  }
+
+  LeapFrog::Brio::U8
+  HWController::GetFwVersion(void) const {
+	  return pimpl_->GetFwVersion();
+  }
+
   LeapFrog::Brio::U8 
   HWController::GetID(void) const {
     return pimpl_->GetID();
