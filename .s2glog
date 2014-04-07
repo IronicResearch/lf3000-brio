@@ -40492,3 +40492,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/4/14 7:45 PM
 25,042 ms. (Cumulative: 21,967,730 ms)
 
 ----------------
+Revision 10,708 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Now that LF2000 DisplayFB doesn't need to check for the Cabo or Glasgow name, no need to retrieve the name in the first place.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/7/14 11:55 AM
+1 changed, 0 added, 0 deleted.
+24,829 ms. (Cumulative: 21,992,669 ms)
+
+----------------

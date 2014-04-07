@@ -987,7 +987,6 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 		use_32_bit_buffer = true;
 		fclose(opengl_flag);
 	}
-	CString platform_name = GetPlatformName();
 	tDisplayHandle hogl = CreateHandle(vyres, vxres, use_32_bit_buffer ? kPixelFormatARGB8888 : kPixelFormatRGB565, fbmem[n]);
 	tDisplayContext *dcogl = (tDisplayContext*)hogl;
 	memset(fbmem[n], 0, 2 * vyres * vxres * dcogl->bpp/8);
