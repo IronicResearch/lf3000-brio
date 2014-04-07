@@ -27,14 +27,20 @@ namespace Hardware {
 	debugMPI_.SetDebugLevel(kDbgLvlVerbose);
 #endif
     debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL constructor for %p\n", controller_);
-    ZeroAccelerometerData();
-    ZeroButtonData();
-    ZeroAnalogStickData();
+    ZeroAllData();
   }
 
   HWControllerPIMPL::~HWControllerPIMPL(void) {
   }
   
+  void
+  HWControllerPIMPL::ZeroAllData(void) {
+	    ZeroAccelerometerData();
+	    ZeroButtonData();
+	    ZeroAnalogStickData();
+	    ZeroVersionData();
+  }
+
   void
   HWControllerPIMPL::ZeroAccelerometerData(void) {
     accelerometerData_.accelX = 0;
@@ -61,6 +67,11 @@ namespace Hardware {
     analogStickData_.time.microSeconds = id_;    
   }
 
+  void HWControllerPIMPL::ZeroVersionData() {
+	  hw_version_ = 0;
+	  fw_version_ = 0;
+  }
+
   /*!
    * Broad Based Controller Methods
    */
@@ -69,6 +80,16 @@ namespace Hardware {
     return id_;
   }
   
+  LeapFrog::Brio::U8
+  HWControllerPIMPL::GetHwVersion(void) const {
+	  return hw_version_;
+  }
+
+  LeapFrog::Brio::U8
+  HWControllerPIMPL::GetFwVersion(void) const {
+	  return fw_version_;
+  }
+
   HWControllerMode 
   HWControllerPIMPL::GetCurrentMode(void) const {
     return mode_;
@@ -228,7 +249,7 @@ namespace Hardware {
   }
   
   inline float BYTE_TO_FLOAT(U8 byte) {
-  	  return (float)((int)byte - 128) / 128.0;
+  	  return (float)((int)byte - 128) / 128.0f;
   }
 
   inline S32 WORD_TO_SIGNED(U16 word) {

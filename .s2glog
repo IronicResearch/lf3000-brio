@@ -40501,3 +40501,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/7/14 11:55 AM
 24,829 ms. (Cumulative: 21,992,669 ms)
 
 ----------------
+Revision 10,709 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added MPI for getting hardware and firmware version numbers. Right now will just return 0, but allows QA to start. (FWGLAS-282)
+
+By Lmoore (Lmoore@leapfrog.com) on 4/7/14 2:25 PM
+4 changed, 0 added, 0 deleted.
+25,520 ms. (Cumulative: 22,018,282 ms)
+
+----------------

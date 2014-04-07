@@ -43,6 +43,16 @@ namespace Hardware {
     LeapFrog::Brio::U8 GetID(void) const;
     
     /*!
+     * \brief Returns the hardware version/revision of the controller
+     */
+    LeapFrog::Brio::U8 GetHwVersion(void) const;
+
+    /*!
+     * \brief Returns the firmware version/revision of the controller
+     */
+    LeapFrog::Brio::U8 GetFwVersion(void) const;
+
+    /*!
      * Obtain the current mode of the controller
      * \return the current controller mode
      */

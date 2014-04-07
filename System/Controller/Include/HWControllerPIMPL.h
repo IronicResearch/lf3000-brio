@@ -20,6 +20,8 @@ namespace Hardware {
      * Broad Based Controller Methods
      */
     LeapFrog::Brio::U8 GetID(void) const;
+    LeapFrog::Brio::U8 GetHwVersion(void) const;
+    LeapFrog::Brio::U8 GetFwVersion(void) const;
     HWControllerMode GetCurrentMode(void) const;
     bool IsConnected(void) const;
     LeapFrog::Brio::U32 GetControllerUpdateRate(void) const;
@@ -73,6 +75,8 @@ namespace Hardware {
 
     HWController* controller_;
     LeapFrog::Brio::U8 id_;
+    LeapFrog::Brio::U8 hw_version_;
+    LeapFrog::Brio::U8 fw_version_;
     HWControllerMode mode_;
     HWControllerLEDColor color_;
     LeapFrog::Brio::U32 updateRate_;
@@ -83,9 +87,11 @@ namespace Hardware {
     LeapFrog::Brio::tButtonData2 buttonData_;
     LF::Hardware::tHWAnalogStickData analogStickData_;
 
+    void ZeroAllData(void);
     void ZeroAccelerometerData(void);
     void ZeroButtonData(void);
     void ZeroAnalogStickData(void);
+    void ZeroVersionData(void);
 
   };
   
