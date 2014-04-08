@@ -27,6 +27,7 @@ namespace Hardware {
     LeapFrog::Brio::U32 GetControllerUpdateRate(void) const;
     LeapFrog::Brio::tErrType SetControllerUpdateRate(LeapFrog::Brio::U32 rate);
     HWControllerFunctionalityMask GetFunctionality(void) const;
+    void ZeroAllData(void);
 
     /*!
      * Color LED Tip Methods
@@ -87,7 +88,6 @@ namespace Hardware {
     LeapFrog::Brio::tButtonData2 buttonData_;
     LF::Hardware::tHWAnalogStickData analogStickData_;
 
-    void ZeroAllData(void);
     void ZeroAccelerometerData(void);
     void ZeroButtonData(void);
     void ZeroAnalogStickData(void);

@@ -40538,3 +40538,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/8/14 10:20 AM
 25,068 ms. (Cumulative: 22,094,343 ms)
 
 ----------------
+Revision 10,713 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Hooked up event timeout timer to zero out all controller data. (FWGLAS-202)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 4/8/14 3:10 PM
+2 changed, 0 added, 0 deleted.
+25,072 ms. (Cumulative: 22,119,509 ms)
+
+----------------

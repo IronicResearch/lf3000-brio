@@ -247,6 +247,16 @@ namespace Hardware {
     if (type == LeapFrog::Brio::kTimerFiredEvent) {
         debugMPI_.DebugOut(kDbgLvlImportant, "Notify: timer event type %08x\n", (unsigned)type);
         HWControllerEventMessage qmsg(kHWControllerDisconnected, controller);
+
+        //Zero out all data and post messages stating that there has been a change
+        controller->pimpl_->ZeroAllData();
+        HWControllerEventMessage stickMsg(kHWControllerAnalogStickDataChanged, controller);
+        eventMPI_.PostEvent(stickMsg, 0);
+        HWControllerEventMessage acclMsg(kHWControllerAccelerometerDataChanged, controller);
+        eventMPI_.PostEvent(acclMsg, 0);
+        HWControllerEventMessage btnMsg(kHWControllerButtonStateChanged, controller);
+        eventMPI_.PostEvent(btnMsg, 0);
+
         eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
        	return LeapFrog::Brio::kEventStatusOKConsumed;
     }
