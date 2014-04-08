@@ -40528,3 +40528,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/7/14 5:54 PM
 25,518 ms. (Cumulative: 22,069,182 ms)
 
 ----------------
+Revision 10,712 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Disable flat-profiler in ControllerMPI by default.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/8/14 10:20 AM
+1 changed, 0 added, 0 deleted.
+25,068 ms. (Cumulative: 22,094,343 ms)
+
+----------------

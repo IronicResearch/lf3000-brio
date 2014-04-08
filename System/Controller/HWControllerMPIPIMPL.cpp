@@ -7,7 +7,7 @@
 #include <dlfcn.h>
 #include <string.h>
 
-#define ENABLE_PROFILING
+#undef ENABLE_PROFILING	// #define to enable profiling BT callbacks
 #include <FlatProfiler.h>
 
 const LeapFrog::Brio::tEventType 
