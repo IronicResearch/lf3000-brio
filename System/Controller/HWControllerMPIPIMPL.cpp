@@ -139,6 +139,8 @@ namespace Hardware {
 
   void
   HWControllerMPIPIMPL::ScanForDevices(void) {
+	  if (!dll_)
+		  return;
 	  if (!isScanning_) {
 			debugMPI_.DebugOut(kDbgLvlImportant, "ScanForDevices\n");
 			isScanning_ = true;
@@ -196,11 +198,15 @@ namespace Hardware {
 
   int
   HWControllerMPIPIMPL::SendCommand(HWController* controller, int command, void* data, int length) {
+      if (!dll_)
+    	  return -1;
 	  return pBTIO_SendCommand_(handle_, command, data, length, FindControllerLink(controller));
   }
 
   int
   HWControllerMPIPIMPL::QueryStatus(HWController* controller, int command, void* data, int length) {
+      if (!dll_)
+    	  return -1;
 	  return pBTIO_QueryStatus_(handle_, command, data, length, FindControllerLink(controller));
   }
 
