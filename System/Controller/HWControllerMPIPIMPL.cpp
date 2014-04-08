@@ -7,6 +7,9 @@
 #include <dlfcn.h>
 #include <string.h>
 
+#define ENABLE_PROFILING
+#include <FlatProfiler.h>
+
 const LeapFrog::Brio::tEventType 
   kHWControllerListenerTypes[] = {LeapFrog::Brio::kAccelerometerDataChanged,
 				  LeapFrog::Brio::kOrientationChanged,
@@ -68,9 +71,25 @@ namespace Hardware {
 		}
 
 		timer = new COneShotTimer(props);
+
+#ifdef ENABLE_PROFILING
+		FlatProfilerInit(kHWMaximumNumberOfControllers, 0);
+#endif
   }
   
   HWControllerMPIPIMPL::~HWControllerMPIPIMPL() {
+	  std::vector<HWController*>::iterator it;
+	  for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
+		  HWController* controller = *(it);
+#ifdef ENABLE_PROFILING
+		  TimeStampOff(controller->GetID());
+#endif
+		  delete controller;
+	  }
+#ifdef ENABLE_PROFILING
+	  FlatProfilerDone();
+#endif
+
 	  delete timer;
 	  // Close Bluetooth client lib connection
 	  if (dll_) {
@@ -102,11 +121,20 @@ namespace Hardware {
     	  controller = pModule->mapControllers_.at(key);
       if (!controller)   
     	  return;
+
+#ifdef ENABLE_PROFILING
+	  TimeStampOff(controller->GetID());
+#endif
+
       HWControllerPIMPL* device = dynamic_cast<HWControllerPIMPL*>(controller->pimpl_.get());
       if (device)
     	  device->LocalCallback(device, data, length);
       if (timer)
 		  timer->Start(props);
+
+#ifdef ENABLE_PROFILING
+	  TimeStampOn(controller->GetID());
+#endif
   }
 
   void
@@ -136,6 +164,10 @@ namespace Hardware {
       numControllers_++;
       HWControllerEventMessage qmsg(kHWControllerConnected, controller);
       eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
+
+#ifdef ENABLE_PROFILING
+      TimeStampOn(controller->GetID());
+#endif
   }
 
   HWController*
