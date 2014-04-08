@@ -40519,3 +40519,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/7/14 5:11 PM
 25,179 ms. (Cumulative: 22,043,570 ms)
 
 ----------------
+Revision 10,711 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added conditional guards for BTIO function calls, since there is no BTIO lib for x86 emulation.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/7/14 5:54 PM
+1 changed, 0 added, 0 deleted.
+25,518 ms. (Cumulative: 22,069,182 ms)
+
+----------------
