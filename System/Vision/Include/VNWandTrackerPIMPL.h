@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <VNWandPIMPL.h>
 #include <VNTranslatorBase.h>
+#include <CameraTypes.h>
 
 namespace LF {
 namespace Vision {
@@ -33,7 +34,9 @@ namespace Vision {
     float minPercentToScale_;
     float minArea_;
 
-    void SetParams(VNInputParameters *params);
+    LeapFrog::Brio::tControlInfo* FindCameraControl(const LeapFrog::Brio::tCameraControls controls,
+						    const LeapFrog::Brio::tControlType type);
+   void SetParams(VNInputParameters *params);
     void ComputeLargestContour(cv::Mat& img, 
 			       std::vector<std::vector<cv::Point> > &contours,
 			       int &index);

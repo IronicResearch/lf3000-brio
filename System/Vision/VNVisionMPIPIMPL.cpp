@@ -227,10 +227,6 @@ namespace Vision {
 	return kVNVideoSurfaceNotOfCorrectSizeForVisionCapture;
       }
 
-      if (algorithm_)
-	algorithm_->Initialize(frameProcessingWidth_,
-			       frameProcessingHeight_);
-
        if (error == kNoErr) {
 	videoSurf_ = surf;
 
@@ -245,6 +241,13 @@ namespace Vision {
 	    dbg_.DebugOut(kDbgLvlCritical, "Failed to start vision video capture\n");
 	  } else {
 	    dbg_.DebugOut(kDbgLvlImportant, "VNVision [started video capture.\n");
+
+	    // this initialization needs to happen after starting the video capture
+	    // as some algorithms, like the wand tracking, adjust camera controls that
+	    // can only be set once the camera is up and running
+	    if (algorithm_)
+	      algorithm_->Initialize(frameProcessingWidth_,
+				     frameProcessingHeight_);
 
 	    visionAlgorithmRunning_ = true;
 	  

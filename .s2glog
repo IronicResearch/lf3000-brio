@@ -40564,3 +40564,25 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/9/14 12:44 PM
 25,340 ms. (Cumulative: 22,169,902 ms)
 
 ----------------
+Revision 10,718 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+====================================
+r10716 | alindblad | 2014-04-09 00:41:27 -0700 (Wed, 09 Apr 2014) | 1 line
+Changed paths:
+   M /BRANCHES/Sprint_Lockdown/Samples/lf-wand-test/Include/WNDMainState.h
+   M /BRANCHES/Sprint_Lockdown/Samples/lf-wand-test/Src/WNDMainState.cpp
+   M /BRANCHES/Sprint_Lockdown/System/Include/Vision/VNAlgorithm.h
+   M /BRANCHES/Sprint_Lockdown/System/Vision/Include/VNWandTrackerPIMPL.h
+   M /BRANCHES/Sprint_Lockdown/System/Vision/VNVisionMPIPIMPL.cpp
+   M /BRANCHES/Sprint_Lockdown/System/Vision/VNWandTrackerPIMPL.cpp
+
+Merge branch 'wandDemoAppFixes'
+====================================
+
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 4/9/14 2:19 PM
+4 changed, 0 added, 0 deleted.
+25,483 ms. (Cumulative: 22,195,494 ms)
+
+----------------
