@@ -26,8 +26,8 @@ namespace Vision {
   public:
     /*!
      * \brief an optional initialization method that gets called during
-     * VNVisionMPI::Start after the camera is setup but before the capture 
-     * session is started.
+     * VNVisionMPI::Start after the camera is setup and the capture session
+     * has been started
      * \param frameProcessingWidth the width of the frame size the vision mpi
      * uses for processing
      * \param frameProcessingHeight the height of the frame size the vision mpi

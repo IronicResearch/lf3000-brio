@@ -83,6 +83,25 @@ namespace Vision {
 					height));
   }
 
+  LeapFrog::Brio::tControlInfo*
+  VNWandTrackerPIMPL::FindCameraControl(const LeapFrog::Brio::tCameraControls controls,
+					const LeapFrog::Brio::tControlType type) {
+    tControlInfo *c = NULL;
+    for(LeapFrog::Brio::tCameraControls::const_iterator i = controls.begin();
+	i != controls.end();
+	++i) {
+
+      c = *i;
+      if (!c)
+	continue;
+
+      if (c->type == type)
+	break;
+    }
+    
+    return c;
+  }
+
   void
   VNWandTrackerPIMPL::Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
 				 LeapFrog::Brio::U16 frameProcessingHeight) {
@@ -95,39 +114,39 @@ namespace Vision {
     LeapFrog::Brio::Boolean err = cameraMPI.GetCameraControls(controls);
     dbg.Assert(err, "VNWandTracker could get camera controls\n");
     
-    bool setExposure = false;
-    bool setWhiteBlaance = false;
-    
-    for(LeapFrog::Brio::tCameraControls::iterator i = controls.begin();
-	i != controls.end();
-	++i) {
-      tControlInfo* c = *i;
-      
-      if(!c) {
-	dbg.DebugOut(kDbgLvlCritical, "null camera control (tControlInfo)\n");
-	continue;
-      } else {
-	printf("Control type: %i\n", c->type);
-      }
-      
-      switch(c->type) {
-      case kControlTypeAutoWhiteBalance:
-	printf("AutoWhiteBalance: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	cameraMPI.SetCameraControl(c, 0);
-	printf("New AutoWhiteBalance: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	break;
-      case kControlTypeAutoExposure:
-	printf("New Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	cameraMPI.SetCameraControl(c, 0);
-	printf("New Auto Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	break;
-      case kControlTypeExposure:
-	printf("Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	cameraMPI.SetCameraControl(c, c->min);
-	printf("New Exposure: %li %li %li %li\n", c->min, c->max, c->preset, c->current);
-	break;
-      }
+    // turn off autowhitebalance 
+    LeapFrog::Brio::tControlInfo *awb = FindCameraControl(controls, 
+							  LeapFrog::Brio::kControlTypeAutoWhiteBalance);
+    if (awb) {
+      printf("AutoWhiteBalance (min,max,preset,current): %li %li %li %li\n", awb->min, awb->max, awb->preset, awb->current);
+      cameraMPI.SetCameraControl(awb, 0); // is a boolean, set to 0 for false 
+      printf("New AutoWhiteBalance (min,max,preset,current): %li %li %li %li\n", awb->min, awb->max, awb->preset, awb->current);
+    } else {
+      dbg.DebugOut(kDbgLvlCritical, "null camera control for auto white balance\n");
     }
+
+    // turn off auto exposure
+    LeapFrog::Brio::tControlInfo *ae = FindCameraControl(controls, 
+							 LeapFrog::Brio::kControlTypeAutoExposure);
+    if (ae) {
+      printf("AutoExposure (min,max,preset,current): %li %li %li %li\n", ae->min, ae->max, ae->preset, ae->current);
+      cameraMPI.SetCameraControl(ae, 1); // V4L2_EXPOSURE_MANUAL == 1
+      printf("New AutoExposure (min,max,preset,current): %li %li %li %li\n", ae->min, ae->max, ae->preset, ae->current);
+    } else {
+      dbg.DebugOut(kDbgLvlCritical, "null camera control for auto exposure\n");
+    }
+
+    // set exposure to minimum
+    LeapFrog::Brio::tControlInfo *e = FindCameraControl(controls, 
+							LeapFrog::Brio::kControlTypeExposure);
+    if (e) {
+      printf("Exposure (min,max,preset,current): %li %li %li %li\n", e->min, e->max, e->preset, e->current);
+      cameraMPI.SetCameraControl(e, e->min);
+      printf("New Exposure(min,max,preset,current) : %li %li %li %li\n", e->min, e->max, e->preset, e->current);
+    } else {
+      dbg.DebugOut(kDbgLvlCritical, "null camera control for exposure\n");
+    }
+
   }
 
   void
