@@ -519,7 +519,6 @@ tErrType CButtonMPI::SetTouchRate(U32 rate)
 		fclose(fd);
 		return kNoErr;
 	}
-	printf("%s:%s:%d SYSFS_TOUCHSCREEN_PATH(\"report_rate\")=%s\n", __FILE__, __FUNCTION__, __LINE__, SYSFS_TOUCHSCREEN_PATH("report_rate"));
 	fd = fopen(SYSFS_TOUCHSCREEN_PATH("report_rate"), "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", (unsigned int)rate);

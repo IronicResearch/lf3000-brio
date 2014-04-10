@@ -40597,3 +40597,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/10/14 2:56 PM
 26,577 ms. (Cumulative: 22,222,196 ms)
 
 ----------------
+Revision 10,722 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove debug statement.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/10/14 2:57 PM
+1 changed, 0 added, 0 deleted.
+25,413 ms. (Cumulative: 22,247,703 ms)
+
+----------------
