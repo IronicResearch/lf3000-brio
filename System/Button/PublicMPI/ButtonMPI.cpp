@@ -38,10 +38,27 @@ static tMutex 			gButtonDataMutex	= PTHREAD_MUTEX_INITIALIZER;
 
 const CString	SYSFS_TOUCHSCREEN_LF1000	= "/sys/devices/platform/lf1000-touchscreen/";
 const CString	SYSFS_TOUCHSCREEN_LF2000	= "/sys/devices/platform/lf2000-touchscreen/";
-static CString	SYSFS_TOUCHSCREEN_ROOT		= SYSFS_TOUCHSCREEN_LF2000;
+static CString	SYSFS_TOUCHSCREEN_ROOT		= "";
 
 inline const char* SYSFS_TOUCHSCREEN_PATH(const char* path)
 {
+	if(SYSFS_TOUCHSCREEN_ROOT.empty())
+	{
+		CString platform_name = GetPlatformName();
+		if(platform_name == "Emerald" || platform_name == "Madrid")
+			SYSFS_TOUCHSCREEN_ROOT = SYSFS_TOUCHSCREEN_LF1000;
+		else if(platform_name == "LUCY" || platform_name == "VALENCIA" || platform_name == "RIO")
+			SYSFS_TOUCHSCREEN_ROOT = SYSFS_TOUCHSCREEN_LF2000;
+		else {
+			SYSFS_TOUCHSCREEN_ROOT = "/sys/module/";
+			FILE *ts_driver = fopen("/tmp/ts_driver", "r");
+			char module_name[80];
+			fscanf(ts_driver, "%s", module_name);
+			fclose(ts_driver);
+			SYSFS_TOUCHSCREEN_ROOT += module_name;
+			SYSFS_TOUCHSCREEN_ROOT += "/parameters/";
+		}
+	}
 	return CString(SYSFS_TOUCHSCREEN_ROOT + path).c_str();
 }
 
@@ -472,6 +489,11 @@ U32	CButtonMPI::GetTouchRate() const
 			fclose(fd);
 			rate = z;
 		}
+		else {
+			fd = fopen(SYSFS_TOUCHSCREEN_PATH("report_rate"), "r");
+			fscanf(fd, "%u\n", (unsigned int*)&rate);
+			fclose(fd);
+		}
 	}
 	return rate;
 #else
@@ -494,6 +516,13 @@ tErrType CButtonMPI::SetTouchRate(U32 rate)
 		if (rate > kTouchTableRio[kTouchParamSampleRate])
 			rate = kTouchTableRio[kTouchParamSampleRate];
 		fprintf(fd, "%u %u %u\n", 25, (unsigned int)rate, (unsigned int)rate);
+		fclose(fd);
+		return kNoErr;
+	}
+	printf("%s:%s:%d SYSFS_TOUCHSCREEN_PATH(\"report_rate\")=%s\n", __FILE__, __FUNCTION__, __LINE__, SYSFS_TOUCHSCREEN_PATH("report_rate"));
+	fd = fopen(SYSFS_TOUCHSCREEN_PATH("report_rate"), "w");
+	if (fd != NULL) {
+		fprintf(fd, "%u\n", (unsigned int)rate);
 		fclose(fd);
 		return kNoErr;
 	}

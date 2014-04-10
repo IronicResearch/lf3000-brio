@@ -40586,3 +40586,14 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 4/9/14 2:19 PM
 25,483 ms. (Cumulative: 22,195,494 ms)
 
 ----------------
+Revision 10,719 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,720 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,721 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-1441.  Adding support for adjusting touch rate for LF3000.  Because of multiple modules, checks /tmp/ts_driver to know the name of the module.  Tested to work with K&D screen.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/10/14 2:56 PM
+1 changed, 0 added, 0 deleted.
+26,577 ms. (Cumulative: 22,222,196 ms)
+
+----------------
