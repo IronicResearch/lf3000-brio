@@ -40623,3 +40623,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/10/14 6:24 PM
 24,837 ms. (Cumulative: 22,297,424 ms)
 
 ----------------
+Revision 10,727 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Hack to avoid destroying HWController instances in ControllerMPI destructor. (FIXME)
+Implicit destruction of HWAnalogStickPIMPL instances occasionally segfault.
+Not sure how PIMPL singleton instances are expected to be destroyed. 
+
+By Dave Milici (dmilici@leapfrog.com) on 4/10/14 7:33 PM
+1 changed, 0 added, 0 deleted.
+25,288 ms. (Cumulative: 22,322,822 ms)
+
+----------------

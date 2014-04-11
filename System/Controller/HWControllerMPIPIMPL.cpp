@@ -84,8 +84,11 @@ namespace Hardware {
 #ifdef ENABLE_PROFILING
 		  TimeStampOff(controller->GetID());
 #endif
-		  delete controller;
+//		  delete controller; // FIXME: HWAnalogStickPIMPL crash
 	  }
+	  listControllers_.clear();
+	  mapControllers_.clear();
+
 #ifdef ENABLE_PROFILING
 	  FlatProfilerDone();
 #endif
