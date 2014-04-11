@@ -40606,3 +40606,20 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/10/14 2:57 PM
 25,413 ms. (Cumulative: 22,247,703 ms)
 
 ----------------
+Revision 10,723 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,724 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,725 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,758 ms. (Cumulative: 22,272,571 ms)
+
+----------------
+Revision 10,726 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix Controller unit test case condition for LED "Off" state.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/10/14 6:24 PM
+1 changed, 0 added, 0 deleted.
+24,837 ms. (Cumulative: 22,297,424 ms)
+
+----------------
