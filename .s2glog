@@ -40634,3 +40634,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/10/14 7:33 PM
 25,288 ms. (Cumulative: 22,322,822 ms)
 
 ----------------
+Revision 10,728 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add Hidden=1 to meta.inf
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 4/11/14 2:29 PM
+1 changed, 0 added, 0 deleted.
+24,946 ms. (Cumulative: 22,347,862 ms)
+
+----------------
