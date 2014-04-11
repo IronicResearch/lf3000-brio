@@ -174,7 +174,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void XXXXtestLEDs( )
+	void testLEDs( )
 	{
 		PRINT_TEST_NAME();
 
@@ -201,7 +201,7 @@ public:
 				TS_ASSERT_EQUALS( color , controller->GetLEDColor() );
 				sleep(1);
 				controller->SetLEDColor(kHWControllerLEDOff);
-				TS_ASSERT_EQUALS( color , controller->GetLEDColor() );
+				TS_ASSERT_DIFFERS( color , controller->GetLEDColor() );
 				sleep(1);
 			}
 		}
@@ -210,7 +210,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testEvents( )
+	void XXXXtestEvents( )
 	{
 		PRINT_TEST_NAME();
 
