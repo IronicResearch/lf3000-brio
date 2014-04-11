@@ -40644,3 +40644,19 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 4/11/14 2:29 PM
 24,946 ms. (Cumulative: 22,347,862 ms)
 
 ----------------
+Revision 10,729 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,733 ms. (Cumulative: 22,372,689 ms)
+
+----------------
+Revision 10,730 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+glasgow DisplayFB : update to not change/query VSCREENINFO parameters for HDMI displays (glasgow). This fixes the flickering problem and the scaling works as expected too. 
+
+
+By Falguni Mirani (fmirani@leapfrog.com) on 4/11/14 3:24 PM
+1 changed, 0 added, 0 deleted.
+25,259 ms. (Cumulative: 22,397,964 ms)
+
+----------------
