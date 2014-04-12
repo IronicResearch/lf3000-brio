@@ -40660,3 +40660,13 @@ By Falguni Mirani (fmirani@leapfrog.com) on 4/11/14 3:24 PM
 25,259 ms. (Cumulative: 22,397,964 ms)
 
 ----------------
+Revision 10,731 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add LF3000 platform option to compile GStreamer player in VideoMPI.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/11/14 7:23 PM
+1 changed, 0 added, 0 deleted.
+24,984 ms. (Cumulative: 22,423,057 ms)
+
+----------------
