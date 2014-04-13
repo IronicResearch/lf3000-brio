@@ -25,7 +25,7 @@ mpilibs		= ['ModuleMPI', 'EventMPI', 'KernelMPI', 'AnalogStickMPI', 'ButtonMPI',
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Clone()
-myenv.Append(CPPPATH=['Include'])
+myenv.Append(CPPPATH=['Include', '#System/Vision/Include', '#ThirdParty/OpenCV/Include'])
 
 if not env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/Bluetopia/Include'])

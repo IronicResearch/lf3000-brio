@@ -2,11 +2,11 @@
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
 
-int lowerH=0;
+int lowerH=61;
 int lowerS=0;
-int lowerV=0;
+int lowerV=77;
 
-int upperH=180;
+int upperH=97;
 int upperS=256;
 int upperV=256;
 static const std::string videoName = "Video";

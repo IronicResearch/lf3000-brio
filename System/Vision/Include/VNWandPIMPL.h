@@ -4,6 +4,8 @@
 #include <Vision/VNVisionTypes.h>
 #include <VNCoordinateTranslator.h>
 #include <opencv2/opencv.hpp>
+#include <Hardware/HWControllerTypes.h>
+#include <DebugMPI.h>
 
 namespace LF {
 namespace Vision {
@@ -16,6 +18,8 @@ namespace Vision {
     void NotVisibleOnScreen(void);
     void VisibleOnScreen(const cv::Point &p);
 
+    void SetColor(const LF::Hardware::HWControllerLEDColor color);
+
     bool IsVisible(void) const;
     VNPoint GetLocation(void) const;
 
@@ -25,6 +29,7 @@ namespace Vision {
   protected:
     bool visible_;
     VNPoint location_;
+    LeapFrog::Brio::CDebugMPI debugMPI_;
 
     VNCoordinateTranslator *translator_;
   };
