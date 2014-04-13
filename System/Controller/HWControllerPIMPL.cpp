@@ -3,6 +3,7 @@
 #include <Hardware/HWControllerTypes.h>
 #include <Hardware/HWControllerEventMessage.h>
 #include <Vision/VNWand.h>
+#include <VNWandPIMPL.h>
 #include <string.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -16,9 +17,10 @@ namespace Hardware {
 
   HWControllerPIMPL::HWControllerPIMPL(HWController* controller) :
     controller_(controller),
+    wand_(NULL),
     id_(kHWDefaultControllerID),
     mode_(kHWControllerMode),
-    color_(kHWControllerLEDGreen),
+    color_(kHWControllerLEDOff),
     updateRate_(kHWControllerDefaultRate),
     updateDivider_(1),
     updateCounter_(0),
@@ -27,6 +29,8 @@ namespace Hardware {
 	debugMPI_.SetDebugLevel(kDbgLvlVerbose);
 #endif
     debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL constructor for %p\n", controller_);
+    wand_ = visionMPI_.GetWandByID(id_);
+    assert(wand_);
     ZeroAllData();
   }
 
@@ -156,16 +160,17 @@ namespace Hardware {
 	debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::SetLEDColor %08x\n", (unsigned int)color);
 	HWControllerMPIPIMPL::Instance()->SendCommand(controller_, kBTIOCmdSetLEDState, &color, sizeof(color));
 	color_ = color;
+	wand_->pimpl_->SetColor(color);
   }
   
   Vision::VNPoint 
   HWControllerPIMPL::GetLocation(void) const {
-    visionMPI_.GetWandByID(id_)->GetLocation();
+    wand_->GetLocation();
   }
   
   bool 
   HWControllerPIMPL::IsVisible(void) const {
-    visionMPI_.GetWandByID(id_)->IsVisible();
+    wand_->IsVisible();
   }
   
   /*!

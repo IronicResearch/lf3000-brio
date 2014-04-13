@@ -5,6 +5,11 @@
 #include <boost/shared_ptr.hpp>
 
 namespace LF {
+
+namespace Hardware {
+  class HWControllerPIMPL;
+}
+
 namespace Vision {
 
   // forward declaration
@@ -53,6 +58,7 @@ namespace Vision {
      */
     friend class VNWandTracker;
     friend class VNVisionMPI;
+    friend class LF::Hardware::HWControllerPIMPL;
   };
 
 } // namespace Vision

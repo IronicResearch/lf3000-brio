@@ -71,6 +71,7 @@ namespace Vision {
    */
   VNWand*
   VNVisionMPI::GetWandByID(LeapFrog::Brio::U32 id) const {
+    //TODO: handle multiple wands in conjunction with multiple controllers
     // for now we have just a single default wand, regardless of the id
     static VNWand* wandInstance = NULL;
     if (wandInstance == NULL) {

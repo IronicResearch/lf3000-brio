@@ -10,7 +10,7 @@
 
 namespace LF {
 namespace Hardware {
-  
+
   class HWControllerPIMPL {
   public:
     HWControllerPIMPL(HWController* controller);
@@ -75,6 +75,7 @@ namespace Hardware {
     LeapFrog::Brio::CDebugMPI debugMPI_;
 
     HWController* controller_;
+    LF::Vision::VNWand* wand_;
     LeapFrog::Brio::U8 id_;
     LeapFrog::Brio::U8 hw_version_;
     LeapFrog::Brio::U8 fw_version_;
