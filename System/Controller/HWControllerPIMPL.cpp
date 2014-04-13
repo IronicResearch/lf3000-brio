@@ -143,8 +143,7 @@ namespace Hardware {
 	    kHWControllerLEDBlue     |
 	    kHWControllerLEDOrange   |
 	    kHWControllerLEDTurqoise |
-	    kHWControllerLEDPurple   |
-	    kHWControllerLEDWhite);
+	    kHWControllerLEDPurple);
   }
   
   HWControllerLEDColor 
