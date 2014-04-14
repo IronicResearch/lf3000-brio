@@ -230,6 +230,7 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		Querying other displays is platform specific.
 	*/
 	eglDisplay = eglGetDisplay(ctx.eglDisplay);
+	printf("%s:%s:%d eglDisplay=%p\n", __FILE__, __FUNCTION__, __LINE__, eglDisplay);
 
 	/*
 		Step 2 - Initialize EGL.
@@ -336,6 +337,7 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 	if(ctx.width != ctx.owidth || ctx.height != ctx.oheight)
 	{
+		printf("%s:%s:%d ctx.owidth=%d ctx.oheight=%d\n", __FILE__, __FUNCTION__, __LINE__, ctx.owidth, ctx.oheight);
 		eglSetDrawingOrgSize(ctx.owidth, ctx.oheight);
 		eglEnableDrawingOrgSize();
 	}
@@ -345,9 +347,20 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 	if(brioOpenGLVersion == kBrioOpenGL11)
 	{
 		glEnableSpecialMode(GL_SPECIAL_MODE_LAST_TEXTURE_EN);
-		glEnableSpecialMode(GL_SPECIAL_MODE_PIXEL_FOG_EN);
-		glSetSpecialModeParam(GL_SPECIAL_MODE_PIXEL_FOG_EN, 3);
-		FILE *flag = fopen("/tmp/ogl_texfilteroff", "r");
+
+		FILE *flag = fopen("/tmp/ogl_pixelfog", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_pixelfog", "r");
+		if(flag)
+		{
+			int pixel_fog_value;
+			fscanf(flag, "%d\n",&pixel_fog_value);
+			glEnableSpecialMode(GL_SPECIAL_MODE_PIXEL_FOG_EN);
+			glSetSpecialModeParam(GL_SPECIAL_MODE_PIXEL_FOG_EN, pixel_fog_value);
+			fclose(flag);
+		}
+
+		flag = fopen("/tmp/ogl_texfilteroff", "r");
 		if(!flag)
 			flag = fopen("/flags/ogl_texfilteroff", "r");
 		if(flag)

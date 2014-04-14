@@ -40710,3 +40710,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/14/14 12:18 PM
 24,913 ms. (Cumulative: 22,523,795 ms)
 
 ----------------
+Revision 10,740 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding support for ogl_pixelfog flag.  This way Fog Fix is not globally applied.  I hope this fixes new Glasgow titles that are having problems using Fog.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/14/14 12:34 PM
+1 changed, 0 added, 0 deleted.
+25,050 ms. (Cumulative: 22,548,954 ms)
+
+----------------
