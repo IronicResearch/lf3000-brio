@@ -52,11 +52,15 @@ inline const char* SYSFS_TOUCHSCREEN_PATH(const char* path)
 		else {
 			SYSFS_TOUCHSCREEN_ROOT = "/sys/module/";
 			FILE *ts_driver = fopen("/tmp/ts_driver", "r");
-			char module_name[80];
-			fscanf(ts_driver, "%s", module_name);
-			fclose(ts_driver);
-			SYSFS_TOUCHSCREEN_ROOT += module_name;
-			SYSFS_TOUCHSCREEN_ROOT += "/parameters/";
+			if(ts_driver) {
+				char module_name[80];
+				fscanf(ts_driver, "%s", module_name);
+				fclose(ts_driver);
+				SYSFS_TOUCHSCREEN_ROOT += module_name;
+				SYSFS_TOUCHSCREEN_ROOT += "/parameters/";
+			} else {
+				SYSFS_TOUCHSCREEN_ROOT = "/error_no_ts";
+			}
 		}
 	}
 	return CString(SYSFS_TOUCHSCREEN_ROOT + path).c_str();
@@ -491,8 +495,11 @@ U32	CButtonMPI::GetTouchRate() const
 		}
 		else {
 			fd = fopen(SYSFS_TOUCHSCREEN_PATH("report_rate"), "r");
-			fscanf(fd, "%u\n", (unsigned int*)&rate);
-			fclose(fd);
+			if(fd)
+			{
+				fscanf(fd, "%u\n", (unsigned int*)&rate);
+				fclose(fd);
+			}
 		}
 	}
 	return rate;
