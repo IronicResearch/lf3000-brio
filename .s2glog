@@ -40692,3 +40692,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/13/14 3:27 PM
 25,361 ms. (Cumulative: 22,473,613 ms)
 
 ----------------
+Revision 10,738 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-319.  ButtonMPI now checks for successful file open before getting or setting TouchRate.  Should fix crashing.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/14/14 12:00 PM
+1 changed, 0 added, 0 deleted.
+25,003 ms. (Cumulative: 22,498,788 ms)
+
+----------------
