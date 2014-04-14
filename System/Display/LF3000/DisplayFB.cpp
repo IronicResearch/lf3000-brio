@@ -298,7 +298,7 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 		   flickering and also improper scaling due to change in virtual resolutions but not changing
 		   physical screen resolutions. Returning early on to avoid changing any parameters for Glasgow.  
 		*/
-		if (GetPlatformName() == "GLASGOW") 
+		if (isBlockAddr && GetPlatformName() == "GLASGOW")
 			return kNoErr;
 
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);

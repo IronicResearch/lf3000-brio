@@ -40701,3 +40701,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/14/14 12:00 PM
 25,003 ms. (Cumulative: 22,498,788 ms)
 
 ----------------
+Revision 10,739 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Additionally qualify with OGL conditional to avoid changing framebuffer varinfo parameters. (FWGLAS-331)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/14/14 12:18 PM
+1 changed, 0 added, 0 deleted.
+24,913 ms. (Cumulative: 22,523,795 ms)
+
+----------------
