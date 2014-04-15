@@ -481,7 +481,7 @@ private:
 
 //==============================================================================
 // LF3000 NXP-specific functionality
-#define MAX_NXP_BUFS	4
+#define MAX_NXP_BUFS	3
 class CNXPCameraModule : public CCameraModule {
 
 public:

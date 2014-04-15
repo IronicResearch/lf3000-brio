@@ -40719,3 +40719,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/14/14 12:34 PM
 25,050 ms. (Cumulative: 22,548,954 ms)
 
 ----------------
+Revision 10,741 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix for front camera tearing (FWSCRUM-2018)
+
+
+
+By jdcole (jdcole@leapfrog.com) on 4/15/14 10:50 AM
+1 changed, 0 added, 0 deleted.
+24,962 ms. (Cumulative: 22,574,010 ms)
+
+----------------
