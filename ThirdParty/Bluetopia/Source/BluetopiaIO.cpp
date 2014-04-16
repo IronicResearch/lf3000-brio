@@ -368,7 +368,7 @@ int BTIO_QueryForDevices(int handle)
 		unsigned int flags = DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_LOW_ENERGY;
 		BTAddr* addr = BTAddr::fromByteArray((const char*)&BD_ADDRList[i]);
 		DEVM_QueryRemoteDeviceProperties(BD_ADDRList[i], flags, &prop);
-		if (!strstr(prop.DeviceName, "Simple"))
+		if (!strstr(prop.DeviceName, "LeapTV") && !strstr(prop.DeviceName, "Simple"))
 			continue;
 #if USE_PAIRED_MODE
 		if (!(prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_PAIRED_OVER_LE))
@@ -421,7 +421,7 @@ int BTIO_ConnectToDevice(int handle, const BTAddr* device)
 	unsigned int flags = DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_LOW_ENERGY;
 	int q = DEVM_QueryRemoteDeviceProperties(BD_ADDR, flags, &prop);
 	if (0 == q) {
-		if (!strstr(prop.DeviceName, "Simple")) {
+		if (!strstr(prop.DeviceName, "LeapTV") && !strstr(prop.DeviceName, "Simple")) {
 			printf("DEVM_QueryRemoteDeviceProperties() returned %d for %s\n", q, prop.DeviceName);
 			return q;
 		}

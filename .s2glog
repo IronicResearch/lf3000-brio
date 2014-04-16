@@ -40730,3 +40730,19 @@ By jdcole (jdcole@leapfrog.com) on 4/15/14 10:50 AM
 24,962 ms. (Cumulative: 22,574,010 ms)
 
 ----------------
+Revision 10,742 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,897 ms. (Cumulative: 22,599,001 ms)
+
+----------------
+Revision 10,743 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added LeapTV to BT device names checks during queries.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/15/14 5:52 PM
+2 changed, 0 added, 0 deleted.
+25,146 ms. (Cumulative: 22,624,162 ms)
+
+----------------
