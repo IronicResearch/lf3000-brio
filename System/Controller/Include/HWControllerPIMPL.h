@@ -21,7 +21,7 @@ namespace Hardware {
      */
     LeapFrog::Brio::U8 GetID(void) const;
     LeapFrog::Brio::U8 GetHwVersion(void) const;
-    LeapFrog::Brio::U8 GetFwVersion(void) const;
+    LeapFrog::Brio::U16 GetFwVersion(void) const;
     HWControllerMode GetCurrentMode(void) const;
     bool IsConnected(void) const;
     LeapFrog::Brio::U32 GetControllerUpdateRate(void) const;
@@ -63,8 +63,12 @@ namespace Hardware {
     LeapFrog::Brio::tAccelerometerMode GetAccelerometerMode(void) const;
     LeapFrog::Brio::tErrType SetAccelerometerMode(const LeapFrog::Brio::tAccelerometerMode mode);
     
+    /*!
+    * Configuration Related Methods
+    */
     void LocalCallback(void*, void*, int);
     void SetID(LeapFrog::Brio::U8 id) { id_ = id; };
+    void SetVersionNumbers(LeapFrog::Brio::U8 hw, LeapFrog::Brio::U16 fw);
 
  private:
     Vision::VNVisionMPI visionMPI_;
@@ -78,7 +82,7 @@ namespace Hardware {
     LF::Vision::VNWand* wand_;
     LeapFrog::Brio::U8 id_;
     LeapFrog::Brio::U8 hw_version_;
-    LeapFrog::Brio::U8 fw_version_;
+    LeapFrog::Brio::U16 fw_version_;
     HWControllerMode mode_;
     HWControllerLEDColor color_;
     LeapFrog::Brio::U32 updateRate_;

@@ -89,7 +89,7 @@ namespace Hardware {
 	  return hw_version_;
   }
 
-  LeapFrog::Brio::U8
+  LeapFrog::Brio::U16
   HWControllerPIMPL::GetFwVersion(void) const {
 	  return fw_version_;
   }
@@ -252,6 +252,13 @@ namespace Hardware {
     accelerometerMPI_.SetAccelerometerMode(mode);
   }
   
+  void
+  HWControllerPIMPL::SetVersionNumbers(LeapFrog::Brio::U8 hw, LeapFrog::Brio::U16 fw)
+  {
+	  hw_version_ = hw; fw_version_ = fw;
+	  debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::SetVersionNumbers hw=%08x, fw=%08x\n", (unsigned int)hw_version_, (unsigned int)fw_version_);
+  }
+
   inline float BYTE_TO_FLOAT(U8 byte) {
   	  return (float)((int)byte - 128) / 128.0f;
   }
