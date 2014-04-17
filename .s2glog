@@ -40746,3 +40746,18 @@ By Dave Milici (dmilici@leapfrog.com) on 4/15/14 5:52 PM
 25,146 ms. (Cumulative: 22,624,162 ms)
 
 ----------------
+Revision 10,744 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,378 ms. (Cumulative: 22,649,665 ms)
+
+----------------
+Revision 10,745 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge branch 'develop'
+
+By Alex Lindblad (alindblad@leapfrog.com) on 4/16/14 6:05 PM
+6 changed, 2 added, 0 deleted.
+26,959 ms. (Cumulative: 22,676,624 ms)
+
+----------------

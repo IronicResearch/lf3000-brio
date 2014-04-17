@@ -31,6 +31,13 @@ namespace Vision {
   }
   
   void
+  VNVirtualTouch::Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
+			     LeapFrog::Brio::U16 frameProcessingHeight) {
+    pimpl_->Initialize(frameProcessingWidth,
+		       frameProcessingHeight);
+  }
+
+  void
   VNVirtualTouch::Execute(cv::Mat &input, cv::Mat &output) {
     pimpl_->Execute(input, output);
   }
