@@ -453,3 +453,56 @@ BTAddr* BTIO_GetLocalAddress(int handle)
 	return NULL;
 }
 
+int BTIO_GetControllerVersion(const char* device, unsigned char* hwVersion, unsigned short* fwVersion)
+{
+	BD_ADDR_t address;											//MAC address of the desired controller
+	Advertising_Data_t adData;									//Advertising data response
+	Advertising_Data_t scanResponseData;						//The scan response data
+	const int maxScanResponseDataEntries = 10;					//Maximum number of expected scan response entries
+	bool versionFound = false;									//Has the version number information been found?
+
+	ASSIGN_BD_ADDR(address, device[5], device[4], device[3], device[2], device[1], device[0]);
+
+	int dataResult = DEVM_QueryRemoteDeviceAdvertisingData(address, &adData, &scanResponseData);
+
+	/*
+	 //This code block is for debugging leaving it here as it will be very helpful if the packet ever changes
+	printf("****Query remote device data returned %d\r\n", dataResult);
+	printf("****Scan response data packet:");
+	for(int count = 0; count < ADVERTISING_DATA_MAXIMUM_SIZE; count++)
+	{
+		printf("%u:", unsigned(scanResponseData.Advertising_Data[count]));
+	}
+	printf("\r\n");
+	 */
+	if(dataResult == 2)
+	{
+		const Byte_t GAP_ADTYPE_MANUFACTURER_SPECIFIC  = 0xff;				//Identifier tag for the entry containing the version number information
+		const Byte_t GAP_ADTYPE_MANUFACTURER_DATA_LENGTH = 0x06;			//Expected length for the entry containing the version number information
+
+		//Walk the data structure looking for the GAP_ADTYPE_MANUFACTURER_SPECIFIC block
+		Byte_t *pCurrentDataBlock = &(scanResponseData.Advertising_Data[0]);		//Pointer into the data block to be searched for the version number
+		while(
+				(pCurrentDataBlock - scanResponseData.Advertising_Data) < SCAN_RESPONSE_DATA_MAXIMUM_SIZE
+				&& pCurrentDataBlock[0]
+			 )
+		{
+			if(pCurrentDataBlock[0] != GAP_ADTYPE_MANUFACTURER_DATA_LENGTH ||
+			   pCurrentDataBlock[1] != GAP_ADTYPE_MANUFACTURER_SPECIFIC)
+			{
+				pCurrentDataBlock += (pCurrentDataBlock[0] + 1);
+				continue;
+			}
+
+			//Found the correct block, extract the version numbers
+			*hwVersion = pCurrentDataBlock[4];
+			*fwVersion = (unsigned short)(pCurrentDataBlock[5]) * 256 + pCurrentDataBlock[6];
+			versionFound = true;
+			break;
+		}
+	}
+
+	return (versionFound ? 0 : 1);
+}
+
+

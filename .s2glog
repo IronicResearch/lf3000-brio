@@ -40761,3 +40761,15 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/16/14 6:05 PM
 26,959 ms. (Cumulative: 22,676,624 ms)
 
 ----------------
+Revision 10,746 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,747 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,748 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,749 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Updates controller MPI code to pick up the version numbers from the BT scan response data packet and expose the values to the public controller MPI. (FWGLAS-283)
+
+By Lmoore (Lmoore@leapfrog.com) on 4/17/14 11:45 AM
+7 changed, 0 added, 0 deleted.
+27,026 ms. (Cumulative: 22,703,759 ms)
+
+----------------

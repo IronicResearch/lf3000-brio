@@ -13,6 +13,7 @@ typedef int (*pFnQueryStatus)( int, int, void*, int, char* );
 typedef int (*pFnScanForDevices)( int, int );
 typedef int (*pFnConnectToDevice)( int, const BTAddr* );
 typedef BTAddr* (*pFnGetLocalAddress)( int ); 
+typedef int (*pFnGetControllerVersion)( const char*, unsigned char*, unsigned short*);
 
 typedef void (*pFnCallback)( void*, void*, int );
 typedef void (*pFnCallback2)( void*, void*, int, char* );
@@ -26,6 +27,7 @@ extern pFnQueryStatus			pBTIO_QueryStatus;
 extern pFnScanForDevices		pBTIO_ScanForDevices;
 extern pFnConnectToDevice		pBTIO_ConnectToDevice;
 extern pFnGetLocalAddress		pBTIO_GetLocalAddress;
+extern pFnGetControllerVersion	pBTIO_GetControllerVersion;
 
 #define BTIO_Init   			pBTIO_Init
 #define BTIO_Exit   			pBTIO_Exit
@@ -34,6 +36,7 @@ extern pFnGetLocalAddress		pBTIO_GetLocalAddress;
 #define BTIO_ScanForDevices		pBTIO_ScanForDevices
 #define BTIO_ConnectToDevice		pBTIO_ConnectToDevice
 #define BTIO_GetLocalAddress		pBTIO_GetLocalAddress
+#define BTIO_GetControllerVersion	pBTIO_GetControllerVersion
 
 #else
 
@@ -46,6 +49,7 @@ int BTIO_QueryStatus(int handle, int command, void* data, int length, char* addr
 int BTIO_ScanForDevices(int handle, int scan_time);
 int BTIO_ConnectToDevice(int handle, const BTAddr* device);
 BTAddr* BTIO_GetLocalAddress(int handle);
+int BTIO_GetControllerVersion(const char* device, unsigned char* hwVersion, unsigned short* fwVersion);
 
 };
 

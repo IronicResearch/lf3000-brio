@@ -54,11 +54,12 @@ namespace Hardware {
 
     void* dll_;
     int handle_;
-    pFnInit	    		pBTIO_Init_;
-    pFnExit 			pBTIO_Exit_;
-    pFnSendCommand		pBTIO_SendCommand_;
-    pFnQueryStatus		pBTIO_QueryStatus_;
-    pFnScanForDevices	pBTIO_ScanDevices_;
+    pFnInit	    			pBTIO_Init_;
+    pFnExit 				pBTIO_Exit_;
+    pFnSendCommand			pBTIO_SendCommand_;
+    pFnQueryStatus			pBTIO_QueryStatus_;
+    pFnScanForDevices		pBTIO_ScanDevices_;
+    pFnGetControllerVersion	pBTIO_GetControllerVersion_;
 
     static void DeviceCallback(void*, void*, int);
     static void InputCallback(void*, void*, int, char*);

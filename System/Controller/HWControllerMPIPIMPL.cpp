@@ -58,6 +58,7 @@ namespace Hardware {
 			pBTIO_SendCommand_ 	= (pFnSendCommand)dlsym(dll_, "BTIO_SendCommand");
 			pBTIO_QueryStatus_	= (pFnQueryStatus)dlsym(dll_, "BTIO_QueryStatus");
 			pBTIO_ScanDevices_	= (pFnScanForDevices)dlsym(dll_, "BTIO_ScanForDevices");
+			pBTIO_GetControllerVersion_ = (pFnGetControllerVersion)dlsym(dll_, "BTIO_GetControllerVersion");
 
 			// Connect to Bluetooth client service?
 			handle_ = pBTIO_Init_(this);
@@ -169,6 +170,14 @@ namespace Hardware {
       numControllers_++;
       HWControllerEventMessage qmsg(kHWControllerConnected, controller);
       eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
+
+
+      unsigned char hwVersion;
+      unsigned short fwVersion;
+      unsigned char* pHwVersion = &hwVersion;
+      unsigned short* pFwVersion = &fwVersion;
+      int resultVal = pBTIO_GetControllerVersion_(link, pHwVersion, pFwVersion);
+      if(!resultVal) controller->pimpl_ ->SetVersionNumbers(hwVersion, fwVersion);
 
 #ifdef ENABLE_PROFILING
       TimeStampOn(controller->GetID());
