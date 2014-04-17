@@ -42,6 +42,17 @@ namespace Vision {
     virtual ~VNVirtualTouch(void);
 
     /*!
+     * Virtual method to perform algorithm specific initialization
+     * The virtual touch algorithm resets camera settings to a "normal" state
+     * \param frameProcessingWidth the width of the frame size the vision mpi
+     * uses for processing
+     * \param frameProcessingHeight the height of the frame size the vision mpi
+     * uses for processing
+     */
+    virtual void Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
+			    LeapFrog::Brio::U16 frameProcessingHeight);
+
+    /*!
      * \brief SetLearningRate Valid ranges are 0.001 to 1.0 
      * the large the value of the learning rate the faster an object, that was moving,
      * will move in to the background.

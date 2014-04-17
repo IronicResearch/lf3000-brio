@@ -10,6 +10,7 @@
 #undef LF_PROFILE
 #include <VNProfiler.h>
 #include <VNInRange3.h>
+#include <VNAlgorithmHelpers.h>
 
 #if defined(EMULATION)
 #include <opencv2/highgui/highgui.hpp>
@@ -81,25 +82,6 @@ namespace Vision {
 					0,
 					width,
 					height));
-  }
-
-  LeapFrog::Brio::tControlInfo*
-  VNWandTrackerPIMPL::FindCameraControl(const LeapFrog::Brio::tCameraControls controls,
-					const LeapFrog::Brio::tControlType type) {
-    tControlInfo *c = NULL;
-    for(LeapFrog::Brio::tCameraControls::const_iterator i = controls.begin();
-	i != controls.end();
-	++i) {
-
-      c = *i;
-      if (!c)
-	continue;
-
-      if (c->type == type)
-	break;
-    }
-    
-    return c;
   }
 
   void

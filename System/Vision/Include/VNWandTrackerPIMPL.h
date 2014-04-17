@@ -34,9 +34,7 @@ namespace Vision {
     float minPercentToScale_;
     float minArea_;
 
-    LeapFrog::Brio::tControlInfo* FindCameraControl(const LeapFrog::Brio::tCameraControls controls,
-						    const LeapFrog::Brio::tControlType type);
-   void SetParams(VNInputParameters *params);
+    void SetParams(VNInputParameters *params);
     void ComputeLargestContour(cv::Mat& img, 
 			       std::vector<std::vector<cv::Point> > &contours,
 			       int &index);

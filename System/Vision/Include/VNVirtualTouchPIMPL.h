@@ -12,6 +12,8 @@ namespace Vision {
     VNVirtualTouchPIMPL(float learningRate);
     virtual ~VNVirtualTouchPIMPL(void);
     
+    void Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
+		    LeapFrog::Brio::U16 frameProcessingHeight);
     void Execute(cv::Mat &input, cv::Mat &output);
     
     float learningRate_;
