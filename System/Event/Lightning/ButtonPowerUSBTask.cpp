@@ -768,7 +768,7 @@ skip_usb_socket:
 								CTouchMessage mt_msg(mtd[touch_slot]);
 								pThis->PostEvent(mt_msg, kTouchEventPriority, 0);
 							}
-							else
+							else if(ev.code == SYN_REPORT)
 								pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
 
 							// Load tslib on demand?

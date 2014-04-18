@@ -40773,3 +40773,19 @@ By Lmoore (Lmoore@leapfrog.com) on 4/17/14 11:45 AM
 27,026 ms. (Cumulative: 22,703,759 ms)
 
 ----------------
+Revision 10,750 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,751 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+26,474 ms. (Cumulative: 22,730,374 ms)
+
+----------------
+Revision 10,752 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-1868.  Brio no longer posts SYN_MT_REPORT events as single touch events.  This solves double touch, double move, and double release events on NVD screens.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/18/14 4:37 PM
+1 changed, 0 added, 0 deleted.
+25,571 ms. (Cumulative: 22,755,945 ms)
+
+----------------
