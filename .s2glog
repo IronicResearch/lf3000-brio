@@ -40789,3 +40789,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/18/14 4:37 PM
 25,571 ms. (Cumulative: 22,755,945 ms)
 
 ----------------
+Revision 10,753 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-2135.  CameraNXP now properly sets video layer priority.  No longer locked to between the 2 RGB layers.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/19/14 12:21 PM
+1 changed, 0 added, 0 deleted.
+25,957 ms. (Cumulative: 22,781,996 ms)
+
+----------------
