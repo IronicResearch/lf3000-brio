@@ -24,6 +24,7 @@
 #include <linux/v4l2-mediabus.h>
 #include <lf3000/nxp-v4l2-media.h>
 #include <lf3000/nx_alloc_mem.h>
+#include <linux/lf1000/lf1000fb.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
@@ -476,7 +477,12 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
 		SetWindowScale(pCamCtx->surf, camCtx_.mode.width, camCtx_.mode.height);
 
-		v4l2_set_ctrl(nxphndl_, nxp_v4l2_mlc0_video, V4L2_CID_MLC_VID_PRIORITY, 1);
+		int fbdev = open("/dev/fb2", O_RDWR | O_SYNC);
+		struct fb_var_screeninfo vinfo;
+		ioctl(fbdev, FBIOGET_VSCREENINFO, &vinfo);
+		close(fbdev);
+		int priority = (vinfo.nonstd & (3<<LF1000_NONSTD_PRIORITY)) >> LF1000_NONSTD_PRIORITY;
+		v4l2_set_ctrl(nxphndl_, nxp_v4l2_mlc0_video, V4L2_CID_MLC_VID_PRIORITY, priority);
 
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
 		overlay_ = true;
