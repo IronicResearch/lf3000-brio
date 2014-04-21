@@ -40798,3 +40798,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/19/14 12:21 PM
 25,957 ms. (Cumulative: 22,781,996 ms)
 
 ----------------
+Revision 10,754 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Exposed DEVM_EnableBluetoothDebug and DEVM_DeleteRemoteDevice in libBluetopiaIO.so (FWGLAS-379)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 4/21/14 9:41 AM
+3 changed, 0 added, 0 deleted.
+27,522 ms. (Cumulative: 22,809,628 ms)
+
+----------------
