@@ -542,6 +542,13 @@ Boolean CNXPCameraModule::StopVideoCaptureInt(int fd)
 	v4l2_streamoff(nxphndl_, clipper_);
 	streaming_ = false;
 	overlay_ = false;
+
+	for (int i = 0; i < maxcnt_; i++) {
+		int index = 0;
+		v4l2_dqbuf(nxphndl_, nxp_v4l2_mlc0_video, 3, &index, NULL);
+		v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
+	}
+
 	return true;
 }
 //----------------------------------------------------------------------------

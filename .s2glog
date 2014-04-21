@@ -40826,3 +40826,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/21/14 11:46 AM
 25,758 ms. (Cumulative: 22,862,454 ms)
 
 ----------------
+Revision 10,757 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Make sure to dequeue all pending V4L buffers when turning off streaming before ION reallocations.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/21/14 12:17 PM
+1 changed, 0 added, 0 deleted.
+25,397 ms. (Cumulative: 22,887,945 ms)
+
+----------------
