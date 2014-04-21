@@ -505,4 +505,32 @@ int BTIO_GetControllerVersion(const char* device, unsigned char* hwVersion, unsi
 	return (versionFound ? 0 : 1);
 }
 
+int BTIO_DeleteRemoteDevice(const char *device)
+{
+	BD_ADDR_t address;											//MAC address of the desired controller
+
+	if (!device)
+		return BTPM_ERROR_CODE_INVALID_PARAMETER;
+
+	ASSIGN_BD_ADDR(address, device[5], device[4], device[3], device[2], device[1], device[0]);
+
+	int result = DEVM_DeleteRemoteDevice(address);
+
+	return result;
+}
+
+int BTIO_EnableBluetoothDebug(bool enable, unsigned int type, unsigned long flags, const char *filename)
+{
+	unsigned int nameLength = 0;			//Current length of the filename, if present
+
+	if(filename)
+	{
+		nameLength = strlen(filename) + 1;
+	}
+
+	int result = DEVM_EnableBluetoothDebug((enable ? 1 : 0), type, flags, nameLength, (unsigned char *)(filename));
+
+	return result;
+
+}
 
