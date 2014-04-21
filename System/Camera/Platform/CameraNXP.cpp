@@ -184,6 +184,20 @@ inline void SetWindowScale(tVideoSurf* pSurf, int sw, int sh)
 	dispmgr.SetVideoScaler(hvideo, sw, sh, false);
 }
 
+//----------------------------------------------------------------------------
+inline int GetZOrderPriority(void)
+{
+	int priority = 1;
+	int fbdev = open("/dev/fb2", O_RDWR | O_SYNC);
+	struct fb_var_screeninfo vinfo;
+	if (fbdev > 0) {
+		ioctl(fbdev, FBIOGET_VSCREENINFO, &vinfo);
+		close(fbdev);
+		priority = (vinfo.nonstd & (3<<LF1000_NONSTD_PRIORITY)) >> LF1000_NONSTD_PRIORITY;
+	}
+	return priority;
+}
+
 //============================================================================
 // CCameraModule: Informational functions
 //============================================================================
@@ -477,11 +491,7 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 		v4l2_set_crop(nxphndl_, nxp_v4l2_mlc0_video, x, y, pCamCtx->surf->width, pCamCtx->surf->height);
 		SetWindowScale(pCamCtx->surf, camCtx_.mode.width, camCtx_.mode.height);
 
-		int fbdev = open("/dev/fb2", O_RDWR | O_SYNC);
-		struct fb_var_screeninfo vinfo;
-		ioctl(fbdev, FBIOGET_VSCREENINFO, &vinfo);
-		close(fbdev);
-		int priority = (vinfo.nonstd & (3<<LF1000_NONSTD_PRIORITY)) >> LF1000_NONSTD_PRIORITY;
+		int priority = GetZOrderPriority();
 		v4l2_set_ctrl(nxphndl_, nxp_v4l2_mlc0_video, V4L2_CID_MLC_VID_PRIORITY, priority);
 
 		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);

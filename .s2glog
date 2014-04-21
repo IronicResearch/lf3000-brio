@@ -40807,3 +40807,13 @@ By Lloyd Moore (lmoore@leapfrog.com) on 4/21/14 9:41 AM
 27,522 ms. (Cumulative: 22,809,628 ms)
 
 ----------------
+Revision 10,755 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Followup svn -r10753 for framebuffer z-order priority query in subroutine for clarity. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/21/14 10:48 AM
+1 changed, 0 added, 0 deleted.
+26,866 ms. (Cumulative: 22,836,603 ms)
+
+----------------
