@@ -40845,3 +40845,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/21/14 12:53 PM
 25,611 ms. (Cumulative: 22,913,712 ms)
 
 ----------------
+Revision 10,759 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-1282.  Clearing controls and modes list on CameraNXP destruction.  Not doing this seemed to have caused a memory corruption.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/21/14 4:53 PM
+1 changed, 0 added, 0 deleted.
+25,099 ms. (Cumulative: 22,938,920 ms)
+
+----------------
