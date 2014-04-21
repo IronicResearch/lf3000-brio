@@ -6,19 +6,8 @@
 namespace LF {
 namespace Vision {
 
-  static const VNPixelType kVNWandHueDefault = kVNWandGreenHue;
-  static const VNPixelType kVNWandSaturationDefault = kVNWandGreenSaturation;
-  static const VNPixelType kVNWandBrightnessDefault = kVNWandGreenBrightness;
-  static const VNPixelType kVNWandHueWidthDefault = 36; //50;
-
-  static const VNPixelType kVNWandHueMin = kVNMinPixelValue;
-  static const VNPixelType kVNWandHueMax = kVNMaxPixelValue;
-  static const VNPixelType kVNWandHueWidthMin = kVNMinPixelValue;
-  static const VNPixelType kVNWandHueWidthMax = kVNMaxPixelValue;
-  static const VNPixelType kVNWandSaturationMin = kVNMinPixelValue;
-  static const VNPixelType kVNWandSaturationMax = kVNMaxPixelValue;
-  static const VNPixelType kVNWandBrightnessMin = kVNMinPixelValue;
-  static const VNPixelType kVNWandBrightnessMax = kVNMaxPixelValue;
+  static const cv::Scalar kVNWandDefaultHSVMin = kVNWandGreenMin;
+  static const cv::Scalar kVNWandDefaultHSVMax = kVNWandGreenMax;
 
   static const LeapFrog::Brio::S16 kVNNoWandLocationX = -10000;
   static const LeapFrog::Brio::S16 kVNNoWandLocationY = -10000;
@@ -27,12 +16,8 @@ namespace Vision {
   VNWandPIMPL::VNWandPIMPL(void) :
     visible_(false),
     location_(VNPoint(kVNNoWandLocationX, kVNNoWandLocationY)),
-    hsvMin_(kVNWandHueDefault-0.5*kVNWandHueWidthDefault,
-	    kVNWandSaturationDefault,
-	    kVNWandBrightnessDefault),
-    hsvMax_(kVNWandHueDefault+0.5*kVNWandHueWidthDefault,
-	    kVNMaxPixelValue,
-	    kVNMaxPixelValue),
+    hsvMin_(kVNWandDefaultHSVMin),
+    hsvMax_(kVNWandDefaultHSVMax),
     debugMPI_(kGroupVision),
     translator_(VNCoordinateTranslator::Instance()) {
   }
@@ -57,54 +42,37 @@ namespace Vision {
   void
   VNWandPIMPL::SetColor(const LF::Hardware::HWControllerLEDColor color) {
     debugMPI_.DebugOut(kDbgLvlValuable, "VNWandPIMPL::SetColor %08x\n", (unsigned int)color);
-    VNPixelType hue = 0;
-    VNPixelType saturation = 0;
-    VNPixelType brightness = 0;
+
     if (color == LF::Hardware::kHWControllerLEDGreen) {
-      hue = kVNWandGreenHue;
-      saturation = kVNWandGreenSaturation;
-      brightness = kVNWandGreenBrightness;	
+      hsvMin_ = kVNWandGreenMin;
+      hsvMax_ = kVNWandGreenMax;
+
     } else if(color == LF::Hardware::kHWControllerLEDRed) {
-      hue = kVNWandRedHue;
-      saturation = kVNWandRedSaturation;
-      brightness = kVNWandRedBrightness;	
+      hsvMin_ = kVNWandRedMin;
+      hsvMax_ = kVNWandRedMax;
+
     } else if (color == LF::Hardware::kHWControllerLEDBlue) {
-      hue = kVNWandBlueHue;
-      saturation = kVNWandBlueSaturation;
-      brightness = kVNWandBlueBrightness;	
+      hsvMin_ = kVNWandBlueMin;
+      hsvMax_ = kVNWandBlueMax;
+
     } else if (color == LF::Hardware::kHWControllerLEDOrange) {
-      hue = kVNWandOrangeHue;
-      saturation = kVNWandOrangeSaturation;
-      brightness = kVNWandOrangeBrightness;	
+      hsvMin_ = kVNWandOrangeMin;
+      hsvMax_ = kVNWandOrangeMax;
+
     } else if (color == LF::Hardware::kHWControllerLEDTurqoise) {
-      hue = kVNWandTurqoiseHue;
-      saturation = kVNWandTurqoiseSaturation;
-      brightness = kVNWandTurqoiseBrightness;	
+      hsvMin_ = kVNWandTurqoiseMin;
+      hsvMax_ = kVNWandTurqoiseMax;
+
     } else if (color == LF::Hardware::kHWControllerLEDPurple) {
-      hue = kVNWandPurpleHue;
-      saturation = kVNWandPurpleSaturation;
-      brightness = kVNWandPurpleBrightness;	
+      hsvMin_ = kVNWandPurpleMin;
+      hsvMax_ = kVNWandPurpleMax;
+
     } else {
       // this handles kHWControllerLEDOff case
-      hue = kVNWandHueDefault;
-      saturation = kVNWandSaturationDefault;
-      brightness = kVNWandBrightnessDefault;
+      hsvMin_ = kVNWandDefaultHSVMin;
+      hsvMax_ = kVNWandDefaultHSVMax;
+
     }
-
-    //NOTE: if using opencv RGB-->HSV the Hue values are in the range
-    // of 0-180, however, the NEON and C-based implementation in
-    // VNRGB2HSV.cpp are in the range 0-255.  This is only imporatant
-    // if debuggin with OpenCV as both the emulator and device conversions
-    // use the methods in VNRGB2HSV.cpp
-    hsvMin_[0] = hue-0.5*kVNWandHueWidthDefault;
-    hsvMin_[1] = saturation;
-    hsvMin_[2] = brightness;
-    if (hsvMin_[0] < 0) hsvMin_[0] = 0;
-
-    hsvMax_[0] = hue+0.5*kVNWandHueWidthDefault;
-    hsvMax_[1] = kVNMaxPixelValue;
-    hsvMax_[2] = kVNMaxPixelValue;
-    if (hsvMax_[0] > kVNMaxPixelValue) hsvMax_[0] = kVNMaxPixelValue;
   }
 
   bool
