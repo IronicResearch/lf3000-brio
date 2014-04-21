@@ -283,10 +283,12 @@ CNXPCameraModule::~CNXPCameraModule()
 	for (cit = camCtx_.controls->begin(); cit != camCtx_.controls->end(); cit++) {
 		delete *cit;
 	}
+	camCtx_.controls->clear();
 
 	for (mit = camCtx_.modes->begin(); mit != camCtx_.modes->end(); mit++) {
 		delete *mit;
 	}
+	camCtx_.modes->clear();
 }
 
 //----------------------------------------------------------------------------
