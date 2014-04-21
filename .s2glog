@@ -40817,3 +40817,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/21/14 10:48 AM
 26,866 ms. (Cumulative: 22,836,603 ms)
 
 ----------------
+Revision 10,756 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-2093.  Brio now checks for /flags/ogl_vtxxoffet, /tmp/ogl_vtxxoffset, /flags/ogl_vtxyoffset,/tmp/ogl_vtxyoffset.  If flags are present the file is scanned, value read in and used for setting OpenGL special mode.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/21/14 11:46 AM
+1 changed, 0 added, 0 deleted.
+25,758 ms. (Cumulative: 22,862,454 ms)
+
+----------------

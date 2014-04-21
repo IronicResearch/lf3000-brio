@@ -369,6 +369,30 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			fclose(flag);
 		}
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		flag = fopen("/tmp/ogl_vtxxoffset", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_vtxxoffset", "r");
+		if(flag)
+		{
+			int vtx_x_offset;
+			fscanf(flag, "%d\n",&vtx_x_offset);
+			glEnableSpecialMode(4);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_X_OFFSET);
+			glSetSpecialModeParam(4, vtx_x_offset);//glSetSpecialModeParam(GL_SPECIAL_MODE_VTX_X_OFFSET, vtx_x_offset);
+			fclose(flag);
+		}
+
+		flag = fopen("/tmp/ogl_vtxyoffset", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_vtxyoffset", "r");
+		if(flag)
+		{
+			int vtx_y_offset;
+			fscanf(flag, "%d\n",&vtx_y_offset);
+			glEnableSpecialMode(5);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_Y_OFFSET);
+			glSetSpecialModeParam(5, vtx_y_offset);//glSetSpecialModeParam(GL_SPECIAL_MODE_VTX_Y_OFFSET, vtx_y_offset);
+			fclose(flag);
+		}
 	}
 
 	glClearColorx(0, 0, 0, 0);
