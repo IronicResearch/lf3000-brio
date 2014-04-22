@@ -40863,3 +40863,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/22/14 11:47 AM
 25,006 ms. (Cumulative: 22,964,020 ms)
 
 ----------------
+Revision 10,761 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Backing out 1760.  Back to using int instead of #define value.  Unbreak build.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/22/14 1:06 PM
+1 changed, 0 added, 0 deleted.
+25,367 ms. (Cumulative: 22,989,496 ms)
+
+----------------
