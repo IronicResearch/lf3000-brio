@@ -365,7 +365,7 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			flag = fopen("/flags/ogl_texfilteroff", "r");
 		if(flag)
 		{
-			glEnableSpecialMode(2);//glEnableSpecialMode(GL_SPECIAL_MODE_TEX_FILTER_OFF);
+			glEnableSpecialMode(GL_SPECIAL_MODE_TEX_FILTER_OFF);
 			fclose(flag);
 		}
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -377,8 +377,8 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		{
 			int vtx_x_offset;
 			fscanf(flag, "%d\n",&vtx_x_offset);
-			glEnableSpecialMode(4);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_X_OFFSET);
-			glSetSpecialModeParam(4, vtx_x_offset);//glSetSpecialModeParam(GL_SPECIAL_MODE_VTX_X_OFFSET, vtx_x_offset);
+			glEnableSpecialMode(GL_SPECIAL_MODE_VTX_X_OFFSET);
+			glSetSpecialModeParam(GL_SPECIAL_MODE_VTX_X_OFFSET, vtx_x_offset);
 			fclose(flag);
 		}
 
@@ -389,8 +389,8 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		{
 			int vtx_y_offset;
 			fscanf(flag, "%d\n",&vtx_y_offset);
-			glEnableSpecialMode(5);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_Y_OFFSET);
-			glSetSpecialModeParam(5, vtx_y_offset);//glSetSpecialModeParam(GL_SPECIAL_MODE_VTX_Y_OFFSET, vtx_y_offset);
+			glEnableSpecialMode(GL_SPECIAL_MODE_VTX_Y_OFFSET);
+			glSetSpecialModeParam(GL_SPECIAL_MODE_VTX_Y_OFFSET, vtx_y_offset);
 			fclose(flag);
 		}
 	}

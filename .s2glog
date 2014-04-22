@@ -40854,3 +40854,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/21/14 4:53 PM
 25,099 ms. (Cumulative: 22,938,920 ms)
 
 ----------------
+Revision 10,760 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+BrioOpenGLConfig using LF3000 flags from gl.h instead of integers.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/22/14 11:47 AM
+1 changed, 0 added, 0 deleted.
+25,006 ms. (Cumulative: 22,964,020 ms)
+
+----------------
