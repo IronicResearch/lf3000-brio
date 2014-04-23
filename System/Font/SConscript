@@ -52,7 +52,8 @@ else:
 
 if env['buildtests']:
 	if env['cpu'] != 'x86':
-		targets.append(RunMyTests(module_name, [], mpilibs + ogllibs + ['DisplayMPI', 'EventMPI'], myenv))
+		#targets.append(RunMyTests(module_name, [], mpilibs + ogllibs + ['DisplayMPI', 'EventMPI'], myenv))
+		print "WARNING: Font test disabled in emulation until fixed!"
 	else:
 		print "WARNING: Font test disabled in emulation until fixed!"
 

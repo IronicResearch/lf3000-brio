@@ -40894,3 +40894,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/23/14 11:18 AM
 24,825 ms. (Cumulative: 23,065,133 ms)
 
 ----------------
+Revision 10,765 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Disable unit tests for DisplayMPI and FontMPI until OGL dependency can be sorted out. (FIXME)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/23/14 11:19 AM
+2 changed, 0 added, 0 deleted.
+24,955 ms. (Cumulative: 23,090,198 ms)
+
+----------------
