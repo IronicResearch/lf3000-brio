@@ -40872,3 +40872,25 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/22/14 1:06 PM
 25,367 ms. (Cumulative: 22,989,496 ms)
 
 ----------------
+Revision 10,762 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+26,018 ms. (Cumulative: 23,015,592 ms)
+
+----------------
+Revision 10,763 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,716 ms. (Cumulative: 23,040,308 ms)
+
+----------------
+Revision 10,764 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Re-order compile-time conditionals for auto-generated tests.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/23/14 11:18 AM
+1 changed, 0 added, 0 deleted.
+24,825 ms. (Cumulative: 23,065,133 ms)
+
+----------------

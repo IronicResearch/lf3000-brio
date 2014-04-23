@@ -667,10 +667,10 @@ public:
 		TS_ASSERT( lengthSec < 6 && lengthSec > 4);
 	}
 
-#if USE_GSTREAMER
 	//------------------------------------------------------------------------
 	void testVideoGStreamer()
 	{
+#if USE_GSTREAMER
 		PRINT_TEST_NAME();
 
 		tVideoHndl	video;
@@ -707,14 +707,14 @@ public:
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
 		delete pDisplayMPI_;
-	}
 #endif
+	}
 
 
-#if USE_ROTATOR
 	//------------------------------------------------------------------------
 	void testVideoRotator()
 	{
+#if USE_ROTATOR
 		PRINT_TEST_NAME();
 
 		tVideoHndl	video;
@@ -755,8 +755,8 @@ public:
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
 		delete pDisplayMPI_;
-	}
 #endif
+	}
 
 };
 
