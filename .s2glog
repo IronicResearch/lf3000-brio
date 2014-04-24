@@ -40904,3 +40904,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/23/14 11:19 AM
 24,955 ms. (Cumulative: 23,090,198 ms)
 
 ----------------
+Revision 10,766 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixed captured frame timestamp used elapsed time calculation. (FWSCRUM-2179 1:2)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/23/14 5:01 PM
+1 changed, 0 added, 0 deleted.
+24,942 ms. (Cumulative: 23,115,233 ms)
+
+----------------
