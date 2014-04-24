@@ -59,6 +59,31 @@ namespace
 //============================================================================
 
 //----------------------------------------------------------------------------
+inline void CalcTimeDiff(struct timeval& tvt, struct timeval& tvn, struct timeval& tv0)
+{
+	// Calculate difference in first and last video timestamps
+	if (tvn.tv_usec < tv0.tv_usec) {
+		tvn.tv_usec += 1000000;
+		tvn.tv_sec--;
+	}
+	tvt.tv_sec  += (tvn.tv_sec - tv0.tv_sec);
+	tvt.tv_usec += (tvn.tv_usec - tv0.tv_usec);
+	if (tvt.tv_usec > 1000000) {
+		tvt.tv_usec -= 1000000;
+		tvt.tv_sec++;
+	}
+}
+
+//----------------------------------------------------------------------------
+inline long long int CalcTimeElapsed(struct timeval& tvt, struct timeval& tvn, struct timeval& tv0)
+{
+	// Calculate linear time difference of video timestamps in usecs
+	struct timeval tvx = tvt; //{0, 0};
+	CalcTimeDiff(tvx, tvn, tv0);
+	return 1000000LL * tvx.tv_sec + tvx.tv_usec;
+}
+
+//----------------------------------------------------------------------------
 static void TimerCallback(tTimerHndl arg)
 {
 	// Let camera capture thread terminate itself
@@ -297,17 +322,7 @@ void* CameraTaskMain(void* arg)
 			if(bFirst)
 			{
 				// Calculate difference in first and last video timestamps
-				if (tvn.tv_usec < tv0.tv_usec) {
-					tvn.tv_usec += 1000000;
-					tvn.tv_sec--;
-				}
-				tvt.tv_sec	+= (tvn.tv_sec - tv0.tv_sec);
-				tvt.tv_usec += (tvn.tv_usec - tv0.tv_usec);
-				if(tvt.tv_usec > 1000000)
-				{
-					tvt.tv_usec -= 1000000;
-					tvt.tv_sec++;
-				}
+				CalcTimeDiff(tvt, tvn, tv0);
 			}
 		}
 
@@ -397,9 +412,12 @@ void* CameraTaskMain(void* arg)
 					r = AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 				//} while (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter);
 
+#if defined(LF1000)
 				// Audio block counter is based on cummulative bytes written
 				if (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter)
 					keyframe = cam->micCtx_.counter;
+#endif
+				dbg.DebugOut( kDbgLvlVerbose, "v4l frame=%d, key frame=%d, mic frame=%d\n", framecount, keyframe, cam->micCtx_.counter);
 
 				// Breakout on next loop iteration if AVI write error
 				if (r < 0)
@@ -418,6 +436,9 @@ void* CameraTaskMain(void* arg)
 
 				tv0 = tvn;
 			}
+
+			// Calculate video keyframe based on elapsed timestamp
+			keyframe = (int)((long long int)pCtx->fps * CalcTimeElapsed(tvt, tvn, tv0) / 1000000LL);
 		}
 
 		if (!bQueued)
@@ -438,17 +459,7 @@ void* CameraTaskMain(void* arg)
 	if(bFirst && !bWasPaused)
 	{
 		// Calculate difference in first and last video timestamps
-		if (tvn.tv_usec < tv0.tv_usec) {
-			tvn.tv_usec += 1000000;
-			tvn.tv_sec--;
-		}
-		tvt.tv_sec	+= (tvn.tv_sec - tv0.tv_sec);
-		tvt.tv_usec += (tvn.tv_usec - tv0.tv_usec);
-		if(tvt.tv_usec > 1000000)
-		{
-			tvt.tv_usec -= 1000000;
-			tvt.tv_sec++;
-		}
+		CalcTimeDiff(tvt, tvn, tv0);
 	}
 	elapsed = 1000000 * (tvt.tv_sec) + (tvt.tv_usec);
 
@@ -456,14 +467,15 @@ void* CameraTaskMain(void* arg)
 
 	if(bFile)
 	{
+#if defined(LF1000)
 		float fps = (float)keyframe / ((float)elapsed / 1000000);
 
 		// Actual FPS rate is based on cummulative audio bytes written
 		if (pCtx->bAudio)
 			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
-		//printf("fps=%f\n",fps);
 
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, V4L2_PIX_FMT_MJPEG);
+#endif
 		AVI_close(avi);
 	}
 
