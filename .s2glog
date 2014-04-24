@@ -40913,3 +40913,22 @@ By Dave Milici (dmilici@leapfrog.com) on 4/23/14 5:01 PM
 24,942 ms. (Cumulative: 23,115,233 ms)
 
 ----------------
+Revision 10,767 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,691 ms. (Cumulative: 23,140,018 ms)
+
+----------------
+Revision 10,768 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,769 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,770 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,771 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Calculate video keyframe based on elapsed timestamps. (FWSCRUM-2179 2:2)
+Deprecated AVI FPS fixup on audio stats as LF1000 hangover.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/24/14 1:44 PM
+1 changed, 0 added, 0 deleted.
+24,910 ms. (Cumulative: 23,164,959 ms)
+
+----------------
