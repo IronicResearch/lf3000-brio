@@ -19,6 +19,7 @@ namespace Vision {
   class VNAlgorithm;
   class VNWandTracker;
   class VNHotSpotPIMPL;
+  class VNWand;
 
   /*!
    * \class VNVisionMPI
@@ -82,6 +83,16 @@ namespace Vision {
      * \return A pointer to the current VNAlgorithm
      */
     VNAlgorithm* GetAlgorithm(void) const;
+
+    /*!
+     * DEPRECATED - this method only returns NULL and is begin removed in
+     * an upcomgin release. 
+     * GetWandByID
+     * \breif With no parameter, this method will return the default wand
+     * \param id the unique identifier of the desired wand.
+     * \return A ponter to the VNWand object associated with the id
+     */
+    VNWand* GetWandByID(LeapFrog::Brio::U32 id = 0) const;
 
     /*!
      * \brief AddHotSpot adds a hot spot to the mpi for tracking/triggering.

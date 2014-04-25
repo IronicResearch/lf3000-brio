@@ -67,6 +67,11 @@ namespace Vision {
     return pimpl_->algorithm_;
   }
   
+  VNWand*
+  VNVisionMPI::GetWandByID(LeapFrog::Brio::U32 id) const {
+    return NULL;
+  }
+
   /*!
    * Add/Remove hot spots
    */
