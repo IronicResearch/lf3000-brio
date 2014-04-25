@@ -40956,3 +40956,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/25/14 10:40 AM
 25,579 ms. (Cumulative: 23,216,346 ms)
 
 ----------------
+Revision 10,774 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add GetWandByID back in to fix build, returns NULL
+
+By Alex Lindblad (alindblad@leapfrog.com) on 4/25/14 12:56 PM
+2 changed, 0 added, 0 deleted.
+26,464 ms. (Cumulative: 23,242,903 ms)
+
+----------------
