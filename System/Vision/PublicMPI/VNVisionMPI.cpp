@@ -3,6 +3,7 @@
 #include <Vision/VNAlgorithm.h>
 #include <Vision/VNHotSpot.h>
 #include <Vision/VNWand.h>
+#include <VNWandPIMPL.h>
 #include <algorithm>
 
 static const LeapFrog::Brio::CString kVNVisionMPIName("VNVisionMPI");
@@ -66,20 +67,6 @@ namespace Vision {
     return pimpl_->algorithm_;
   }
   
-  /*!
-   * Return a Wand by ID
-   */
-  VNWand*
-  VNVisionMPI::GetWandByID(LeapFrog::Brio::U32 id) const {
-    //TODO: handle multiple wands in conjunction with multiple controllers
-    // for now we have just a single default wand, regardless of the id
-    static VNWand* wandInstance = NULL;
-    if (wandInstance == NULL) {
-      wandInstance = new VNWand();
-    }
-    return wandInstance;
-  }
-
   /*!
    * Add/Remove hot spots
    */

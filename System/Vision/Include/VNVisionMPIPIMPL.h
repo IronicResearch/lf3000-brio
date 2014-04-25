@@ -37,7 +37,9 @@ namespace Vision {
     LeapFrog::Brio::Boolean Resume(void);
     
     void TriggerHotSpots(void);
-    
+    void SetCurrentWand(VNWand *wand);
+    VNWand* GetCurrentWand(void) const;
+
     bool visionAlgorithmRunning_;
     float frameProcessingRate_;
     std::vector<const VNHotSpot*> hotSpots_;
@@ -79,6 +81,7 @@ namespace Vision {
     int frameCount_;
     LeapFrog::Brio::U16 frameProcessingWidth_;
     LeapFrog::Brio::U16 frameProcessingHeight_;
+    VNWand *currentWand_;
 
 #if defined(EMULATION)
     bool showOCVDebugOutput_;

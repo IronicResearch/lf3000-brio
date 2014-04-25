@@ -43,7 +43,8 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, LeapFrog::Brio::FirstEvent(LeapFrog::Bri
    * HW_CONTROLLER_ERRORS
    */
 #define HW_CONTROLLER_ERRORS			\
- (kHWControllerEmulationConfigErr)
+  (kHWControllerEmulationConfigErr)		\
+    (kHWControllerNotInWandModeForTracking)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::kGroupController), HW_CONTROLLER_ERRORS)
 
@@ -84,6 +85,11 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::
   static HWControllerLEDColor kHWControllerLEDOrange   = (1 << 3);
   static HWControllerLEDColor kHWControllerLEDTurqoise = (1 << 4);
   static HWControllerLEDColor kHWControllerLEDPurple   = (1 << 5);
+
+  /*!
+   * Default LED color for light tracking
+   */
+  static HWControllerLEDColor kHWControllerLEDDefaultColor = kHWControllerLEDGreen;
 
   typedef LeapFrog::Brio::U8 HWControllerRGBLEDColor;
   static const HWControllerRGBLEDColor HWControllerLEDGreenRGB[3] = {215, 244, 154};

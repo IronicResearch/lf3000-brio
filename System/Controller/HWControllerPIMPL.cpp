@@ -4,6 +4,7 @@
 #include <Hardware/HWControllerEventMessage.h>
 #include <Vision/VNWand.h>
 #include <VNWandPIMPL.h>
+#include <VNVisionMPIPIMPL.h>
 #include <string.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -29,12 +30,19 @@ namespace Hardware {
 	debugMPI_.SetDebugLevel(kDbgLvlVerbose);
 #endif
     debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL constructor for %p\n", controller_);
-    wand_ = visionMPI_.GetWandByID(id_);
+    wand_ = new Vision::VNWand();
     assert(wand_);
     ZeroAllData();
   }
 
   HWControllerPIMPL::~HWControllerPIMPL(void) {
+    if (wand_) delete wand_;
+  }
+  
+  void
+  HWControllerPIMPL::SetID(LeapFrog::Brio::U8 id) {
+    id_ = id;
+    wand_->pimpl_->SetID(id_);
   }
   
   void
@@ -165,7 +173,7 @@ namespace Hardware {
   
   Vision::VNPoint 
   HWControllerPIMPL::GetLocation(void) const {
-    wand_->GetLocation();
+    return wand_->GetLocation();
   }
   
   bool 
@@ -173,6 +181,16 @@ namespace Hardware {
     wand_->IsVisible();
   }
   
+  LeapFrog::Brio::tErrType
+  HWControllerPIMPL::StartTracking(HWControllerLEDColor color) {
+    if (GetCurrentMode() == kHWControllerWandMode) {
+      SetLEDColor(color);
+      visionMPI_.pimpl_->SetCurrentWand(wand_);
+      return kNoErr;
+    }
+    return kHWControllerNotInWandModeForTracking;
+  }
+
   /*!
    * Button Related Methods
    */

@@ -25,6 +25,7 @@ namespace Vision {
    * Currently the hue, saturation and intensity are fixed for the specific 
    * LF wand light color.
    */
+  class VNVisionMPIPIMPL;
   class VNWandTrackerPIMPL;
   class VNWandTracker : public VNAlgorithm {
   public:
@@ -120,6 +121,8 @@ namespace Vision {
      */
     VNWandTracker(const VNWandTracker& wt);
     VNWandTracker& operator=(const VNWandTracker& wt);
+
+    friend class VNVisionMPIPIMPL;
   };
 
 } // namespace Vision

@@ -7,12 +7,18 @@
 //#include <boost/shared_ptr.hpp>
 
 namespace LF {
+
+namespace Hardware {
+  class HWControllerPIMPL;
+}
+
 namespace Vision {
 
   // forward declaration
   class VNHotSpot;
   class VNAlgorithm;
-  class VNWand;
+  class VNWandTracker;
+  class VNHotSpotPIMPL;
 
   /*!
    * \class VNVisionMPI
@@ -76,14 +82,6 @@ namespace Vision {
      * \return A pointer to the current VNAlgorithm
      */
     VNAlgorithm* GetAlgorithm(void) const;
-
-    /*!
-     * GetWandByID
-     * \breif With no parameter, this method will return the default wand
-     * \param id the unique identifier of the desired wand.
-     * \return A ponter to the VNWand object associated with the id
-     */
-    VNWand* GetWandByID(LeapFrog::Brio::U32 id = kVNDefaultWandID) const;
 
     /*!
      * \brief AddHotSpot adds a hot spot to the mpi for tracking/triggering.
@@ -187,6 +185,10 @@ namespace Vision {
      */
     VNVisionMPI(const VNVisionMPI&);
     VNVisionMPI& operator=(const VNVisionMPI&);
+
+    friend class VNWandTracker;
+    friend class VNHotSpotPIMPL;
+    friend class LF::Hardware::HWControllerPIMPL;
   };
 
 } // namespace Vision

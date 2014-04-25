@@ -80,6 +80,11 @@ namespace Hardware {
     return pimpl_->IsVisible();
   }
     
+  LeapFrog::Brio::tErrType
+  HWController::StartTracking(HWControllerLEDColor color) {
+    return pimpl_->StartTracking(color);
+  }
+
   LeapFrog::Brio::tButtonData2 
   HWController::GetButtonData(void) const {
     return pimpl_->GetButtonData();

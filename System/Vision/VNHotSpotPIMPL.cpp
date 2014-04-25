@@ -1,6 +1,8 @@
 #include <VNHotSpotPIMPL.h>
 #include <Vision/VNVisionMPI.h>
 #include <Vision/VNWand.h>
+#include <VNWandPIMPL.h>
+#include <VNVisionMPIPIMPL.h>
 
 LeapFrog::Brio::U32 LF::Vision::VNHotSpotPIMPL::instanceCounter_ = 0;
 
@@ -33,8 +35,12 @@ namespace Vision {
 
   VNPoint
   VNHotSpotPIMPL::WandPoint(void) {
+    static VNPoint p(kVNNoWandLocationX, kVNNoWandLocationY);
     VNVisionMPI mpi;
-    return mpi.GetWandByID()->GetLocation();
+    VNWand *wand = mpi.pimpl_->GetCurrentWand();
+    if (wand)
+      return wand->GetLocation();
+    return p;
   }
 
   int

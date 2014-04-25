@@ -9,6 +9,8 @@
 
 namespace LF {
 namespace Vision {
+  extern const LeapFrog::Brio::S16 kVNNoWandLocationX;
+  extern const LeapFrog::Brio::S16 kVNNoWandLocationY;
 
   class VNWandPIMPL {
   public:
@@ -23,10 +25,14 @@ namespace Vision {
     bool IsVisible(void) const;
     VNPoint GetLocation(void) const;
 
+    LeapFrog::Brio::U8 GetID(void) const;
+    void SetID(LeapFrog::Brio::U8 id);
+
     cv::Scalar hsvMin_;
     cv::Scalar hsvMax_;
 
   protected:
+    LeapFrog::Brio::U8 id_;
     bool visible_;
     VNPoint location_;
     LeapFrog::Brio::CDebugMPI debugMPI_;

@@ -7,6 +7,8 @@
 #include <DisplayMPI.h>
 #include <Vision/VNWand.h>
 #include <VNHotSpotPIMPL.h>
+#include <Vision/VNWandTracker.h>
+#include <VNWandTrackerPIMPL.h>
 #include <VNCoordinateTranslator.h>
 #ifdef EMULATION
 #include <opencv2/highgui/highgui.hpp>
@@ -47,6 +49,20 @@ namespace Vision {
   }
   
   void
+  VNVisionMPIPIMPL::SetCurrentWand(VNWand *wand) {
+    currentWand_ = wand;
+    VNWandTracker *wt = dynamic_cast<VNWandTracker*>(algorithm_);
+    if (wt) {
+      wt->pimpl_->SetWand(wand);
+    }
+  }
+
+  VNWand*
+  VNVisionMPIPIMPL::GetCurrentWand(void) const {
+    return currentWand_;
+  }
+
+  void
   VNVisionMPIPIMPL::SetFrameProcessingSize(void) {
     // check for qvga flag and set size base don this    
     if (FlagExists(kVNQVGAFlagPath.c_str())) {
@@ -67,7 +83,8 @@ namespace Vision {
     frameTime_(time(0)),
     frameCount_(0),
     frameProcessingWidth_(kVNDefaultProcessingFrameWidth),
-    frameProcessingHeight_(kVNDefaultProcessingFrameHeight) {
+    frameProcessingHeight_(kVNDefaultProcessingFrameHeight),
+    currentWand_(NULL) {
 
 #if defined(EMULATION)
     showOCVDebugOutput_ = false;      
