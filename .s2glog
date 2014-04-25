@@ -40945,3 +40945,14 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/25/14 1:17 AM
 25,606 ms. (Cumulative: 23,190,658 ms)
 
 ----------------
+Revision 10,773 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added a fast integer version of yuyv to rgb conversion
+
+Added unit tests to Vision for yuyv2rgb conversion
+
+By Alex Lindblad (alindblad@leapfrog.com) on 4/25/14 10:40 AM
+3 changed, 3 added, 0 deleted.
+25,579 ms. (Cumulative: 23,216,346 ms)
+
+----------------
