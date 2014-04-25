@@ -18,6 +18,7 @@
 #include <KernelMPI.h>
 #include <Utility.h>
 #include <sys/stat.h>
+#include <VNYUYV2RGB.h>
 
 namespace LF {
 namespace Vision {
@@ -473,12 +474,14 @@ namespace Vision {
 		    CV_8UC3, 
 		    surf->buffer);
     } else if (surf->format == LeapFrog::Brio::kPixelFormatYUYV422) {
-      cv::Mat tmp(cv::Size(width,
-			   height),
-		  CV_8UC2,
-		  surf->buffer,
-		  surf->pitch);
-      cv::cvtColor(tmp, img, CV_YUV2RGB_YUYV);
+      //cv::Mat tmp(cv::Size(width,
+		//	   height),
+		//  CV_8UC2,
+		//  surf->buffer,
+		//  surf->pitch);
+      //cv::cvtColor(tmp, img, CV_YUV2RGB_YUYV);
+
+	  LF::Vision::YUYV2RGB( surf->buffer, width, height, img );
     } else {
       //some other format
     }
