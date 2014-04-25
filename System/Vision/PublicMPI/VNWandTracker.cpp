@@ -1,6 +1,7 @@
 #include <Vision/VNWandTracker.h>
 #include <VNWandTrackerPIMPL.h>
 #include <Vision/VNVisionMPI.h>
+#include <VNVisionMPIPIMPL.h>
 #include <Vision/VNWand.h>
 #include <VNWandPIMPL.h>
 #include <opencv2/opencv.hpp>
@@ -10,7 +11,7 @@ namespace Vision {
 
 
   VNWandTracker::VNWandTracker(VNInputParameters *params) :
-    pimpl_(new VNWandTrackerPIMPL(&*(VNVisionMPI().GetWandByID()->pimpl_),
+    pimpl_(new VNWandTrackerPIMPL(VNVisionMPI().pimpl_->GetCurrentWand(),
 				  params)) {
   }
   

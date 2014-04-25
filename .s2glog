@@ -40932,3 +40932,16 @@ By Dave Milici (dmilici@leapfrog.com) on 4/24/14 1:44 PM
 24,910 ms. (Cumulative: 23,164,959 ms)
 
 ----------------
+Revision 10,772 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conect a single wand instance to a single controller instance
+
+Added StartTracking API method to HWController class
+Removed GetWandByID from VNVisionMPI API
+Update lf-wand-test to reflect changes
+
+By Alex Lindblad (alindblad@leapfrog.com) on 4/25/14 1:17 AM
+17 changed, 0 added, 0 deleted.
+25,606 ms. (Cumulative: 23,190,658 ms)
+
+----------------

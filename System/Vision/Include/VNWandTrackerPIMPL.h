@@ -3,16 +3,16 @@
 
 #include <Vision/VNVisionTypes.h>
 #include <opencv2/opencv.hpp>
-#include <VNWandPIMPL.h>
 #include <VNTranslatorBase.h>
 #include <CameraTypes.h>
 
 namespace LF {
 namespace Vision {
+  class VNWand;
 
   class VNWandTrackerPIMPL {
   public:
-    VNWandTrackerPIMPL(VNWandPIMPL* wand,
+    VNWandTrackerPIMPL(VNWand* wand,
 		       VNInputParameters *params);
     virtual ~VNWandTrackerPIMPL(void);
     
@@ -23,10 +23,11 @@ namespace Vision {
     void SetAutomaticWandScaling(bool autoScale);
     bool GetAutomaticWandScaling(void) const;
 
-    VNWandPIMPL* wand_;
+    void SetWand(VNWand *wand);
     cv::Mat hsv_;
 
   private:
+    VNWand* wand_;
     bool scaleInput_;
     cv::Rect subFrame_;
     VNTranslatorBase translator_;

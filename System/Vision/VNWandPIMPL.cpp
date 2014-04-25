@@ -9,8 +9,8 @@ namespace Vision {
   static const cv::Scalar kVNWandDefaultHSVMin = kVNWandGreenMin;
   static const cv::Scalar kVNWandDefaultHSVMax = kVNWandGreenMax;
 
-  static const LeapFrog::Brio::S16 kVNNoWandLocationX = -10000;
-  static const LeapFrog::Brio::S16 kVNNoWandLocationY = -10000;
+  const LeapFrog::Brio::S16 kVNNoWandLocationX = -10000;
+  const LeapFrog::Brio::S16 kVNNoWandLocationY = -10000;
 
 
   VNWandPIMPL::VNWandPIMPL(void) :
@@ -88,5 +88,15 @@ namespace Vision {
     return translator_->FromVisionToDisplay(location_);
   }
 
+  
+  LeapFrog::Brio::U8
+  VNWandPIMPL::GetID(void) const {
+    return id_;
+  }
+
+  void
+  VNWandPIMPL::SetID(LeapFrog::Brio::U8 id) {
+    id_ = id;
+  }
 } // namespace Vision
 } // namespace LF

@@ -4,6 +4,8 @@
 #include <CameraMPI.h>
 #include <DebugMPI.h>
 #include <GroupEnumeration.h>
+#include <Vision/VNWand.h>
+#include <VNWandPIMPL.h>
 #include <stdio.h>
 #include <VNRGB2HSV.h>
 //#define LF_PROFILE 1
@@ -60,7 +62,7 @@ namespace Vision {
     }
   }
 
-  VNWandTrackerPIMPL::VNWandTrackerPIMPL(VNWandPIMPL* wand,
+  VNWandTrackerPIMPL::VNWandTrackerPIMPL(VNWand* wand,
 					 VNInputParameters *params) :
     wand_(wand),
     scaleInput_(false),
@@ -74,6 +76,10 @@ namespace Vision {
   VNWandTrackerPIMPL::~VNWandTrackerPIMPL(void) {
   }
   
+  void
+  VNWandTrackerPIMPL::SetWand(VNWand *wand) {
+    wand_ = wand;
+  }
 
   void
   VNWandTrackerPIMPL::SetProcessingFrameSize(LeapFrog::Brio::U16 width,
@@ -218,67 +224,69 @@ namespace Vision {
 
   void
   VNWandTrackerPIMPL::Execute(cv::Mat &input, cv::Mat &output) {
-    PROF_BLOCK_START("VNWandTrackerPIMPL::Execute");  		  
-    // switch to HSV color spave
-    PROF_BLOCK_START("RGBToHSV");
-    RGBToHSV(input, hsv_);    
-    PROF_BLOCK_END();
-    // filter out the valid pixels based on hue, saturation and intensity
-    PROF_BLOCK_START("inRange");
-    inRange3( hsv_, wand_->hsvMin_, wand_->hsvMax_, output );
-    PROF_BLOCK_END();
-
-    PROF_BLOCK_START("threshold");
-    cv::threshold(output, 
-		  output, 
-		  kVNMinPixelValue, 
-		  kVNMaxPixelValue, 
-		  cv::THRESH_BINARY);
-    PROF_BLOCK_END();
-
-#if defined(EMULATION)
-    cv::namedWindow("threshold");
-    cv::imshow("threshold", output);
-#endif
-
-    PROF_BLOCK_START("ComputeLargestContour");
-    std::vector<std::vector<cv::Point> > contours;
-    int index = kVNNoContourIndex;
-    ComputeLargestContour(output, contours, index);
-    PROF_BLOCK_END();
-
-    if (index != kVNNoContourIndex) {
-      cv::Point p(0,0);
-      float r = 0.f;
-
-      PROF_BLOCK_START("FitCircleToContour");
-      FitCircleToContour(contours[index], p, r);
+    if (wand_) {
+      PROF_BLOCK_START("VNWandTrackerPIMPL::Execute");  		  
+      // switch to HSV color spave
+      PROF_BLOCK_START("RGBToHSV");
+      RGBToHSV(input, hsv_);    
       PROF_BLOCK_END();
-
-      bool inFrame = true;
-      if (scaleInput_) {
-	// insure the size of the input image matches the translator source frame size
-	assert(SameSize(translator_.GetSourceFrame(), cv::Rect(0,0,input.cols,input.rows)));
+      // filter out the valid pixels based on hue, saturation and intensity
+      PROF_BLOCK_START("inRange");
+      inRange3( hsv_, wand_->pimpl_->hsvMin_, wand_->pimpl_->hsvMax_, output );
+      PROF_BLOCK_END();
+      
+      PROF_BLOCK_START("threshold");
+      cv::threshold(output, 
+		    output, 
+		    kVNMinPixelValue, 
+		    kVNMaxPixelValue, 
+		    cv::THRESH_BINARY);
+      PROF_BLOCK_END();
+      
+#if defined(EMULATION)
+      cv::namedWindow("threshold");
+      cv::imshow("threshold", output);
+#endif
+      
+      PROF_BLOCK_START("ComputeLargestContour");
+      std::vector<std::vector<cv::Point> > contours;
+      int index = kVNNoContourIndex;
+      ComputeLargestContour(output, contours, index);
+      PROF_BLOCK_END();
+      
+      if (index != kVNNoContourIndex) {
+	cv::Point p(0,0);
+	float r = 0.f;
 	
-	PROF_BLOCK_START("ScaleSubFrame");
-	ScaleSubFrame(input,p,r);
+	PROF_BLOCK_START("FitCircleToContour");
+	FitCircleToContour(contours[index], p, r);
 	PROF_BLOCK_END();
 	
-	PROF_BLOCK_START("ScaleWandPoint");
-	inFrame = ScaleWandPoint(p);
-	PROF_BLOCK_END();
-      }
-      // insure we have at least a minimum circle area
-      if (inFrame && M_PI*r*r > minArea_) {
-	wand_->VisibleOnScreen(p);
+	bool inFrame = true;
+	if (scaleInput_) {
+	  // insure the size of the input image matches the translator source frame size
+	  assert(SameSize(translator_.GetSourceFrame(), cv::Rect(0,0,input.cols,input.rows)));
+	  
+	  PROF_BLOCK_START("ScaleSubFrame");
+	  ScaleSubFrame(input,p,r);
+	  PROF_BLOCK_END();
+	  
+	  PROF_BLOCK_START("ScaleWandPoint");
+	  inFrame = ScaleWandPoint(p);
+	  PROF_BLOCK_END();
+	}
+	// insure we have at least a minimum circle area
+	if (inFrame && M_PI*r*r > minArea_) {
+	  wand_->pimpl_->VisibleOnScreen(p);
+	} else {
+	  wand_->pimpl_->NotVisibleOnScreen();
+	}
       } else {
-	wand_->NotVisibleOnScreen();
+	wand_->pimpl_->NotVisibleOnScreen();
       }
-    } else {
-      wand_->NotVisibleOnScreen();
+      
+      PROF_BLOCK_END();	
     }
-    
-    PROF_BLOCK_END();	
   }
 
   void

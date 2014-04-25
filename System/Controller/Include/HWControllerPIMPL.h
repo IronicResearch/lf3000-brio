@@ -9,6 +9,11 @@
 #include <DebugMPI.h>
 
 namespace LF {
+
+namespace Vision {
+  class VNWand;
+}
+
 namespace Hardware {
 
   class HWControllerPIMPL {
@@ -37,7 +42,8 @@ namespace Hardware {
     void SetLEDColor(HWControllerLEDColor color);
     Vision::VNPoint GetLocation(void) const;
     bool IsVisible(void) const;
-   
+    LeapFrog::Brio::tErrType StartTracking(HWControllerLEDColor color);
+
     /*!
      * Button Related Methods
      */
@@ -67,7 +73,7 @@ namespace Hardware {
     * Configuration Related Methods
     */
     void LocalCallback(void*, void*, int);
-    void SetID(LeapFrog::Brio::U8 id) { id_ = id; };
+    void SetID(LeapFrog::Brio::U8 id);
     void SetVersionNumbers(LeapFrog::Brio::U8 hw, LeapFrog::Brio::U16 fw);
 
  private:

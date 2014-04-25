@@ -4,6 +4,7 @@
 #include <Hardware/HWControllerTypes.h>
 #include <Vision/VNVisionTypes.h>
 #include <Hardware/HWAnalogStickTypes.h>
+#include <Hardware/HWControllerTypes.h>
 #include <AccelerometerTypes.h>
 #include <ButtonTypes.h>
 #include <EventMPI.h>
@@ -124,6 +125,18 @@ namespace Hardware {
      */
     bool IsVisible(void) const;
     
+    /*!
+     * \brief Tells the system that this is the controller to start tracking
+     * inside of the VisionMPI.  This method should only be called when the
+     * controller is in HWControllerWandMode.  If called while in any other
+     * mode it will be a no-op and an error will be returned.
+     * \param color This is the suggested color of the wand for light tracking.
+     * This is only a suggestion as the VNWandTracker algorithm may choose
+     * a different color based on environmental conditions.
+     * \return kNoErr if successful
+     */
+    LeapFrog::Brio::tErrType StartTracking(HWControllerLEDColor color = kHWControllerLEDDefaultColor);
+
     //-----------------------------------------------------------------------
     /*!
      * Methods associated with the buttons

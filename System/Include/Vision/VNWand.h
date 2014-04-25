@@ -14,7 +14,7 @@ namespace Vision {
 
   // forward declaration
   class VNWandPIMPL;
-  class VNWandTracker;
+  class VNWandTrackerPIMPL;
   class VNVisionMPI;
 
   /*!
@@ -56,7 +56,7 @@ namespace Vision {
     /*!
      * Friend classes
      */
-    friend class VNWandTracker;
+    friend class VNWandTrackerPIMPL;
     friend class VNVisionMPI;
     friend class LF::Hardware::HWControllerPIMPL;
   };
