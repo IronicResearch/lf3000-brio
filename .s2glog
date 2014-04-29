@@ -40965,3 +40965,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/25/14 12:56 PM
 26,464 ms. (Cumulative: 23,242,903 ms)
 
 ----------------
+Revision 10,775 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Handle Pause and Resume viewfinder overlay with NXP driver. (FWSCRUM-2222)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/28/14 7:32 PM
+1 changed, 0 added, 0 deleted.
+25,051 ms. (Cumulative: 23,268,063 ms)
+
+----------------
