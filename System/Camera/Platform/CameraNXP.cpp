@@ -198,6 +198,17 @@ inline int GetZOrderPriority(void)
 	return priority;
 }
 
+//----------------------------------------------------------------------------
+inline void SetOverlayVisible(bool visible)
+{
+	int fbdev = open("/dev/fb2", O_RDWR | O_SYNC);
+	if (fbdev > 0) {
+		ioctl(fbdev, FBIOBLANK, (visible) ? 0 : 1);
+		close(fbdev);
+	}
+
+}
+
 //============================================================================
 // CCameraModule: Informational functions
 //============================================================================
@@ -550,6 +561,7 @@ Boolean CNXPCameraModule::StopVideoCaptureInt(int fd)
 		v4l2_dqbuf(nxphndl_, nxp_v4l2_mlc0_video, 3, &index, NULL);
 		v4l2_dqbuf(nxphndl_, clipper_, 3, &index, NULL);
 	}
+	outcnt_ = 0;
 
 	return true;
 }
@@ -581,12 +593,23 @@ done:
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean display)
 {
+	// Disable viewfinder overlay updates until resumed
+	if (display) {
+		v4l2_streamoff(nxphndl_, nxp_v4l2_mlc0_video);
+		SetOverlayVisible(true);
+		overlay_ = false;
+	}
 	return CCameraModule::PauseVideoCapture(hndl, display);
 }
 
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 {
+	// Re-enable viewfinder overlay if it was paused
+	if (camCtx_.bVPaused && outcnt_) {
+		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
+		overlay_ = true;
+	}
 	return CCameraModule::ResumeVideoCapture(hndl);
 }
 
@@ -628,6 +651,9 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::PollFrame(const tVidCapHndl hndl)
 {
+	if (camCtx_.bPaused)
+		return false;
+
 	int index = 0;
 	int flags = 0;
 	kernel_.LockMutex(mutex_);
@@ -648,6 +674,9 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	long long int timestamp = 0;
 	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[index_];
 	struct nxp_vid_buffer  vb;
+
+	if (camCtx_.bPaused)
+		return false;
 
 	kernel_.LockMutex(mutex_);
 
@@ -681,12 +710,15 @@ Boolean	CNXPCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *
 	struct nxp_vid_buffer  vb;
 	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[index_];
 
+	if (camCtx_.bPaused)
+		return false;
+
 	kernel_.LockMutex(mutex_);
 
 	PackVidBuf(vb, vm);
 	v4l2_qbuf(nxphndl_, clipper_, vb.plane_num, index_, &vb, -1, NULL);
 
-	if (overlay_ && outcnt_ > 1) {
+	if (overlay_ && outcnt_ >= maxcnt_) {
 		int index = 0;
 		v4l2_dqbuf(nxphndl_, nxp_v4l2_mlc0_video, 3, &index, NULL);
 		outcnt_--;
