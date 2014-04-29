@@ -40985,3 +40985,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/29/14 8:18 AM
 25,175 ms. (Cumulative: 23,293,347 ms)
 
 ----------------
+Revision 10,777 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add check for failed AVI file creation in case of bad file names. (FWSCRUM-1491)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/29/14 11:58 AM
+1 changed, 0 added, 0 deleted.
+25,027 ms. (Cumulative: 23,318,468 ms)
+
+----------------
