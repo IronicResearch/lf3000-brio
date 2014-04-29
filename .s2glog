@@ -41003,3 +41003,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/29/14 2:24 PM
 25,053 ms. (Cumulative: 23,343,615 ms)
 
 ----------------
+Revision 10,779 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Capture stream not meant to be paused when viewfinder is paused. (FWSCRUM-2298)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/29/14 4:02 PM
+1 changed, 0 added, 0 deleted.
+24,943 ms. (Cumulative: 23,368,656 ms)
+
+----------------
