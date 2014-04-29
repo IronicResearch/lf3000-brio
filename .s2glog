@@ -40974,3 +40974,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/28/14 7:32 PM
 25,051 ms. (Cumulative: 23,268,063 ms)
 
 ----------------
+Revision 10,776 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Disable calls to QueryRemoteDeviceServices() to avoid impacting event callback timings. (FWGLAS-201)
+GATT services attribute for writing LED commands remains constant, regardless of query.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/29/14 8:18 AM
+2 changed, 0 added, 0 deleted.
+25,175 ms. (Cumulative: 23,293,347 ms)
+
+----------------
