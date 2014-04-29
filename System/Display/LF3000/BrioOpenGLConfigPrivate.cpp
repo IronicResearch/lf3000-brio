@@ -393,6 +393,15 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			glSetSpecialModeParam(5, vtx_y_offset);//glSetSpecialModeParam(GL_SPECIAL_MODE_VTX_Y_OFFSET, vtx_y_offset);
 			fclose(flag);
 		}
+
+		flag = fopen("/tmp/ogl_restorefb", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_restorefb", "r");
+		if(flag)
+		{
+			glEnableSpecialMode(6);//glEnableSpecialMode(GL_SPECIAL_MODE_RESTORE_FB);
+			fclose(flag);
+		}
 	}
 
 	glClearColorx(0, 0, 0, 0);

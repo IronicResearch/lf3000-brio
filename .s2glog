@@ -40994,3 +40994,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/29/14 11:58 AM
 25,027 ms. (Cumulative: 23,318,468 ms)
 
 ----------------
+Revision 10,778 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-1594.  Added Brio support for the flag ogl_restorefb, this activates GL_SPECIAL_MODE_RESTORE_FB.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/29/14 2:24 PM
+1 changed, 0 added, 0 deleted.
+25,053 ms. (Cumulative: 23,343,615 ms)
+
+----------------
