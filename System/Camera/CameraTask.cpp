@@ -194,10 +194,15 @@ void* CameraTaskMain(void* arg)
 	if(pCtx->path.length())
 	{
 #if !defined(EMULATION)
-		bFile	= true;
-
 		avi	= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()), pCtx->bAudio);
 
+		if (NULL == avi)
+			dbg.DebugOut( kDbgLvlCritical, "%s: failed to create AVI for %s\n", __func__,  pCtx->path.c_str());
+		else
+			bFile = true;
+	}
+	if (bFile)
+	{
 		switch(pCtx->mode.pixelformat)
 		{
 		case kCaptureFormatMJPEG:
