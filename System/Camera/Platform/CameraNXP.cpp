@@ -651,9 +651,6 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 //----------------------------------------------------------------------------
 Boolean CNXPCameraModule::PollFrame(const tVidCapHndl hndl)
 {
-	if (camCtx_.bPaused)
-		return false;
-
 	int index = 0;
 	int flags = 0;
 	kernel_.LockMutex(mutex_);
@@ -674,9 +671,6 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	long long int timestamp = 0;
 	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[index_];
 	struct nxp_vid_buffer  vb;
-
-	if (camCtx_.bPaused)
-		return false;
 
 	kernel_.LockMutex(mutex_);
 
@@ -709,9 +703,6 @@ Boolean	CNXPCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *
 {
 	struct nxp_vid_buffer  vb;
 	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[index_];
-
-	if (camCtx_.bPaused)
-		return false;
 
 	kernel_.LockMutex(mutex_);
 
