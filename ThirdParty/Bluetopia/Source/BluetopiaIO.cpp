@@ -79,7 +79,7 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 						buf[6] = '\0';
 						(*callbackmain)(CallbackParameter, buf, sizeof(buf));
 					}
-					BTIO_QueryForServices(DEVMCallbackID, device, true);
+//					BTIO_QueryForServices(DEVMCallbackID, device, true);
 				}
 				else {
 					device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.BD_ADDR);
@@ -104,7 +104,7 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 		case detRemoteDeviceServicesStatus:
 			printf("Remote Device Services Status\n");
 			device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDeviceServicesStatusEventData.RemoteDeviceAddress);
-			BTIO_QueryForServices(DEVMCallbackID, device, false);
+//			BTIO_QueryForServices(DEVMCallbackID, device, false);
 			break;
 		case detRemoteDeviceConnectionStatus:
 			printf("Remote Device Connection Status\n");
@@ -141,10 +141,6 @@ static void BTPSAPI GATM_Event_Callback(GATM_Event_Data_t *EventData, void *Call
 			break;
 		case getGATTHandleValueData:
 //			printf("GATT Handle Value Data\n");
-			// Compare incoming packet with cached packet to minimize callbacks
-			if (0 == memcmp(packet, EventData->EventData.HandleValueDataEventData.AttributeValue, EventData->EventData.HandleValueDataEventData.AttributeValueLength))
-				break;
-			memcpy(packet, EventData->EventData.HandleValueDataEventData.AttributeValue, EventData->EventData.HandleValueDataEventData.AttributeValueLength);
 			if (callbackfunc) {
 				char buf[7] = {'\0'};
 				memcpy(&buf, &EventData->EventData.HandleValueDataEventData.RemoteDeviceAddress, 6);
@@ -376,10 +372,12 @@ int BTIO_QueryForDevices(int handle)
 				continue;
 #endif
 		printf("%s: %d: %s, stats=%08x, name=%s\n", __func__, i, addr->toString().c_str(), (unsigned int)prop.RemoteDeviceFlags, prop.DeviceName);
+
 		if (!(prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE)) {
 			flags |= DEVM_QUERY_REMOTE_DEVICE_PROPERTIES_FLAGS_FORCE_UPDATE;
 			DEVM_QueryRemoteDeviceProperties(BD_ADDRList[i], flags, &prop);
 		}
+
 		if ((prop.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE)) {
 			if (callbackscan) {
 				char buf[7] = {'\0'};
