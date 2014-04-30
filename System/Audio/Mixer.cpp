@@ -260,7 +260,7 @@ CAudioMixer::CAudioMixer( int inStreams ):
 
 	// Set base mixer rate for platform (formerly constant)
 	if ("GLASGOW" == GetPlatformName())
-		kAudioSampleRate = 44100;
+		kAudioSampleRate = 32000;
 
 	numInStreams_ = inStreams;
 	

@@ -41054,3 +41054,13 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/30/14 10:21 AM
 25,105 ms. (Cumulative: 23,468,755 ms)
 
 ----------------
+Revision 10,784 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify Brio mixer base rate to 32KHz default for Glasgow. (FWGLAS-432)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/30/14 12:24 PM
+1 changed, 0 added, 0 deleted.
+24,961 ms. (Cumulative: 23,493,810 ms)
+
+----------------
