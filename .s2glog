@@ -41012,3 +41012,15 @@ By Dave Milici (dmilici@leapfrog.com) on 4/29/14 4:02 PM
 24,943 ms. (Cumulative: 23,368,656 ms)
 
 ----------------
+Revision 10,780 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+grab correct surface from camera for vision processing
+
+this enables the visionmpi to use an independent surface from
+the surface that gets passed in to Start
+
+By Alex Lindblad (alindblad@leapfrog.com) on 4/29/14 5:43 PM
+2 changed, 0 added, 0 deleted.
+24,990 ms. (Cumulative: 23,393,739 ms)
+
+----------------
