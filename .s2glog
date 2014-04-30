@@ -41041,3 +41041,16 @@ By Dave Milici (dmilici@leapfrog.com) on 4/29/14 8:50 PM
 24,941 ms. (Cumulative: 23,443,541 ms)
 
 ----------------
+Revision 10,783 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+add integer version of accumulateWeighted for virtual touch algorithm
+
+this includes associated unit tests to compare performance of the
+floating point opencv version and the implemented integer version
+and verify they give they same results.
+
+By Alex Lindblad (alindblad@leapfrog.com) on 4/30/14 10:21 AM
+1 changed, 4 added, 0 deleted.
+25,105 ms. (Cumulative: 23,468,755 ms)
+
+----------------
