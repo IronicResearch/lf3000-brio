@@ -327,6 +327,8 @@ Boolean CNXPCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
     NX_VID_MEMORY_INFO    *vm;
 	NX_MEMORY_INFO    	  *mi;
 
+	DeinitCameraBufferInt(pCamCtx);
+
 	v4l2_reqbuf(nxphndl_, clipper_, maxcnt_);
 	v4l2_reqbuf(nxphndl_, nxp_v4l2_mlc0_video, maxcnt_);
 
@@ -595,9 +597,9 @@ Boolean CNXPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolea
 {
 	// Disable viewfinder overlay updates until resumed
 	if (display) {
-		v4l2_streamoff(nxphndl_, nxp_v4l2_mlc0_video);
-		SetOverlayVisible(true);
+		kernel_.LockMutex(camCtx_.mThread);
 		overlay_ = false;
+		kernel_.UnlockMutex(camCtx_.mThread);
 	}
 	return CCameraModule::PauseVideoCapture(hndl, display);
 }
@@ -606,9 +608,18 @@ Boolean CNXPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolea
 Boolean CNXPCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 {
 	// Re-enable viewfinder overlay if it was paused
-	if (camCtx_.bVPaused && outcnt_) {
-		v4l2_streamon(nxphndl_, nxp_v4l2_mlc0_video);
+	if (camCtx_.bVPaused) {
+		kernel_.LockMutex(camCtx_.mThread);
+
+		// Re-queue viewfinder buffer for next capture frame cycle
+		struct nxp_vid_buffer  vb;
+		NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[outdex_];
+
+		PackVidBuf(vb, vm);
+		v4l2_qbuf(nxphndl_, clipper_, vb.plane_num, outdex_, &vb, -1, NULL);
+
 		overlay_ = true;
+		kernel_.UnlockMutex(camCtx_.mThread);
 	}
 	return CCameraModule::ResumeVideoCapture(hndl);
 }
@@ -692,6 +703,7 @@ Boolean	CNXPCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		PackVidBuf(vb, vm);
 		v4l2_qbuf(nxphndl_, nxp_v4l2_mlc0_video, vb.plane_num, index_, &vb, -1, NULL);
 		outcnt_++;
+		outdex_ = index_;
 	}
 
 	kernel_.UnlockMutex(mutex_);
@@ -703,6 +715,10 @@ Boolean	CNXPCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *
 {
 	struct nxp_vid_buffer  vb;
 	NX_VID_MEMORY_INFO    *vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[index_];
+
+	// If viewfinder paused, do not re-queue visible buffer
+	if (camCtx_.bVPaused && index_ == outdex_)
+		return false;
 
 	kernel_.LockMutex(mutex_);
 
