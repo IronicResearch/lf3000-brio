@@ -8,6 +8,11 @@
 #include <DebugMPI.h>
 #include <stdio.h>
 
+#define VN_OPTIMIZE_FIXEDPOINT 1
+#if VN_OPTIMIZE_FIXEDPOINT
+#include "VNAccumulate.h"
+#endif
+
 namespace LF {
 namespace Vision {
 
@@ -73,23 +78,25 @@ namespace Vision {
   VNVirtualTouchPIMPL::Execute(cv::Mat &input, cv::Mat &output) {
 
 	  PROF_BLOCK_START("Execute");
-
-	  PROF_BLOCK_START("down scale");	  
-	  // scale down to half size
-	  cv::Mat resizedInput;
-	  cv::resize(input, resizedInput, cv::Size(), kVNDownScale, kVNDownScale, cv::INTER_LINEAR);
-	  PROF_BLOCK_END();
-
 	  PROF_BLOCK_START("RGB to GRAY");
-	  fast_rgb_to_gray( resizedInput, gray_ );
+	  fast_rgb_to_gray( input, gray_ );
 	  PROF_BLOCK_END();
 	  // initialize background to first frame
-	  if (background_.empty())
+	  if (background_.empty()) {
+#if VN_OPTIMIZE_FIXEDPOINT
+		  gray_.convertTo(background_, CV_32S);
+#else 
 		  gray_.convertTo(background_, CV_32F);
+#endif 
+	  }
 
 	  PROF_BLOCK_START("convertTo 8U");
 	  // convert background to 8U
+#if VN_OPTIMIZE_FIXEDPOINT
+	  LF::Vision::convertFixedPointToU8(background_, backImage_);
+#else
 	  background_.convertTo(backImage_, CV_8U);
+#endif
 	  PROF_BLOCK_END();
 
 	  PROF_BLOCK_START("absdiff");
@@ -101,18 +108,17 @@ namespace Vision {
 	  // apply threshold to foreground image
 	  cv::threshold(foreground_, output, threshold_, 255, cv::THRESH_BINARY);
 	  PROF_BLOCK_END();
-
-	  PROF_BLOCK_START("up scale");
-	  // scale output back to fullsize
-	  cv::resize(output, output, cv::Size(), kVNUpScale, kVNUpScale, cv::INTER_LINEAR);
-	  PROF_BLOCK_END();
-
+	  
 	  PROF_BLOCK_START("accumulateWeighted");
 	  // accumulate the background
+#if VN_OPTIMIZE_FIXEDPOINT
+	  LF::Vision::accumulateWeightedFixedPoint(gray_, background_, learningRate_);
+#else 
 	  cv::accumulateWeighted(gray_, background_, learningRate_);
+#endif
 	  PROF_BLOCK_END();
 
-	  PROF_BLOCK_END();
+	  PROF_BLOCK_END(); // Execute
   }
 
 }
