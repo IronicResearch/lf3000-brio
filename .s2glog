@@ -41024,3 +41024,20 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/29/14 5:43 PM
 24,990 ms. (Cumulative: 23,393,739 ms)
 
 ----------------
+Revision 10,781 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,752 ms. (Cumulative: 23,418,585 ms)
+
+----------------
+Revision 10,782 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+When pausing viewfinder, de-queue visible buffer from capture cycle and re-queue on resume. (FWSCRUM-2222)
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/29/14 8:50 PM
+2 changed, 0 added, 0 deleted.
+24,941 ms. (Cumulative: 23,443,541 ms)
+
+----------------

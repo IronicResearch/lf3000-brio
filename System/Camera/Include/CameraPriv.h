@@ -508,6 +508,7 @@ private:
 	void*						nxpmbuf_[MAX_NXP_BUFS];
 	int 						maxcnt_;
 	int  						index_;
+	int  						outdex_;
 	int							outcnt_;
 	int  						clipper_;
 	int  						sensor_;
