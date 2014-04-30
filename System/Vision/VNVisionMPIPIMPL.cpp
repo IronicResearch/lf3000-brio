@@ -497,12 +497,12 @@ namespace Vision {
 
 	if (cameraMPI_.LockCaptureVideoSurface(videoCapture_)) {
 	  LeapFrog::Brio::tVideoSurf *surf = cameraMPI_.GetCaptureVideoSurface(videoCapture_);
-	  dbg_.Assert(surf != 0, "VNVisionMPIPIMPL::Update - failed getting video surface.\n");
+	  //dbg_.Assert(surf != 0, "VNVisionMPIPIMPL::Update - failed getting video surface.\n");
 	  if (!surf) return;
 	  
 	  unsigned char *buffer = surf->buffer;
 
-	  dbg_.Assert(buffer && algorithm_, "VNVisionMPIPIMPL::Update - invalid buffer or algorithm.\n");
+	  //dbg_.Assert(buffer && algorithm_, "VNVisionMPIPIMPL::Update - invalid buffer or algorithm.\n");
 	  if (buffer && algorithm_) {
 	    cv::Mat rgbMat(cv::Size(surf->width,
 				    surf->height),
