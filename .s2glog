@@ -41073,3 +41073,13 @@ By Alex Lindblad (alindblad@leapfrog.com) on 4/30/14 5:09 PM
 25,192 ms. (Cumulative: 23,519,096 ms)
 
 ----------------
+Revision 10,786 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Post HWController Connected event when existing controllers re-connect. (FWGLAS-4, FWGLAS-310)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/30/14 6:21 PM
+1 changed, 0 added, 0 deleted.
+24,853 ms. (Cumulative: 23,544,058 ms)
+
+----------------
