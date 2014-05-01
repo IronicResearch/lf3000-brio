@@ -20,6 +20,8 @@ namespace Vision {
     virtual bool ContainsPoint(const VNPoint &p) const;
     virtual int GetTriggerImage(cv::Mat &img);
 
+    virtual bool GetIntegralImage(cv::Mat &img);
+
     void SetRadius(float radius);
     float GetRadius(void) const;
     

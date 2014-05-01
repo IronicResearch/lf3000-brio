@@ -137,5 +137,11 @@ namespace Vision {
     return numPixels_;
   }
 
+  bool
+  VNCircleHotSpotPIMPL::GetIntegralImage(cv::Mat &img) {
+    // do not use integral image
+    return false;
+  }
+
 } // namespace Vision
 } // namespace LF

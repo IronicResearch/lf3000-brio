@@ -21,6 +21,7 @@ namespace Vision {
 
     virtual bool ContainsPoint(const VNPoint &p) const;
     virtual int GetTriggerImage(cv::Mat &img);
+    virtual bool GetIntegralImage(cv::Mat &img);
 
     void SetFilterImage(const cv::Mat &filterImage);
     void SetFilterImage(const LeapFrog::Brio::tFontSurf &filterImage);

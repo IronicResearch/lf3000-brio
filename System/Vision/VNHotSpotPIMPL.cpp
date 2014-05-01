@@ -9,6 +9,8 @@ LeapFrog::Brio::U32 LF::Vision::VNHotSpotPIMPL::instanceCounter_ = 0;
 namespace LF {
 namespace Vision {
 
+  cv::Mat *VNHotSpotPIMPL::integralImage_ = NULL;
+
   VNHotSpotPIMPL::VNHotSpotPIMPL(void) :
     trigger_(NULL),
     tag_(VNHotSpotPIMPL::instanceCounter_++),
@@ -23,7 +25,7 @@ namespace Vision {
   }
 
   void
-  VNHotSpotPIMPL::Trigger(void *input, const VNHotSpot *hs) {
+  VNHotSpotPIMPL::Trigger(cv::Mat &input, const VNHotSpot *hs) {
     // do nothing in this method
   }
 
@@ -50,9 +52,21 @@ namespace Vision {
     return 0;
   }
 
+  bool
+  VNHotSpotPIMPL::GetIntegralImage(cv::Mat &img) {
+    // default is no integlra image
+    return false;
+  }
+
   void
   VNHotSpotPIMPL::UpdateVisionCoordinates(void) {
     // do nothing
+  }
+
+  cv::Rect
+  VNHotSpotPIMPL::GetBoundingBox(void) const {
+    static cv::Rect tmp(0,0,0,0);
+    return tmp;
   }
 } // namespace Vision
 } // namespace LF

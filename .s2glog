@@ -41104,3 +41104,19 @@ By Dave Milici (dmilici@leapfrog.com) on 4/30/14 7:38 PM
 25,351 ms. (Cumulative: 23,594,551 ms)
 
 ----------------
+Revision 10,789 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+use integral image for rect hot spots with occlusion trigger
+
+this is an optimization to improve hot spot triggering performance
+for cases where there are a high number of rect hot spots using
+an occlusion trigger
+
+added a test app that can have 1, 100 or 400 hot spots, at 400 they
+cover the entire screen
+
+By Alex Lindblad (alindblad@leapfrog.com) on 4/30/14 11:49 PM
+18 changed, 0 added, 0 deleted.
+27,120 ms. (Cumulative: 23,621,781 ms)
+
+----------------

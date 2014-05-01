@@ -3,6 +3,9 @@
 #include <opencv2/opencv.hpp>
 #include <Vision/VNAlgorithm.h>
 #include <Vision/VNHotSpot.h>
+#include <Vision/VNRectHotSpot.h>
+#include <Vision/VNCircleHotSpot.h>
+#include <Vision/VNArbitraryShapeHotSpot.h>
 #include <DisplayTypes.h>
 #include <DisplayMPI.h>
 #include <Vision/VNWand.h>
@@ -19,6 +22,8 @@
 #include <Utility.h>
 #include <sys/stat.h>
 #include <VNYUYV2RGB.h>
+#undef VN_PROFILE
+#include <VNProfiler.h>
 
 namespace LF {
 namespace Vision {
@@ -170,6 +175,10 @@ namespace Vision {
 	 it != hotSpots_.end(); ++it) {
       (*it)->pimpl_->UpdateVisionCoordinates();
     }
+    for (std::vector<const VNHotSpot*>::iterator it = rectHotSpots_.begin();
+	 it != rectHotSpots_.end(); ++it) {
+      (*it)->pimpl_->UpdateVisionCoordinates();
+    }
   }
 
   LeapFrog::Brio::tErrType
@@ -230,6 +239,9 @@ namespace Vision {
   VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf *surf,
 			  bool dispatchSynchronously,
 			  const LeapFrog::Brio::tRect *displayRect) {
+    std::cout << "** SIZE OF hotSpots_ = " << hotSpots_.size() << std::endl;
+    std::cout << "** SIZE OF rectHotSpots_ = " << rectHotSpots_.size() << std::endl;
+
     LeapFrog::Brio::tErrType error = kNoErr;
 
     if (!visionAlgorithmRunning_) {
@@ -310,12 +322,38 @@ namespace Vision {
   
   void
   VNVisionMPIPIMPL::TriggerHotSpots(void) {
+    static int numCalls = 0;
+
+    PROF_BLOCK_START("triggerHotSpots");
     for (std::vector<const VNHotSpot*>::iterator hs = hotSpots_.begin();
 	 hs != hotSpots_.end();
 	 ++hs) {
       
       (*hs)->Trigger(outputImg_);
     }
+    PROF_BLOCK_END();
+
+    if (rectHotSpots_.size() > 0) {
+      PROF_BLOCK_START("integralImage");
+      // compute integral image
+      cv::Mat integralImg;
+      cv::integral(outputImg_, integralImg);
+      VNHotSpotPIMPL::SetIntegralImage(&integralImg);
+      PROF_BLOCK_END();
+      
+      PROF_BLOCK_START("triggerRectHotSpots");
+      for (std::vector<const VNHotSpot*>::iterator rhs = rectHotSpots_.begin();
+	   rhs != rectHotSpots_.end();
+	   ++rhs) {
+	(*rhs)->Trigger(outputImg_);
+      }
+      PROF_BLOCK_END();
+    }
+    VNHotSpotPIMPL::SetIntegralImage(NULL);
+
+    ++numCalls;
+    if (numCalls == 1000)
+      PROF_PRINT_REPORT();
   }
   
   void
@@ -490,13 +528,23 @@ namespace Vision {
   void
   VNVisionMPIPIMPL::Update(void) {
 
+    PROF_BLOCK_START("Update");
     if (visionAlgorithmRunning_) {
+      PROF_BLOCK_START("beginFrameProcessing");
       BeginFrameProcessing();
+      PROF_BLOCK_END();
 
       if (!cameraMPI_.IsVideoCapturePaused(videoCapture_) ) {
+	
+	PROF_BLOCK_START("lockVideoSurface");
+	LeapFrog::Brio::Boolean locked = cameraMPI_.LockCaptureVideoSurface(videoCapture_);
+	PROF_BLOCK_END();
 
-	if (cameraMPI_.LockCaptureVideoSurface(videoCapture_)) {
+	if (locked) {
+	  PROF_BLOCK_START("videoSurf");
 	  LeapFrog::Brio::tVideoSurf *surf = cameraMPI_.GetCaptureVideoSurface(videoCapture_);
+	  PROF_BLOCK_END();
+
 	  //dbg_.Assert(surf != 0, "VNVisionMPIPIMPL::Update - failed getting video surface.\n");
 	  if (!surf) return;
 	  
@@ -504,23 +552,32 @@ namespace Vision {
 
 	  //dbg_.Assert(buffer && algorithm_, "VNVisionMPIPIMPL::Update - invalid buffer or algorithm.\n");
 	  if (buffer && algorithm_) {
+	    PROF_BLOCK_START("createRGB");
 	    cv::Mat rgbMat(cv::Size(surf->width,
 				    surf->height),
 			   CV_8UC3);
 	    CreateRGBImage(surf,
 			   rgbMat);
+	    PROF_BLOCK_END();
+
 #ifdef EMULATION
 	    cv::namedWindow("input");
 	    cv::imshow("input", rgbMat);
 #endif
+
+	    PROF_BLOCK_START("algorithm");
 	    algorithm_->Execute(rgbMat, outputImg_);
+	    PROF_BLOCK_END();
 
 #ifdef EMULATION
 	    if (showOCVDebugOutput_)
 	      OpenCVDebug();
 #endif
 
+	    PROF_BLOCK_START("triggering");
 	    TriggerHotSpots();
+	    PROF_BLOCK_END();
+
 	    ++frameCount_;
 	    if (frameCount_ % 30 == 0) {
 	      std::cout << "FPS = " << frameCount_ / ((float)(time(0) - frameTime_)) << std::endl;
@@ -531,8 +588,11 @@ namespace Vision {
       } else {
 	dbg_.DebugOut(kDbgLvlCritical, "VNVisionMPIPIMPL - no frame.\n");
       }
+      PROF_BLOCK_START("endFrameProcessing");
       EndFrameProcessing();
+      PROF_BLOCK_END();
     }
+    PROF_BLOCK_END();
   }
 
   void*
@@ -564,6 +624,72 @@ namespace Vision {
     }
   }
 #endif
+
+  void
+  VNVisionMPIPIMPL::AddHotSpot(const VNHotSpot* hotSpot,
+			       std::vector<const VNHotSpot*> & hotSpots) {
+    if (std::find(hotSpots.begin(),
+		  hotSpots.end(),
+		  hotSpot) == (hotSpots.end())) {
+      hotSpots.push_back(hotSpot);
+    }
+  }
+
+  void
+  VNVisionMPIPIMPL::AddHotSpot(const VNHotSpot* hotSpot) {
+    const VNRectHotSpot* rhs = dynamic_cast<const VNRectHotSpot*>(hotSpot);
+    const VNCircleHotSpot *chs = dynamic_cast<const VNCircleHotSpot*>(rhs);
+    const VNArbitraryShapeHotSpot *ahs = dynamic_cast<const VNArbitraryShapeHotSpot*>(rhs);
+    // only add VNRectHotSpot not any children of VNRectHotSpot
+    if (rhs && (chs == NULL) && (ahs == NULL)) {
+      AddHotSpot(hotSpot, rectHotSpots_);
+    } else {
+      AddHotSpot(hotSpot, hotSpots_);
+    }
+  }
+  
+  bool
+  VNVisionMPIPIMPL::RemoveHotSpot(const VNHotSpot *hotSpot,
+				  std::vector<const VNHotSpot*> &hotSpots) {
+    std::vector<const VNHotSpot*>::iterator it;
+    it = std::find(hotSpots.begin(), hotSpots.end(), hotSpot);
+    if (it != hotSpots.end()) {
+      hotSpots.erase(it);
+    }
+  }
+  
+  void
+  VNVisionMPIPIMPL::RemoveHotSpot(const VNHotSpot* hotSpot) {
+    if (!RemoveHotSpot(hotSpot, hotSpots_)) {
+      RemoveHotSpot(hotSpot, rectHotSpots_);
+    }
+  }
+  
+  void
+  VNVisionMPIPIMPL::RemoveHotSpotByID(const LeapFrog::Brio::U32 tag,
+				      std::vector<const VNHotSpot*> &hotSpots) {
+    std::vector<const VNHotSpot*>::iterator it = hotSpots.begin();
+    for ( ; it != hotSpots.end(); ++it) {
+      if ((*it)->GetTag() == tag) {	
+	it = hotSpots.erase(it);
+	// because erase returns an iterator to the "next" spot we need 
+	// to decrement the iterator since we icrement it at the end of each loop
+	it--;
+      }
+    }
+  }
+
+  void
+  VNVisionMPIPIMPL::RemoveHotSpotByID(const LeapFrog::Brio::U32 tag) {
+    RemoveHotSpotByID(tag, hotSpots_);
+    RemoveHotSpotByID(tag, rectHotSpots_);
+  }
+
+  void
+  VNVisionMPIPIMPL::RemoveAllHotSpots(void) {
+    rectHotSpots_.clear();
+    hotSpots_.clear();
+  }
 
 } // namespace Vision
 } // namespace LF
