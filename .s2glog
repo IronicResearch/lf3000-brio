@@ -41094,3 +41094,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/30/14 7:31 PM
 24,955 ms. (Cumulative: 23,569,107 ms)
 
 ----------------
+Revision 10,788 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+BTIO: Callback to ControllerMPI client on BT device disconnect events. (FWGLAS-4, FWGLAS-310)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/30/14 7:38 PM
+2 changed, 0 added, 0 deleted.
+25,351 ms. (Cumulative: 23,594,551 ms)
+
+----------------
