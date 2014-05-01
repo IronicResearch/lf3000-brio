@@ -41083,3 +41083,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/30/14 6:21 PM
 24,853 ms. (Cumulative: 23,544,058 ms)
 
 ----------------
+Revision 10,787 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Test controller connectivity status on device callbacks to post connected vs disconnected events. (FWGLAS-4, GWGLAS-310)
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/30/14 7:31 PM
+1 changed, 0 added, 0 deleted.
+24,955 ms. (Cumulative: 23,569,107 ms)
+
+----------------
