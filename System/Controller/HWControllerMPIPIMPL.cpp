@@ -7,7 +7,7 @@
 #include <dlfcn.h>
 #include <string.h>
 
-#undef ENABLE_PROFILING	// #define to enable profiling BT callbacks
+#define ENABLE_PROFILING	// #define to enable profiling BT callbacks
 #include <FlatProfiler.h>
 
 const LeapFrog::Brio::tEventType 
@@ -155,8 +155,11 @@ namespace Hardware {
   void
   HWControllerMPIPIMPL::AddController(char* link) {
 	  std::string key(link);
-	  if (mapControllers_.count(key) > 0)
+	  if (mapControllers_.count(key) > 0) {
+	      HWControllerEventMessage qmsg(kHWControllerConnected, FindController(link));
+	      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
 		  return;
+	  }
 
 	  if (numControllers_ >= kHWMaximumNumberOfControllers) {
 		  debugMPI_.DebugOut(kDbgLvlImportant, "AddController maxed out at %d\n", numControllers_);
