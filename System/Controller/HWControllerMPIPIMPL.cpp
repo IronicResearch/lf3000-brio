@@ -51,7 +51,7 @@ namespace Hardware {
 	    isScanning_ = false;
 
 	    // Dynamically load Bluetooth client lib
-		dll_ = dlopen("libBluetopiaIO.so", RTLD_LAZY);
+		dll_ = dlopen(BTIO_LIB_NAME, RTLD_LAZY);
 		if (dll_ != NULL) {
 			pBTIO_Init_			= (pFnInit)dlsym(dll_, "BTIO_Init");
 			pBTIO_Exit_			= (pFnExit)dlsym(dll_, "BTIO_Exit");
@@ -68,7 +68,7 @@ namespace Hardware {
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputContext, this, sizeof(void*), NULL);
 		}
 		else {
-			debugMPI_.DebugOut(kDbgLvlImportant, "%s: dlopen failed to load libBluetopiaIO.so, error=%s\n", __func__, dlerror());
+			debugMPI_.DebugOut(kDbgLvlImportant, "%s: dlopen failed to load %s, error=%s\n", __func__, BTIO_LIB_NAME, dlerror());
 		}
 
 		timer = new COneShotTimer(props);

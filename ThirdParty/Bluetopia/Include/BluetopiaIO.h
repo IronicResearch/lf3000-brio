@@ -1,6 +1,8 @@
 #ifndef __BLUETOPIAIO_H__
 #define __BLUETOPIAIO_H__
 
+#define BTIO_LIB_NAME		"libBluetopiaIO.so"
+
 #define USE_PAIRED_MODE		1	// for connecting to controllers paired with console
 
 #include <BTAddr.h>
