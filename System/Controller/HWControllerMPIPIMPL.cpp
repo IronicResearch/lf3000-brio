@@ -156,9 +156,13 @@ namespace Hardware {
   HWControllerMPIPIMPL::AddController(char* link) {
 	  std::string key(link);
 	  if (mapControllers_.count(key) > 0) {
-	      HWControllerEventMessage qmsg(kHWControllerConnected, FindController(link));
+	      // If controller already exists, test its connectivity
+	      HWController* controller = FindController(link);
+	      HWControllerLEDColor color = controller->GetLEDColor();
+	      int r = SendCommand(controller, kBTIOCmdSetLEDState, &color, sizeof(color));
+	      HWControllerEventMessage qmsg((r < 0) ? kHWControllerDisconnected : kHWControllerConnected, controller);
 	      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
-		  return;
+	      return;
 	  }
 
 	  if (numControllers_ >= kHWMaximumNumberOfControllers) {
