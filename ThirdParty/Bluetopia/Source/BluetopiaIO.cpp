@@ -14,9 +14,6 @@ extern "C" {
 static unsigned int        DEVMCallbackID = 0;
 static unsigned int        GATMCallbackID = 0;
 
-static BTAddr*             device = NULL;
-static unsigned char       packet[256] = {'\0'};
-
 // Callback function to ControllerMPI client
 static pFnCallback2        callbackfunc = NULL;
 static pFnCallback         callbackmain = NULL;
@@ -46,7 +43,7 @@ void BTPSAPI ServerUnRegistrationCallback(void *CallbackParameter)
 // BTPM Local Device Manager Callback function
 static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *CallbackParameter)
 {
-//	printf("%s: %p, %p\n", __func__, EventData, CallbackParameter);
+	BTAddr*             device = NULL;
 
 	if (EventData) {
 		switch (EventData->EventType) {
@@ -73,6 +70,7 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 			if (EventData->EventData.RemoteDevicePropertiesChangedEventData.ChangedMemberMask & DEVM_REMOTE_DEVICE_PROPERTIES_CHANGED_LE_CONNECTION_STATE) {
 				if (EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.RemoteDeviceFlags & DEVM_REMOTE_DEVICE_FLAGS_DEVICE_CURRENTLY_CONNECTED_OVER_LE) {
 					device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.BD_ADDR);
+					// Callback client for connection event
 					if (callbackmain) {
 						char buf[7] = {'\0'};
 						device->toByteArray(buf);
@@ -84,6 +82,13 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 				else {
 					device = BTAddr::fromByteArray((const char*)&EventData->EventData.RemoteDevicePropertiesChangedEventData.RemoteDeviceProperties.BD_ADDR);
 					BTIO_ConnectToDevice(DEVMCallbackID, device);
+					// Callback client for disconnection event
+					if (callbackmain) {
+						char buf[7] = {'\0'};
+						device->toByteArray(buf);
+						buf[6] = '\0';
+						(*callbackmain)(CallbackParameter, buf, sizeof(buf));
+					}
 				}
 			}
 			break;
@@ -124,6 +129,9 @@ static void BTPSAPI DEVM_Event_Callback(DEVM_Event_Data_t *EventData, void *Call
 	else {
 		printf("%s: invalid %p, %p\n", __func__, EventData, CallbackParameter);
 	}
+
+	if (device)
+		delete device;
 }
 
 // GATM Manager Callback Function
@@ -258,9 +266,8 @@ int BTIO_WriteValue(int handle, int command, void* data, int length, char* addr)
 	if (addr) {
 		memcpy(&BDADDR, addr, sizeof(BDADDR));
 	}
-	else if (device) {
-		device->toByteArray((char*)&BDADDR);
-	}
+	else
+		return -1;
 
 	int r = GATM_WriteValue(GATMCallbackID, BDADDR, command, sizeof(value), (Byte_t*)&value);
 	printf("GATM_WriteValue() returned %d for %02x\n", r, value);
