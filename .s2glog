@@ -41064,3 +41064,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/30/14 12:24 PM
 24,961 ms. (Cumulative: 23,493,810 ms)
 
 ----------------
+Revision 10,785 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+single pass virtual touch algorithm
+
+By Alex Lindblad (alindblad@leapfrog.com) on 4/30/14 5:09 PM
+3 changed, 1 added, 0 deleted.
+25,192 ms. (Cumulative: 23,519,096 ms)
+
+----------------

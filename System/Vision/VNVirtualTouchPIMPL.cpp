@@ -1,6 +1,6 @@
 #include <VNVirtualTouchPIMPL.h>
 #include "VNRGB2Gray.h"
-#undef LF_PROFILE 
+#define VN_PROFILE 0
 #include <VNProfiler.h>
 #include <VNAlgorithmHelpers.h>
 #include <GroupEnumeration.h>
@@ -10,7 +10,9 @@
 
 #define VN_OPTIMIZE_FIXEDPOINT 1
 #if VN_OPTIMIZE_FIXEDPOINT
+#define VN_OPTIMIZE_FRAME_PASSES 1
 #include "VNAccumulate.h"
+#include "VNFixedPoint.h"
 #endif
 
 namespace LF {
@@ -93,12 +95,18 @@ namespace Vision {
 	  PROF_BLOCK_START("convertTo 8U");
 	  // convert background to 8U
 #if VN_OPTIMIZE_FIXEDPOINT
+#if VN_OPTIMIZE_FRAME_PASSES == 0
 	  LF::Vision::convertFixedPointToU8(background_, backImage_);
+#endif
 #else
 	  background_.convertTo(backImage_, CV_8U);
 #endif
 	  PROF_BLOCK_END();
-
+#if VN_OPTIMIZE_FRAME_PASSES
+	  PROF_BLOCK_START("AbsDifferenceThreshold");
+	  AbsDifferenceThreshold( background_, gray_, output, threshold_, learningRate_);
+	  PROF_BLOCK_END();
+#else // VN_OPTIMIZE_FRAME_PASSES
 	  PROF_BLOCK_START("absdiff");
 	  // compute difference between current image and background
 	  cv::absdiff(backImage_, gray_, foreground_);
@@ -108,11 +116,13 @@ namespace Vision {
 	  // apply threshold to foreground image
 	  cv::threshold(foreground_, output, threshold_, 255, cv::THRESH_BINARY);
 	  PROF_BLOCK_END();
-	  
+#endif // VN_OPTIMIZE_FRAME_PASSES 
 	  PROF_BLOCK_START("accumulateWeighted");
 	  // accumulate the background
 #if VN_OPTIMIZE_FIXEDPOINT
+#if VN_OPTIMIZE_FRAME_PASSES == 0
 	  LF::Vision::accumulateWeightedFixedPoint(gray_, background_, learningRate_);
+#endif
 #else 
 	  cv::accumulateWeighted(gray_, background_, learningRate_);
 #endif
@@ -121,5 +131,58 @@ namespace Vision {
 	  PROF_BLOCK_END(); // Execute
   }
 
+
+void 
+  VNVirtualTouchPIMPL::AbsDifferenceThreshold(cv::Mat& background, cv::Mat &gray, cv::Mat& output, int threshold, float alpha) {
+
+	  if( output.empty() ) {
+		  printf("\a output.create\n");
+		  output.create(background.size(), CV_8U);
+	  }
+
+	  int32_t backImage[4], foreground[4];
+
+	  fixed_t d[4], s[4];
+
+	  fixed_t a = FLOAT2FIXED( alpha );
+	  fixed_t b = FLOAT2FIXED( 1.0f - alpha );
+	  const int32_t sz = background.rows * background.cols;
+	  for( int i = 0; i < sz; i+=4 ) {
+		  // convertTo
+		  backImage[0] = FIXED2INT(background.at<uint32_t>(i));
+		  backImage[1] = FIXED2INT(background.at<uint32_t>(i+1));
+		  backImage[2] = FIXED2INT(background.at<uint32_t>(i+2));
+		  backImage[3] = FIXED2INT(background.at<uint32_t>(i+3));
+		  // compute difference between current image and background
+		  // cv::absdiff
+		  foreground[0] = std::abs(backImage[0] - gray.at<uint8_t>(i));
+		  foreground[1] = std::abs(backImage[1] - gray.at<uint8_t>(i+1));
+		  foreground[2] = std::abs(backImage[2] - gray.at<uint8_t>(i+2));
+		  foreground[3] = std::abs(backImage[3] - gray.at<uint8_t>(i+3));
+
+		  // apply threshold to foreground image
+		  // cv::threshold
+		  output.at<uint8_t>(i) = (foreground[0] > threshold) * 255;//? 255 : 0;
+		  output.at<uint8_t>(i+1) = (foreground[1] > threshold) * 255;//? 255 : 0;
+		  output.at<uint8_t>(i+2) = (foreground[2] > threshold) * 255;//? 255 : 0;
+		  output.at<uint8_t>(i+3) = (foreground[3] > threshold) * 255;//? 255 : 0;
+
+
+		  s[0] = INT2FIXED( gray.at<uint8_t>(i) );
+		  s[1] = INT2FIXED( gray.at<uint8_t>(i+1) );
+		  s[2] = INT2FIXED( gray.at<uint8_t>(i+2) );
+		  s[3] = INT2FIXED( gray.at<uint8_t>(i+3) );
+
+		  d[0] = background.at<uint32_t>(i);
+		  d[1] = background.at<uint32_t>(i+1);
+		  d[2] = background.at<uint32_t>(i+2);
+		  d[3] = background.at<uint32_t>(i+3);
+
+		  background.at<uint32_t>(i)  = MULT(a, s[0]) + MULT(b, d[0]);
+		  background.at<uint32_t>(i+1)  = MULT(a, s[1]) + MULT(b, d[1]);
+		  background.at<uint32_t>(i+2)  = MULT(a, s[2]) + MULT(b, d[2]);
+		  background.at<uint32_t>(i+3)  = MULT(a, s[3]) + MULT(b, d[3]);
+	  }
+  }
 }
 }

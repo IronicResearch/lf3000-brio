@@ -15,13 +15,16 @@ namespace Vision {
     void Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
 		    LeapFrog::Brio::U16 frameProcessingHeight);
     void Execute(cv::Mat &input, cv::Mat &output);
-    
+
+
     float learningRate_;
     int threshold_;
     cv::Mat gray_;
     cv::Mat background_;
     cv::Mat backImage_;
     cv::Mat foreground_;
+  private:
+	void AbsDifferenceThreshold(cv::Mat& background, cv::Mat &gray, cv::Mat& output, int threshold, float alpha);
   };
 
 }
