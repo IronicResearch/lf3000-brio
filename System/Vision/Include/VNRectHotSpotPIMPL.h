@@ -18,7 +18,8 @@ namespace Vision {
 
     virtual bool ContainsPoint(const VNPoint &p) const;
     virtual int GetTriggerImage(cv::Mat &img);
-    
+    virtual bool GetIntegralImage(cv::Mat &img);
+
     // assumption is that all coordinates passed in to this method
     // are relative to the display coordinate system
     void SetRect(const LeapFrog::Brio::tRect &rect);
@@ -27,6 +28,7 @@ namespace Vision {
     // translates the lfRect (in display coordinates) to rect_ in vision coordinates
     virtual void UpdateVisionCoordinates(void);
 
+    virtual cv::Rect GetBoundingBox(void) const;
   protected:
     // assumption is that all coordinates passed in to this method
     // are relative to the display coordinate system

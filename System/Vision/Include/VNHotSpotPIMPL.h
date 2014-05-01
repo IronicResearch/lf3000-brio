@@ -15,7 +15,7 @@ namespace Vision {
     VNHotSpotPIMPL(void);
     virtual ~VNHotSpotPIMPL(void);
     
-    virtual void Trigger(void *input, const VNHotSpot *hs);
+    virtual void Trigger(cv::Mat &input, const VNHotSpot *hs);
 
     /*!
      * methods for triggers to call to facilitate triggering
@@ -25,11 +25,15 @@ namespace Vision {
     // returns the number of pixels in the region
     // and sets the img to the triggering image
     virtual int GetTriggerImage(cv::Mat &img);
+    virtual bool GetIntegralImage(cv::Mat &img);
 
     // This method is called when the vision algorithm starts processing to insure
     // that the mapping between the vision coordinate system and the display 
     // coordinate system is correct.
     virtual void UpdateVisionCoordinates(void);
+
+    virtual cv::Rect GetBoundingBox(void) const;
+    static void SetIntegralImage(cv::Mat *integralImg) { integralImage_ = integralImg;}
 
     VNTrigger* trigger_;
     LeapFrog::Brio::U32 tag_;
@@ -38,8 +42,7 @@ namespace Vision {
 
   protected:
     int numPixels_;
-
-    
+    static cv::Mat *integralImage_;
 
   private:
     static LeapFrog::Brio::U32 instanceCounter_;

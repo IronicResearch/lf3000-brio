@@ -40,9 +40,13 @@ namespace Vision {
     void SetCurrentWand(VNWand *wand);
     VNWand* GetCurrentWand(void) const;
 
+    void AddHotSpot(const VNHotSpot* hotSpot);
+    void RemoveHotSpot(const VNHotSpot* hotSpot);
+    void RemoveHotSpotByID(const LeapFrog::Brio::U32 tag);
+    void RemoveAllHotSpots(void);
+
     bool visionAlgorithmRunning_;
     float frameProcessingRate_;
-    std::vector<const VNHotSpot*> hotSpots_;
     LeapFrog::Brio::tTaskHndl taskHndl_;
     VNAlgorithm* algorithm_;
     LeapFrog::Brio::tVideoSurf* videoSurf_;
@@ -63,6 +67,12 @@ namespace Vision {
 			cv::Mat &img) const;
     void UpdateHotSpotVisionCoordinates(void);
     void SetFrameProcessingSize(void);
+    void AddHotSpot(const VNHotSpot *hotSpot,
+		    std::vector<const VNHotSpot*> &hotSpots);
+    bool RemoveHotSpot(const VNHotSpot *hotSpot,
+		       std::vector<const VNHotSpot*> &hotSpots);
+    void RemoveHotSpotByID(const LeapFrog::Brio::U32 tag,
+			   std::vector<const VNHotSpot*> &hotSpots);
 
     static void* CameraCaptureTask(void* args);
 
@@ -76,7 +86,12 @@ namespace Vision {
     VNVisionMPIPIMPL& operator=(const VNVisionMPIPIMPL&);
     
     LeapFrog::Brio::CDebugMPI dbg_;
-    
+
+    // all rectangular hot spots
+    std::vector<const VNHotSpot*> rectHotSpots_;
+    // all other hot spots
+    std::vector<const VNHotSpot*> hotSpots_;
+
     time_t frameTime_;
     int frameCount_;
     LeapFrog::Brio::U16 frameProcessingWidth_;

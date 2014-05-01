@@ -1,6 +1,6 @@
 #include <VNVirtualTouchPIMPL.h>
 #include "VNRGB2Gray.h"
-#define VN_PROFILE 0
+#undef VN_PROFILE 
 #include <VNProfiler.h>
 #include <VNAlgorithmHelpers.h>
 #include <GroupEnumeration.h>

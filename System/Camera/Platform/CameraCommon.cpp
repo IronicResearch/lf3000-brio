@@ -3224,7 +3224,6 @@ tVideoSurf* 	CCameraModule::GetCaptureVideoSurface(const tVidCapHndl hndl)
     surf.pitch  = (surf.height > 0) ? camCtx_.frame->size / surf.height : 0;
     return &surf;
   }
-
   return NULL;
 #else
   return camCtx_.surf;

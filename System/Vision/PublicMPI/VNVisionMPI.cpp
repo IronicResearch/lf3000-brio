@@ -77,38 +77,22 @@ namespace Vision {
    */
   void
   VNVisionMPI::AddHotSpot(const VNHotSpot* hotSpot) {
-    if (std::find(pimpl_->hotSpots_.begin(),
-		  pimpl_->hotSpots_.end(),
-		  hotSpot) == (pimpl_->hotSpots_.end())) {
-      pimpl_->hotSpots_.push_back(hotSpot);
-    }
+    pimpl_->AddHotSpot(hotSpot);
   }
   
   void
   VNVisionMPI::RemoveHotSpot(const VNHotSpot* hotSpot) {
-    std::vector<const VNHotSpot*>::iterator it;
-    it = std::find(pimpl_->hotSpots_.begin(), pimpl_->hotSpots_.end(), hotSpot);
-    if (it != pimpl_->hotSpots_.end()) {
-      pimpl_->hotSpots_.erase(it);
-    }
+    pimpl_->RemoveHotSpot(hotSpot);
   }
   
   void
   VNVisionMPI::RemoveHotSpotByID(const LeapFrog::Brio::U32 tag) {
-    std::vector<const VNHotSpot*>::iterator it = pimpl_->hotSpots_.begin();
-    for ( ; it != pimpl_->hotSpots_.end(); ++it) {
-      if ((*it)->GetTag() == tag) {	
-	it = pimpl_->hotSpots_.erase(it);
-	// because erase returns an iterator to the "next" spot we need 
-	// to decrement the iterator since we icrement it at the end of each loop
-	it--;
-      }
-    }
+    pimpl_->RemoveHotSpotByID(tag);
   }
 
   void
   VNVisionMPI::RemoveAllHotSpots(void) {
-    pimpl_->hotSpots_.clear();
+    pimpl_->RemoveAllHotSpots();
   }
 
   /*!

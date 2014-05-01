@@ -13,6 +13,14 @@ namespace Vision {
     virtual ~VNOcclusionTriggerPIMPL(void);
     bool Triggered(VNHotSpotPIMPL &hs);
 
+    void TriggerWithIntegralImage(VNHotSpotPIMPL &hs,
+				  cv::Mat img,
+				  int &numPixles,
+				  int &numDiffPixels);
+    void TriggerWithDiffImage(VNHotSpotPIMPL &hs,
+			      int &numPixles,
+			      int &numDiffPixels);
+
     float percentOccludedToTrigger_;
     float percentOccluded_;
   };

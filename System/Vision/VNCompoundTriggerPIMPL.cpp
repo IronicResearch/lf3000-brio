@@ -19,7 +19,9 @@ namespace Vision {
 
   bool
   VNCompoundTriggerPIMPL::Triggered(const VNHotSpot *hs) {
-    return temporalTrigger_->Triggered(spatialTrigger_->Triggered(hs));
+    if (spatialTrigger_ && temporalTrigger_)
+      return temporalTrigger_->Triggered(spatialTrigger_->Triggered(hs));
+    return false;
   }
 
 }

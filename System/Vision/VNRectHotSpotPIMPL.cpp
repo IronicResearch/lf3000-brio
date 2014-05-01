@@ -67,6 +67,11 @@ namespace Vision {
   }
 
   cv::Rect
+  VNRectHotSpotPIMPL::GetBoundingBox(void) const {
+    return rect_;
+  }
+
+  cv::Rect
   VNRectHotSpotPIMPL::ClipRectToImage(cv::Mat &img) const {
     cv::Rect imgRect(0,0,img.cols,img.rows);
     return rect_ & imgRect;
@@ -112,6 +117,15 @@ namespace Vision {
     //numPixels_ = triggerImage_.cols*triggerImage_.rows;
     numPixels_ = rect_.width*rect_.height;
     return numPixels_;
+  }
+
+  bool
+  VNRectHotSpotPIMPL::GetIntegralImage(cv::Mat &img) {
+    if (integralImage_) {
+      img = *integralImage_;
+      return true;
+    }
+    return false;
   }
 
 } // namespace Vision
