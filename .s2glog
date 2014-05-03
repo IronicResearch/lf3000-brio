@@ -41140,3 +41140,20 @@ By Dave Milici (dmilici@leapfrog.com) on 5/1/14 12:21 PM
 25,082 ms. (Cumulative: 23,672,303 ms)
 
 ----------------
+Revision 10,796 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Deleted ThirdParty/Bluetopia source from Brio (the code is already moved to LinuxDist and builds and deploys as LinuxDist package) 
+Other changes to the build script to support this and also ControllerMPI to look for the headers at the new location
+
+Note : Your toolchain should be updated to include btio headers and libraries using - 
+opkg-toolchain update     
+opkg-toolchain install btio-dev
+
+
+
+
+By Falguni Mirani (fmirani@leapfrog.com) on 5/2/14 5:08 PM
+2 changed, 0 added, 8 deleted.
+25,470 ms. (Cumulative: 23,697,867 ms)
+
+----------------

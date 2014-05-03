@@ -6,7 +6,7 @@
 #include <EventMPI.h>
 #include <DebugMPI.h>
 #include <KernelMPI.h>
-#include <BluetopiaIO.h>
+#include <Bluetooth/BTIO.h>
 #include <vector>
 #include <map>
 
