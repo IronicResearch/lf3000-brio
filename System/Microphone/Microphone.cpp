@@ -1085,6 +1085,8 @@ static int direct_read_begin(struct tMicrophoneContext *pCtx, char** pbuffer, in
 	// Query captured samples available
 	avail = snd_pcm_avail_update(handle);
 	if (avail < 0) {
+		err = avail;
+		pCtx->dbg->DebugOut(kDbgLvlCritical, "MicrophoneModule::%s: err=%d: %s\n", __func__, err, snd_strerror(err));
 		err = xrun_recovery(handle, avail);
 		return 0;
 	}
@@ -1096,6 +1098,7 @@ static int direct_read_begin(struct tMicrophoneContext *pCtx, char** pbuffer, in
 	frames = avail;
 	err = snd_pcm_mmap_begin(handle, &my_area, &offset, &frames);
 	if (err < 0) {
+		pCtx->dbg->DebugOut(kDbgLvlCritical, "MicrophoneModule::%s: err=%d: %s\n", __func__, err, snd_strerror(err));
 		err = xrun_recovery(handle, err);
 		return 0;
 	}
@@ -1116,6 +1119,7 @@ static int direct_read_end(struct tMicrophoneContext *pCtx, char* pbuffer, int o
 	// Release mmapped region to captured samples
 	err = snd_pcm_mmap_commit(handle, offset, len/2);
 	if (err < 0) {
+		pCtx->dbg->DebugOut(kDbgLvlCritical, "MicrophoneModule::%s: err=%d: %s\n", __func__, err, snd_strerror(err));
 		err = xrun_recovery(handle, err);
 		return err;
 	}
