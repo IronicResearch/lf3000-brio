@@ -409,25 +409,6 @@ void* CameraTaskMain(void* arg)
 		 */
 		if(!pCtx->bPaused)
 		{
-			if(bFile && bRet)
-			{
-				int r = 0;
-				// Duplicate video frame(s) if video frame count lags behind audio block count
-				//do {
-					r = AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
-				//} while (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter);
-
-#if defined(LF1000)
-				// Audio block counter is based on cummulative bytes written
-				if (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter)
-					keyframe = cam->micCtx_.counter;
-#endif
-				dbg.DebugOut( kDbgLvlVerbose, "v4l frame=%d, key frame=%d, mic frame=%d\n", framecount, keyframe, cam->micCtx_.counter);
-
-				// Breakout on next loop iteration if AVI write error
-				if (r < 0)
-					bRunning = false;
-			}
 			if (!bFirst) {
 				bFirst = true;
 				tv0 = frame.timestamp;
@@ -444,6 +425,22 @@ void* CameraTaskMain(void* arg)
 
 			// Calculate video keyframe based on elapsed timestamp
 			keyframe = (int)((long long int)pCtx->fps * CalcTimeElapsed(tvt, tvn, tv0) / 1000000LL);
+
+			if(bFile && bRet)
+			{
+				int r = AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe);
+
+				dbg.DebugOut( kDbgLvlVerbose, "v4l frame=%d, key frame=%d, mic frame=%d\n", framecount, keyframe, cam->micCtx_.counter);
+
+#if defined(LF1000)
+				// Audio block counter is based on cummulative bytes written
+				if (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter)
+					keyframe = cam->micCtx_.counter;
+#endif
+				// Breakout on next loop iteration if AVI write error
+				if (r < 0)
+					bRunning = false;
+			}
 		}
 
 		if (!bQueued)
