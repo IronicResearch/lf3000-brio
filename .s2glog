@@ -41186,3 +41186,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/9/14 2:54 PM
 24,956 ms. (Cumulative: 23,772,900 ms)
 
 ----------------
+Revision 10,802 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Additionally track invalid controller button values for "NoMode" state, without posting "NoMode" events. (FWGLAS-399)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/9/14 3:18 PM
+1 changed, 0 added, 0 deleted.
+24,930 ms. (Cumulative: 23,797,924 ms)
+
+----------------
