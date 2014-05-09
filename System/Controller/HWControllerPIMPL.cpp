@@ -347,6 +347,8 @@ namespace Hardware {
 				  pModule->mode_ = kHWControllerMode;
 			  else if (!packet[i] && packet[i-1])
 				  pModule->mode_ = kHWControllerWandMode;
+			  else
+				  pModule->mode_ = kHWControllerNoMode;
 			  break;
 		  case 6:
 			  pModule->analogStickData_.x = BYTE_TO_FLOAT(packet[i]);
@@ -384,7 +386,7 @@ namespace Hardware {
 		  pModule->eventMPI_.PostEvent(cmsg, 128);
 	  }
 
-	  if (mode != pModule->mode_) {
+	  if (mode != pModule->mode_ && pModule->mode_ != kHWControllerNoMode) {
 	      HWControllerEventMessage cmsg(kHWControllerModeChanged, pModule->controller_);
 		  pModule->eventMPI_.PostEvent(cmsg, 128);
 	  }
