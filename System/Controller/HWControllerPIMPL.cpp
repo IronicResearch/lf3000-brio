@@ -341,12 +341,12 @@ namespace Hardware {
 			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonHint : 0;
 			  break;
 		  case 4:
-			  if (packet[i])
-				  pModule->mode_ = kHWControllerWandMode;
 			  break;
 		  case 5:
-			  if (packet[i])
+			  if (packet[i] && !packet[i-1])
 				  pModule->mode_ = kHWControllerMode;
+			  else if (!packet[i] && packet[i-1])
+				  pModule->mode_ = kHWControllerWandMode;
 			  break;
 		  case 6:
 			  pModule->analogStickData_.x = BYTE_TO_FLOAT(packet[i]);
