@@ -41196,3 +41196,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/9/14 3:18 PM
 24,930 ms. (Cumulative: 23,797,924 ms)
 
 ----------------
+Revision 10,803 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+single pass neon virtual touch, including color conversion
+
+includes associated unit tests
+
+By Alex Lindblad (alindblad@leapfrog.com) on 5/11/14 1:06 PM
+7 changed, 0 added, 0 deleted.
+25,184 ms. (Cumulative: 23,823,202 ms)
+
+----------------

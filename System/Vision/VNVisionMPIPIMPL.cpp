@@ -512,12 +512,6 @@ namespace Vision {
 		    CV_8UC3, 
 		    surf->buffer);
     } else if (surf->format == LeapFrog::Brio::kPixelFormatYUYV422) {
-      //cv::Mat tmp(cv::Size(width,
-		//	   height),
-		//  CV_8UC2,
-		//  surf->buffer,
-		//  surf->pitch);
-      //cv::cvtColor(tmp, img, CV_YUV2RGB_YUYV);
 
 	  LF::Vision::YUYV2RGB( surf->buffer, width, height, img );
     } else {
@@ -552,21 +546,32 @@ namespace Vision {
 
 	  //dbg_.Assert(buffer && algorithm_, "VNVisionMPIPIMPL::Update - invalid buffer or algorithm.\n");
 	  if (buffer && algorithm_) {
-	    PROF_BLOCK_START("createRGB");
+		  
+		  // create a camera surface cv::Mat
+		  cv::Mat cameraSurfaceMat;
+		  switch(surf->format) {
+			  case LeapFrog::Brio::kPixelFormatRGB888:
+				  cameraSurfaceMat = cv::Mat(cv::Size(surf->width, surf->height), CV_8UC3, surf->buffer);
+				  break;
+			  case LeapFrog::Brio::kPixelFormatYUYV422:
+				  cameraSurfaceMat = cv::Mat(cv::Size(surf->width, surf->height), CV_8UC2, surf->buffer, surf->pitch);
+				  break;
+			  default:
+				  assert( !"unsupported surface format");
+		  }
+
+#ifdef EMULATION
+	    cv::namedWindow("input");
 	    cv::Mat rgbMat(cv::Size(surf->width,
 				    surf->height),
 			   CV_8UC3);
 	    CreateRGBImage(surf,
 			   rgbMat);
-	    PROF_BLOCK_END();
-
-#ifdef EMULATION
-	    cv::namedWindow("input");
 	    cv::imshow("input", rgbMat);
 #endif
 
 	    PROF_BLOCK_START("algorithm");
-	    algorithm_->Execute(rgbMat, outputImg_);
+	    algorithm_->Execute(cameraSurfaceMat, outputImg_);
 	    PROF_BLOCK_END();
 
 #ifdef EMULATION
