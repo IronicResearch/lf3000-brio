@@ -13,6 +13,7 @@
 #include <VNProfiler.h>
 #include <VNInRange3.h>
 #include <VNAlgorithmHelpers.h>
+#include <VNYUYV2RGB.h>
 
 #if defined(EMULATION)
 #include <opencv2/highgui/highgui.hpp>
@@ -227,8 +228,11 @@ namespace Vision {
     if (wand_) {
       PROF_BLOCK_START("VNWandTrackerPIMPL::Execute");  		  
       // switch to HSV color spave
-      PROF_BLOCK_START("RGBToHSV");
-      RGBToHSV(input, hsv_);    
+      
+	  cv::Mat rgb;
+	  ConvertToRGB(input, rgb);
+	  PROF_BLOCK_START("RGBToHSV");
+      RGBToHSV(rgb, hsv_);    
       PROF_BLOCK_END();
       // filter out the valid pixels based on hue, saturation and intensity
       PROF_BLOCK_START("inRange");
@@ -299,5 +303,22 @@ namespace Vision {
     return scaleInput_;
   }
 
+  void
+  VNWandTrackerPIMPL::ConvertToRGB(const cv::Mat& in, cv::Mat& outrgb) {
+
+	  switch( in.type() ) {
+		  case CV_8UC2: // YUYV
+			  LF::Vision::YUYV2RGB(in, outrgb);
+			  break;
+
+		  case CV_8UC3:
+			  outrgb = in.clone();
+			  break;
+
+		  default:
+
+			  assert(!"Unsupported image format");
+	  }
+  }
 }
 }

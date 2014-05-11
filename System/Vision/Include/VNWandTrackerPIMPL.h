@@ -48,6 +48,7 @@ namespace Vision {
     bool ScaleWandPoint(cv::Point &p) const;
     void SetProcessingFrameSize(LeapFrog::Brio::U16 width,
 				LeapFrog::Brio::U16 height);
+	void ConvertToRGB(const cv::Mat& in, cv::Mat& outrgb);
   };
 }
 }

@@ -25,6 +25,8 @@ namespace Vision {
     cv::Mat foreground_;
   private:
 	void AbsDifferenceThreshold(cv::Mat& background, cv::Mat &gray, cv::Mat& output, int threshold, float alpha);
+	void ConvertToRGB(const cv::Mat& in, cv::Mat& outrgb);
+	void ConvertToGray(const cv::Mat& in, cv::Mat& outrgb);
   };
 
 }

@@ -6,7 +6,11 @@
 
 namespace LF {
 	namespace Vision {
+		void YUYV2RGB( const cv::Mat& src, cv::Mat& dst );
 		void YUYV2RGB( const uint8_t* src, const int width, const int height, cv::Mat& dst );
+		
+		void YUYV2Gray( const cv::Mat& src, cv::Mat& dst );
+		void YUYV2Gray( const uint8_t* src, const int width, const int height, cv::Mat& dst );
 	}
 }
 
