@@ -41207,3 +41207,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 5/11/14 1:06 PM
 25,184 ms. (Cumulative: 23,823,202 ms)
 
 ----------------
+Revision 10,804 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-2061.  BrioOpenGLConfigPrivate now uses /flags/ogl_maintainlightdefault and /tmp/ogl_maintainlightdefault to activate compatibility mode GL_SPECIAL_MODE_MAINTAIN_LIGHT_DEFULT.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/12/14 12:41 PM
+1 changed, 0 added, 0 deleted.
+24,784 ms. (Cumulative: 23,848,079 ms)
+
+----------------

@@ -402,6 +402,15 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			glEnableSpecialMode(6);//glEnableSpecialMode(GL_SPECIAL_MODE_RESTORE_FB);
 			fclose(flag);
 		}
+
+		flag = fopen("/tmp/ogl_maintainlightdefault", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_maintainlightdefault", "r");
+		if(flag)
+		{
+			glEnableSpecialMode(7);//glEnableSpecialMode(GL_SPECIAL_MODE_MAINTAIN_LIGHT_DEFULT);
+			fclose(flag);
+		}
 	}
 
 	glClearColorx(0, 0, 0, 0);
