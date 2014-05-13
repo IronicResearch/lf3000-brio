@@ -120,7 +120,7 @@ namespace Hardware {
   HWControllerMPIPIMPL::InputCallback(void* context, void* data, int length, char* addr) {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       HWController* controller = NULL;
-      std::string key(addr);
+      BtAdrWrap key(addr);
       if (pModule->mapControllers_.count(key) > 0)
     	  controller = pModule->mapControllers_.at(key);
       if (!controller)   
@@ -154,7 +154,7 @@ namespace Hardware {
 
   void
   HWControllerMPIPIMPL::AddController(char* link) {
-	  std::string key(link);
+	  BtAdrWrap key(link);
 	  if (mapControllers_.count(key) > 0) {
 	      // If controller already exists, test its connectivity
 	      HWController* controller = FindController(link);
@@ -173,7 +173,7 @@ namespace Hardware {
       HWController* controller = new HWController();
       controller->pimpl_->SetID(numControllers_);
       listControllers_.push_back(controller);
-      mapControllers_.insert(std::pair<std::string, HWController*>(key, controller));
+      mapControllers_.insert(std::pair<BtAdrWrap, HWController*>(key, controller));
       numControllers_++;
       HWControllerEventMessage qmsg(kHWControllerConnected, controller);
       eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
@@ -194,7 +194,7 @@ namespace Hardware {
   HWController*
   HWControllerMPIPIMPL::FindController(char* link) {
 	  HWController* controller = NULL;
-	  std::string key(link);
+	  BtAdrWrap key(link);
       if (mapControllers_.count(key) > 0)
     	  controller = mapControllers_.at(key);
 	  return controller;
@@ -202,8 +202,8 @@ namespace Hardware {
 
   char*
   HWControllerMPIPIMPL::FindControllerLink(HWController* controller) {
-	  std::string link;
-	  std::map<std::string, HWController*>::iterator it;
+	  static BtAdrWrap link;
+	  std::map<BtAdrWrap, HWController*>::iterator it;
 	  for (it = mapControllers_.begin(); it != mapControllers_.end(); it++) {
 		  if ((it)->second == controller) {
 			  link = (it)->first;
@@ -212,7 +212,7 @@ namespace Hardware {
 	  }
 	  if (link.empty())
 		  return NULL;
-	  return (char*)link.c_str();
+	  return (char*)link.val;
   }
 
   int

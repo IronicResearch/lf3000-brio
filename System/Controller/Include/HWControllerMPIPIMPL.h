@@ -7,11 +7,48 @@
 #include <DebugMPI.h>
 #include <KernelMPI.h>
 #include <Bluetooth/BTIO.h>
+#include <string.h>
 #include <vector>
 #include <map>
 
 namespace LF {
 namespace Hardware {
+
+  struct BtAdrWrap
+  {
+    static const int keySize = 6;
+	char val[keySize + 1];
+
+	BtAdrWrap()
+	{
+		memset(val, 0, keySize + 1);
+	}
+
+	BtAdrWrap(char* str)
+	{
+		memset(val, 0, keySize + 1);
+		memcpy(val, str, keySize);
+	}
+
+	void GetAdr(char *target)
+	{
+		memcpy(target, val, keySize);
+	}
+
+	bool operator<(const BtAdrWrap& oth) const
+	{
+		return memcmp(val , oth.val, keySize) < 0;
+	}
+
+	bool empty()
+	{
+		for(int count = 0; count < keySize; ++count)
+		{
+			if(val[count] != 0) return false;
+		}
+		return true;
+	}
+  };
 
   class HWController;
 
@@ -45,7 +82,7 @@ namespace Hardware {
 
     int numControllers_;
     std::vector<HWController*> listControllers_;
-    std::map<std::string, HWController*> mapControllers_;
+    std::map<BtAdrWrap, HWController*> mapControllers_;
     bool isScanning_;
 
     LeapFrog::Brio::CEventMPI eventMPI_;
