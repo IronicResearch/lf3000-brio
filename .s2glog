@@ -41238,3 +41238,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 5/13/14 4:46 PM
 25,081 ms. (Cumulative: 23,898,275 ms)
 
 ----------------
+Revision 10,809 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+fix memory issue when shuting down Vision thread
+
+By Alex Lindblad (alindblad@leapfrog.com) on 5/13/14 4:49 PM
+1 changed, 0 added, 0 deleted.
+24,856 ms. (Cumulative: 23,923,241 ms)
+
+----------------
