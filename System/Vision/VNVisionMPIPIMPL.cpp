@@ -120,7 +120,7 @@ namespace Vision {
     visionAlgorithmRunning_ = false;
     if (taskHndl_ != LeapFrog::Brio::kInvalidTaskHndl) {
       LeapFrog::Brio::CKernelMPI kernel;
-      if (kernel.CancelTask(taskHndl_ != kNoErr))
+      if (kernel.CancelTask(taskHndl_) != kNoErr)
 	  result = static_cast<LeapFrog::Brio::Boolean>(false);	  
     }
     return result;
