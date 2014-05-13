@@ -66,7 +66,7 @@ namespace Vision {
 	}
 	
 	void YUYV2Gray( const cv::Mat& src, cv::Mat& dst ) {
-		YUYV2Gray( src.data, src.rows, src.cols, dst );
+		YUYV2Gray( src.data, src.size().width, src.size().height, dst );
 	}
 	
 	void YUYV2Gray( const uint8_t* src, const int width, const int height, cv::Mat& dst ) {
