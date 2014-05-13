@@ -24,6 +24,9 @@
 #include <VNYUYV2RGB.h>
 #undef VN_PROFILE
 #include <VNProfiler.h>
+#include <VNIntegralImage.h>
+
+#define VN_USE_FAST_INTEGRAL_IMAGE 1
 
 namespace LF {
 namespace Vision {
@@ -337,7 +340,11 @@ namespace Vision {
       PROF_BLOCK_START("integralImage");
       // compute integral image
       cv::Mat integralImg;
+#if VN_USE_FAST_INTEGRAL_IMAGE
+	  LF::Vision::IntegralImage(outputImg_, integralImg);
+#else
       cv::integral(outputImg_, integralImg);
+#endif
       VNHotSpotPIMPL::SetIntegralImage(&integralImg);
       PROF_BLOCK_END();
       

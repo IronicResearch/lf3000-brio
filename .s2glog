@@ -41227,3 +41227,14 @@ By Lmoore (Lmoore@leapfrog.com) on 5/13/14 7:45 AM
 24,897 ms. (Cumulative: 23,873,085 ms)
 
 ----------------
+Revision 10,808 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+optimize integral image for vision
+
+add unit tests for virtual touch, integral image
+
+By Alex Lindblad (alindblad@leapfrog.com) on 5/13/14 4:46 PM
+4 changed, 2 added, 0 deleted.
+25,081 ms. (Cumulative: 23,898,275 ms)
+
+----------------
