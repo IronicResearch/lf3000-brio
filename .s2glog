@@ -41216,3 +41216,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/12/14 12:41 PM
 24,784 ms. (Cumulative: 23,848,079 ms)
 
 ----------------
+Revision 10,805 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,806 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,807 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Corrects an issue when the controller MAC address contains the byte 0x00 by ensuring the MAC address does not get truncated at the 0x00 byte. (FWGLAS-341)
+
+By Lmoore (Lmoore@leapfrog.com) on 5/13/14 7:45 AM
+2 changed, 0 added, 0 deleted.
+24,897 ms. (Cumulative: 23,873,085 ms)
+
+----------------
