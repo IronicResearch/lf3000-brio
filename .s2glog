@@ -41247,3 +41247,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 5/13/14 4:49 PM
 24,856 ms. (Cumulative: 23,923,241 ms)
 
 ----------------
+Revision 10,810 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-1969.  BrioOpenGLConfigPrivate now checks for /tmp/ogl_lasttexturedis or /tmp/ogl_lasttexturedis.  If flag is present then it does not enable GL_SPECIAL_MODE_LAST_TEXTURE_EN.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/13/14 5:30 PM
+1 changed, 0 added, 0 deleted.
+24,856 ms. (Cumulative: 23,948,191 ms)
+
+----------------
