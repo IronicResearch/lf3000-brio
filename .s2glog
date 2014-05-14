@@ -41265,3 +41265,12 @@ By dlazzari (dlazzari@leapfrog.com) on 5/13/14 6:02 PM
 25,223 ms. (Cumulative: 23,973,508 ms)
 
 ----------------
+Revision 10,812 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-2036.  BrioOpenGLConfig now checks for /tmp/ogl_4444to8888 or /flags/ogl4444to8888.  If flag is present, activates GL_SPECIAL_MODE_TRANSFORM_4444_TO_8888.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/13/14 7:06 PM
+1 changed, 0 added, 0 deleted.
+26,467 ms. (Cumulative: 24,000,100 ms)
+
+----------------

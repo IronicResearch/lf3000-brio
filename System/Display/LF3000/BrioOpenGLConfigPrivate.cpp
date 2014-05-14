@@ -267,7 +267,7 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		Window surface, i.e. it will be visible on screen. The list
 		has to contain key/value pairs, terminated with EGL_NONE.
 	 */
-	bool using_32_bit = true;
+	bool using_32_bit = ((tDisplayContext*)ctx.hndlDisplay)->colorDepthFormat == kPixelFormatARGB8888;
 	const EGLint pi32ConfigAttribs[] =
 	{
 	    EGL_RED_SIZE,       using_32_bit ? 8 : 5,
@@ -415,6 +415,16 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		if(flag)
 		{
 			glEnableSpecialMode(7);//glEnableSpecialMode(GL_SPECIAL_MODE_MAINTAIN_LIGHT_DEFULT);
+			fclose(flag);
+		}
+
+		flag = fopen("/tmp/ogl_4444to8888", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_4444to8888", "r");
+		if(flag)
+		{
+			printf("%s:%s:%d\n", __FILE__, __FUNCTION__, __LINE__);
+			glEnableSpecialMode(8);//glEnableSpecialMode(GL_SPECIAL_MODE_TRANSFORM_4444_TO_8888);
 			fclose(flag);
 		}
 	}
