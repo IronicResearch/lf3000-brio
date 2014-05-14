@@ -41283,3 +41283,12 @@ By dlazzari (dlazzari@leapfrog.com) on 5/13/14 8:04 PM
 25,191 ms. (Cumulative: 24,025,400 ms)
 
 ----------------
+Revision 10,814 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Removing debug statement.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/14/14 11:40 AM
+1 changed, 0 added, 0 deleted.
+24,913 ms. (Cumulative: 24,050,407 ms)
+
+----------------
