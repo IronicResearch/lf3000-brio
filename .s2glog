@@ -41256,3 +41256,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/13/14 5:30 PM
 24,856 ms. (Cumulative: 23,948,191 ms)
 
 ----------------
+Revision 10,811 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Let CXXFLAGS bleed through for LF3000 emulation builds. This should probably be moved to a generic 'emulation toolchain' that's shared between emulation builds, but that doesn't exist yet, so we'll leave it here.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/13/14 6:02 PM
+1 changed, 0 added, 0 deleted.
+25,223 ms. (Cumulative: 23,973,508 ms)
+
+----------------

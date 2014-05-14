@@ -31,6 +31,9 @@ def PlatformMods(env):
 	env.Append(LINKFLAGS = '-g')
 	env.ParseConfig('pkg-config --cflags --libs glib-2.0')
 	env.ParseConfig('pkg-config --cflags --libs glibmm-2.4')
+	
+	#FIXME: Should probably be in an emulation toolchain file that's shared...
+	env.Append(CXXFLAGS = SCons.Util.CLVar( os.getenv('CXXFLAGS') ) )
 
 	
 #-----------------------------------------------------------------------------
