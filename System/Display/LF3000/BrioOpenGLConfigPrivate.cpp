@@ -346,9 +346,15 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 	// Clear garbage pixels from previous OpenGL context (embedded target)
 	if(brioOpenGLVersion == kBrioOpenGL11)
 	{
-		glEnableSpecialMode(GL_SPECIAL_MODE_LAST_TEXTURE_EN);
+		FILE *flag = fopen("/tmp/ogl_lasttexturedis", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_lasttexturedis", "r");
+		if(flag)
+			fclose(flag);
+		else
+			glEnableSpecialMode(GL_SPECIAL_MODE_LAST_TEXTURE_EN);
 
-		FILE *flag = fopen("/tmp/ogl_pixelfog", "r");
+		flag = fopen("/tmp/ogl_pixelfog", "r");
 		if(!flag)
 			flag = fopen("/flags/ogl_pixelfog", "r");
 		if(flag)
