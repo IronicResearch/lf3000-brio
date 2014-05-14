@@ -423,7 +423,6 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			flag = fopen("/flags/ogl_4444to8888", "r");
 		if(flag)
 		{
-			printf("%s:%s:%d\n", __FILE__, __FUNCTION__, __LINE__);
 			glEnableSpecialMode(8);//glEnableSpecialMode(GL_SPECIAL_MODE_TRANSFORM_4444_TO_8888);
 			fclose(flag);
 		}
