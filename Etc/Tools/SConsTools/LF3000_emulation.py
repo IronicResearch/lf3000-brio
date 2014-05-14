@@ -34,6 +34,8 @@ def PlatformMods(env):
 	
 	#FIXME: Should probably be in an emulation toolchain file that's shared...
 	env.Append(CXXFLAGS = SCons.Util.CLVar( os.getenv('CXXFLAGS') ) )
+	#Don't optimize in emulation environment
+	env.Append(CXXFLAGS = '-O0')
 
 	
 #-----------------------------------------------------------------------------

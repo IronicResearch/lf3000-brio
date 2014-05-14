@@ -41274,3 +41274,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/13/14 7:06 PM
 26,467 ms. (Cumulative: 24,000,100 ms)
 
 ----------------
+Revision 10,813 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Turn off optimizations explicitly in emulation builds.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/13/14 8:04 PM
+1 changed, 0 added, 0 deleted.
+25,191 ms. (Cumulative: 24,025,400 ms)
+
+----------------
