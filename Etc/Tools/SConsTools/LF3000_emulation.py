@@ -33,7 +33,8 @@ def PlatformMods(env):
 	env.ParseConfig('pkg-config --cflags --libs glibmm-2.4')
 	
 	#FIXME: Should probably be in an emulation toolchain file that's shared...
-	env.Append(CXXFLAGS = SCons.Util.CLVar( os.getenv('CXXFLAGS') ) )
+	env.Append(CXXFLAGS = SCons.Util.CLVar( os.getenv('BUILD_CXXFLAGS') ) )
+	env.Append(LDFLAGS = SCons.Util.CLVar( os.getenv('BUILD_LDFLAGS') ) )
 	#Don't optimize in emulation environment
 	env.Append(CXXFLAGS = '-O0')
 
