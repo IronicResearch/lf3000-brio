@@ -41309,3 +41309,12 @@ By dlazzari (dlazzari@leapfrog.com) on 5/14/14 5:22 PM
 24,849 ms. (Cumulative: 24,100,169 ms)
 
 ----------------
+Revision 10,819 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Nevermind. BUILD_CXXFLAGS are not the flags I was looking for, so we'll make our own convention.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/14/14 5:35 PM
+1 changed, 0 added, 0 deleted.
+24,970 ms. (Cumulative: 24,125,233 ms)
+
+----------------
