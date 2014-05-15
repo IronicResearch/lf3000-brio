@@ -41292,3 +41292,20 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/14/14 11:40 AM
 24,913 ms. (Cumulative: 24,050,407 ms)
 
 ----------------
+Revision 10,815 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,816 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,817 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,804 ms. (Cumulative: 24,075,320 ms)
+
+----------------
+Revision 10,818 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change Brio emulation to use BUILD_CXXFLAGS and BUILD_LDFLAGS so they can be separated from embedded variables when doing mixed builds. This follows the oe-core convention.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/14/14 5:22 PM
+1 changed, 0 added, 0 deleted.
+24,849 ms. (Cumulative: 24,100,169 ms)
+
+----------------
