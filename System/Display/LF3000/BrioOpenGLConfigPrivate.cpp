@@ -376,11 +376,28 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		}
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+		flag = fopen("/tmp/ogl_vtxsnappingen", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_vtxsnappingen", "r");
+		if(flag)
+		{
+			glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
+			fclose(flag);
+		}
+
 		flag = fopen("/tmp/ogl_vtxxoffset", "r");
 		if(!flag)
 			flag = fopen("/flags/ogl_vtxxoffset", "r");
 		if(flag)
 		{
+			File *flag2 = fopen("/tmp/ogl_vtxsnappingdis", "r");
+			if(!flag2)
+				flag2 = fopen("/flags/ogl_vtxsnappingdis", "r");
+			if(flag2)
+				fclose(flag2);
+			else
+				glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
+
 			int vtx_x_offset;
 			fscanf(flag, "%d\n",&vtx_x_offset);
 			glEnableSpecialMode(4);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_X_OFFSET);
@@ -393,6 +410,14 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			flag = fopen("/flags/ogl_vtxyoffset", "r");
 		if(flag)
 		{
+			File *flag2 = fopen("/tmp/ogl_vtxsnappingdis", "r");
+			if(!flag2)
+				flag2 = fopen("/flags/ogl_vtxsnappingdis", "r");
+			if(flag2)
+				fclose(flag2);
+			else
+				glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
+
 			int vtx_y_offset;
 			fscanf(flag, "%d\n",&vtx_y_offset);
 			glEnableSpecialMode(5);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_Y_OFFSET);
@@ -424,6 +449,27 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		if(flag)
 		{
 			glEnableSpecialMode(8);//glEnableSpecialMode(GL_SPECIAL_MODE_TRANSFORM_4444_TO_8888);
+			fclose(flag);
+		}
+
+		flag = fopen("/tmp/ogl_textureoffset", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_textureoffset", "r");
+		if(flag)
+		{
+			glEnableSpecialMode(10);//glEnableSpecialMode(GL_SPECIAL_MODE_TEXTURE_OFFSET);
+			fclose(flag);
+		}
+		
+		flag = fopen("/tmp/ogl_fastbufferobj", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_fastbufferobj", "r");
+		if(flag)
+		{
+			int fast_buffer_obj;
+			fscanf(flag, "%d\n",&fast_buffer_obj);
+			glEnableSpecialMode(11);//glEnableSpecialMode(GL_SPECIAL_MODE_FAST_BUFFER_OBJ_EN);
+			glSetSpecialModeParam(11, fast_buffer_obj);//glSetSpecialModeParam(GL_SPECIAL_MODE_FAST_BUFFER_OBJ_EN, fast_buffer_obj);
 			fclose(flag);
 		}
 	}
