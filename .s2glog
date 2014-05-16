@@ -41331,3 +41331,24 @@ By Falguni Mirani (fmirani@leapfrog.com) on 5/16/14 3:05 PM
 24,997 ms. (Cumulative: 24,150,371 ms)
 
 ----------------
+Revision 10,823 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-2451 & FWSCRUM-2161.  Brio now looks for 4 new flags in the usual locations.
+
+/flags/ogl_ogl_vtxsnappingen & /tmp/ogl_vtxsnappingen
+Uses GL_SPECIAL_MODE_VTX_SNAPPING_EN, turning on vertex snapping without setting offsets.  Soft fix for lines.  Equivalent to old library using OglVtx?Offset 0.
+
+/flags/ogl_vtxsnappingdis & /tmp/ogl_vtxsnappingdis
+Explicitly doesn't call GL_SPECIAL_MODE_VTX_SNAPPING_EN.  When using OglVtx?Offsets, snapping is normally turned on.  In the new OpenGL, it needs to be enabled manually.  I'm automatically enabling it when OglVtx?Offsets are used (to mimic old behavior).  If you want to use OglVtx?Offset without snapping (i.e. LGEO where snapping caused depth problems), use this flag.
+
+/flags/ogl_textureoffset & /tmp/ogl_textureoffset
+Calls GL_SPECIAL_MODE_TEXTURE_OFFSET_EN.  Fixes some stray pixel problems in some titles (i.e. SOCL).  May need to be combined with other flags (i.e. GL_SPECIAL_MODE_TEX_FILTER_OFF).
+
+/flags/ogl_fastbufferobj & /tmp/ogl_fastbufferobj
+Sets GL_SPECIAL_MODE_FAST_BUFFER_OBJ_EN.  Adjusts maximum byte count of VertexBufferObjects to apply acceleration to.  Automatically enabled at 100.  Can be adjusted higher for higher performance at a memory penalty.  May cause memory errors if set too high.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/16/14 3:23 PM
+1 changed, 0 added, 0 deleted.
+24,799 ms. (Cumulative: 24,175,264 ms)
+
+----------------
