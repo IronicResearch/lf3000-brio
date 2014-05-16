@@ -213,7 +213,7 @@ tErrType CWirelessModule::SetWirelessPower(Boolean power)
 			if_props["Ifname"] = ifname;
 			
 			DBus::Variant conf_file;
-			conf_file.writer().append_string("/etc/wpa_supplicant.conf");
+			conf_file.writer().append_string("/etc/wpa_supplicant-adhoc.conf");
 			if_props["ConfigFile"] = conf_file;
 			
 			pWPASupplicant_->CreateInterface(if_props);

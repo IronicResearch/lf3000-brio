@@ -41318,3 +41318,16 @@ By dlazzari (dlazzari@leapfrog.com) on 5/14/14 5:35 PM
 24,970 ms. (Cumulative: 24,125,233 ms)
 
 ----------------
+Revision 10,820 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,821 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,822 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-2118 : cabo wifi adhoc mode (GOPHER and other game titles lag issue) : libWireless - updated so it uses wpa_supplicant-adhoc.conf with ap_scan set to 2 for adhoc mode. This fixes the connect/disconnect issue in adhoc mode and thus the lags.   
+
+
+
+By Falguni Mirani (fmirani@leapfrog.com) on 5/16/14 3:05 PM
+1 changed, 0 added, 0 deleted.
+24,997 ms. (Cumulative: 24,150,371 ms)
+
+----------------
