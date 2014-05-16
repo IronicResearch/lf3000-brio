@@ -376,12 +376,15 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		}
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-		flag = fopen("/tmp/ogl_vtxsnappingen", "r");
+		flag = fopen("/tmp/ogl_vtxsnapping", "r");
 		if(!flag)
-			flag = fopen("/flags/ogl_vtxsnappingen", "r");
+			flag = fopen("/flags/ogl_vtxsnapping", "r");
 		if(flag)
 		{
-			glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
+			int vtx_snapping_value;
+			fscanf(flag, "%d\n",&pixel_fog_value);
+			if(vtx_snapping_value)
+				glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
 			fclose(flag);
 		}
 
@@ -390,13 +393,18 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			flag = fopen("/flags/ogl_vtxxoffset", "r");
 		if(flag)
 		{
-			File *flag2 = fopen("/tmp/ogl_vtxsnappingdis", "r");
+			File *flag2 = fopen("/tmp/ogl_vtxsnapping", "r");
 			if(!flag2)
-				flag2 = fopen("/flags/ogl_vtxsnappingdis", "r");
-			if(flag2)
+				flag2 = fopen("/flags/ogl_vtxsnapping", "r");
+			if(flag2) {
+				int vtx_snapping_value;
+				fscanf(flag, "%d\n",&pixel_fog_value);
+				if(vtx_snapping_value)
+					glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
 				fclose(flag2);
-			else
+			} else {
 				glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
+			}
 
 			int vtx_x_offset;
 			fscanf(flag, "%d\n",&vtx_x_offset);
@@ -410,13 +418,18 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			flag = fopen("/flags/ogl_vtxyoffset", "r");
 		if(flag)
 		{
-			File *flag2 = fopen("/tmp/ogl_vtxsnappingdis", "r");
+			File *flag2 = fopen("/tmp/ogl_vtxsnapping", "r");
 			if(!flag2)
-				flag2 = fopen("/flags/ogl_vtxsnappingdis", "r");
-			if(flag2)
+				flag2 = fopen("/flags/ogl_vtxsnapping", "r");
+			if(flag2) {
+				int vtx_snapping_value;
+				fscanf(flag, "%d\n",&pixel_fog_value);
+				if(vtx_snapping_value)
+					glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
 				fclose(flag2);
-			else
+			} else {
 				glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
+			}
 
 			int vtx_y_offset;
 			fscanf(flag, "%d\n",&vtx_y_offset);

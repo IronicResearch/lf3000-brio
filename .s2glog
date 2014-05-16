@@ -41352,3 +41352,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/16/14 3:23 PM
 24,799 ms. (Cumulative: 24,175,264 ms)
 
 ----------------
+Revision 10,824 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Combining the ogl_vtxsnappingen and ogl_snapplingdis flags into a single flag ogl_vtxsnapping.  If the value is 0, then it's disabled.  Any other number then it's enabled.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/16/14 3:46 PM
+1 changed, 0 added, 0 deleted.
+25,007 ms. (Cumulative: 24,200,365 ms)
+
+----------------
