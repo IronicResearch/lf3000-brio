@@ -41361,3 +41361,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/16/14 3:46 PM
 25,007 ms. (Cumulative: 24,200,365 ms)
 
 ----------------
+Revision 10,825 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix sloppy copypasta, Brio builds again.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/16/14 3:52 PM
+1 changed, 0 added, 0 deleted.
+25,016 ms. (Cumulative: 24,225,475 ms)
+
+----------------
