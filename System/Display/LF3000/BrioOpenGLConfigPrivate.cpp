@@ -382,7 +382,7 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		if(flag)
 		{
 			int vtx_snapping_value;
-			fscanf(flag, "%d\n",&pixel_fog_value);
+			fscanf(flag, "%d\n",&vtx_snapping_value);
 			if(vtx_snapping_value)
 				glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
 			fclose(flag);
@@ -393,12 +393,12 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			flag = fopen("/flags/ogl_vtxxoffset", "r");
 		if(flag)
 		{
-			File *flag2 = fopen("/tmp/ogl_vtxsnapping", "r");
+			FILE *flag2 = fopen("/tmp/ogl_vtxsnapping", "r");
 			if(!flag2)
 				flag2 = fopen("/flags/ogl_vtxsnapping", "r");
 			if(flag2) {
 				int vtx_snapping_value;
-				fscanf(flag, "%d\n",&pixel_fog_value);
+				fscanf(flag2, "%d\n",&vtx_snapping_value);
 				if(vtx_snapping_value)
 					glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
 				fclose(flag2);
@@ -418,12 +418,12 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			flag = fopen("/flags/ogl_vtxyoffset", "r");
 		if(flag)
 		{
-			File *flag2 = fopen("/tmp/ogl_vtxsnapping", "r");
+			FILE *flag2 = fopen("/tmp/ogl_vtxsnapping", "r");
 			if(!flag2)
 				flag2 = fopen("/flags/ogl_vtxsnapping", "r");
 			if(flag2) {
 				int vtx_snapping_value;
-				fscanf(flag, "%d\n",&pixel_fog_value);
+				fscanf(flag2, "%d\n",&vtx_snapping_value);
 				if(vtx_snapping_value)
 					glEnableSpecialMode(9);//glEnableSpecialMode(GL_SPECIAL_MODE_VTX_SNAPPING_EN);
 				fclose(flag2);
