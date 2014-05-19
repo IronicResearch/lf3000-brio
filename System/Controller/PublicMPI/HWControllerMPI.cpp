@@ -79,6 +79,11 @@ namespace Hardware {
   HWControllerMPI::GetNumberOfConnectedControllers(void) const {
     return pimpl_->GetNumberOfConnectedControllers();
   }
+
+  LeapFrog::Brio::tErrType
+  HWControllerMPI::EnableControllerSync(bool enable) {
+	  return pimpl_->EnableControllerSync(enable);
+  }
  
   
 } // namespace Hardware

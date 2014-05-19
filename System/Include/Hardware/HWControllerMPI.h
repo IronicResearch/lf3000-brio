@@ -88,6 +88,12 @@ namespace Hardware {
      */
     LeapFrog::Brio::U8 GetNumberOfConnectedControllers(void) const;
     
+    /*!
+     * \brief begin or abort the controller sync/pairing operation
+     * \param enable If true will start a sync operation, if false abort the sync operation in process
+     */
+    LeapFrog::Brio::tErrType EnableControllerSync(bool enable);
+
   private:
     boost::shared_ptr<HWControllerMPIPIMPL> pimpl_;
     

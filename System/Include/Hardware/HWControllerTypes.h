@@ -28,7 +28,9 @@ namespace Hardware {
   (kHWControllerModeChanged)						\
   (kHWControllerLowBattery)						\
   (kHWControllerDisconnected)					\
-  (kHWControllerConnected)
+  (kHWControllerConnected)						\
+  (kHWControllerSyncSuccess)					\
+  (kHWControllerSyncFailure)
     
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, LeapFrog::Brio::FirstEvent(LeapFrog::Brio::kGroupController), HW_CONTROLLER_EVENTS)
 

@@ -70,6 +70,8 @@ namespace Hardware {
     int SendCommand(HWController*, int command, void* data, int length);
     int QueryStatus(HWController*, int command, void* data, int length);
 
+    LeapFrog::Brio::tErrType EnableControllerSync(bool enable);
+
   private:
     HWControllerMPIPIMPL(void);
     HWControllerMPIPIMPL(const HWControllerMPIPIMPL&);
