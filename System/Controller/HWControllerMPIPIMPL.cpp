@@ -303,6 +303,21 @@ namespace Hardware {
 	  msg = reinterpret_cast<const LeapFrog::Brio::CButtonMessage&>(msgIn);
 	controller->pimpl_->SetButtonData(msg.GetButtonState2());
 
+	tButtonData2 buttonData = msg.GetButtonState2();
+	if(buttonData.buttonTransition == kButtonSync)
+	{
+		{
+			static S32 lastEventTime = 0;
+			static U32 lastButtonState = 0;
+
+			if(lastButtonState == 0 && buttonData.buttonState != 0 && buttonData.time.seconds > lastEventTime) {
+				lastEventTime = buttonData.time.seconds + 1;	//Debounce for one second between event detections
+				EnableControllerSync(true);
+			}
+			lastButtonState == buttonData.buttonState;
+		}
+	}
+
       } else if (type == LF::Hardware::kHWAnalogStickDataChanged) {
 	newType = kHWControllerAnalogStickDataChanged;
 	priority = kHWControllerHighPriorityEvent;
@@ -314,6 +329,17 @@ namespace Hardware {
       eventMPI_.PostEvent(newMsg, 0); // FIXME -- priority?
     } 
     return LeapFrog::Brio::kEventStatusOK;
+  }
+
+  LeapFrog::Brio::tErrType
+  HWControllerMPIPIMPL::EnableControllerSync(bool enable) {
+
+	  debugMPI_.DebugOut(kDbgLvlImportant, "EnableControllerSync: Sync enabled changed %x\n", (unsigned)enable);
+
+	  HWControllerEventMessage newMsg(kHWControllerSyncFailure, 0);
+	  eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
+
+	  return kNoErr;
   }
 
   HWController* 
