@@ -374,7 +374,19 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			glEnableSpecialMode(2);//glEnableSpecialMode(GL_SPECIAL_MODE_TEX_FILTER_OFF);
 			fclose(flag);
 		}
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		flag = fopen("/tmp/ogl_unpackalignment", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_unpackalignment", "r");
+		if(flag)
+		{
+			int unpack_alignment;
+			fscanf(flag, "%d\n",&unpack_alignment);
+			glPixelStorei(GL_UNPACK_ALIGNMENT, unpack_alignment);
+			fclose(flag);
+		} else {
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		}
 
 		flag = fopen("/tmp/ogl_vtxsnapping", "r");
 		if(!flag)
