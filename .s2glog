@@ -41380,3 +41380,12 @@ By Lmoore (Lmoore@leapfrog.com) on 5/19/14 2:46 PM
 25,083 ms. (Cumulative: 24,250,664 ms)
 
 ----------------
+Revision 10,828 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-2487.  BrioOpenGLConfig now looks for /tmp/ogl_unpackalignment or /flags/ogl_unpackalignment.  If present, it will read the integer from it and call glPixelStorei(GL_UNPACK_ALIGNMENT, unpack_alignment).  If the flag is not present, it will call glPixelStorei(GL_UNPACK_ALIGNMENT, 1) as usual.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/20/14 12:18 PM
+1 changed, 0 added, 0 deleted.
+24,815 ms. (Cumulative: 24,275,588 ms)
+
+----------------
