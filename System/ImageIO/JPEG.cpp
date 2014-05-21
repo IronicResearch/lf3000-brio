@@ -225,6 +225,13 @@ bool JPEG_Load(CPath& path, tVideoSurf& surf)
 
 	jpeg_read_header( &cinfo, TRUE );
 
+	//Check if there's an already allocated buffer, but of the wrong size
+	//Nullify it if it doesn't match, later we allocate the buffer if it's NULL
+	if(surf.buffer != NULL && (surf.width != cinfo.image_width || surf.height != cinfo.image_height))
+	{
+		delete surf.buffer;
+		surf.buffer = NULL;
+	}
 
 	surf.width = cinfo.image_width;
 	surf.height = cinfo.image_height;
