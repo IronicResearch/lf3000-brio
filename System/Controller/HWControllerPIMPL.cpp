@@ -310,31 +310,29 @@ namespace Hardware {
 	  debugMPI_.DebugOut(kDbgLvlVerbose, "%s\n", buf);
 #endif
 
+	  pModule->buttonData_.buttonTransition = 0;
+
 	  for (int i = 0; i < length; i++) {
 		  switch (i) {
 		  case 0:
-			  pModule->buttonData_.buttonTransition &= ~kButtonA;
 			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonA : 0;
 			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonA);
 			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonA;
 			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonA : 0;
 			  break;
 		  case 1:
-			  pModule->buttonData_.buttonTransition &= ~kButtonB;
 			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonB : 0;
 			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonB);
 			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonB;
 			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonB : 0;
 			  break;
 		  case 2:
-			  pModule->buttonData_.buttonTransition &= ~kButtonMenu;
 			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonMenu : 0;
 			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonMenu);
 			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonMenu;
 			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonMenu : 0;
 			  break;
 		  case 3:
-			  pModule->buttonData_.buttonTransition &= ~kButtonHint;
 			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonHint : 0;
 			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonHint);
 			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonHint;
