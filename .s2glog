@@ -41409,3 +41409,12 @@ By Lmoore (Lmoore@leapfrog.com) on 5/22/14 9:52 AM
 24,837 ms. (Cumulative: 24,325,599 ms)
 
 ----------------
+Revision 10,833 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Cleaner solution for handling .buttonTransition - per Dave's request
+
+By Lmoore (Lmoore@leapfrog.com) on 5/22/14 9:57 AM
+1 changed, 0 added, 0 deleted.
+25,063 ms. (Cumulative: 24,350,756 ms)
+
+----------------
