@@ -41418,3 +41418,13 @@ By Lmoore (Lmoore@leapfrog.com) on 5/22/14 9:57 AM
 25,063 ms. (Cumulative: 24,350,756 ms)
 
 ----------------
+Revision 10,834 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add Logitech webcam ID back. Name missing to match via UVC class method.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/22/14 2:20 PM
+1 changed, 0 added, 0 deleted.
+24,881 ms. (Cumulative: 24,375,731 ms)
+
+----------------

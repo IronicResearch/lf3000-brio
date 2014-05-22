@@ -59,7 +59,8 @@ Boolean EnumCameraCallback(const CPath& path, void* pctx)
 	}
 
 	// FIXME: Generalize camera device enumeration
-//	#define USB_WEB_CAM_ID	0x046d08d7	// Logitech
+	#undef  USB_CAM_ID
+	#define USB_CAM_ID    	0x046d0000	// Logitech
 	#define USB_WEB_CAM_ID	0x0ac80000	// Richtek
 	#define USB_EXT_CAM_ID	0x18710000	// GI
 
