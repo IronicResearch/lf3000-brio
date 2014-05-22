@@ -41399,3 +41399,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/21/14 12:20 PM
 24,956 ms. (Cumulative: 24,300,653 ms)
 
 ----------------
+Revision 10,831 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,832 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Corrects an issue where console sync button events were being propagated forever. (FWGLAS-509)
+
+By Lmoore (Lmoore@leapfrog.com) on 5/22/14 9:52 AM
+1 changed, 0 added, 0 deleted.
+24,837 ms. (Cumulative: 24,325,599 ms)
+
+----------------
