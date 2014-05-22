@@ -301,23 +301,13 @@ namespace Hardware {
 	newType = kHWControllerButtonStateChanged;
 	const LeapFrog::Brio::CButtonMessage &
 	  msg = reinterpret_cast<const LeapFrog::Brio::CButtonMessage&>(msgIn);
-	controller->pimpl_->SetButtonData(msg.GetButtonState2());
-
-	tButtonData2 buttonData = msg.GetButtonState2();
-	if(buttonData.buttonTransition == kButtonSync)
-	{
+		tButtonData2 buttonData = msg.GetButtonState2();
+		if(buttonData.buttonTransition & kButtonSync)
 		{
-			static S32 lastEventTime = 0;
-			static U32 lastButtonState = 0;
-
-			if(lastButtonState == 0 && buttonData.buttonState != 0 && buttonData.time.seconds > lastEventTime) {
-				lastEventTime = buttonData.time.seconds + 1;	//Debounce for one second between event detections
-				EnableControllerSync(true);
-			}
-			lastButtonState == buttonData.buttonState;
+			if( buttonData.buttonState & kButtonSync ) EnableControllerSync(true);
+			return LeapFrog::Brio::kEventStatusOK;
 		}
-	}
-
+        controller->pimpl_->SetButtonData(msg.GetButtonState2());
       } else if (type == LF::Hardware::kHWAnalogStickDataChanged) {
 	newType = kHWControllerAnalogStickDataChanged;
 	priority = kHWControllerHighPriorityEvent;
