@@ -99,6 +99,7 @@ namespace Hardware {
     pFnQueryStatus			pBTIO_QueryStatus_;
     pFnScanForDevices		pBTIO_ScanDevices_;
     pFnGetControllerVersion	pBTIO_GetControllerVersion_;
+    pFnEnableBluetoothDebug	pBTIO_EnableBluetoothDebug_;
 
     static void DeviceCallback(void*, void*, int);
     static void InputCallback(void*, void*, int, char*);

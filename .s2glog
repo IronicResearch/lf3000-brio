@@ -41438,3 +41438,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/22/14 6:26 PM
 24,958 ms. (Cumulative: 24,400,782 ms)
 
 ----------------
+Revision 10,836 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Import BTIO function for enabling Bluetooth logging, for FWQA.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/22/14 6:48 PM
+2 changed, 0 added, 0 deleted.
+25,215 ms. (Cumulative: 24,426,107 ms)
+
+----------------
