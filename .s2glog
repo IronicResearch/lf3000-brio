@@ -41457,3 +41457,12 @@ By Lmoore (Lmoore@leapfrog.com) on 5/23/14 9:00 AM
 24,866 ms. (Cumulative: 24,451,067 ms)
 
 ----------------
+Revision 10,838 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+SetLEDColor will now check to see if the requested color is valid before setting, and issue an error message if the requested color is not valid (FWGLAS-353)
+
+By Lmoore (Lmoore@leapfrog.com) on 5/23/14 9:02 AM
+1 changed, 0 added, 0 deleted.
+24,851 ms. (Cumulative: 24,476,012 ms)
+
+----------------

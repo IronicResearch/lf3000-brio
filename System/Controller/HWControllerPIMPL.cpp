@@ -166,9 +166,14 @@ namespace Hardware {
   void 
   HWControllerPIMPL::SetLEDColor(HWControllerLEDColor color) {
 	debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::SetLEDColor %08x\n", (unsigned int)color);
-	HWControllerMPIPIMPL::Instance()->SendCommand(controller_, kBTIOCmdSetLEDState, &color, sizeof(color));
-	color_ = color;
-	wand_->pimpl_->SetColor(color);
+	if( (color == kHWControllerLEDOff) || (color & GetAvailableLEDColors())) {
+		HWControllerMPIPIMPL::Instance()->SendCommand(controller_, kBTIOCmdSetLEDState, &color, sizeof(color));
+		color_ = color;
+		wand_->pimpl_->SetColor(color);
+	}
+	else {
+		debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::SetLEDColor Color not available %08x\n", (unsigned int)color);
+	}
   }
   
   Vision::VNPoint 
