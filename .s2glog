@@ -41428,3 +41428,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/22/14 2:20 PM
 24,881 ms. (Cumulative: 24,375,731 ms)
 
 ----------------
+Revision 10,835 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Moderate camera capture thread to queue more buffers. (FWGLAS-1)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/22/14 6:26 PM
+2 changed, 0 added, 0 deleted.
+24,958 ms. (Cumulative: 24,400,782 ms)
+
+----------------

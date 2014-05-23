@@ -351,7 +351,7 @@ void* CameraTaskMain(void* arg)
 													  "Couldn't unlock mutex.\n");
 			// Yield timeslice if neither audio nor video input ready 
 			if (!bRet)
-				kernel.TaskSleep(10);
+				kernel.TaskSleep(1);
 			continue;
 		}
 
@@ -361,7 +361,7 @@ void* CameraTaskMain(void* arg)
 													"Couldn't unlock mutex.\n");
 			// Yield timeslice if neither audio nor video input ready 
 			if (!bRet)
-				kernel.TaskSleep(10);
+				kernel.TaskSleep(1);
 			continue;
 		}
 		framecount++;
