@@ -41448,3 +41448,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/22/14 6:48 PM
 25,215 ms. (Cumulative: 24,426,107 ms)
 
 ----------------
+Revision 10,837 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix for GetControllerByID(1) so that it returns NULL when only one controller connected. (FWGLAS-342)
+
+By Lmoore (Lmoore@leapfrog.com) on 5/23/14 9:00 AM
+1 changed, 0 added, 0 deleted.
+24,866 ms. (Cumulative: 24,451,067 ms)
+
+----------------

@@ -351,9 +351,11 @@ namespace Hardware {
 	if (listControllers_.empty())
 		ScanForDevices();
     for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
-    	controller = *(it);
-    	if (controller->GetID() == id)
+    	HWController* testController = *(it);
+    	if (testController->GetID() == id) {
+    		controller = testController;
     		break;
+    	}
     }
     return controller;
 #endif
