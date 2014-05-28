@@ -34,6 +34,8 @@ namespace Vision {
     float wandAreaToStartScaling_;
     float minPercentToScale_;
     float minArea_;
+	cv::Mat integral_;
+	cv::Mat rgb_;
 
     void SetParams(VNInputParameters *params);
     void ComputeLargestContour(cv::Mat& img, 
@@ -49,6 +51,8 @@ namespace Vision {
     void SetProcessingFrameSize(LeapFrog::Brio::U16 width,
 				LeapFrog::Brio::U16 height);
 	void ConvertToRGB(const cv::Mat& in, cv::Mat& outrgb);
+	bool FindLight(const cv::Mat &integral, cv::Point &c);
+	int integralSum(const cv::Mat &integral, cv::Rect &roi);
   };
 }
 }

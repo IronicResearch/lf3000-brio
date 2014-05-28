@@ -88,6 +88,7 @@ namespace Vision {
   void
   VNVirtualTouchPIMPL::Execute(cv::Mat &input, cv::Mat &output) {
 
+    PROF_FRAMES_PER_SECOND( "Execute");
 
 	  PROF_BLOCK_START("Execute");
 	  // initialize background to first frame
@@ -220,7 +221,7 @@ namespace Vision {
 					   "vst1.32 {q5}, [%7]! \n"
 					   "vst1.32 {q6}, [%7]! \n"
 					   
-					   "subs %6, %6, #8 \n"
+					   "subs %6, %6, #16 \n"  // BUGBUG: crashes on #8???
 					   "bne 0b \n"
 					   :
 					   :	"r"(yuy2),		// %0

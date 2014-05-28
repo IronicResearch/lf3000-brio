@@ -8,8 +8,9 @@
 #include <VNWandPIMPL.h>
 #include <stdio.h>
 #include <VNRGB2HSV.h>
-//#define LF_PROFILE 1
-#undef LF_PROFILE
+#include <VNIntegralImage.h>
+//#define VN_PROFILE 1
+#undef VN_PROFILE
 #include <VNProfiler.h>
 #include <VNInRange3.h>
 #include <VNAlgorithmHelpers.h>
@@ -18,6 +19,8 @@
 #if defined(EMULATION)
 #include <opencv2/highgui/highgui.hpp>
 #endif
+
+#define VN_USE_INTEGRAL_IMAGE_SEARCH 1
 
 namespace LF {
 namespace Vision {
@@ -229,16 +232,21 @@ namespace Vision {
       PROF_BLOCK_START("VNWandTrackerPIMPL::Execute");  		  
       // switch to HSV color spave
       
-	  cv::Mat rgb;
-	  ConvertToRGB(input, rgb);
+
+	  PROF_BLOCK_START("YUYV to RGB");
+	  ConvertToRGB(input, rgb_);
+	  PROF_BLOCK_END();
+		
 	  PROF_BLOCK_START("RGBToHSV");
-      RGBToHSV(rgb, hsv_);    
+      RGBToHSV(rgb_, hsv_);
       PROF_BLOCK_END();
+		
       // filter out the valid pixels based on hue, saturation and intensity
       PROF_BLOCK_START("inRange");
       inRange3( hsv_, wand_->pimpl_->hsvMin_, wand_->pimpl_->hsvMax_, output );
       PROF_BLOCK_END();
       
+	/* redundant from inrange???
       PROF_BLOCK_START("threshold");
       cv::threshold(output, 
 		    output, 
@@ -246,11 +254,36 @@ namespace Vision {
 		    kVNMaxPixelValue, 
 		    cv::THRESH_BINARY);
       PROF_BLOCK_END();
-      
+      */
 #if defined(EMULATION)
       cv::namedWindow("threshold");
       cv::imshow("threshold", output);
 #endif
+      
+#if VN_USE_INTEGRAL_IMAGE_SEARCH
+		PROF_BLOCK_START("integral");
+		//cv::integral(output, integral);
+		LF::Vision::IntegralImage( output, integral_);
+		PROF_BLOCK_END();
+		
+		PROF_BLOCK_START("findLight");
+		cv::Point p;
+		bool foundLight = FindLight(integral_, p);
+		PROF_BLOCK_END();
+		
+		if ( foundLight ) {
+			wand_->pimpl_->VisibleOnScreen(p);
+			
+			static bool report = false;
+			if ( !report ) {
+				printf("\n\n\a\aFOUND LIGHT (%d, %d)\n", p.x, p.y);
+				report = true;
+			}
+		} else {
+			wand_->pimpl_->NotVisibleOnScreen();
+		}
+
+#else // VN_USE_INTEGRAL_IMAGE_SEARCH
       
       PROF_BLOCK_START("ComputeLargestContour");
       std::vector<std::vector<cv::Point> > contours;
@@ -288,7 +321,7 @@ namespace Vision {
       } else {
 	wand_->pimpl_->NotVisibleOnScreen();
       }
-      
+#endif // VN_USE_INTEGRAL_IMAGE_SEARCH
       PROF_BLOCK_END();	
     }
   }
@@ -320,5 +353,49 @@ namespace Vision {
 			  assert(!"Unsupported image format");
 	  }
   }
+	
+     int VNWandTrackerPIMPL::integralSum(const cv::Mat &integral, cv::Rect &roi) {
+        int tl = integral.at<unsigned int>(roi.y, roi.x);
+        int tr = integral.at<unsigned int>(roi.y, roi.x+roi.width);
+        int bl = integral.at<unsigned int>(roi.y+roi.height, roi.x);
+        int br = integral.at<unsigned int>(roi.y+roi.height, roi.x+roi.width);
+        return br-bl-tr+tl;
+    }
+
+	
+    bool VNWandTrackerPIMPL::FindLight(const cv::Mat &integral, cv::Point &c) {
+        static const int dx = 5;
+        static const int dy = 5;
+        static const int xMid = 2;
+        static const int yMid = 2;
+        c.x = 0;
+        c.y = 0;
+        
+        int numX = integral.cols/dx;
+        int numY = integral.rows/dy;
+        cv::Point result(0,0);
+        int sumX = 0, sumY = 0, sum = 0;
+        
+        for (int i = 0; i < numX; ++i) {
+            for (int j = 0; j < numY; ++j) {
+                cv::Rect rect(i*dx, j*dy, dx, dy);
+                int val = integralSum(integral, rect);
+                if (val > 0.7*dx*dy) {
+                    sum += val;
+                    sumX += val*(i*dx+xMid);
+                    sumY += val*(j*dy+yMid);
+                }
+            }
+        }
+        //std::cout << "sum = " << sum << std::endl;
+        if (sum > 30) {
+            c.x = float(sumX)/float(sum);
+            c.y = float(sumY)/float(sum);
+            //std::cout << "center = " << c.x << ", " << c.y << std::endl;
+            return true;
+        }
+        return false;
+    }
+
 }
 }

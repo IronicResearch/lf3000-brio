@@ -4,6 +4,9 @@
 #include <Vision/VNVisionTypes.h>
 #include <boost/shared_ptr.hpp>
 
+class TestWand;
+
+
 namespace LF {
 
 namespace Hardware {
@@ -16,6 +19,7 @@ namespace Vision {
   class VNWandPIMPL;
   class VNWandTrackerPIMPL;
   class VNVisionMPI;
+
 
   /*!
    * \class VNWand
@@ -59,6 +63,7 @@ namespace Vision {
     friend class VNWandTrackerPIMPL;
     friend class VNVisionMPI;
     friend class LF::Hardware::HWControllerPIMPL;
+	  friend class ::TestWand;
   };
 
 } // namespace Vision
