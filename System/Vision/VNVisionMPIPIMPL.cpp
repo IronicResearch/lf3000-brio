@@ -339,7 +339,7 @@ namespace Vision {
     if (rectHotSpots_.size() > 0) {
       PROF_BLOCK_START("integralImage");
       // compute integral image
-      cv::Mat integralImg;
+      static cv::Mat integralImg;
 #if VN_USE_FAST_INTEGRAL_IMAGE
 	  LF::Vision::IntegralImage(outputImg_, integralImg);
 #else
