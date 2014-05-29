@@ -16,7 +16,7 @@
 #include "VNAccumulate.h"
 #include "VNFixedPoint.h"
 
-#define VN_NEON_OPTIMIZE_FRAME_PASSES !defined(EMULATION)
+#define VN_NEON_OPTIMIZE_FRAME_PASSES 0 //!defined(EMULATION)
 
 #if VN_NEON_OPTIMIZE_FRAME_PASSES
 #include <arm_neon.h>
@@ -34,11 +34,11 @@ namespace Vision {
   VNVirtualTouchPIMPL::VNVirtualTouchPIMPL(float learningRate) :
     learningRate_(learningRate),
     threshold_(kVNDefaultVirtualTouchThreshold) {
-    
+
   }
-  
+
   VNVirtualTouchPIMPL::~VNVirtualTouchPIMPL(void) {
-    
+
   }
 
   void
@@ -47,23 +47,23 @@ namespace Vision {
     LeapFrog::Brio::tCameraControls controls;
     LeapFrog::Brio::CCameraMPI cameraMPI;
     LeapFrog::Brio::CDebugMPI dbg(LeapFrog::Brio::kGroupVision);
-    
+
     LeapFrog::Brio::Boolean err = cameraMPI.GetCameraControls(controls);
     dbg.Assert(err, "VNWandTracker could get camera controls\n");
-    
-    // turn on autowhitebalance 
-    LeapFrog::Brio::tControlInfo *awb = FindCameraControl(controls, 
+
+    // turn on autowhitebalance
+    LeapFrog::Brio::tControlInfo *awb = FindCameraControl(controls,
 							  LeapFrog::Brio::kControlTypeAutoWhiteBalance);
     if (awb) {
       printf("AutoWhiteBalance (min,max,preset,current): %li %li %li %li\n", awb->min, awb->max, awb->preset, awb->current);
-      cameraMPI.SetCameraControl(awb, 1); // is a boolean, set to 0 for false 
+      cameraMPI.SetCameraControl(awb, 1); // is a boolean, set to 0 for false
       printf("New AutoWhiteBalance (min,max,preset,current): %li %li %li %li\n", awb->min, awb->max, awb->preset, awb->current);
     } else {
       dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for auto white balance\n");
     }
 
     // set exposure to default value
-    LeapFrog::Brio::tControlInfo *e = FindCameraControl(controls, 
+    LeapFrog::Brio::tControlInfo *e = FindCameraControl(controls,
 							LeapFrog::Brio::kControlTypeExposure);
     if (e) {
       printf("Exposure (min,max,preset,current): %li %li %li %li\n", e->min, e->max, e->preset, e->current);
@@ -74,7 +74,7 @@ namespace Vision {
     }
 
     // turn on auto exposure
-    LeapFrog::Brio::tControlInfo *ae = FindCameraControl(controls, 
+    LeapFrog::Brio::tControlInfo *ae = FindCameraControl(controls,
 							 LeapFrog::Brio::kControlTypeAutoExposure);
     if (ae) {
       printf("AutoExposure (min,max,preset,current): %li %li %li %li\n", ae->min, ae->max, ae->preset, ae->current);
@@ -96,9 +96,9 @@ namespace Vision {
 		  ConvertToGray( input, gray_);
 #if VN_OPTIMIZE_FIXEDPOINT
 		  gray_.convertTo(background_, CV_32S);
-#else 
+#else
 		  gray_.convertTo(background_, CV_32F);
-#endif 
+#endif
 	  }
 
 	  PROF_BLOCK_START("AbsDifferenceThreshold");
@@ -145,60 +145,60 @@ namespace Vision {
 	  }
   }
 
-  void 
+  void
   VNVirtualTouchPIMPL::AbsDifferenceThreshold(cv::Mat& background, cv::Mat &yuyv, cv::Mat& output, int threshold, float alpha) {
 
 	  if( output.empty() ) {
 		  output.create(background.size(), CV_8U);
 	  }
-	  
+
 #if VN_NEON_OPTIMIZE_FRAME_PASSES
 //	  printf("1\a\n");
-	  
+
 	  uint8_t __restrict * yuy2    = yuyv.data;
 	  uint8_t __restrict * bg     = background.data;
 	  uint8_t __restrict * bg_out = background.data;
 	  uint8_t __restrict * out    = output.data;
 	  int numPixels               = (int)background.total();
-	  
+
 	  fixed_t a = FLOAT2FIXED( alpha );
 	  fixed_t b = FLOAT2FIXED( 1.0f - alpha );
-	  
+
 	  uint32_t constants[] = {	a >> FRACT_BITS_D2,	// NOTE: we shift right because we are going to multiply this (see fixed point MULT(x, y) macro)
 		  b >> FRACT_BITS_D2,
 		  (uint32_t)threshold,
 		  255 };
-	  
+
 	  __asm__ volatile(
 					   // load constants
 					   "vld1.32 {q0}, [%5]\n"
 					   "0:"	// loop
-					   
+
 					   // load gray from yuyv
 					   //"vld1.8	{d2},		[%0]! \n"
 					   "vld2.8 {d2,d3}, [%0]! \n"
-					   
+
 					   // load background
 					   "vld1.32	{q2},		[%1]! \n"
 					   "vld1.32	{q3},		[%1]! \n"
-					   
+
 					   // convert background to int and narrow to 8 bit
 					   //TODO: shift right FIXED2INT
 					   "vshrn.u32 d8, q2, #16 \n"
 					   "vshrn.u32 d9, q3, #16 \n"
 					   "vshrn.u16 d8, q4, #8 \n"
-					   
-					   
+
+
 					   // absolute difference
 					   "vabd.u8	d9,	d8, d2 \n"	// foreground = d9
-					   
+
 					   // apply threshold: foreground > threshold
 					   "vdup.8	d10, d1[0] \n"	// load the threshold from constants
 					   "vcgt.u8	d10, d9, d10 \n"		// greater then threshold
-					   
+
 					   // save foreground to output
 					   "vst1.8 {d10}, [%2]! \n"
-					   
+
 					   // expand gray to 32 bit 8.24 fixed point
 					   // s[0] = INT2FIXED( gray.at<uint8_t>(i) );
 					   "vmovl.u8 q4, d2 \n"
@@ -206,21 +206,21 @@ namespace Vision {
 					   "vmovl.u16 q6, d9 \n"
 					   "vshl.u32 q5, q5, #12 \n"  // NOTE: we only shift left 12 and not 24 because we are going to do a multiply below which requires a shift right by 12.  So 24-12 = 12. (see fixed point MULT(x, y) macro)
 					   "vshl.u32 q6, q6, #12 \n"  // NOTE: we only shift left 12 and not 24 because we are going to do a multiply below which requires a shift right by 12.  So 24-12 = 12. (see fixed point MULT(x, y) macro)
-					   
+
 					   // a * b
 					   "vmul.u32 q5, q5, d0[0] \n"
 					   "vmul.u32 q6, q6, d0[0] \n"
-					   
+
 					   // + b * d
 					   "vshr.u32 q2, q2, #12 \n" // prepare background for multiply by doing a shift right >> FRACT_BITS_D2
 					   "vshr.u32 q3, q3, #12 \n" // prepare background for multiply by doing a shift right >> FRACT_BITS_D2
 					   "vmla.u32 q5, q2, d0[1] \n"
 					   "vmla.u32 q6, q3, d0[1] \n"
-					   
+
 					   // save back to background
 					   "vst1.32 {q5}, [%7]! \n"
 					   "vst1.32 {q6}, [%7]! \n"
-					   
+
 					   "subs %6, %6, #16 \n"  // BUGBUG: crashes on #8???
 					   "bne 0b \n"
 					   :
@@ -233,12 +233,12 @@ namespace Vision {
 					   "r"(numPixels),	// %6
 					   "r"(bg_out)		// %7
 					   :  "r4", "r5", "r6"
-					   
+
 					   );
 
 //	  printf("2\a\n");
 #else // VN_NEON_OPTIMIZE_FRAME_PASSES
-	  
+
 	  // TODO: convert to gray in loop below
 	  cv::Mat gray;
 	  ConvertToGray( yuyv, gray );
