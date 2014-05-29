@@ -41475,3 +41475,18 @@ By Alex Lindblad (alindblad@leapfrog.com) on 5/28/14 1:14 PM
 26,535 ms. (Cumulative: 24,502,641 ms)
 
 ----------------
+Revision 10,840 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,607 ms. (Cumulative: 24,528,357 ms)
+
+----------------
+Revision 10,841 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+temporarily turn off neon for virtual touch, modify YUV touch app
+
+By Alex Lindblad (alindblad@leapfrog.com) on 5/29/14 12:58 AM
+1 changed, 0 added, 0 deleted.
+24,854 ms. (Cumulative: 24,553,211 ms)
+
+----------------
