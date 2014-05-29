@@ -5,6 +5,7 @@
 #include <KernelTypes.h>
 #include <CameraMPI.h>
 #include <DebugMPI.h>
+#include <KernelMPI.h>
 #include <Vision/VNVisionTypes.h>
 
 #include <vector>
@@ -15,19 +16,19 @@ namespace LF {
 namespace Vision {
 
   static const LeapFrog::Brio::U16 kVNDefaultProcessingFrameWidth = kVNVGAWidth;
-  static const LeapFrog::Brio::U16 kVNDefaultProcessingFrameHeight = kVNVGAHeight;  
+  static const LeapFrog::Brio::U16 kVNDefaultProcessingFrameHeight = kVNVGAHeight;
 
   class VNHotSpot;
   class VNAlgorithm;
   class VNWand;
 
-  class VNVisionMPIPIMPL {
+  class VNVisionMPIPIMPL : public LeapFrog::Brio::IEventListener {
   public:
     static VNVisionMPIPIMPL* Instance(void);
     virtual ~VNVisionMPIPIMPL(void);
-    
+
     LeapFrog::Brio::Boolean DeleteTask(void);
-    
+
     LeapFrog::Brio::tErrType Start(LeapFrog::Brio::tVideoSurf *surf,
 				   bool dispatchSynchronously,
 				   const LeapFrog::Brio::tRect *displayRect);
@@ -35,7 +36,7 @@ namespace Vision {
     LeapFrog::Brio::Boolean Stop(void);
     LeapFrog::Brio::Boolean Pause(void);
     LeapFrog::Brio::Boolean Resume(void);
-    
+
     void TriggerHotSpots(void);
     void SetCurrentWand(VNWand *wand);
     VNWand* GetCurrentWand(void) const;
@@ -55,6 +56,8 @@ namespace Vision {
     cv::Mat outputImg_;
     boost::timer timer_;
 
+    virtual LeapFrog::Brio::tEventStatus Notify(const LeapFrog::Brio::IEventMessage& msg);
+
   protected:
     LeapFrog::Brio::tErrType SetCameraFormat(void);
     LeapFrog::Brio::tErrType DispatchVisionThread(void);
@@ -63,8 +66,6 @@ namespace Vision {
     void BeginFrameProcessing(void);
     void EndFrameProcessing(void) const;
     void Wait(double secondsToWait) const;
-    void CreateRGBImage(LeapFrog::Brio::tVideoSurf *surf,
-			cv::Mat &img) const;
     void UpdateHotSpotVisionCoordinates(void);
     void SetFrameProcessingSize(void);
     void AddHotSpot(const VNHotSpot *hotSpot,
@@ -84,7 +85,7 @@ namespace Vision {
     VNVisionMPIPIMPL(void);
     VNVisionMPIPIMPL(const VNVisionMPIPIMPL&);
     VNVisionMPIPIMPL& operator=(const VNVisionMPIPIMPL&);
-    
+
     LeapFrog::Brio::CDebugMPI dbg_;
 
     // all rectangular hot spots
@@ -97,6 +98,10 @@ namespace Vision {
     LeapFrog::Brio::U16 frameProcessingWidth_;
     LeapFrog::Brio::U16 frameProcessingHeight_;
     VNWand *currentWand_;
+
+    // camera surface
+    LeapFrog::Brio::CKernelMPI kernelMPI_;
+    LeapFrog::Brio::tVideoSurf surface_;
 
 #if defined(EMULATION)
     bool showOCVDebugOutput_;

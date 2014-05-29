@@ -21,12 +21,18 @@
 #include <KernelMPI.h>
 #include <Utility.h>
 #include <sys/stat.h>
-#include <VNYUYV2RGB.h>
 #undef VN_PROFILE
 #include <VNProfiler.h>
 #include <VNIntegralImage.h>
 
 #define VN_USE_FAST_INTEGRAL_IMAGE 1
+
+#define VN_ORIGINAL_METHOD 0
+#define VN_FRAMES_FROM_EVENTS 1
+#define VN_FRAME_METHOD VN_FRAMES_FROM_EVENTS
+// #define VN_FRAME_METHOD VN_ORIGINAL_METHOD
+
+const LeapFrog::Brio::tEventType gVNEventKey[] = {LeapFrog::Brio::kCaptureFrameEvent};
 
 namespace LF {
 namespace Vision {
@@ -34,10 +40,11 @@ namespace Vision {
   static const double kVNMillisecondsInASecond = 1000.0;
   static const float kVNDefaultFrameProcessingRate = 0.03125; // 32 fps
   static const LeapFrog::Brio::U32 kVNDefaultStackSize = 134217728; // 128 MB in bytes
+  static const LeapFrog::Brio::U32 kVNDefaultBufferSize = 2*kVNDefaultProcessingFrameWidth*kVNDefaultProcessingFrameHeight;
   static const std::string kVNQVGAFlagPath = "/flags/qvga_vision_mode";
   static const std::string kVNDebugOCVFlagPath = "/flags/showocv";
-  
-  bool 
+
+  bool
   FlagExists(const char *fileName) {
     struct stat buf;
     // checking for file status, will return 0 if file exists and all is well
@@ -56,7 +63,7 @@ namespace Vision {
     }
     return sharedInstance;
   }
-  
+
   void
   VNVisionMPIPIMPL::SetCurrentWand(VNWand *wand) {
     currentWand_ = wand;
@@ -73,7 +80,7 @@ namespace Vision {
 
   void
   VNVisionMPIPIMPL::SetFrameProcessingSize(void) {
-    // check for qvga flag and set size base don this    
+    // check for qvga flag and set size base don this
     if (FlagExists(kVNQVGAFlagPath.c_str())) {
       frameProcessingWidth_ = kVNQVGAWidth;
       frameProcessingHeight_ = kVNQVGAHeight;
@@ -84,6 +91,7 @@ namespace Vision {
   }
 
   VNVisionMPIPIMPL::VNVisionMPIPIMPL(void) :
+    IEventListener(gVNEventKey, 5),
     dbg_(kGroupVision),
     visionAlgorithmRunning_(false),
     frameProcessingRate_(kVNDefaultFrameProcessingRate),
@@ -96,24 +104,32 @@ namespace Vision {
     currentWand_(NULL) {
 
 #if defined(EMULATION)
-    showOCVDebugOutput_ = false;      
+    showOCVDebugOutput_ = false;
     if (FlagExists(kVNDebugOCVFlagPath.c_str()))
       showOCVDebugOutput_ = true;
 #endif
+
+    surface_.width = 0;
+    surface_.height = 0;
+    surface_.pitch = 0;
+    surface_.buffer = NULL;
+    surface_.format = LeapFrog::Brio::kPixelFormatYUYV422; // initialize to something
 
     SetFrameProcessingSize();
 
     dbg_.SetDebugLevel(kDbgLvlVerbose);
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [ctor]\n");
   }
-  
+
   VNVisionMPIPIMPL::~VNVisionMPIPIMPL(void) {
     DeleteTask();
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [dtor]\n");
   }
-  
+
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::DeleteTask(void) {
+    if (surface_.buffer) delete surface_.buffer;
+
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
     if (videoCapture_ != kInvalidVidCapHndl)
       result = cameraMPI_.StopVideoCapture(videoCapture_);
@@ -121,7 +137,7 @@ namespace Vision {
     if (taskHndl_ != LeapFrog::Brio::kInvalidTaskHndl) {
       LeapFrog::Brio::CKernelMPI kernel;
       if (kernel.CancelTask(taskHndl_) != kNoErr)
-	  result = static_cast<LeapFrog::Brio::Boolean>(false);	  
+	  result = static_cast<LeapFrog::Brio::Boolean>(false);
     }
     return result;
   }
@@ -130,7 +146,7 @@ namespace Vision {
   VNVisionMPIPIMPL::SetCameraFormat(void) {
     LeapFrog::Brio::tCaptureModes modeList;
     LeapFrog::Brio::tErrType error = cameraMPI_.EnumFormats(modeList);
-    
+
     if (error == kNoErr) {
       error = kVNCameraDoesNotSupportRequiredVisionFormat;
       std::cout << "Number of camera modes is " << modeList.size() << std::endl;
@@ -189,13 +205,13 @@ namespace Vision {
     LeapFrog::Brio::tCameraDevice useCamera = LeapFrog::Brio::kCameraDefault;
     if(GetPlatformName() == "CABO") {
       useCamera = LeapFrog::Brio::kCameraFront;
-    } 
+    }
 
     if (useCamera == LeapFrog::Brio::kCameraDefault)
       dbg_.DebugOut(kDbgLvlValuable, "VNVisionMPIPIMPL: selected default camera\n");
     else if (useCamera == LeapFrog::Brio::kCameraFront)
       dbg_.DebugOut(kDbgLvlValuable, "VNVisionMPIPIMPL: selected front camera\n");
-    
+
     return cameraMPI_.SetCurrentCamera(useCamera);
   }
 
@@ -208,7 +224,7 @@ namespace Vision {
     visionFrame.bottom = frameProcessingHeight_;
     translator->SetVisionFrame(visionFrame);
 
-    //initialize frame    
+    //initialize frame
     LeapFrog::Brio::tRect displayFrame;
     displayFrame.left = 0;
     displayFrame.top = 0;
@@ -242,10 +258,10 @@ namespace Vision {
   VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf *surf,
 			  bool dispatchSynchronously,
 			  const LeapFrog::Brio::tRect *displayRect) {
-    std::cout << "** SIZE OF hotSpots_ = " << hotSpots_.size() << std::endl;
-    std::cout << "** SIZE OF rectHotSpots_ = " << rectHotSpots_.size() << std::endl;
-
     LeapFrog::Brio::tErrType error = kNoErr;
+
+    // allocate buffers
+    surface_.buffer = new LeapFrog::Brio::U8[kVNDefaultBufferSize];
 
     if (!visionAlgorithmRunning_) {
       frameCount_ = 0;
@@ -267,7 +283,11 @@ namespace Vision {
 	error = SetCameraFormat();
 
 	if (error == kNoErr) {
+#if VN_FRAME_METHOD == VN_FRAMES_FROM_EVENTS
+	  videoCapture_ = cameraMPI_.StartVideoCapture(videoSurf_, this);
+#elif VN_FRAME_METHOD == VN_ORIGINAL_METHOD
 	  videoCapture_ = cameraMPI_.StartVideoCapture(videoSurf_);
+#endif
 
 	  if (videoCapture_ == LeapFrog::Brio::kInvalidVidCapHndl) {
 	    error = kVNVideoCaptureFailed;
@@ -283,7 +303,7 @@ namespace Vision {
 				     frameProcessingHeight_);
 
 	    visionAlgorithmRunning_ = true;
-	  
+
 	    if (dispatchSynchronously) {
 	      error = DispatchVisionThread();
 
@@ -299,12 +319,12 @@ namespace Vision {
     }
     return error;
   }
-  
+
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::Stop(void) {
     return DeleteTask();
   }
-  
+
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::Pause(void) {
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
@@ -316,13 +336,13 @@ namespace Vision {
 
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::Resume(void) {
-    LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);    
+    LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
     if (videoCapture_ != kInvalidVidCapHndl)
       result = cameraMPI_.ResumeVideoCapture(videoCapture_);
     visionAlgorithmRunning_ = true;
     return result;
   }
-  
+
   void
   VNVisionMPIPIMPL::TriggerHotSpots(void) {
     static int numCalls = 0;
@@ -331,7 +351,7 @@ namespace Vision {
     for (std::vector<const VNHotSpot*>::iterator hs = hotSpots_.begin();
 	 hs != hotSpots_.end();
 	 ++hs) {
-      
+
       (*hs)->Trigger(outputImg_);
     }
     PROF_BLOCK_END();
@@ -347,7 +367,7 @@ namespace Vision {
 #endif
       VNHotSpotPIMPL::SetIntegralImage(&integralImg);
       PROF_BLOCK_END();
-      
+
       PROF_BLOCK_START("triggerRectHotSpots");
       for (std::vector<const VNHotSpot*>::iterator rhs = rectHotSpots_.begin();
 	   rhs != rectHotSpots_.end();
@@ -362,7 +382,7 @@ namespace Vision {
     if (numCalls == 1000)
       PROF_PRINT_REPORT();
   }
-  
+
   void
   VNVisionMPIPIMPL::Wait(double secondsToWait) const {
     boost::timer timer;
@@ -370,12 +390,12 @@ namespace Vision {
       // nothing
     }while(timer.elapsed() < secondsToWait);
   }
-  
+
   void
   VNVisionMPIPIMPL::BeginFrameProcessing(void) {
     timer_.restart();
   }
-  
+
   void
   VNVisionMPIPIMPL::EndFrameProcessing(void) const {
     double elapsedTimeInSecs = timer_.elapsed();
@@ -383,152 +403,19 @@ namespace Vision {
       Wait(frameProcessingRate_-elapsedTimeInSecs);
     }
   }
-  
-#define CLIP8BIT(v)    v > 255 ? 255 : v < 0 ? 0 : v
-  
-  void YUV2RGB(cv::Mat src, cv::Mat dst) {
-    const int width = dst.cols;
-    const int height = dst.rows;
-    const int halfHeight = height / 2;
-    const int pitch = src.step;
-    const int halfPitch = pitch / 2;
-    
-    // Set all the plane starting points, UV lives out at the 2k boundry
-    const unsigned char* yData = src.ptr();
-    const unsigned char* uData = yData + halfPitch;
-    const unsigned char* vData = uData + halfHeight * pitch;
-    
-    // Grab the output pointer
-    unsigned char* rgbData = dst.ptr();
-    
-    // Each pair of 2 Y values share a single U & V
-    for(int j = 0; j < height; ++j) {
-      const unsigned char* y = yData + j * pitch;
-      
-      // U V rows advance half as fast (note integer divide by 2)
-      const unsigned char* u = uData + (j / 2) * pitch;
-      const unsigned char* v = vData + (j / 2) * pitch;
-      
-      // The output row
-      unsigned char* c = rgbData + j * 3 * width;
-      
-      // Work on each pair of Ys (even & odd) at once
-      for(int i = 0, k = 0; i < width; i += 2, ++k) {
-	// U/V stays the same for each two pixels
-	const short redUV = 1.13983f * (v[k] - 128);
-	const short greenUV = - 0.39465 * (u[k] - 128) - 0.58060f * (v[k] - 128); 
-	const short blueUV = 2.03211 * (u[k] - 128);
-	
-	for(int yi = 0; yi < 2; ++yi) {
-	  *c++ = CLIP8BIT(*y + blueUV);
-	  *c++ = CLIP8BIT(*y + greenUV);
-	  *c++ = CLIP8BIT(*y + redUV);
-	  ++y;
-	}
-      }
-    }
-  }
-  
-  static bool tableInited = false;
-  static short rv[256];
-  static short gu[256];
-  static short gv[256];
-  static short bu[256];
-  
-  void YUV2RGB_fast_table(cv::Mat src, cv::Mat dst) {
-    if(!tableInited) {
-      for(int i = 0; i < 256; ++i) {
-	rv[i] = 1.13983f * (i - 128);
-	gu[i] = - 0.39465 * (i - 128);
-	gv[i] = - 0.58060f * (i - 128);
-	bu[i] = 2.03211f * (i - 128);
-      }
-      tableInited = true;
-    }
-    const int width = dst.cols;
-    const int tripleWidth = 3 * width;
-    const int height = dst.rows;
-    const int halfHeight = height / 2;
-    const int pitch = src.step;
-    const int halfPitch = pitch / 2;
-    
-    // Set all the plane starting points, UV lives out at the 2k boundry
-    const unsigned char* yData = src.ptr();
-    const unsigned char* uData = yData + halfPitch;
-    const unsigned char* vData = yData + halfHeight * pitch + halfPitch;
-    
-    // Grab the output pointer
-    unsigned char* rgbData = dst.ptr();
-    
-    // Each pair of 2 Y values share a single U & V
-    for(int j = 0; j < height; ++j) {
-      const unsigned char* y = yData + j * pitch;
-      
-      // U V rows advance half as fast (note integer divide by 2)
-      const unsigned char* u = uData + (j / 2) * pitch;
-      const unsigned char* v = vData + (j / 2) * pitch;
-      
-      // The output row
-      unsigned char* c = rgbData + j * tripleWidth;
-      
-      const unsigned char* yEnd = y + width;
-      
-      // Work on the whole line of Y values
-      while(y < yEnd) {
-	// U/V stays the same for each two pixels
-	const short redUV = rv[*v];
-	const short greenUV = gu[*u] + gv[*v];
-	const short blueUV = bu[*u];
-	
-	// Even Y
-	*c++ = CLIP8BIT(*y + blueUV);
-	*c++ = CLIP8BIT(*y + greenUV);
-	*c++ = CLIP8BIT(*y + redUV);
-	++y;
-	
-	// Odd Y
-	*c++ = CLIP8BIT(*y + blueUV);
-	*c++ = CLIP8BIT(*y + greenUV);
-	*c++ = CLIP8BIT(*y + redUV);
-	++y;
-	
-	++u;
-	++v;
-      }
-    }
-  }
 
-  void
-  VNVisionMPIPIMPL::CreateRGBImage(LeapFrog::Brio::tVideoSurf* surf,
-				   cv::Mat& img) const {
-
-    LeapFrog::Brio::U32 width = surf->width;
-    LeapFrog::Brio::U32 height = surf->height;
-    
-    if (surf->format == LeapFrog::Brio::kPixelFormatYUV420) {
-      cv::Mat tmp(cv::Size(width,
-			   height),
-		  CV_8UC2, 
-		  surf->buffer,
-		  surf->pitch); //4096); //FIXME: what is this magic number???
-      YUV2RGB_fast_table(tmp, img);
-      
-    } else if (surf->format == LeapFrog::Brio::kPixelFormatRGB888) {
-      img = cv::Mat(cv::Size(width, 
-			     height), 
-		    CV_8UC3, 
-		    surf->buffer);
-    } else if (surf->format == LeapFrog::Brio::kPixelFormatYUYV422) {
-
-	  LF::Vision::YUYV2RGB( surf->buffer, width, height, img );
-    } else {
-      //some other format
-    }
-  }
+#if VN_FRAME_METHOD == VN_FRAMES_FROM_EVENTS
 
   void
   VNVisionMPIPIMPL::Update(void) {
+    // do nothing
+  }
 
+#elif VN_FRAME_METHOD == VN_ORIGINAL_METHOD
+
+  void
+  VNVisionMPIPIMPL::Update(void) {
+    
     PROF_BLOCK_START("Update");
     if (visionAlgorithmRunning_) {
       PROF_BLOCK_START("beginFrameProcessing");
@@ -536,7 +423,7 @@ namespace Vision {
       PROF_BLOCK_END();
 
       if (!cameraMPI_.IsVideoCapturePaused(videoCapture_) ) {
-	
+
 	PROF_BLOCK_START("lockVideoSurface");
 	LeapFrog::Brio::Boolean locked = cameraMPI_.LockCaptureVideoSurface(videoCapture_);
 	PROF_BLOCK_END();
@@ -550,37 +437,27 @@ namespace Vision {
 	  if (!surf) return;
 	  
 	  unsigned char *buffer = surf->buffer;
-
+	  
 	  //dbg_.Assert(buffer && algorithm_, "VNVisionMPIPIMPL::Update - invalid buffer or algorithm.\n");
 	  if (buffer && algorithm_) {
-		  
-		  // create a camera surface cv::Mat
-		  cv::Mat cameraSurfaceMat;
-		  switch(surf->format) {
-			  case LeapFrog::Brio::kPixelFormatRGB888:
-				  cameraSurfaceMat = cv::Mat(cv::Size(surf->width, surf->height), CV_8UC3, surf->buffer);
-				  break;
-			  case LeapFrog::Brio::kPixelFormatYUYV422:
-				  cameraSurfaceMat = cv::Mat(cv::Size(surf->width, surf->height), CV_8UC2, surf->buffer, surf->pitch);
-				  break;
-			  default:
-				  assert( !"unsupported surface format");
-		  }
-
-#ifdef EMULATION
-	    cv::namedWindow("input");
-	    cv::Mat rgbMat(cv::Size(surf->width,
-				    surf->height),
-			   CV_8UC3);
-	    CreateRGBImage(surf,
-			   rgbMat);
-	    cv::imshow("input", rgbMat);
-#endif
-
+	    
+	    // create a camera surface cv::Mat
+	    cv::Mat cameraSurfaceMat;
+	    switch(surf->format) {
+	    case LeapFrog::Brio::kPixelFormatRGB888:
+	      cameraSurfaceMat = cv::Mat(cv::Size(surf->width, surf->height), CV_8UC3, surf->buffer);
+	      break;
+	    case LeapFrog::Brio::kPixelFormatYUYV422:
+	      cameraSurfaceMat = cv::Mat(cv::Size(surf->width, surf->height), CV_8UC2, surf->buffer, surf->pitch);
+	      break;
+	    default:
+	      assert( !"unsupported surface format");
+	    }
+	    
 	    PROF_BLOCK_START("algorithm");
 	    algorithm_->Execute(cameraSurfaceMat, outputImg_);
 	    PROF_BLOCK_END();
-
+	    
 #ifdef EMULATION
 	    if (showOCVDebugOutput_)
 	      OpenCVDebug();
@@ -606,12 +483,102 @@ namespace Vision {
     }
     PROF_BLOCK_END();
   }
+#endif // VN_FRAME_METHOD
+
+
+#if VN_FRAME_METHOD == VN_FRAMES_FROM_EVENTS
+  LeapFrog::Brio::tEventStatus
+  VNVisionMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msg) {
+
+    const LeapFrog::Brio::CCameraEventMessage *cemsg =
+      dynamic_cast<const LeapFrog::Brio::CCameraEventMessage*>(&msg);
+    if (cemsg) {
+      if (cemsg->GetEventType() == LeapFrog::Brio::kCaptureFrameEvent) {
+	
+	LeapFrog::Brio::tCaptureFrameMsg frameMsg = cemsg->data.framed;
+	LeapFrog::Brio::tVideoSurf *surf = cameraMPI_.GetCaptureVideoSurface(frameMsg.vhndl);
+	
+	if (surf) {
+	  unsigned char *buffer = surf->buffer;
+	  if (buffer) {
+	    //BeginFrameProcessing();
+	    
+	    PROF_BLOCK_START("Vision::Update");
+	    
+	    surface_.width  = surf->width;
+	    surface_.height = surf->height;
+	    surface_.pitch  = surf->pitch;
+	    surface_.format = surf->format;	    
+	    memcpy(surface_.buffer,
+		   buffer,
+		   kVNDefaultBufferSize*sizeof(unsigned char));
+	    
+	    
+	    // create a camera surface cv::Mat
+	    static cv::Mat cameraSurfaceMat;
+	    switch(surf->format) {
+	    case LeapFrog::Brio::kPixelFormatRGB888:
+	      cameraSurfaceMat = cv::Mat(cv::Size(surface_.width, surface_.height),
+					 CV_8UC3,
+					 surface_.buffer);
+	      break;
+	    case LeapFrog::Brio::kPixelFormatYUYV422:
+	      cameraSurfaceMat = cv::Mat(cv::Size(surface_.width, surface_.height),
+					 CV_8UC2,
+					 surface_.buffer,
+					 surface_.pitch);
+	      break;
+	    default:
+	      assert( !"unsupported surface format");
+	    }
+	    
+	    
+	    
+	    PROF_BLOCK_START("algorithm");
+	    algorithm_->Execute(cameraSurfaceMat, outputImg_);
+	    PROF_BLOCK_END();
+	    
+	    
+#if defined(EMULATION)
+	    OpenCVDebug();
+#endif
+	    
+	    TriggerHotSpots();
+	    
+	    PROF_BLOCK_END();
+	    
+	    ++frameCount_;
+	    if (frameCount_ % 30 == 0) {
+	      std::cout << "FPS = " << frameCount_ / ((float)(time(0) - frameTime_)) << std::endl;
+	    }
+	    
+	    //EndFrameProcessing();
+	  }
+	}
+	return LeapFrog::Brio::kEventStatusOKConsumed;
+      }
+    } else {
+      std::cout << "DID NOT successfully cast the msg\n";
+    }
+    return LeapFrog::Brio::kEventStatusOK;
+  }
+  
+#elif VN_FRAME_METHOD == VN_ORIGINAL_METHOD
+  
+  LeapFrog::Brio::tEventStatus
+  VNVisionMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msg) {
+    // do nothing
+    return LeapFrog::Brio::kEventStatusOK;
+  }
+
+
+#endif // VN_FRAME_METHOD
 
   void*
   VNVisionMPIPIMPL::CameraCaptureTask(void* args) {
     VNVisionMPIPIMPL* me = static_cast<VNVisionMPIPIMPL*>(args);
-    me->visionAlgorithmRunning_ = true;		
-
+    me->visionAlgorithmRunning_ = true;
+    
     while (true) {
       me->Update();
     }
@@ -620,8 +587,8 @@ namespace Vision {
     //TODO: investigate what we should return here.
     return NULL;
   }
-
-
+  
+  
 #ifdef EMULATION
   void
   VNVisionMPIPIMPL::OpenCVDebug(void) {
@@ -636,7 +603,7 @@ namespace Vision {
     }
   }
 #endif
-
+  
   void
   VNVisionMPIPIMPL::AddHotSpot(const VNHotSpot* hotSpot,
 			       std::vector<const VNHotSpot*> & hotSpots) {
@@ -659,7 +626,7 @@ namespace Vision {
       AddHotSpot(hotSpot, hotSpots_);
     }
   }
-  
+
   bool
   VNVisionMPIPIMPL::RemoveHotSpot(const VNHotSpot *hotSpot,
 				  std::vector<const VNHotSpot*> &hotSpots) {
@@ -669,22 +636,22 @@ namespace Vision {
       hotSpots.erase(it);
     }
   }
-  
+
   void
   VNVisionMPIPIMPL::RemoveHotSpot(const VNHotSpot* hotSpot) {
     if (!RemoveHotSpot(hotSpot, hotSpots_)) {
       RemoveHotSpot(hotSpot, rectHotSpots_);
     }
   }
-  
+
   void
   VNVisionMPIPIMPL::RemoveHotSpotByID(const LeapFrog::Brio::U32 tag,
 				      std::vector<const VNHotSpot*> &hotSpots) {
     std::vector<const VNHotSpot*>::iterator it = hotSpots.begin();
     for ( ; it != hotSpots.end(); ++it) {
-      if ((*it)->GetTag() == tag) {	
+      if ((*it)->GetTag() == tag) {
 	it = hotSpots.erase(it);
-	// because erase returns an iterator to the "next" spot we need 
+	// because erase returns an iterator to the "next" spot we need
 	// to decrement the iterator since we icrement it at the end of each loop
 	it--;
       }
