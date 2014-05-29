@@ -41490,3 +41490,17 @@ By Alex Lindblad (alindblad@leapfrog.com) on 5/29/14 12:58 AM
 24,854 ms. (Cumulative: 24,553,211 ms)
 
 ----------------
+Revision 10,842 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+vision update now driven by camera notificaiton
+
+updated sample apps to reflect this change
+updated sample apps to use VGA
+updated virtual touch sample apps to turn OGL on/off
+cleaned up code
+
+By Alex Lindblad (alindblad@leapfrog.com) on 5/29/14 12:52 PM
+2 changed, 0 added, 0 deleted.
+24,947 ms. (Cumulative: 24,578,251 ms)
+
+----------------
