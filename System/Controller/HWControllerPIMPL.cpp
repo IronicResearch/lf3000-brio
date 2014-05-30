@@ -389,7 +389,7 @@ namespace Hardware {
 		  pModule->eventMPI_.PostEvent(cmsg, 128);
 	  }
 
-	  if (mode != pModule->mode_ && pModule->mode_ != kHWControllerNoMode) {
+	  if (mode != pModule->mode_) {
 	      HWControllerEventMessage cmsg(kHWControllerModeChanged, pModule->controller_);
 		  pModule->eventMPI_.PostEvent(cmsg, 128);
 	  }
