@@ -41504,3 +41504,27 @@ By Alex Lindblad (alindblad@leapfrog.com) on 5/29/14 12:52 PM
 24,947 ms. (Cumulative: 24,578,251 ms)
 
 ----------------
+Revision 10,843 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,840 ms. (Cumulative: 24,603,201 ms)
+
+----------------
+Revision 10,844 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,845 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,846 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,691 ms. (Cumulative: 24,627,923 ms)
+
+----------------
+Revision 10,847 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Post events for HWController "NoMode" state transitions too. (FWGLAS-399)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/30/14 3:55 PM
+1 changed, 0 added, 0 deleted.
+24,917 ms. (Cumulative: 24,652,856 ms)
+
+----------------
