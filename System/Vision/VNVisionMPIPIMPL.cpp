@@ -266,7 +266,7 @@ namespace Vision {
     if (!visionAlgorithmRunning_) {
       frameCount_ = 0;
       frameTime_ = time(0);
-      
+
       // make sure the surface size is at least as big as the processing size
       // TODO: This may/should go away once we resolve issues around different
       // sized between processing and display
@@ -415,7 +415,7 @@ namespace Vision {
 
   void
   VNVisionMPIPIMPL::Update(void) {
-    
+
     PROF_BLOCK_START("Update");
     if (visionAlgorithmRunning_) {
       PROF_BLOCK_START("beginFrameProcessing");
@@ -435,12 +435,12 @@ namespace Vision {
 
 	  //dbg_.Assert(surf != 0, "VNVisionMPIPIMPL::Update - failed getting video surface.\n");
 	  if (!surf) return;
-	  
+
 	  unsigned char *buffer = surf->buffer;
-	  
+
 	  //dbg_.Assert(buffer && algorithm_, "VNVisionMPIPIMPL::Update - invalid buffer or algorithm.\n");
 	  if (buffer && algorithm_) {
-	    
+
 	    // create a camera surface cv::Mat
 	    cv::Mat cameraSurfaceMat;
 	    switch(surf->format) {
@@ -453,11 +453,11 @@ namespace Vision {
 	    default:
 	      assert( !"unsupported surface format");
 	    }
-	    
+
 	    PROF_BLOCK_START("algorithm");
 	    algorithm_->Execute(cameraSurfaceMat, outputImg_);
 	    PROF_BLOCK_END();
-	    
+
 #ifdef EMULATION
 	    if (showOCVDebugOutput_)
 	      OpenCVDebug();
@@ -494,64 +494,63 @@ namespace Vision {
       dynamic_cast<const LeapFrog::Brio::CCameraEventMessage*>(&msg);
     if (cemsg) {
       if (cemsg->GetEventType() == LeapFrog::Brio::kCaptureFrameEvent) {
-	
+
 	LeapFrog::Brio::tCaptureFrameMsg frameMsg = cemsg->data.framed;
 	LeapFrog::Brio::tVideoSurf *surf = cameraMPI_.GetCaptureVideoSurface(frameMsg.vhndl);
-	
+
 	if (surf) {
 	  unsigned char *buffer = surf->buffer;
 	  if (buffer) {
 	    //BeginFrameProcessing();
-	    
+
 	    PROF_BLOCK_START("Vision::Update");
-	    
+
 	    surface_.width  = surf->width;
 	    surface_.height = surf->height;
 	    surface_.pitch  = surf->pitch;
-	    surface_.format = surf->format;	    
+	    surface_.format = surf->format;
 	    memcpy(surface_.buffer,
 		   buffer,
-		   kVNDefaultBufferSize*sizeof(unsigned char));
-	    
-	    
+		   surface_.height * surface_.pitch);
+
+
 	    // create a camera surface cv::Mat
-	    static cv::Mat cameraSurfaceMat;
 	    switch(surf->format) {
 	    case LeapFrog::Brio::kPixelFormatRGB888:
-	      cameraSurfaceMat = cv::Mat(cv::Size(surface_.width, surface_.height),
+	      cameraSurfaceMat_ = cv::Mat(cv::Size(surface_.width, surface_.height),
 					 CV_8UC3,
 					 surface_.buffer);
 	      break;
 	    case LeapFrog::Brio::kPixelFormatYUYV422:
-	      cameraSurfaceMat = cv::Mat(cv::Size(surface_.width, surface_.height),
+	      cameraSurfaceMat_ = cv::Mat(cv::Size(surface_.width, surface_.height),
 					 CV_8UC2,
 					 surface_.buffer,
 					 surface_.pitch);
 	      break;
 	    default:
-	      assert( !"unsupported surface format");
+	      assert( !"unsupported surface format" );
 	    }
-	    
-	    
-	    
+
+
+
 	    PROF_BLOCK_START("algorithm");
-	    algorithm_->Execute(cameraSurfaceMat, outputImg_);
+	    algorithm_->Execute(cameraSurfaceMat_, outputImg_);
 	    PROF_BLOCK_END();
-	    
-	    
+
+
 #if defined(EMULATION)
 	    OpenCVDebug();
 #endif
-	    
+
 	    TriggerHotSpots();
-	    
+
 	    PROF_BLOCK_END();
-	    
+
 	    ++frameCount_;
 	    if (frameCount_ % 30 == 0) {
 	      std::cout << "FPS = " << frameCount_ / ((float)(time(0) - frameTime_)) << std::endl;
 	    }
-	    
+
 	    //EndFrameProcessing();
 	  }
 	}
@@ -562,9 +561,9 @@ namespace Vision {
     }
     return LeapFrog::Brio::kEventStatusOK;
   }
-  
+
 #elif VN_FRAME_METHOD == VN_ORIGINAL_METHOD
-  
+
   LeapFrog::Brio::tEventStatus
   VNVisionMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msg) {
     // do nothing
@@ -578,17 +577,17 @@ namespace Vision {
   VNVisionMPIPIMPL::CameraCaptureTask(void* args) {
     VNVisionMPIPIMPL* me = static_cast<VNVisionMPIPIMPL*>(args);
     me->visionAlgorithmRunning_ = true;
-    
+
     while (true) {
       me->Update();
     }
-    
+
     me->visionAlgorithmRunning_ = false;
     //TODO: investigate what we should return here.
     return NULL;
   }
-  
-  
+
+
 #ifdef EMULATION
   void
   VNVisionMPIPIMPL::OpenCVDebug(void) {
@@ -603,7 +602,7 @@ namespace Vision {
     }
   }
 #endif
-  
+
   void
   VNVisionMPIPIMPL::AddHotSpot(const VNHotSpot* hotSpot,
 			       std::vector<const VNHotSpot*> & hotSpots) {

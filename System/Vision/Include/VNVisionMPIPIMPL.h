@@ -102,6 +102,7 @@ namespace Vision {
     // camera surface
     LeapFrog::Brio::CKernelMPI kernelMPI_;
     LeapFrog::Brio::tVideoSurf surface_;
+    cv::Mat cameraSurfaceMat_;
 
 #if defined(EMULATION)
     bool showOCVDebugOutput_;
