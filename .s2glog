@@ -41543,3 +41543,48 @@ By Alex Lindblad (alindblad@leapfrog.com) on 6/3/14 5:06 PM
 25,099 ms. (Cumulative: 24,702,752 ms)
 
 ----------------
+Revision 10,850 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,880 ms. (Cumulative: 24,727,742 ms)
+
+----------------
+Revision 10,851 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,783 ms. (Cumulative: 24,752,525 ms)
+
+----------------
+Revision 10,852 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,828 ms. (Cumulative: 24,777,369 ms)
+
+----------------
+Revision 10,853 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,695 ms. (Cumulative: 24,802,064 ms)
+
+----------------
+Revision 10,854 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,783 ms. (Cumulative: 24,826,847 ms)
+
+----------------
+Revision 10,855 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,746 ms. (Cumulative: 24,851,593 ms)
+
+----------------
+Revision 10,856 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+fix neon version of virtual touch algorithm
+
+By Alex Lindblad (alindblad@leapfrog.com) on 6/4/14 12:16 PM
+6 changed, 0 added, 0 deleted.
+25,145 ms. (Cumulative: 24,876,753 ms)
+
+----------------
