@@ -124,9 +124,9 @@ namespace Vision {
      * \brief Start begins the video capture process necessary for video processing
      * \param videoSurf Is an optional parameter.  If a video surface is passed in the
      * video capture will be displayed to this surfae
-     * \param dispatchSynchronously when set to true, the vision algorithm will be 
-     * dispatched on a separate thread to allow image processing to occur synchronously.
-     * The default behavior is asynchronous updates with the developer manually calling
+     * \param dispatchSynchronously DEPRECATED This input parameter is now deprecated as it
+     * is no longer necessary or adventageous to launch an asynchronous vision update.  In future
+     * releases of the API/SDK the signature of this method will change to reflect this.
      * the VNVisionMPI::Update method once per state update. 
      * \param displayRect an optional parameter that specifies the display rectangle the application
      * code intends to use.  If pass in, the vision library will use this as the basis for
@@ -136,13 +136,13 @@ namespace Vision {
      * \return kNoErr if started successfully, the appropriate error otherwise
      */
     LeapFrog::Brio::tErrType Start(LeapFrog::Brio::tVideoSurf* videoSurf = NULL,
-				   bool dispatchSynchronously = false,
+				   bool dispatchSynchronously = false, /* DEPRECATED */
 				   const LeapFrog::Brio::tRect *displayRect = NULL);
 
     /*!
-     * \breif Update performs one iteration of the current algorithm allowing
-     * the image processing to occur.  This should be called in the CGameState
-     * Update loop/
+     * **DEPRECATED**
+     * This method is now deprecated and is a no-op if called.  In a future relase of the SDK
+     * this method signature will be removed from the API.
      */
     void Update(void);
 

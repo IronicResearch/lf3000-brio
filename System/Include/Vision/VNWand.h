@@ -1,5 +1,8 @@
 #ifndef __INCLUDE_VISION_VNWAND_H__
 #define __INCLUDE_VISION_VNWAND_H__
+/////////////////////
+ /** DEPRECATED **/
+/////////////////////
 
 #include <Vision/VNVisionTypes.h>
 #include <boost/shared_ptr.hpp>
@@ -24,8 +27,9 @@ namespace Vision {
   /*!
    * \class VNWand
    *
-   * \brief The VNWand class is an object that represents a physical light wand
-   * used for interaction with the console via the VNWandTracking algorithm.  
+   * ** DEPRECATED **
+   * This class is deprecated as there is no means in the API to obtain or create an instance of 
+   * VNWand.  In a future SDK release this file will be removed from the API/SDK.
    */
   class VNWand {
   public:

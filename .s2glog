@@ -41528,3 +41528,18 @@ By Dave Milici (dmilici@leapfrog.com) on 5/30/14 3:55 PM
 24,917 ms. (Cumulative: 24,652,856 ms)
 
 ----------------
+Revision 10,848 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,703 ms. (Cumulative: 24,677,653 ms)
+
+----------------
+Revision 10,849 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+add comments deprecating method, parameter and file in vision
+
+By Alex Lindblad (alindblad@leapfrog.com) on 6/3/14 5:06 PM
+2 changed, 0 added, 0 deleted.
+25,099 ms. (Cumulative: 24,702,752 ms)
+
+----------------
