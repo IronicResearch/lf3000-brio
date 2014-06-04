@@ -103,6 +103,7 @@ namespace Hardware {
     void ZeroButtonData(void);
     void ZeroAnalogStickData(void);
     void ZeroVersionData(void);
+    void DeadZoneAnalogStickData(tHWAnalogStickData& theData);
 
   };
   

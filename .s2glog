@@ -41588,3 +41588,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 6/4/14 12:16 PM
 25,145 ms. (Cumulative: 24,876,753 ms)
 
 ----------------
+Revision 10,857 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Filter the analog stick data such that there is a central dead zone inside which reads zero, and an outer dead zzone such that the stick values always go to +/-1 for full range. (FWGLAS-584)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 6/4/14 3:53 PM
+2 changed, 0 added, 0 deleted.
+25,151 ms. (Cumulative: 24,901,999 ms)
+
+----------------

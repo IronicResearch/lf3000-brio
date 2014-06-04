@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <sys/time.h>
+#include <math.h>
 
 using namespace LeapFrog::Brio;
 
@@ -229,6 +230,35 @@ namespace Hardware {
     memcpy(&analogStickData_, &data, sizeof(data));
   }
 
+  void
+  HWControllerPIMPL::DeadZoneAnalogStickData(tHWAnalogStickData& theData) {
+	  const float centerDeadZoneThreshold = 0.07f;		//Specified by EE team
+	  const float outerDeadZoneThreshold = 0.81f;		//0.9^2
+	  const float ordinalThreshold = 0.344f;			//sin(22.5 degrees) * 0.9
+
+	  //Handle the dead zone in the center of the stick
+	  if(fabsf(theData.x) <= centerDeadZoneThreshold) theData.x = 0.0f;
+	  if(fabsf(theData.y) <= centerDeadZoneThreshold) theData.y = 0.0f;
+
+	  //Handle the dead zone at the outer edge of the stick
+	  float stickR2 = (theData.x * theData.x) + (theData.y * theData.y);
+	  if(stickR2 >= outerDeadZoneThreshold) {
+		  if(fabsf(theData.x) >= ordinalThreshold) {
+			  theData.x = (theData.x > 0.0f) ? 1.0f : -1.0f;
+		  }
+		  else {
+			  theData.x = 0.0f;
+		  }
+
+		  if(fabsf(theData.y) >= ordinalThreshold) {
+			  theData.y = (theData.y > 0.0f) ? 1.0f : -1.0f;
+		  }
+		  else {
+			  theData.y = 0.0f;
+		  }
+	  }
+  }
+
   tHWAnalogStickMode 
   HWControllerPIMPL::GetAnalogStickMode(void) const {
     return analogStickMPI_.GetAnalogStickMode(id_);
@@ -403,6 +433,7 @@ namespace Hardware {
 	  }
 #endif
 
+	  DeadZoneAnalogStickData(pModule->analogStickData_);
 	  if (memcmp(&stick, &analogStickData_, sizeof(tHWAnalogStickData)) != 0) {
 		  pModule->analogStickData_.time.seconds = time.tv_sec;
 		  pModule->analogStickData_.time.microSeconds = time.tv_usec;
