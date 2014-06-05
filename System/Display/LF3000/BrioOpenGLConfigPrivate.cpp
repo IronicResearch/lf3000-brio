@@ -497,6 +497,18 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 			glSetSpecialModeParam(11, fast_buffer_obj);//glSetSpecialModeParam(GL_SPECIAL_MODE_FAST_BUFFER_OBJ_EN, fast_buffer_obj);
 			fclose(flag);
 		}
+	} else {
+		FILE *flag = fopen("/tmp/ogl_fastbufferobj", "r");
+		if(!flag)
+			flag = fopen("/flags/ogl_fastbufferobj", "r");
+		if(flag)
+		{
+			int fast_buffer_obj;
+			fscanf(flag, "%d\n",&fast_buffer_obj);
+			glEnableSpecialMode(11);//glEnableSpecialMode(GL_SPECIAL_MODE_FAST_BUFFER_OBJ_EN);
+			glSetSpecialModeParam(11, fast_buffer_obj);//glSetSpecialModeParam(GL_SPECIAL_MODE_FAST_BUFFER_OBJ_EN, fast_buffer_obj);
+			fclose(flag);
+		}
 	}
 
 	glClearColorx(0, 0, 0, 0);
