@@ -41597,3 +41597,12 @@ By Lloyd Moore (lmoore@leapfrog.com) on 6/4/14 3:53 PM
 25,151 ms. (Cumulative: 24,901,999 ms)
 
 ----------------
+Revision 10,858 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-423.  Allow ogl_fastbufferobj flag to work in OpenGL ES 2.0.  I've managed to gain another 4 fps when set to 1000000.  May need some ajustments.
+
+By Minh Saelock (msaelock@leapfrog.com) on 6/4/14 5:44 PM
+1 changed, 0 added, 0 deleted.
+25,039 ms. (Cumulative: 24,927,131 ms)
+
+----------------
