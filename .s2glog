@@ -41658,3 +41658,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 6/5/14 11:28 PM
 24,801 ms. (Cumulative: 25,100,869 ms)
 
 ----------------
+Revision 10,866 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Set the return button mask for HWController::GetAvailbleButtons (FWGLAS-585)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 6/6/14 7:37 AM
+1 changed, 0 added, 0 deleted.
+25,186 ms. (Cumulative: 25,126,165 ms)
+
+----------------

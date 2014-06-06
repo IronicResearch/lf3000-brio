@@ -213,8 +213,7 @@ namespace Hardware {
 
   HWControllerButtonMask 
   HWControllerPIMPL::GetAvailableButtons(void) const {
-    //TODO: figure out which buttons are available
-    return 0;
+    return (kButtonA | kButtonB | kButtonMenu | kButtonHint);
   }
   
   /*!
