@@ -41606,3 +41606,46 @@ By Minh Saelock (msaelock@leapfrog.com) on 6/4/14 5:44 PM
 25,039 ms. (Cumulative: 24,927,131 ms)
 
 ----------------
+Revision 10,859 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,799 ms. (Cumulative: 24,952,023 ms)
+
+----------------
+Revision 10,860 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,705 ms. (Cumulative: 24,976,728 ms)
+
+----------------
+Revision 10,861 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,777 ms. (Cumulative: 25,001,520 ms)
+
+----------------
+Revision 10,862 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,850 ms. (Cumulative: 25,026,385 ms)
+
+----------------
+Revision 10,863 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,659 ms. (Cumulative: 25,051,044 ms)
+
+----------------
+Revision 10,864 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+DisplayMPI updated for support of 16bit RGB565 buffers.  Changed SetPixelFormat to only change width and height if the platform is not Glasgow.  This way Glasgow can still use 16bit buffers, and the flicker problem from changing the resolution doesn't occur.
+
+BrioOpenGLConfig now walks the available EGLConfigs to select the one that matches the RGBA depth that it asked for.  This is because 32bit RGBA8888 is the first EGLConfig when you ask for RGB565.
+
+InitOpenGL still setting 32bit buffers for now.
+
+By Minh Saelock (msaelock@leapfrog.com) on 6/5/14 5:34 PM
+2 changed, 0 added, 0 deleted.
+24,898 ms. (Cumulative: 25,075,958 ms)
+
+----------------
