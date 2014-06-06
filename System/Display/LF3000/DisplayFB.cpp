@@ -290,16 +290,16 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 			vinfo[n].nonstd |=  (1<<LF1000_NONSTD_PLANAR);
 		else
 			vinfo[n].nonstd &= ~(1<<LF1000_NONSTD_PLANAR);
-		// Change effective resolution for any onscreen context
-		vinfo[n].xres = width;
-		vinfo[n].yres = height;
 
 		/* Changing/Querying VSCREENINFO parameters dynamically for HDMI displays on Glasgow causes
 		   flickering and also improper scaling due to change in virtual resolutions but not changing
-		   physical screen resolutions. Returning early on to avoid changing any parameters for Glasgow.  
+		   physical screen resolutions. Don't change the resolution for Glasgow.
 		*/
-		if (isBlockAddr && GetPlatformName() == "GLASGOW")
-			return kNoErr;
+		if (isBlockAddr && GetPlatformName() != "GLASGOW") {
+			// Change effective resolution for any onscreen context
+			vinfo[n].xres = width;
+			vinfo[n].yres = height;
+		}
 
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOGET_VSCREENINFO, &vinfo[n]);
