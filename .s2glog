@@ -41649,3 +41649,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 6/5/14 5:34 PM
 24,898 ms. (Cumulative: 25,075,958 ms)
 
 ----------------
+Revision 10,865 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+cleanup wand sample app memory
+
+By Alex Lindblad (alindblad@leapfrog.com) on 6/5/14 11:28 PM
+1 changed, 0 added, 0 deleted.
+24,801 ms. (Cumulative: 25,100,869 ms)
+
+----------------
