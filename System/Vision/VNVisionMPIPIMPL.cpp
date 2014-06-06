@@ -129,6 +129,7 @@ namespace Vision {
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::DeleteTask(void) {
     if (surface_.buffer) delete surface_.buffer;
+    surface_.buffer = NULL;
 
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
     if (videoCapture_ != kInvalidVidCapHndl)
