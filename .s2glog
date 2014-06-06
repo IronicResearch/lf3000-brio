@@ -41667,3 +41667,19 @@ By Lloyd Moore (lmoore@leapfrog.com) on 6/6/14 7:37 AM
 25,186 ms. (Cumulative: 25,126,165 ms)
 
 ----------------
+Revision 10,867 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,778 ms. (Cumulative: 25,151,041 ms)
+
+----------------
+Revision 10,868 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Disable ControllerMPI profiling by default.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/6/14 1:30 PM
+1 changed, 0 added, 0 deleted.
+24,793 ms. (Cumulative: 25,175,834 ms)
+
+----------------
