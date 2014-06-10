@@ -41683,3 +41683,43 @@ By Dave Milici (dmilici@leapfrog.com) on 6/6/14 1:30 PM
 24,793 ms. (Cumulative: 25,175,834 ms)
 
 ----------------
+Revision 10,869 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,081 ms. (Cumulative: 25,201,024 ms)
+
+----------------
+Revision 10,870 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,035 ms. (Cumulative: 25,226,075 ms)
+
+----------------
+Revision 10,871 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,324 ms. (Cumulative: 25,251,399 ms)
+
+----------------
+Revision 10,872 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,210 ms. (Cumulative: 25,276,609 ms)
+
+----------------
+Revision 10,873 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,092 ms. (Cumulative: 25,301,717 ms)
+
+----------------
+Revision 10,874 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Compile CameraEventMessage classes with CameraEmulation module for runtime resolution. (SDK) 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/9/14 7:37 PM
+1 changed, 0 added, 0 deleted.
+25,190 ms. (Cumulative: 25,326,907 ms)
+
+----------------

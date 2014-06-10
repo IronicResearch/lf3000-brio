@@ -20,7 +20,7 @@ modsrcs		= Glob('*.cpp') + ['Platform/CameraCommon.cpp']
 usbmodsrcs	= ['Platform/CameraUSB.cpp']
 vipmodsrcs	= ['Platform/CameraVIP.cpp']
 nxpmodsrcs	= ['Platform/CameraNXP.cpp']
-emumodsrcs	= ['Platform/CameraEmul.cpp']
+emumodsrcs	= ['Platform/CameraEmul.cpp', 'PublicMPI/CameraMPI.cpp']
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['Utility', 'AudioMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI',
 					 'DebugMPI', 'MicrophoneMPI', 'USBDeviceMPI', 'jpeg', 'asound', 'sndfile',
