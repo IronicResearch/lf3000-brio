@@ -10,6 +10,7 @@
 #undef ENABLE_PROFILING	// #define to enable profiling BT callbacks
 #include <FlatProfiler.h>
 
+
 const LeapFrog::Brio::tEventType 
   kHWControllerListenerTypes[] = {LeapFrog::Brio::kAccelerometerDataChanged,
 				  LeapFrog::Brio::kOrientationChanged,
@@ -58,6 +59,7 @@ namespace Hardware {
 			pBTIO_SendCommand_ 	= (pFnSendCommand)dlsym(dll_, "BTIO_SendCommand");
 			pBTIO_QueryStatus_	= (pFnQueryStatus)dlsym(dll_, "BTIO_QueryStatus");
 			pBTIO_ScanDevices_	= (pFnScanForDevices)dlsym(dll_, "BTIO_ScanForDevices");
+			pBTIO_PairWithRemoteDevice_ = (pFnPairWithRemoteDevice)dlsym(dll_, "BTIO_PairWithRemoteDevice");
 			pBTIO_GetControllerVersion_ = (pFnGetControllerVersion)dlsym(dll_, "BTIO_GetControllerVersion");
 			pBTIO_EnableBluetoothDebug_ = (pFnEnableBluetoothDebug)dlsym(dll_, "BTIO_EnableBluetoothDebug");
 
@@ -327,10 +329,17 @@ namespace Hardware {
 
 	  debugMPI_.DebugOut(kDbgLvlImportant, "EnableControllerSync: Sync enabled changed %x\n", (unsigned)enable);
 
-	  HWControllerEventMessage newMsg(kHWControllerSyncFailure, 0);
-	  eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
-
-	  return kNoErr;
+	  int ret = pBTIO_PairWithRemoteDevice_(handle_);
+	  
+	  if (ret == 0){
+		HWControllerEventMessage newMsg(kHWControllerSyncSuccess, 0);
+          	eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
+		return kNoErr;
+	  } else {
+		HWControllerEventMessage newMsg(kHWControllerSyncFailure, 0);
+          	eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
+	  	return ret;
+	  }
   }
 
   HWController* 

@@ -41789,3 +41789,24 @@ By Alex Lindblad (alindblad@leapfrog.com) on 6/11/14 11:15 AM
 25,101 ms. (Cumulative: 25,578,125 ms)
 
 ----------------
+Revision 10,885 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,031 ms. (Cumulative: 25,603,265 ms)
+
+----------------
+Revision 10,886 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+ControllerMPI - Updated EnableControllerSync stub function to call the new pairing API in libBTIO to pair with the controller in sync mode (FWGLAS-628)
+
+NOTE : For the local brio build to be successful after pulling in these changes, your toolchain should be updated to include the updated btio headers and libraries. Please run the following commands to do that - 
+opkg-toolchain update     
+opkg-toolchain install btio-dev
+
+
+
+By Falguni Mirani (fmirani@leapfrog.com) on 6/11/14 12:08 PM
+2 changed, 0 added, 0 deleted.
+25,839 ms. (Cumulative: 25,629,104 ms)
+
+----------------
