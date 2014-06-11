@@ -97,6 +97,7 @@ namespace Hardware {
     pFnExit 				pBTIO_Exit_;
     pFnSendCommand			pBTIO_SendCommand_;
     pFnQueryStatus			pBTIO_QueryStatus_;
+    pFnPairWithRemoteDevice		pBTIO_PairWithRemoteDevice_;
     pFnScanForDevices		pBTIO_ScanDevices_;
     pFnGetControllerVersion	pBTIO_GetControllerVersion_;
     pFnEnableBluetoothDebug	pBTIO_EnableBluetoothDebug_;
