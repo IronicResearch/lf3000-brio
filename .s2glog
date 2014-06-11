@@ -41723,3 +41723,30 @@ By Dave Milici (dmilici@leapfrog.com) on 6/9/14 7:37 PM
 25,190 ms. (Cumulative: 25,326,907 ms)
 
 ----------------
+Revision 10,875 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,324 ms. (Cumulative: 25,352,340 ms)
+
+----------------
+Revision 10,876 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,240 ms. (Cumulative: 25,377,595 ms)
+
+----------------
+Revision 10,877 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,116 ms. (Cumulative: 25,402,711 ms)
+
+----------------
+Revision 10,878 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert svn -r10864 to fix Glasgow display contexts.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/11/14 9:50 AM
+1 changed, 0 added, 0 deleted.
+25,206 ms. (Cumulative: 25,427,917 ms)
+
+----------------
