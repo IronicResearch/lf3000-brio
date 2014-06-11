@@ -3214,10 +3214,9 @@ tCameraDevice CCameraModule::GetCurrentCamera()
 // surface access and locking
 tVideoSurf* 	CCameraModule::GetCaptureVideoSurface(const tVidCapHndl hndl)
 {
-#if !defined(EMULATION)
   if (camCtx_.frame) {
     static tVideoSurf surf; // FIXME
-    surf.format = (camCtx_.frame->pixelformat == kCaptureFormatRAWYUYV) ? kPixelFormatYUYV422 : kPixelFormatYUV420;
+    surf.format = kPixelFormatYUYV422; 
     surf.width  = camCtx_.frame->width;
     surf.height = camCtx_.frame->height;
     surf.buffer = (U8*)camCtx_.frame->data;
@@ -3225,9 +3224,6 @@ tVideoSurf* 	CCameraModule::GetCaptureVideoSurface(const tVidCapHndl hndl)
     return &surf;
   }
   return NULL;
-#else
-  return camCtx_.surf;
-#endif
 }
 Boolean 	CCameraModule::LockCaptureVideoSurface(const tVidCapHndl hndl)
 {

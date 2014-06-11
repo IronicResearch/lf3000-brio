@@ -160,6 +160,7 @@ namespace Vision {
 
 	  // the pixel format supported by the glasgow camera is RAWYUYV
 	  mode->pixelformat = LeapFrog::Brio::kCaptureFormatRAWYUYV;
+	  
 	  mode->fps_numerator = 1;
 	  // if we are in VGA mode set the fps to 30, if in QVGA mode set it to 60
 	  mode->fps_denominator = (frameProcessingWidth_ == kVNVGAWidth) ? 30 : 60;
@@ -451,6 +452,9 @@ namespace Vision {
 	    case LeapFrog::Brio::kPixelFormatYUYV422:
 	      cameraSurfaceMat = cv::Mat(cv::Size(surf->width, surf->height), CV_8UC2, surf->buffer, surf->pitch);
 	      break;
+	    case LeapFrog::Brio::kPixelFormatYUV420:
+	      cv::Mat tmp = cv::Mat(cv::Size(surf->width, surf->height), CV_8UC2, surf->buffer);
+	      cv::cvtColor(tmp, cameraSufaceMat, CV_YUV2RGB);
 	    default:
 	      assert( !"unsupported surface format");
 	    }
