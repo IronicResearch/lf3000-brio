@@ -47,12 +47,6 @@ namespace Hardware {
 
   private:
     const HWController* controller_;
-
-    /*!
-     * Explicitly disable copy semantics
-     */
-    HWControllerEventMessage(const HWControllerEventMessage&);
-    HWControllerEventMessage& operator=(const HWControllerEventMessage&);
   };
 
 } // namespace Hardware
