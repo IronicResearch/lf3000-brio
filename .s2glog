@@ -41835,3 +41835,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 6/12/14 12:24 AM
 25,131 ms. (Cumulative: 25,706,407 ms)
 
 ----------------
+Revision 10,894 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adds an event queue to the Controller MPI (FWGLAS-623)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 6/12/14 8:23 AM
+1 changed, 2 added, 0 deleted.
+25,229 ms. (Cumulative: 25,731,730 ms)
+
+----------------
