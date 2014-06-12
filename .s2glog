@@ -41810,3 +41810,28 @@ By Falguni Mirani (fmirani@leapfrog.com) on 6/11/14 12:08 PM
 25,839 ms. (Cumulative: 25,629,104 ms)
 
 ----------------
+Revision 10,887 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+26,519 ms. (Cumulative: 25,655,732 ms)
+
+----------------
+Revision 10,888 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,513 ms. (Cumulative: 25,681,245 ms)
+
+----------------
+Revision 10,889 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,890 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,891 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,892 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,893 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+enable wand tracking in emulation
+
+By Alex Lindblad (alindblad@leapfrog.com) on 6/12/14 12:24 AM
+1 changed, 0 added, 0 deleted.
+25,131 ms. (Cumulative: 25,706,407 ms)
+
+----------------

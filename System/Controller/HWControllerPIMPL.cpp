@@ -186,6 +186,18 @@ namespace Hardware {
   HWControllerPIMPL::IsVisible(void) const {
     wand_->IsVisible();
   }
+
+
+#if defined(EMULATION)
+
+  LeapFrog::Brio::tErrType
+  HWControllerPIMPL::StartTracking(HWControllerLEDColor color) {
+    SetLEDColor(LF::Hardware::kHWControllerLEDGreen);
+    visionMPI_.pimpl_->SetCurrentWand(wand_);
+    return kNoErr;
+  }
+
+#else
   
   LeapFrog::Brio::tErrType
   HWControllerPIMPL::StartTracking(HWControllerLEDColor color) {
@@ -197,6 +209,7 @@ namespace Hardware {
     return kHWControllerNotInWandModeForTracking;
   }
 
+#endif
   /*!
    * Button Related Methods
    */
