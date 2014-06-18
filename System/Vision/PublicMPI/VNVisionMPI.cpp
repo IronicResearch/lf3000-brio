@@ -107,7 +107,8 @@ namespace Vision {
   
   void
   VNVisionMPI::Update(void) {
-    pimpl_->Update();
+    // do nothing
+    // this method has been deprecated and will/should be removed
   }
 
   LeapFrog::Brio::Boolean

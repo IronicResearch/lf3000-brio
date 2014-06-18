@@ -32,7 +32,7 @@ namespace Vision {
     LeapFrog::Brio::tErrType Start(LeapFrog::Brio::tVideoSurf *surf,
 				   bool dispatchSynchronously,
 				   const LeapFrog::Brio::tRect *displayRect);
-    void Update(void);
+
     LeapFrog::Brio::Boolean Stop(void);
     LeapFrog::Brio::Boolean Pause(void);
     LeapFrog::Brio::Boolean Resume(void);
@@ -48,7 +48,6 @@ namespace Vision {
 
     bool visionAlgorithmRunning_;
     float frameProcessingRate_;
-    LeapFrog::Brio::tTaskHndl taskHndl_;
     VNAlgorithm* algorithm_;
     LeapFrog::Brio::tVideoSurf* videoSurf_;
     LeapFrog::Brio::tVidCapHndl videoCapture_;
@@ -60,7 +59,6 @@ namespace Vision {
 
   protected:
     LeapFrog::Brio::tErrType SetCameraFormat(void);
-    LeapFrog::Brio::tErrType DispatchVisionThread(void);
     void SetCoordinateTranslatorFrames(const LeapFrog::Brio::tRect *displayRect);
     LeapFrog::Brio::tErrType SetCurrentCamera(void);
     void BeginFrameProcessing(void);
@@ -74,8 +72,6 @@ namespace Vision {
 		       std::vector<const VNHotSpot*> &hotSpots);
     void RemoveHotSpotByID(const LeapFrog::Brio::U32 tag,
 			   std::vector<const VNHotSpot*> &hotSpots);
-
-    static void* CameraCaptureTask(void* args);
 
 #ifdef EMULATION
     void OpenCVDebug(void);
