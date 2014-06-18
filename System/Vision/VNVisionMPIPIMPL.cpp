@@ -27,11 +27,6 @@
 
 #define VN_USE_FAST_INTEGRAL_IMAGE 1
 
-#define VN_ORIGINAL_METHOD 0
-#define VN_FRAMES_FROM_EVENTS 1
-#define VN_FRAME_METHOD VN_FRAMES_FROM_EVENTS
-// #define VN_FRAME_METHOD VN_ORIGINAL_METHOD
-
 const LeapFrog::Brio::tEventType gVNEventKey[] = {LeapFrog::Brio::kCaptureFrameEvent};
 
 namespace LF {
@@ -39,7 +34,6 @@ namespace Vision {
 
   static const double kVNMillisecondsInASecond = 1000.0;
   static const float kVNDefaultFrameProcessingRate = 0.03125; // 32 fps
-  static const LeapFrog::Brio::U32 kVNDefaultStackSize = 134217728; // 128 MB in bytes
   static const LeapFrog::Brio::U32 kVNDefaultBufferSize = 2*kVNDefaultProcessingFrameWidth*kVNDefaultProcessingFrameHeight;
   static const std::string kVNQVGAFlagPath = "/flags/qvga_vision_mode";
   static const std::string kVNDebugOCVFlagPath = "/flags/showocv";
@@ -95,7 +89,6 @@ namespace Vision {
     dbg_(kGroupVision),
     visionAlgorithmRunning_(false),
     frameProcessingRate_(kVNDefaultFrameProcessingRate),
-    taskHndl_(LeapFrog::Brio::kInvalidTaskHndl),
     algorithm_(NULL),
     frameTime_(time(0)),
     frameCount_(0),
@@ -135,11 +128,6 @@ namespace Vision {
     if (videoCapture_ != kInvalidVidCapHndl)
       result = cameraMPI_.StopVideoCapture(videoCapture_);
     visionAlgorithmRunning_ = false;
-    if (taskHndl_ != LeapFrog::Brio::kInvalidTaskHndl) {
-      LeapFrog::Brio::CKernelMPI kernel;
-      if (kernel.CancelTask(taskHndl_) != kNoErr)
-	  result = static_cast<LeapFrog::Brio::Boolean>(false);
-    }
     return result;
   }
 
@@ -177,17 +165,6 @@ namespace Vision {
       }
     }
     return error;
-  }
-
-  LeapFrog::Brio::tErrType
-  VNVisionMPIPIMPL::DispatchVisionThread(void) {
-    LeapFrog::Brio::CKernelMPI kernel;
-    LeapFrog::Brio::tTaskProperties props;
-    props.TaskMainFcn = &VNVisionMPIPIMPL::CameraCaptureTask;
-    props.taskMainArgCount = 1;
-    props.pTaskMainArgValues = static_cast<LeapFrog::Brio::tPtr>(this);
-    props.stackSize = kVNDefaultStackSize;
-    return kernel.CreateTask(taskHndl_, props, NULL);
   }
 
   void
@@ -258,7 +235,7 @@ namespace Vision {
 
   LeapFrog::Brio::tErrType
   VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf *surf,
-			  bool dispatchSynchronously,
+			  bool dispatchSynchronously, // DEPRECATED...WILL REMOVE
 			  const LeapFrog::Brio::tRect *displayRect) {
     LeapFrog::Brio::tErrType error = kNoErr;
 
@@ -285,11 +262,7 @@ namespace Vision {
 	error = SetCameraFormat();
 
 	if (error == kNoErr) {
-#if VN_FRAME_METHOD == VN_FRAMES_FROM_EVENTS
 	  videoCapture_ = cameraMPI_.StartVideoCapture(videoSurf_, this);
-#elif VN_FRAME_METHOD == VN_ORIGINAL_METHOD
-	  videoCapture_ = cameraMPI_.StartVideoCapture(videoSurf_);
-#endif
 
 	  if (videoCapture_ == LeapFrog::Brio::kInvalidVidCapHndl) {
 	    error = kVNVideoCaptureFailed;
@@ -305,14 +278,6 @@ namespace Vision {
 				     frameProcessingHeight_);
 
 	    visionAlgorithmRunning_ = true;
-
-	    if (dispatchSynchronously) {
-	      error = DispatchVisionThread();
-
-	      if (error != kNoErr) {
-		DeleteTask();
-	      }
-	    }
 	  }
 	}
       }
@@ -406,192 +371,78 @@ namespace Vision {
     }
   }
 
-#if VN_FRAME_METHOD == VN_FRAMES_FROM_EVENTS
-
-  void
-  VNVisionMPIPIMPL::Update(void) {
-    // do nothing
-  }
-
-#elif VN_FRAME_METHOD == VN_ORIGINAL_METHOD
-
-  void
-  VNVisionMPIPIMPL::Update(void) {
-
-    PROF_BLOCK_START("Update");
-    if (visionAlgorithmRunning_) {
-      PROF_BLOCK_START("beginFrameProcessing");
-      BeginFrameProcessing();
-      PROF_BLOCK_END();
-
-      if (!cameraMPI_.IsVideoCapturePaused(videoCapture_) ) {
-
-	PROF_BLOCK_START("lockVideoSurface");
-	LeapFrog::Brio::Boolean locked = cameraMPI_.LockCaptureVideoSurface(videoCapture_);
-	PROF_BLOCK_END();
-
-	if (locked) {
-	  PROF_BLOCK_START("videoSurf");
-	  LeapFrog::Brio::tVideoSurf *surf = cameraMPI_.GetCaptureVideoSurface(videoCapture_);
-	  PROF_BLOCK_END();
-
-	  //dbg_.Assert(surf != 0, "VNVisionMPIPIMPL::Update - failed getting video surface.\n");
-	  if (!surf) return;
-
-	  unsigned char *buffer = surf->buffer;
-
-	  //dbg_.Assert(buffer && algorithm_, "VNVisionMPIPIMPL::Update - invalid buffer or algorithm.\n");
-	  if (buffer && algorithm_) {
-
-	    // create a camera surface cv::Mat
-	    cv::Mat cameraSurfaceMat;
-	    switch(surf->format) {
-	    case LeapFrog::Brio::kPixelFormatRGB888:
-	      cameraSurfaceMat = cv::Mat(cv::Size(surf->width, surf->height), CV_8UC3, surf->buffer);
-	      break;
-	    case LeapFrog::Brio::kPixelFormatYUYV422:
-	      cameraSurfaceMat = cv::Mat(cv::Size(surf->width, surf->height), CV_8UC2, surf->buffer, surf->pitch);
-	      break;
-	    case LeapFrog::Brio::kPixelFormatYUV420:
-	      cv::Mat tmp = cv::Mat(cv::Size(surf->width, surf->height), CV_8UC2, surf->buffer);
-	      cv::cvtColor(tmp, cameraSufaceMat, CV_YUV2RGB);
-	    default:
-	      assert( !"unsupported surface format");
-	    }
-
-	    PROF_BLOCK_START("algorithm");
-	    algorithm_->Execute(cameraSurfaceMat, outputImg_);
-	    PROF_BLOCK_END();
-
-#ifdef EMULATION
-	    if (showOCVDebugOutput_)
-	      OpenCVDebug();
-#endif
-
-	    PROF_BLOCK_START("triggering");
-	    TriggerHotSpots();
-	    PROF_BLOCK_END();
-
-	    ++frameCount_;
-	    if (frameCount_ % 30 == 0) {
-	      std::cout << "FPS = " << frameCount_ / ((float)(time(0) - frameTime_)) << std::endl;
-	    }
-	  }
-	}
-	cameraMPI_.UnLockCaptureVideoSurface(videoCapture_);
-      } else {
-	dbg_.DebugOut(kDbgLvlCritical, "VNVisionMPIPIMPL - no frame.\n");
-      }
-      PROF_BLOCK_START("endFrameProcessing");
-      EndFrameProcessing();
-      PROF_BLOCK_END();
-    }
-    PROF_BLOCK_END();
-  }
-#endif // VN_FRAME_METHOD
-
-
-#if VN_FRAME_METHOD == VN_FRAMES_FROM_EVENTS
   LeapFrog::Brio::tEventStatus
   VNVisionMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msg) {
-
-    const LeapFrog::Brio::CCameraEventMessage *cemsg =
-      dynamic_cast<const LeapFrog::Brio::CCameraEventMessage*>(&msg);
-    if (cemsg) {
-      if (cemsg->GetEventType() == LeapFrog::Brio::kCaptureFrameEvent) {
-
-	LeapFrog::Brio::tCaptureFrameMsg frameMsg = cemsg->data.framed;
-	LeapFrog::Brio::tVideoSurf *surf = cameraMPI_.GetCaptureVideoSurface(frameMsg.vhndl);
-
-	if (surf) {
-	  unsigned char *buffer = surf->buffer;
-	  if (buffer) {
-	    //BeginFrameProcessing();
-
-	    PROF_BLOCK_START("Vision::Update");
-
-	    surface_.width  = surf->width;
-	    surface_.height = surf->height;
-	    surface_.pitch  = surf->pitch;
-	    surface_.format = surf->format;
-	    memcpy(surface_.buffer,
-		   buffer,
-		   surface_.height * surface_.pitch);
-
-
-	    // create a camera surface cv::Mat
-	    switch(surf->format) {
-	    case LeapFrog::Brio::kPixelFormatRGB888:
-	      cameraSurfaceMat_ = cv::Mat(cv::Size(surface_.width, surface_.height),
-					 CV_8UC3,
-					 surface_.buffer);
-	      break;
-	    case LeapFrog::Brio::kPixelFormatYUYV422:
-	      cameraSurfaceMat_ = cv::Mat(cv::Size(surface_.width, surface_.height),
-					 CV_8UC2,
-					 surface_.buffer,
-					 surface_.pitch);
-	      break;
-	    default:
-	      assert( !"unsupported surface format" );
-	    }
-
-
-
-	    PROF_BLOCK_START("algorithm");
-	    algorithm_->Execute(cameraSurfaceMat_, outputImg_);
-	    PROF_BLOCK_END();
-
+    if (algorithm_) {
+      const LeapFrog::Brio::CCameraEventMessage *cemsg =
+	dynamic_cast<const LeapFrog::Brio::CCameraEventMessage*>(&msg);
+      if (cemsg) {
+	if (cemsg->GetEventType() == LeapFrog::Brio::kCaptureFrameEvent) {
+	  
+	  LeapFrog::Brio::tCaptureFrameMsg frameMsg = cemsg->data.framed;
+	  LeapFrog::Brio::tVideoSurf *surf = cameraMPI_.GetCaptureVideoSurface(frameMsg.vhndl);
+	  
+	  if (surf) {
+	    unsigned char *buffer = surf->buffer;
+	    if (buffer) {
+	      //BeginFrameProcessing();
+	      
+	      PROF_BLOCK_START("Vision::Update");
+	      
+	      surface_.width  = surf->width;
+	      surface_.height = surf->height;
+	      surface_.pitch  = surf->pitch;
+	      surface_.format = surf->format;
+	      memcpy(surface_.buffer,
+		     buffer,
+		     surface_.height * surface_.pitch);
+	      
+	      
+	      // create a camera surface cv::Mat
+	      switch(surf->format) {
+	      case LeapFrog::Brio::kPixelFormatRGB888:
+		cameraSurfaceMat_ = cv::Mat(cv::Size(surface_.width, surface_.height),
+					    CV_8UC3,
+					    surface_.buffer);
+		break;
+	      case LeapFrog::Brio::kPixelFormatYUYV422:
+		cameraSurfaceMat_ = cv::Mat(cv::Size(surface_.width, surface_.height),
+					    CV_8UC2,
+					    surface_.buffer,
+					    surface_.pitch);
+		break;
+	      default:
+		assert( !"unsupported surface format" );
+	      }
+	      
+	      PROF_BLOCK_START("algorithm");
+	      algorithm_->Execute(cameraSurfaceMat_, outputImg_);
+	      PROF_BLOCK_END();
 
 #if defined(EMULATION)
-	    OpenCVDebug();
+	      OpenCVDebug();
 #endif
-
-	    TriggerHotSpots();
-
-	    PROF_BLOCK_END();
-
-	    ++frameCount_;
-	    if (frameCount_ % 30 == 0) {
-	      std::cout << "FPS = " << frameCount_ / ((float)(time(0) - frameTime_)) << std::endl;
+	      
+	      TriggerHotSpots();
+	      
+	      PROF_BLOCK_END();
+	      
+	      ++frameCount_;
+	      if (frameCount_ % 30 == 0) {
+		std::cout << "FPS = " << frameCount_ / ((float)(time(0) - frameTime_)) << std::endl;
+	      }
+	      
+	      //EndFrameProcessing();
 	    }
-
-	    //EndFrameProcessing();
 	  }
+	  return LeapFrog::Brio::kEventStatusOKConsumed;
 	}
-	return LeapFrog::Brio::kEventStatusOKConsumed;
+      } else {
+	std::cout << "DID NOT successfully cast the msg\n";
       }
-    } else {
-      std::cout << "DID NOT successfully cast the msg\n";
     }
     return LeapFrog::Brio::kEventStatusOK;
   }
-
-#elif VN_FRAME_METHOD == VN_ORIGINAL_METHOD
-
-  LeapFrog::Brio::tEventStatus
-  VNVisionMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msg) {
-    // do nothing
-    return LeapFrog::Brio::kEventStatusOK;
-  }
-
-
-#endif // VN_FRAME_METHOD
-
-  void*
-  VNVisionMPIPIMPL::CameraCaptureTask(void* args) {
-    VNVisionMPIPIMPL* me = static_cast<VNVisionMPIPIMPL*>(args);
-    me->visionAlgorithmRunning_ = true;
-
-    while (true) {
-      me->Update();
-    }
-
-    me->visionAlgorithmRunning_ = false;
-    //TODO: investigate what we should return here.
-    return NULL;
-  }
-
 
 #ifdef EMULATION
   void

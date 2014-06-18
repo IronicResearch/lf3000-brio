@@ -41844,3 +41844,30 @@ By Lloyd Moore (lmoore@leapfrog.com) on 6/12/14 8:23 AM
 25,229 ms. (Cumulative: 25,731,730 ms)
 
 ----------------
+Revision 10,895 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,228 ms. (Cumulative: 25,757,067 ms)
+
+----------------
+Revision 10,896 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,861 ms. (Cumulative: 25,781,928 ms)
+
+----------------
+Revision 10,897 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,941 ms. (Cumulative: 25,806,885 ms)
+
+----------------
+Revision 10,898 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+fix vision crash when no algorithm set, remove deprecated code, API unchanged
+
+By Alex Lindblad (alindblad@leapfrog.com) on 6/18/14 1:58 PM
+3 changed, 0 added, 0 deleted.
+25,087 ms. (Cumulative: 25,831,972 ms)
+
+----------------
