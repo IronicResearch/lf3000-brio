@@ -23,13 +23,13 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 		LF::Vision::VNWandTrackerPIMPL* wandTrackerPIMPL_;
 		LF::Vision::VNWand* wand_;
 		LF::Vision::VNInputParameters inputParameters_;
-		cv::Mat yuyvImages[3];
-	
+		cv::Mat yuyvImages[6];
+
 	friend LF::Vision::VNWand::VNWand();
-	
+
 	public:
-	
-	
+
+
 
 		//------------------------------------------------------------------------
 		void setUp(void) {
@@ -45,29 +45,121 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 		}
 
 		//------------------------------------------------------------------------
+		void testWandHueAccuracy() {
+			PRINT_TEST_NAME();
+
+			// static HWControllerLEDColor kHWControllerLEDGreen    = (1 << 0);
+		  // static HWControllerLEDColor kHWControllerLEDRed      = (1 << 1);
+		  // static HWControllerLEDColor kHWControllerLEDBlue     = (1 << 2);
+		  // static HWControllerLEDColor kHWControllerLEDOrange   = (1 << 3);
+		  // static HWControllerLEDColor kHWControllerLEDTurqoise = (1 << 4);
+		  // static HWControllerLEDColor kHWControllerLEDPurple   = (1 << 5);
+
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-green-yuy2.raw", yuyvImages[0] );
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-red-yuy2.raw", yuyvImages[1] );
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-blue-yuy2.raw", yuyvImages[2] );
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-orange-yuy2.raw", yuyvImages[3] );
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-turqoise-yuy2.raw", yuyvImages[4] );
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-purple-yuy2.raw", yuyvImages[5] );
+
+			PROF_RESET();
+
+
+			cv::Mat output(VN_TEST_WIDTH, VN_TEST_HEIGHT, CV_8U);
+
+			/// test green
+			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDGreen);
+			wandTrackerPIMPL_->Execute( yuyvImages[0], output);
+
+			if( wand_->IsVisible() ) {
+				LF::Vision::VNPoint p = wand_->GetLocation();
+				printf("found geen wand location: %d, %d\n", p.x, p.y);
+			} else {
+				printf("\aERROR could not find wand\n");
+			}
+
+
+			/// test red
+			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDRed);
+			wandTrackerPIMPL_->Execute( yuyvImages[1], output);
+
+			if( wand_->IsVisible() ) {
+				LF::Vision::VNPoint p = wand_->GetLocation();
+				printf("found red wand location: %d, %d\n", p.x, p.y);
+			} else {
+				printf("\aERROR could not find wand\n");
+			}
+
+			/// test blue
+			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDBlue);
+			wandTrackerPIMPL_->Execute( yuyvImages[2], output);
+
+			if( wand_->IsVisible() ) {
+				LF::Vision::VNPoint p = wand_->GetLocation();
+				printf("found blue wand location: %d, %d\n", p.x, p.y);
+			} else {
+				printf("\aERROR could not find wand\n");
+			}
+
+			/// test orange
+			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDOrange);
+			wandTrackerPIMPL_->Execute( yuyvImages[3], output);
+
+			if( wand_->IsVisible() ) {
+				LF::Vision::VNPoint p = wand_->GetLocation();
+				printf("found orange wand location: %d, %d\n", p.x, p.y);
+			} else {
+				printf("\aERROR could not find wand\n");
+			}
+
+			/// test turqoise
+			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDTurqoise);
+			wandTrackerPIMPL_->Execute( yuyvImages[4], output);
+
+			if( wand_->IsVisible() ) {
+				LF::Vision::VNPoint p = wand_->GetLocation();
+				printf("found turqoise wand location: %d, %d\n", p.x, p.y);
+			} else {
+				printf("\aERROR could not find wand\n");
+			}
+
+			/// test purple
+			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDPurple);
+			wandTrackerPIMPL_->Execute( yuyvImages[5], output);
+
+			if( wand_->IsVisible() ) {
+				LF::Vision::VNPoint p = wand_->GetLocation();
+				printf("found purple wand location: %d, %d\n", p.x, p.y);
+			} else {
+				printf("\aERROR could not find wand\n");
+			}
+
+		}
+
+
+
+		//------------------------------------------------------------------------
 		void testWandPerformance() {
 			PRINT_TEST_NAME();
-			
-			loadYUYVImage( "/LF/Base/Brio/bin/data/wand1-640x480.yuyv", yuyvImages[0] );
-			loadYUYVImage( "/LF/Base/Brio/bin/data/wand2-640x480.yuyv", yuyvImages[1] );
-			loadYUYVImage( "/LF/Base/Brio/bin/data/wand3-640x480.yuyv", yuyvImages[2] );
+
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-green-yuy2.raw", yuyvImages[0] );
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-green-yuy2.raw", yuyvImages[1] );
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-green-yuy2.raw", yuyvImages[2] );
 
 
 			PROF_RESET();
 
-			cv::Mat input(VN_TEST_WIDTH,VN_TEST_HEIGHT,CV_8UC3);
 			cv::Mat output(VN_TEST_WIDTH, VN_TEST_HEIGHT, CV_8U);
 			for( int i = 0; i < 250; i++ ) {
-				cv::randu(input, cv::Scalar::all(0), cv::Scalar::all(255));
 				PROF_BLOCK_START("Wand Execute");
 				wandTrackerPIMPL_->Execute( yuyvImages[rand() % 2], output);
 				PROF_BLOCK_END();
 			}
 
 			PROF_PRINT_REPORT();
- 
+
 		}
-	
+
 		void loadYUYVImage( const char* path, cv::Mat& mat ) {
 			mat.create( cv::Size(VN_TEST_WIDTH, VN_TEST_HEIGHT), CV_8UC2);
 			std::ifstream file;
@@ -83,7 +175,7 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 				file.read(buffer,sz);
 				mat.data = (unsigned char*)buffer;
 				file.close();
-				
+
 				//mat has only ptr to data, not copy, so no delete [] buffer;
 				TS_TRACE("Succesfully loaded test YUYV image...");
 			} else {
@@ -93,6 +185,5 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 
 
 
-		
-};
 
+};

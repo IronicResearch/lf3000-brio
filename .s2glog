@@ -41871,3 +41871,18 @@ By Alex Lindblad (alindblad@leapfrog.com) on 6/18/14 1:58 PM
 25,087 ms. (Cumulative: 25,831,972 ms)
 
 ----------------
+Revision 10,899 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,927 ms. (Cumulative: 25,857,009 ms)
+
+----------------
+Revision 10,900 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+add wand unit tests to insure color tracking for each color
+
+By Alex Lindblad (alindblad@leapfrog.com) on 6/19/14 12:32 AM
+1 changed, 9 added, 0 deleted.
+25,847 ms. (Cumulative: 25,882,872 ms)
+
+----------------
