@@ -307,7 +307,6 @@ namespace Hardware {
 		tButtonData2 buttonData = msg.GetButtonState2();
 		if(buttonData.buttonTransition & kButtonSync)
 		{
-			if( buttonData.buttonState & kButtonSync ) EnableControllerSync(true);
 			return LeapFrog::Brio::kEventStatusOK;
 		}
         controller->pimpl_->SetButtonData(msg.GetButtonState2());

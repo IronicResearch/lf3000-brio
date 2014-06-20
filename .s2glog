@@ -41886,3 +41886,14 @@ By Alex Lindblad (alindblad@leapfrog.com) on 6/19/14 12:32 AM
 25,847 ms. (Cumulative: 25,882,872 ms)
 
 ----------------
+Revision 10,901 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+HWControllerMPI (FWGLAS-711) : removing the function call for EnableControllerSync(bool enable) from HWControllerMPI. The plan is the UI/titles would call this API on Sync button press and if ready to pair.
+We do have this implemented in Dynabug for us to test so this is no more required to be called from ControllerMPI. 
+
+
+By Falguni Mirani (fmirani@leapfrog.com) on 6/20/14 2:27 PM
+1 changed, 0 added, 0 deleted.
+25,157 ms. (Cumulative: 25,908,138 ms)
+
+----------------
