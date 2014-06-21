@@ -41897,3 +41897,12 @@ By Falguni Mirani (fmirani@leapfrog.com) on 6/20/14 2:27 PM
 25,157 ms. (Cumulative: 25,908,138 ms)
 
 ----------------
+Revision 10,902 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+ARIA-535.  Modified VNVisionMPIPIMPL::DeleteTask to delete surface_.buffer after stopping the Camera instead of before.  Depending on timing, it was possible that the VisionMPI was was in the middle of writing to this buffer (i.e. YUYV2RGB) from the Event thread at the moment the surface was deleted.
+
+By Minh Saelock (msaelock@leapfrog.com) on 6/20/14 5:58 PM
+1 changed, 0 added, 0 deleted.
+25,017 ms. (Cumulative: 25,933,249 ms)
+
+----------------
