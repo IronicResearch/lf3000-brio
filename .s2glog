@@ -41906,3 +41906,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 6/20/14 5:58 PM
 25,017 ms. (Cumulative: 25,933,249 ms)
 
 ----------------
+Revision 10,903 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-732.  Updated CameraCommon's helper function GrabFrame, now writes to the resulting tFrameInfo the actual capture format that was used (rather than leave it as MJPEG).  Now RenderFrame does not mistakenly believe that we captured a MJPEG format frame.  This prevents problems with SnapFrame and GetFrame.
+
+By Minh Saelock (msaelock@leapfrog.com) on 6/24/14 4:40 PM
+1 changed, 0 added, 0 deleted.
+25,054 ms. (Cumulative: 25,958,397 ms)
+
+----------------
