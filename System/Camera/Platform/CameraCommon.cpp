@@ -2829,6 +2829,7 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	frame->size		= camCtx_.buf.bytesused;
 	frame->width	= camCtx_.fmt.fmt.pix.width;
 	frame->height	= camCtx_.fmt.fmt.pix.height;
+	frame->pixelformat = camCtx_.mode.pixelformat;
 	frame->data		= kernel_.Malloc(frame->size);
 	memcpy(frame->data, camCtx_.bufs[camCtx_.buf.index], frame->size);
 
