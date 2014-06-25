@@ -55,17 +55,17 @@ namespace Vision {
       hsvMin_ = kVNWandBlueMin;
       hsvMax_ = kVNWandBlueMax;
 
-    } else if (color == LF::Hardware::kHWControllerLEDOrange) {
-      hsvMin_ = kVNWandOrangeMin;
-      hsvMax_ = kVNWandOrangeMax;
+    } else if (color == LF::Hardware::kHWControllerLEDYellow) {
+      hsvMin_ = kVNWandYellowMin;
+      hsvMax_ = kVNWandYellowMax;
 
-    } else if (color == LF::Hardware::kHWControllerLEDTurqoise) {
-      hsvMin_ = kVNWandTurqoiseMin;
-      hsvMax_ = kVNWandTurqoiseMax;
+    } else if (color == LF::Hardware::kHWControllerLEDCyan) {
+      hsvMin_ = kVNWandCyanMin;
+      hsvMax_ = kVNWandCyanMax;
 
-    } else if (color == LF::Hardware::kHWControllerLEDPurple) {
-      hsvMin_ = kVNWandPurpleMin;
-      hsvMax_ = kVNWandPurpleMax;
+    } else if (color == LF::Hardware::kHWControllerLEDMagenta) {
+      hsvMin_ = kVNWandMagentaMin;
+      hsvMax_ = kVNWandMagentaMax;
 
     } else {
       // this handles kHWControllerLEDOff case

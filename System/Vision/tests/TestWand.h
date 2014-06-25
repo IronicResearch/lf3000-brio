@@ -51,16 +51,16 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 			// static HWControllerLEDColor kHWControllerLEDGreen    = (1 << 0);
 		  // static HWControllerLEDColor kHWControllerLEDRed      = (1 << 1);
 		  // static HWControllerLEDColor kHWControllerLEDBlue     = (1 << 2);
-		  // static HWControllerLEDColor kHWControllerLEDOrange   = (1 << 3);
-		  // static HWControllerLEDColor kHWControllerLEDTurqoise = (1 << 4);
-		  // static HWControllerLEDColor kHWControllerLEDPurple   = (1 << 5);
+		  // static HWControllerLEDColor kHWControllerLEDYellow   = (1 << 3);
+		  // static HWControllerLEDColor kHWControllerLEDCyan     = (1 << 4);
+		  // static HWControllerLEDColor kHWControllerLEDMagenta  = (1 << 5);
 
 			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-green-yuy2.raw", yuyvImages[0] );
 			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-red-yuy2.raw", yuyvImages[1] );
 			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-blue-yuy2.raw", yuyvImages[2] );
-			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-orange-yuy2.raw", yuyvImages[3] );
-			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-turqoise-yuy2.raw", yuyvImages[4] );
-			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-purple-yuy2.raw", yuyvImages[5] );
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-yellow-yuy2.raw", yuyvImages[3] );
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-cyan-yuy2.raw", yuyvImages[4] );
+			loadYUYVImage( "/LF/Base/Brio/bin/data/lf-wand-test-640x480-magenta-yuy2.raw", yuyvImages[5] );
 
 			PROF_RESET();
 
@@ -101,35 +101,35 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 				printf("\aERROR could not find wand\n");
 			}
 
-			/// test orange
-			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDOrange);
+			/// test yellow
+			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDYellow);
 			wandTrackerPIMPL_->Execute( yuyvImages[3], output);
 
 			if( wand_->IsVisible() ) {
 				LF::Vision::VNPoint p = wand_->GetLocation();
-				printf("found orange wand location: %d, %d\n", p.x, p.y);
+				printf("found yellow wand location: %d, %d\n", p.x, p.y);
 			} else {
 				printf("\aERROR could not find wand\n");
 			}
 
-			/// test turqoise
-			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDTurqoise);
+			/// test cyan
+			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDCyan);
 			wandTrackerPIMPL_->Execute( yuyvImages[4], output);
 
 			if( wand_->IsVisible() ) {
 				LF::Vision::VNPoint p = wand_->GetLocation();
-				printf("found turqoise wand location: %d, %d\n", p.x, p.y);
+				printf("found cyan wand location: %d, %d\n", p.x, p.y);
 			} else {
 				printf("\aERROR could not find wand\n");
 			}
 
-			/// test purple
-			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDPurple);
+			/// test magenta
+			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDMagenta);
 			wandTrackerPIMPL_->Execute( yuyvImages[5], output);
 
 			if( wand_->IsVisible() ) {
 				LF::Vision::VNPoint p = wand_->GetLocation();
-				printf("found purple wand location: %d, %d\n", p.x, p.y);
+				printf("found magenta wand location: %d, %d\n", p.x, p.y);
 			} else {
 				printf("\aERROR could not find wand\n");
 			}

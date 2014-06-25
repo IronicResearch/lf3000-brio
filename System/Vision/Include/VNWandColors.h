@@ -24,17 +24,17 @@ namespace Vision {
   static const cv::Scalar kVNWandBlueMin(141, 0, 77);
   static const cv::Scalar kVNWandBlueMax(177, 255, 255);
 
-  // orange LED
-  static const cv::Scalar kVNWandOrangeMin(0, 0, 77);
-  static const cv::Scalar kVNWandOrangeMax(36, 255, 255);
+  // yellow LED
+  static const cv::Scalar kVNWandYellowMin(0, 0, 77);
+  static const cv::Scalar kVNWandYellowMax(36, 255, 255);
 
-  // turqoise LED
-  static const cv::Scalar kVNWandTurqoiseMin(77, 0, 77);
-  static const cv::Scalar kVNWandTurqoiseMax(113, 255, 255);
+  // cyan LED
+  static const cv::Scalar kVNWandCyanMin(77, 0, 77);
+  static const cv::Scalar kVNWandCyanMax(113, 255, 255);
 
-  // purple LED
-  static const cv::Scalar kVNWandPurpleMin(0, 0, 77);
-  static const cv::Scalar kVNWandPurpleMax(36, 255, 255);
+  // magenta LED
+  static const cv::Scalar kVNWandMagentaMin(0, 0, 77);
+  static const cv::Scalar kVNWandMagentaMax(36, 255, 255);
 
 } // namespace Vision
 } // namespace LF

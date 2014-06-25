@@ -154,9 +154,9 @@ namespace Hardware {
     return (kHWControllerLEDGreen    |
 	    kHWControllerLEDRed      |
 	    kHWControllerLEDBlue     |
-	    kHWControllerLEDOrange   |
-	    kHWControllerLEDTurqoise |
-	    kHWControllerLEDPurple);
+	    kHWControllerLEDYellow   |
+	    kHWControllerLEDCyan     |
+	    kHWControllerLEDMagenta);
   }
   
   HWControllerLEDColor 

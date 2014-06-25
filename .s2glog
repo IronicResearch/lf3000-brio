@@ -41915,3 +41915,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 6/24/14 4:40 PM
 25,054 ms. (Cumulative: 25,958,397 ms)
 
 ----------------
+Revision 10,904 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+LED color names changed to yellow, cyan, magenta.  (Firmware Glasgow FWGLAS-578)
+
+By mharris (mharris@leapfrog.com) on 6/25/14 3:15 PM
+5 changed, 2 added, 2 deleted.
+25,534 ms. (Cumulative: 25,984,025 ms)
+
+----------------
