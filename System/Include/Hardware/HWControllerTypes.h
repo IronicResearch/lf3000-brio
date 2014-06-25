@@ -84,9 +84,9 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::
   static HWControllerLEDColor kHWControllerLEDGreen    = (1 << 0);
   static HWControllerLEDColor kHWControllerLEDRed      = (1 << 1);
   static HWControllerLEDColor kHWControllerLEDBlue     = (1 << 2);
-  static HWControllerLEDColor kHWControllerLEDOrange   = (1 << 3);
-  static HWControllerLEDColor kHWControllerLEDTurqoise = (1 << 4);
-  static HWControllerLEDColor kHWControllerLEDPurple   = (1 << 5);
+  static HWControllerLEDColor kHWControllerLEDYellow   = (1 << 3);
+  static HWControllerLEDColor kHWControllerLEDCyan     = (1 << 4);
+  static HWControllerLEDColor kHWControllerLEDMagenta = (1 << 5);
 
   /*!
    * Default LED color for light tracking
