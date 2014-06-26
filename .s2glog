@@ -41942,3 +41942,24 @@ By Alex Lindblad (alindblad@leapfrog.com) on 6/25/14 11:11 PM
 25,074 ms. (Cumulative: 26,034,838 ms)
 
 ----------------
+Revision 10,907 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,908 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,909 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,910 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,911 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,912 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,913 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,875 ms. (Cumulative: 26,059,856 ms)
+
+----------------
+Revision 10,914 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Removed broadcast of legacy accelerometer and button events in HWController (FWGLAS-707)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 6/26/14 2:33 PM
+2 changed, 0 added, 0 deleted.
+25,145 ms. (Cumulative: 26,085,001 ms)
+
+----------------
