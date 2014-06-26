@@ -16,7 +16,7 @@ const LeapFrog::Brio::tEventType
 				  LeapFrog::Brio::kOrientationChanged,
 				  LeapFrog::Brio::kButtonStateChanged,
 				  LeapFrog::Brio::kTimerFiredEvent,
-//				  LF::Hardware::kHWAllControllerEvents,
+				  LF::Hardware::kHWAllControllerEvents,
 				  LF::Hardware::kHWAnalogStickDataChanged};
 
 static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 128; // async

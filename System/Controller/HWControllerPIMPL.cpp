@@ -462,27 +462,15 @@ namespace Hardware {
 	  if (memcmp(&accel, &accelerometerData_, sizeof(tAccelerometerData)) != 0) {
 		  pModule->accelerometerData_.time.seconds = time.tv_sec;
 		  pModule->accelerometerData_.time.microSeconds = time.tv_usec;
-		  if (pModule->id_ > 0) {
-		      HWControllerEventMessage cmsg(kHWControllerAccelerometerDataChanged, pModule->controller_);
-			  pModule->eventMPI_.PostEvent(cmsg, 128);
-		  }
-		  else {
-			  CAccelerometerMessage xmsg(pModule->accelerometerData_);
-			  pModule->eventMPI_.PostEvent(xmsg, 128);
-		  }
+		  HWControllerEventMessage cmsg(kHWControllerAccelerometerDataChanged, pModule->controller_);
+		  pModule->eventMPI_.PostEvent(cmsg, 128);
 	  }
 
 	  if (pModule->buttonData_.buttonTransition) {
 		  pModule->buttonData_.time.seconds = time.tv_sec;
 		  pModule->buttonData_.time.microSeconds = time.tv_usec;
-		  if (pModule->id_ > 0) {
-		      HWControllerEventMessage cmsg(kHWControllerButtonStateChanged, pModule->controller_);
-			  pModule->eventMPI_.PostEvent(cmsg, 128);
-		  }
-		  else {
-			  CButtonMessage bmsg(pModule->buttonData_);
-			  pModule->eventMPI_.PostEvent(bmsg, 128);
-		  }
+		  HWControllerEventMessage cmsg(kHWControllerButtonStateChanged, pModule->controller_);
+		  pModule->eventMPI_.PostEvent(cmsg, 128);
 	  }
   }
 
