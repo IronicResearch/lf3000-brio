@@ -20,7 +20,9 @@ namespace Vision {
    */
 #define VN_VISION_EVENTS		\
   (kVNHotSpotTriggeredEvent)		\
-  (kVNHotSpotTriggerChangeEvent)
+  (kVNHotSpotTriggerChangeEvent)	\
+  (kVNHotSpotGroupTriggeredEvent)	\
+  (kVNHotSpotGroupTriggerChangeEvent)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, LeapFrog::Brio::FirstEvent(LeapFrog::Brio::kGroupVision), VN_VISION_EVENTS)
 

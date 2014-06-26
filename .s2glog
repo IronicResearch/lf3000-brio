@@ -41924,3 +41924,12 @@ By mharris (mharris@leapfrog.com) on 6/25/14 3:15 PM
 25,534 ms. (Cumulative: 25,984,025 ms)
 
 ----------------
+Revision 10,905 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+add group notification for hot spots, update HTT to use
+
+By Alex Lindblad (alindblad@leapfrog.com) on 6/25/14 11:07 PM
+18 changed, 0 added, 0 deleted.
+25,537 ms. (Cumulative: 26,009,671 ms)
+
+----------------

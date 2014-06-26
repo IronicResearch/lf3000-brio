@@ -24,6 +24,8 @@
 #undef VN_PROFILE
 #include <VNProfiler.h>
 #include <VNIntegralImage.h>
+#include <Vision/VNVisionTypes.h>
+#include <Vision/VNHotSpotEventMessage.h>
 
 #define VN_USE_FAST_INTEGRAL_IMAGE 1
 
@@ -138,7 +140,6 @@ return result;
 
     if (error == kNoErr) {
       error = kVNCameraDoesNotSupportRequiredVisionFormat;
-      std::cout << "Number of camera modes is " << modeList.size() << std::endl;
       for (tCaptureModes::iterator it = modeList.begin(); it != modeList.end(); ++it) {
 	LeapFrog::Brio::tCaptureMode* mode = *it;
 
@@ -211,17 +212,14 @@ return result;
     displayFrame.bottom = 0;
 
     if (displayRect) {
-      std::cout << "Setting scaling based on dispayRect\n";
       displayFrame.left = displayRect->left;
       displayFrame.right = displayRect->right;
       displayFrame.top = displayRect->top;
       displayFrame.bottom = displayRect->bottom;
     } else if (videoSurf_) {
-      std::cout << "Setting scaling based on videoSurf\n";
       displayFrame.right = videoSurf_->width;
       displayFrame.bottom = videoSurf_->height;
     } else {
-      std::cout << "Setting scaling based on screen size\n";
       const LeapFrog::Brio::tDisplayScreenStats*
 	screenStats = LeapFrog::Brio::CDisplayMPI().GetScreenStats(0);
       if (screenStats) {
@@ -312,14 +310,24 @@ return result;
 
   void
   VNVisionMPIPIMPL::TriggerHotSpots(void) {
-    static int numCalls = 0;
+    std::vector<const VNHotSpot*> triggeredHotSpots;
+    std::vector<const VNHotSpot*> changedHotSpots;
 
+    bool wasTriggered = false;
     PROF_BLOCK_START("triggerHotSpots");
     for (std::vector<const VNHotSpot*>::iterator hs = hotSpots_.begin();
 	 hs != hotSpots_.end();
 	 ++hs) {
+      const VNHotSpot* hotSpot = *hs;
+      wasTriggered = hotSpot->IsTriggered();
 
-      (*hs)->Trigger(outputImg_);
+      hotSpot->Trigger(outputImg_);
+    
+      // add hot spot to appropriate group of hot spots
+      if (hotSpot->IsTriggered())
+	triggeredHotSpots.push_back(hotSpot);
+      if (wasTriggered != hotSpot->IsTriggered())
+	changedHotSpots.push_back(hotSpot);
     }
     PROF_BLOCK_END();
 
@@ -327,11 +335,13 @@ return result;
       PROF_BLOCK_START("integralImage");
       // compute integral image
       static cv::Mat integralImg;
+
 #if VN_USE_FAST_INTEGRAL_IMAGE
 	  LF::Vision::IntegralImage(outputImg_, integralImg);
 #else
       cv::integral(outputImg_, integralImg);
 #endif
+
       VNHotSpotPIMPL::SetIntegralImage(&integralImg);
       PROF_BLOCK_END();
 
@@ -339,15 +349,31 @@ return result;
       for (std::vector<const VNHotSpot*>::iterator rhs = rectHotSpots_.begin();
 	   rhs != rectHotSpots_.end();
 	   ++rhs) {
-	(*rhs)->Trigger(outputImg_);
+
+	const VNHotSpot* hotSpot = *rhs;
+	wasTriggered = hotSpot->IsTriggered();
+
+	hotSpot->Trigger(outputImg_);
+
+	// add hot spot to appropriate group of hot spots
+	if (hotSpot->IsTriggered())
+	  triggeredHotSpots.push_back(hotSpot);
+	if (wasTriggered != hotSpot->IsTriggered())
+	  changedHotSpots.push_back(hotSpot);
       }
       PROF_BLOCK_END();
     }
     VNHotSpotPIMPL::SetIntegralImage(NULL);
 
-    ++numCalls;
-    if (numCalls == 1000)
-      PROF_PRINT_REPORT();
+    if (triggeredHotSpots.size() > 0) {
+      VNHotSpotEventMessage msg(LF::Vision::kVNHotSpotGroupTriggeredEvent, triggeredHotSpots);
+      eventMPI_.PostEvent(msg, 0);
+    }
+
+    if (changedHotSpots.size() > 0) {
+      VNHotSpotEventMessage msg(LF::Vision::kVNHotSpotGroupTriggerChangeEvent, changedHotSpots);
+      eventMPI_.PostEvent(msg, 0);
+    }
   }
 
   void

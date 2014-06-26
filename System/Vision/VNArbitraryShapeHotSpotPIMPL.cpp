@@ -95,7 +95,7 @@ namespace Vision {
   }
 
   void
-  VNArbitraryShapeHotSpotPIMPL::Trigger(cv::Mat &input, const VNHotSpot *hs) {
+  VNArbitraryShapeHotSpotPIMPL::UpdateTrigger(cv::Mat &input, const VNHotSpot *hs) {
     if (trigger_ != NULL) {
       if (input.rows > 0 && input.cols > 0) {
 	// obtain the rectangle that is the intersection of the current rect_ and

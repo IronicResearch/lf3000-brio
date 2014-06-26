@@ -1,6 +1,8 @@
 #ifndef __VISION_INCLUDE_VNHOTSPOTEVENTMESSAGEPIMPL_H__
 #define __VISION_INCLUDE_VNHOTSPOTEVENTMESSAGEPIMPL_H__
 
+#include <vector>
+
 namespace LF {
 namespace Vision {
   class VNHotSpot;
@@ -8,10 +10,12 @@ namespace Vision {
   class VNHotSpotEventMessagePIMPL {
   public:
     VNHotSpotEventMessagePIMPL(const VNHotSpot* hotSpot);
+    VNHotSpotEventMessagePIMPL(std::vector<const VNHotSpot*> hotSpots);
     
     ~VNHotSpotEventMessagePIMPL(void);
     
     const VNHotSpot* hotSpot_;
+    std::vector<const VNHotSpot*> hotSpots_;    
   };
 
 }

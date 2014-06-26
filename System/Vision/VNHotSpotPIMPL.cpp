@@ -3,6 +3,7 @@
 #include <Vision/VNWand.h>
 #include <VNWandPIMPL.h>
 #include <VNVisionMPIPIMPL.h>
+#include <Vision/VNHotSpotEventMessage.h>
 
 LeapFrog::Brio::U32 LF::Vision::VNHotSpotPIMPL::instanceCounter_ = 0;
 
@@ -26,7 +27,23 @@ namespace Vision {
 
   void
   VNHotSpotPIMPL::Trigger(cv::Mat &input, const VNHotSpot *hs) {
-    // do nothing in this method
+    bool wasTriggered = isTriggered_;
+    UpdateTrigger(input, hs);
+    
+    // send appropriate notifications
+    if (isTriggered_) {
+      VNHotSpotEventMessage msg(LF::Vision::kVNHotSpotTriggeredEvent, hs);
+      eventMPI_.PostEvent(msg, 0);
+    }
+    if (wasTriggered != isTriggered_) {
+      VNHotSpotEventMessage msg(LF::Vision::kVNHotSpotTriggerChangeEvent, hs);
+      eventMPI_.PostEvent(msg, 0);
+    }
+  }
+
+  void
+  VNHotSpotPIMPL::UpdateTrigger(cv::Mat &input, const VNHotSpot *hs) {
+    // do nothing
   }
 
   bool

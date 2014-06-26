@@ -5,6 +5,7 @@
 #include <Vision/VNVisionTypes.h>
 #include <SystemTypes.h>
 #include <opencv2/opencv.hpp>
+#include <EventMPI.h>
 
 namespace LF {
 namespace Vision {
@@ -16,6 +17,7 @@ namespace Vision {
     virtual ~VNHotSpotPIMPL(void);
     
     virtual void Trigger(cv::Mat &input, const VNHotSpot *hs);
+    virtual void UpdateTrigger(cv::Mat &input, const VNHotSpot *hs);
 
     /*!
      * methods for triggers to call to facilitate triggering
@@ -43,6 +45,7 @@ namespace Vision {
   protected:
     int numPixels_;
     static cv::Mat *integralImage_;
+    LeapFrog::Brio::CEventMPI eventMPI_;
 
   private:
     static LeapFrog::Brio::U32 instanceCounter_;
