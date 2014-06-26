@@ -41933,3 +41933,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 6/25/14 11:07 PM
 25,537 ms. (Cumulative: 26,009,671 ms)
 
 ----------------
+Revision 10,906 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+fix error in computing wand light location, decrease false positives
+
+By Alex Lindblad (alindblad@leapfrog.com) on 6/25/14 11:11 PM
+1 changed, 0 added, 0 deleted.
+25,074 ms. (Cumulative: 26,034,838 ms)
+
+----------------

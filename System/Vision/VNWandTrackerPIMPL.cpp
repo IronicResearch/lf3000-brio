@@ -379,7 +379,7 @@ namespace Vision {
         for (int i = 0; i < numX; ++i) {
             for (int j = 0; j < numY; ++j) {
                 cv::Rect rect(i*dx, j*dy, dx, dy);
-                int val = integralSum(integral, rect);
+                int val = integralSum(integral, rect)/255;
                 if (val > 0.7*dx*dy) {
                     sum += val;
                     sumX += val*(i*dx+xMid);
