@@ -92,7 +92,7 @@ namespace Vision {
   }
 
   void
-  VNCircleHotSpotPIMPL::Trigger(cv::Mat &input, const VNHotSpot *hs) {
+  VNCircleHotSpotPIMPL::UpdateTrigger(cv::Mat &input, const VNHotSpot *hs) {
     if (trigger_ != NULL) {
       if (input.rows > 0 && input.cols > 0) {
 	// clip the rect to the intersection of the rect and 

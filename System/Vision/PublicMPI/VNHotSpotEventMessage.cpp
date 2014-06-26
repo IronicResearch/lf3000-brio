@@ -11,6 +11,13 @@ namespace Vision {
     
   }
   
+  VNHotSpotEventMessage::VNHotSpotEventMessage(LeapFrog::Brio::tEventType type,
+					       std::vector<const VNHotSpot*> hotSpots) :
+    LeapFrog::Brio::IEventMessage(type),
+    pimpl_(new VNHotSpotEventMessagePIMPL(hotSpots)) {
+    
+  }
+  
   VNHotSpotEventMessage::~VNHotSpotEventMessage(void) {
     
   }
@@ -18,6 +25,11 @@ namespace Vision {
   const VNHotSpot*
   VNHotSpotEventMessage::GetHotSpot(void) const {
     return pimpl_->hotSpot_;
+  }
+  
+  std::vector<const VNHotSpot*>
+  VNHotSpotEventMessage::GetHotSpots(void) const {
+    return pimpl_->hotSpots_;
   }
   
   LeapFrog::Brio::U16

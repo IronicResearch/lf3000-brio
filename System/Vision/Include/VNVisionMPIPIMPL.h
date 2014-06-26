@@ -5,6 +5,7 @@
 #include <KernelTypes.h>
 #include <CameraMPI.h>
 #include <DebugMPI.h>
+#include <EventMPI.h>
 #include <KernelMPI.h>
 #include <Vision/VNVisionTypes.h>
 
@@ -83,6 +84,7 @@ namespace Vision {
     VNVisionMPIPIMPL& operator=(const VNVisionMPIPIMPL&);
 
     LeapFrog::Brio::CDebugMPI dbg_;
+    LeapFrog::Brio::CEventMPI eventMPI_;
 
     // all rectangular hot spots
     std::vector<const VNHotSpot*> rectHotSpots_;

@@ -2,6 +2,7 @@
 #define __INCLUDE_VISION_VNHOTSPOTEVENTMESSAGE_H__
 
 #include <EventMessage.h>
+#include <vector>
 #include <boost/shared_ptr.hpp>
 
 namespace LF {
@@ -21,12 +22,24 @@ namespace Vision {
   class VNHotSpotEventMessage : public LeapFrog::Brio::IEventMessage {
   public:
     /*!
-     * \brief Constructor
+     * \brief Constructor with single hot spot.  This constructor 
+     * will be called if the event listener is listening for either a 
+     * kVNHotSpotTriggeredEvent or kVNHotSpotTriggerChangeEvent event.
      * \param type the event types that will trigger message generation
      * \param hotSpot the VNHotSpot associated with the event type
      */
     VNHotSpotEventMessage(LeapFrog::Brio::tEventType type,
 			  const VNHotSpot* hotSpot);
+
+    /*!
+     * \brief Constructor with vector of hot spots.  This constructor will
+     * be called if the event listener is listening for either a
+     * kVNHotSpotGroupTriggeredEvent or a kVNHotSpotGroupTriggerChangeEvent event.
+     * \param type the event types that will trigger message generation
+     * \param hotSpots the vector of VNHotSpots associated with the event type
+     */
+    VNHotSpotEventMessage(LeapFrog::Brio::tEventType type,
+			  std::vector<const VNHotSpot*> hotSpots);
 
     /*!
      * \brief Default destructor
@@ -38,6 +51,12 @@ namespace Vision {
      * \return A const pointer to the VNHotSpot associated with this message
      */
     const VNHotSpot* GetHotSpot(void) const;
+
+    /*!
+     * \brief GetHotSpots returns the vector of VNHotSpot associated with this message
+     * \return A vector of const pointers to the the VNHotSpots associated with this message
+     */
+    std::vector<const VNHotSpot*> GetHotSpots(void) const;
 
     /*!
      * \brief GetSizeInBytes is used to determine the overall size of the message

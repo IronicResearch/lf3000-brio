@@ -92,7 +92,7 @@ namespace Vision {
 
 
   void
-  VNRectHotSpotPIMPL::Trigger(cv::Mat &input, const VNHotSpot *hs) {
+  VNRectHotSpotPIMPL::UpdateTrigger(cv::Mat &input, const VNHotSpot *hs) {
     if (trigger_ != NULL) {
       if (input.rows > 0 && input.cols > 0) {
 	cv::Rect clippedRect = ClipRectToImage(input);

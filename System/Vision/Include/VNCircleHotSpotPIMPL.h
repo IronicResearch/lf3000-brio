@@ -13,7 +13,7 @@ namespace Vision {
 			 float radius);
     virtual ~VNCircleHotSpotPIMPL(void);
     
-    virtual void Trigger(cv::Mat &input, const VNHotSpot *hs);
+    virtual void UpdateTrigger(cv::Mat &input, const VNHotSpot *hs);
 
     // the assumption is the point passed in, p, is in vision coordinates
     // as this methos is exclusively used from inside the Vision library

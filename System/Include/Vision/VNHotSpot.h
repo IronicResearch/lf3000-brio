@@ -54,8 +54,6 @@ namespace Vision {
      */
     virtual ~VNHotSpot(void);
 
-
-
     /*!
      * \brief Trigger 
      * \param input a cv::Mat reference containing the CV_8U binary image

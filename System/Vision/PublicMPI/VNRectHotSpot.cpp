@@ -1,8 +1,6 @@
 #include <Vision/VNRectHotSpot.h>
 #include <VNRectHotSpotPIMPL.h>
 #include <Vision/VNVisionTypes.h>
-#include <Vision/VNHotSpotEventMessage.h>
-#include <EventMPI.h>
 
 #include <stdio.h>
 
@@ -37,20 +35,7 @@ namespace Vision {
   
   void
   VNRectHotSpot::Trigger(cv::Mat &input) const {
-    bool wasTriggered = pimpl_->isTriggered_;
     pimpl_->Trigger(input, this);
-    
-    // send appropriate notifications
-    if (pimpl_->isTriggered_) {
-      VNHotSpotEventMessage msg(LF::Vision::kVNHotSpotTriggeredEvent, this);
-      LeapFrog::Brio::CEventMPI eventMPI;
-      eventMPI.PostEvent(msg, 0);
-    }
-    if (wasTriggered != pimpl_->isTriggered_) {
-      VNHotSpotEventMessage msg(LF::Vision::kVNHotSpotTriggerChangeEvent, this);
-      LeapFrog::Brio::CEventMPI eventMPI;
-      eventMPI.PostEvent(msg, 0);
-    }
   }
   
 } // namespace Vision
