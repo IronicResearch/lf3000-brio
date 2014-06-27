@@ -41963,3 +41963,12 @@ By Lloyd Moore (lmoore@leapfrog.com) on 6/26/14 2:33 PM
 25,145 ms. (Cumulative: 26,085,001 ms)
 
 ----------------
+Revision 10,915 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix for JIRA FWGLAS-343 ControllerMPI::SetAnalogStickDeadZone doesn't work: 1) If dead zone is not set, it is defaulted to 0.07f. 2) If dead zone is set to 0.0f, dead zone filter will be disabled and raw data from analog stick will be passed through
+
+By pjusuf (pjusuf@leapfrog.com) on 6/27/14 4:35 PM
+2 changed, 0 added, 0 deleted.
+26,415 ms. (Cumulative: 26,111,510 ms)
+
+----------------

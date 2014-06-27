@@ -13,7 +13,7 @@ namespace Hardware {
   }
   
   HWAnalogStickPIMPL::HWAnalogStickPIMPL(void) 
-    :	deadZone_(0.0f)
+    :	deadZone_(0.07f) //Specified by EE team
     ,	mode_(kHWAnalogStickModeAnalog)
   {
   }
