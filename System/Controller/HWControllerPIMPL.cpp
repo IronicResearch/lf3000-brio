@@ -244,9 +244,14 @@ namespace Hardware {
 
   void
   HWControllerPIMPL::DeadZoneAnalogStickData(tHWAnalogStickData& theData) {
-	  const float centerDeadZoneThreshold = 0.07f;		//Specified by EE team
+	  const float centerDeadZoneThreshold = GetAnalogStickDeadZone();
 	  const float outerDeadZoneThreshold = 0.81f;		//0.9^2
 	  const float ordinalThreshold = 0.344f;			//sin(22.5 degrees) * 0.9
+
+	  //When dead zone is set to 0.0f, disable dead zone filter and pass through raw data from analog stick
+	  if(centerDeadZoneThreshold == 0.0f) {
+		  return;
+	  }
 
 	  //Handle the dead zone in the center of the stick
 	  if(fabsf(theData.x) <= centerDeadZoneThreshold) theData.x = 0.0f;
