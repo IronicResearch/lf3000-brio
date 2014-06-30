@@ -19,6 +19,8 @@ namespace Vision {
   static const LeapFrog::Brio::U16 kVNDefaultProcessingFrameWidth = kVNVGAWidth;
   static const LeapFrog::Brio::U16 kVNDefaultProcessingFrameHeight = kVNVGAHeight;
 
+  void* VisionTask(void* pctx);
+
   class VNHotSpot;
   class VNAlgorithm;
   class VNWand;
@@ -105,6 +107,12 @@ namespace Vision {
 #if defined(EMULATION)
     bool showOCVDebugOutput_;
 #endif
+
+    friend void* VisionTask(void*);
+    volatile bool isFramePending_;
+    volatile bool isThreadRunning_;
+    LeapFrog::Brio::tTaskHndl hndlVisionThread_;
+
   };
 
 }

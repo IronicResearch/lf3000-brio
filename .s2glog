@@ -41972,3 +41972,14 @@ By pjusuf (pjusuf@leapfrog.com) on 6/27/14 4:35 PM
 26,415 ms. (Cumulative: 26,111,510 ms)
 
 ----------------
+Revision 10,916 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-735: Create separate vision processing thread to decouple from camera & event threads.
+Decouples FPS rates in camera vs vision threads, and allows flexibility for async vs sync events.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/30/14 3:49 PM
+2 changed, 0 added, 0 deleted.
+25,727 ms. (Cumulative: 26,137,347 ms)
+
+----------------

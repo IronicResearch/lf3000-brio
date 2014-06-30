@@ -28,6 +28,7 @@
 #include <Vision/VNHotSpotEventMessage.h>
 
 #define VN_USE_FAST_INTEGRAL_IMAGE 1
+#define VN_USE_IMAGE_PROCESS_THREAD 1
 
 const LeapFrog::Brio::tEventType gVNEventKey[] = {LeapFrog::Brio::kCaptureFrameEvent};
 
@@ -96,7 +97,10 @@ namespace Vision {
     frameCount_(0),
     frameProcessingWidth_(kVNDefaultProcessingFrameWidth),
     frameProcessingHeight_(kVNDefaultProcessingFrameHeight),
-    currentWand_(NULL) {
+    currentWand_(NULL),
+    isFramePending_(false),
+    isThreadRunning_(false),
+    hndlVisionThread_(kInvalidTaskHndl) {
 
 #if defined(EMULATION)
     showOCVDebugOutput_ = false;
@@ -127,6 +131,16 @@ namespace Vision {
     if (videoCapture_ != kInvalidVidCapHndl)
       result = cameraMPI_.StopVideoCapture(videoCapture_);
     visionAlgorithmRunning_ = false;
+
+#if VN_USE_IMAGE_PROCESS_THREAD
+    // Signal vision thread to exit
+    if (hndlVisionThread_ != kInvalidTaskHndl) {
+       void* retval = NULL;
+       isThreadRunning_ = false;
+       kernelMPI_.JoinTask(hndlVisionThread_, retval);
+       hndlVisionThread_ = kInvalidTaskHndl;
+    }
+#endif
 
     if (surface_.buffer) delete surface_.buffer;
     surface_.buffer = NULL;
@@ -276,6 +290,17 @@ return result;
 				     frameProcessingHeight_);
 
 	    visionAlgorithmRunning_ = true;
+
+#if VN_USE_IMAGE_PROCESS_THREAD
+	    // Create separate vision processing thread to decouple from camera & event threads
+	    tTaskProperties	prop;
+	    prop.TaskMainFcn        = VisionTask;
+	    prop.taskMainArgCount   = 1;
+	    prop.pTaskMainArgValues = this;
+	    prop.stackSize          = 4194304;
+	    isThreadRunning_        = true;
+	    kernelMPI_.CreateTask( hndlVisionThread_, prop, NULL );
+#endif
 	  }
 	}
       }
@@ -397,6 +422,44 @@ return result;
     }
   }
 
+#if VN_USE_IMAGE_PROCESS_THREAD
+  void* VisionTask(void* pctx)
+  {
+	VNVisionMPIPIMPL* pthis = (VNVisionMPIPIMPL*)pctx;
+
+	while (pthis->isThreadRunning_) {
+
+	  if (pthis->isFramePending_) {
+	      PROF_BLOCK_START("Vision::Task");
+
+	      PROF_BLOCK_START("algorithm");
+	      pthis->algorithm_->Execute(pthis->cameraSurfaceMat_, pthis->outputImg_);
+	      PROF_BLOCK_END();
+
+	      pthis->isFramePending_ = false;
+
+#if defined(EMULATION)
+	      OpenCVDebug();
+#endif
+	      
+	      pthis->TriggerHotSpots();
+
+	      PROF_BLOCK_END();
+	      
+	      ++pthis->frameCount_;
+	      if (pthis->frameCount_ % 30 == 0) {
+	          std::cout << "FPS = " << pthis->frameCount_ / ((float)(time(0) - pthis->frameTime_)) << std::endl;
+	      }
+	  } else {
+	      pthis->kernelMPI_.TaskSleep(1); // yield
+	  }
+
+	}
+	
+	return pctx; // optional
+  }
+#endif
+
   LeapFrog::Brio::tEventStatus
   VNVisionMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msg) {
     if (algorithm_) {
@@ -441,6 +504,10 @@ return result;
 		assert( !"unsupported surface format" );
 	      }
 	      
+#if VN_USE_IMAGE_PROCESS_THREAD
+	      // Signal vision thread to process frame
+	      isFramePending_ = true;
+#else
 	      PROF_BLOCK_START("algorithm");
 	      algorithm_->Execute(cameraSurfaceMat_, outputImg_);
 	      PROF_BLOCK_END();
@@ -457,7 +524,7 @@ return result;
 	      if (frameCount_ % 30 == 0) {
 		std::cout << "FPS = " << frameCount_ / ((float)(time(0) - frameTime_)) << std::endl;
 	      }
-	      
+#endif
 	      //EndFrameProcessing();
 	    }
 	  }
