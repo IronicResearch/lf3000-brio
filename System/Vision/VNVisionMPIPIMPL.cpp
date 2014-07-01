@@ -439,7 +439,7 @@ return result;
 	      pthis->isFramePending_ = false;
 
 #if defined(EMULATION)
-	      OpenCVDebug();
+	      pthis->OpenCVDebug();
 #endif
 	      
 	      pthis->TriggerHotSpots();
