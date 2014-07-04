@@ -95,6 +95,8 @@ namespace Hardware {
     LeapFrog::Brio::U32 updateDivider_;
     LeapFrog::Brio::U32 updateCounter_;
 
+    LeapFrog::Brio::U8 has100KOhmJoystick_;
+
     LeapFrog::Brio::tAccelerometerData accelerometerData_;
     LeapFrog::Brio::tButtonData2 buttonData_;
     LF::Hardware::tHWAnalogStickData analogStickData_;
