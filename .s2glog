@@ -41993,3 +41993,40 @@ By Dave Milici (dmilici@leapfrog.com) on 7/1/14 4:43 PM
 25,228 ms. (Cumulative: 26,162,685 ms)
 
 ----------------
+Revision 10,918 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,993 ms. (Cumulative: 26,187,772 ms)
+
+----------------
+Revision 10,919 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,053 ms. (Cumulative: 26,212,825 ms)
+
+----------------
+Revision 10,920 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-787.
+
+Implement linearization for production 100K Ohm joysticks so that when
+they are at rest, they will be inside the dead zone.  Without it, they
+will drift to the upper right.
+
+Note that linearization will mess up non-production joysticks, so you
+will need to disable it if you have a non-100K joystick, like most
+FEPs.  Without linearization, they don't drift.  With it on, they now
+drift to the lower right.
+
+Linearization is by default on.  You can disable it with 'touch
+/flags/joystick-10k' which indicates you don't have the 100K Ohm
+joystick.  (Hmmm, perhaps that should have been
+/flags/joystick-not-100K???)
+
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 7/4/14 2:57 PM
+2 changed, 0 added, 0 deleted.
+25,147 ms. (Cumulative: 26,237,972 ms)
+
+----------------

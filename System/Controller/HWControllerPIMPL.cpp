@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <sys/time.h>
+#include <sys/stat.h>
 #include <math.h>
 
 using namespace LeapFrog::Brio;
@@ -26,6 +27,7 @@ namespace Hardware {
     updateRate_(kHWControllerDefaultRate),
     updateDivider_(1),
     updateCounter_(0),
+    has100KOhmJoystick_(1), // Production defaults to 100K; FEP had 10K
     debugMPI_(kGroupController) {
 #ifdef DEBUG
 	debugMPI_.SetDebugLevel(kDbgLvlVerbose);
@@ -34,6 +36,18 @@ namespace Hardware {
     wand_ = new Vision::VNWand();
     assert(wand_);
     ZeroAllData();
+
+    // Read flag to override default joystick type
+    struct stat st;
+    if (stat("/flags/joystick-100k", &st) == 0) { /* file exists */
+        has100KOhmJoystick_ = 1;
+	debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL found /flags/joystick-100k\n");
+    }
+    if (stat("/flags/joystick-10k", &st) == 0) { /* file exists */
+	has100KOhmJoystick_ = 0;
+	debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL found /flags/joystick-10k\n");
+    }
+    debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL setting has100KOhmJoystick_ to %d\n", has100KOhmJoystick_);
   }
 
   HWControllerPIMPL::~HWControllerPIMPL(void) {
@@ -251,6 +265,24 @@ namespace Hardware {
 	  //When dead zone is set to 0.0f, disable dead zone filter and pass through raw data from analog stick
 	  if(centerDeadZoneThreshold == 0.0f) {
 		  return;
+	  }
+
+	  //Compensate for a systematic non-linear error in joystick
+	  // data on production (100K Ohm) joysticks which would cause
+	  // the joystick rest position to be outside of the EE
+	  // specified center dead zone.  Right now, the average
+	  // production joystick X and Y at rest are (142-128)/128 =
+	  // +0.109.  We want a function f(raw)=cooked, where
+	  // f(-1)=-1, f(0.109)=0, f(1)=1.  We can fit a quadratic
+	  // through these three points, ax^2+bx+c. We get a=0.110699,
+	  // b=1, c=-a, which simplifies things a bit.  We can use
+	  // f(x)=a(x^2-1)+x
+
+#define LINEARIZE_100K(x) 0.110699*(x*x-1)+x
+ 	  if (has100KOhmJoystick_)
+	  {
+		  theData.x = LINEARIZE_100K(theData.x);
+		  theData.y = LINEARIZE_100K(theData.y);
 	  }
 
 	  //Handle the dead zone in the center of the stick
