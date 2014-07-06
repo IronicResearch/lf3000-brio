@@ -42030,3 +42030,12 @@ By Rob Dowling (rdowling@leapfrog.com) on 7/4/14 2:57 PM
 25,147 ms. (Cumulative: 26,237,972 ms)
 
 ----------------
+Revision 10,921 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+fix wand color detection unit tests
+
+By Alex Lindblad (alindblad@leapfrog.com) on 7/6/14 4:17 PM
+1 changed, 0 added, 0 deleted.
+25,034 ms. (Cumulative: 26,263,100 ms)
+
+----------------

@@ -65,12 +65,12 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 			PROF_RESET();
 
 
-			cv::Mat output(VN_TEST_WIDTH, VN_TEST_HEIGHT, CV_8U);
+			cv::Mat output(cv::Size(VN_TEST_WIDTH, VN_TEST_HEIGHT), CV_8U);
 
 			/// test green
 			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDGreen);
 			wandTrackerPIMPL_->Execute( yuyvImages[0], output);
-
+			saveGrayImage( "/tmp/green-output.gray", output );
 			if( wand_->IsVisible() ) {
 				LF::Vision::VNPoint p = wand_->GetLocation();
 				printf("found geen wand location: %d, %d\n", p.x, p.y);
@@ -82,6 +82,7 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 			/// test red
 			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDRed);
 			wandTrackerPIMPL_->Execute( yuyvImages[1], output);
+			saveGrayImage( "/tmp/red-output.gray", output );
 
 			if( wand_->IsVisible() ) {
 				LF::Vision::VNPoint p = wand_->GetLocation();
@@ -93,7 +94,7 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 			/// test blue
 			wand_->pimpl_->SetColor(LF::Hardware::kHWControllerLEDBlue);
 			wandTrackerPIMPL_->Execute( yuyvImages[2], output);
-
+			saveGrayImage( "/tmp/blue-output.gray", output );
 			if( wand_->IsVisible() ) {
 				LF::Vision::VNPoint p = wand_->GetLocation();
 				printf("found blue wand location: %d, %d\n", p.x, p.y);
@@ -149,7 +150,7 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 
 			PROF_RESET();
 
-			cv::Mat output(VN_TEST_WIDTH, VN_TEST_HEIGHT, CV_8U);
+			cv::Mat output(cv::Size(VN_TEST_WIDTH, VN_TEST_HEIGHT), CV_8U);
 			for( int i = 0; i < 250; i++ ) {
 				PROF_BLOCK_START("Wand Execute");
 				wandTrackerPIMPL_->Execute( yuyvImages[rand() % 2], output);
@@ -180,6 +181,17 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 				TS_TRACE("Succesfully loaded test YUYV image...");
 			} else {
 				TS_ASSERT( !"could not open test YUYV image" );
+			}
+		}
+
+		void saveGrayImage( const char* path, cv::Mat& mat ) {
+			std::ofstream file;
+			file.open( path, std::ios::out | std::ios::binary );
+			if( file.is_open() ) {
+				file.write( (char*)mat.data, mat.total() );
+				file.close();
+			} else {
+				TS_ASSERT( !"COULD NOT WRITE GRAY IMAGE");
 			}
 		}
 
