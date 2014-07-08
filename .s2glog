@@ -42039,3 +42039,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/6/14 4:17 PM
 25,034 ms. (Cumulative: 26,263,100 ms)
 
 ----------------
+Revision 10,922 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-398.  Enabling Controller Logs by default when ControllerMPI starts up.  Auto appends events to /LF/Bulk/Data/Local/All/ss1/ControllerLog.btsnoop
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/7/14 5:22 PM
+1 changed, 0 added, 0 deleted.
+25,034 ms. (Cumulative: 26,288,228 ms)
+
+----------------
