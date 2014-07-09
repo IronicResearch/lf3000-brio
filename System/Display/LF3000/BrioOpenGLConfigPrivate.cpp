@@ -290,29 +290,9 @@ void BrioOpenGLConfigPrivate::Init(enum tBrioOpenGLVersion brioOpenGLVersion)
 		all criteria, so we can limit the number of configs returned to 1.
 	*/
 	int iConfigs;
-	int max_num_config;
-	eglGetConfigs(eglDisplay, NULL, 0, &max_num_config);
-	EGLConfig *configs = new EGLConfig[max_num_config];
 	dbg.DebugOut(kDbgLvlVerbose, "eglChooseConfig()\n");
-	success = eglChooseConfig(eglDisplay, pi32ConfigAttribs, configs, max_num_config, &iConfigs);
-	dbg.Assert(success, "eglChooseConfig() failed\n");
-	for (int i=0; i<iConfigs; i++ )
-	{
-		EGLint value;
-
-		/*Use this to explicitly check that the EGL config has the expected color depths */
-		eglGetConfigAttrib( eglDisplay, configs[i], EGL_RED_SIZE, &value );
-		if ( pi32ConfigAttribs[1] != value ) continue;
-		eglGetConfigAttrib( eglDisplay, configs[i], EGL_GREEN_SIZE, &value );
-		if ( pi32ConfigAttribs[3] != value ) continue;
-		eglGetConfigAttrib( eglDisplay, configs[i], EGL_BLUE_SIZE, &value );
-		if ( pi32ConfigAttribs[5] != value ) continue;
-		eglGetConfigAttrib( eglDisplay, configs[i], EGL_ALPHA_SIZE, &value );
-		if ( pi32ConfigAttribs[7] != value ) continue;
-
-		eglConfig = configs[i];
-	}
-	delete[] configs;
+	success = eglChooseConfig(eglDisplay, pi32ConfigAttribs, &eglConfig, 1, &iConfigs);
+	dbg.Assert(success && iConfigs == 1, "eglChooseConfig() failed %d\n", iConfigs);
 
 	/*
 		Step 5 - Create a surface to draw to.

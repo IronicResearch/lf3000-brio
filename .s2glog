@@ -42067,3 +42067,12 @@ By Falguni Mirani (fmirani@leapfrog.com) on 7/9/14 4:06 PM
 25,065 ms. (Cumulative: 26,338,592 ms)
 
 ----------------
+Revision 10,925 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWSCRUM-2625.  Reverting 10864, BrioOpenGLConfigPrivate support for 16 bit OpenGL buffer.  No longer walks the configurations looking for the most limited configuration that has the requested features.  This somehow fixes the line problem.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/9/14 4:39 PM
+1 changed, 0 added, 0 deleted.
+25,154 ms. (Cumulative: 26,363,840 ms)
+
+----------------
