@@ -42057,3 +42057,13 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/9/14 2:19 PM
 25,081 ms. (Cumulative: 26,313,418 ms)
 
 ----------------
+Revision 10,924 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+HWControllerMPI (FWGLAS-711) : Temporary workaround so EnableControllerSync() call to perform pairing gets called from within ControllerMPI on Sync button press. This should be reverted once the UI is ready to listen to the Sync button events and calls this function for pairing.
+
+
+By Falguni Mirani (fmirani@leapfrog.com) on 7/9/14 4:06 PM
+1 changed, 0 added, 0 deleted.
+25,065 ms. (Cumulative: 26,338,592 ms)
+
+----------------
