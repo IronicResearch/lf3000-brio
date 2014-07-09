@@ -247,6 +247,22 @@ namespace Hardware {
     LeapFrog::Brio::tEventPriority priority = kHWControllerDefaultEventPriority;
 //    HWController *controller = this->GetControllerByID(kHWDefaultControllerID);
 
+	 if (type == LeapFrog::Brio::kButtonStateChanged) {
+        debugMPI_.DebugOut(kDbgLvlImportant, "\nLeapFrog::Brio::kButtonStateChanged");
+
+         LeapFrog::Brio::tEventType newType = kHWControllerButtonStateChanged;
+        const LeapFrog::Brio::CButtonMessage &
+          msg = reinterpret_cast<const LeapFrog::Brio::CButtonMessage&>(msgIn);
+                tButtonData2 buttonData = msg.GetButtonState2();
+                if(buttonData.buttonTransition & kButtonSync)
+                {
+			debugMPI_.DebugOut(kDbgLvlImportant, "\nLeapFrog::Brio::kButtonSync");
+                        if( buttonData.buttonState & kButtonSync ) EnableControllerSync(true);
+                        return LeapFrog::Brio::kEventStatusOK;
+                }
+  //      controller->pimpl_->SetButtonData(msg.GetButtonState2());
+	}
+
     // Internally generated event to start scanning for controllers
     if (type == kHWControllerLowBattery) {
         const HWControllerEventMessage& hwmsg = reinterpret_cast<const HWControllerEventMessage&>(msgIn);
@@ -301,7 +317,8 @@ namespace Hardware {
 	newType = kHWControllerAccelerometerOrientationChanged;
 	priority = kHWControllerHighPriorityEvent;
 
-      } else if (type == LeapFrog::Brio::kButtonStateChanged) {
+#if 0      
+	} else if (type == LeapFrog::Brio::kButtonStateChanged) {
 	newType = kHWControllerButtonStateChanged;
 	const LeapFrog::Brio::CButtonMessage &
 	  msg = reinterpret_cast<const LeapFrog::Brio::CButtonMessage&>(msgIn);
@@ -311,6 +328,7 @@ namespace Hardware {
 			return LeapFrog::Brio::kEventStatusOK;
 		}
         controller->pimpl_->SetButtonData(msg.GetButtonState2());
+#endif
       } else if (type == LF::Hardware::kHWAnalogStickDataChanged) {
 	newType = kHWControllerAnalogStickDataChanged;
 	priority = kHWControllerHighPriorityEvent;
@@ -330,7 +348,11 @@ namespace Hardware {
 	  debugMPI_.DebugOut(kDbgLvlImportant, "EnableControllerSync: Sync enabled changed %x\n", (unsigned)enable);
 
 	  int ret = pBTIO_PairWithRemoteDevice_(handle_);
-	  
+#if 1 //FIXME
+	  // ret == 1 indicates "/flags/autopair" not set - no pairing happens, post no events
+	  if (ret == 1)
+		return kNoErr; 
+#endif
 	  if (ret == 0){
 		HWControllerEventMessage newMsg(kHWControllerSyncSuccess, 0);
           	eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
