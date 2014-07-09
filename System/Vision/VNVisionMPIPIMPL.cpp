@@ -354,10 +354,8 @@ return result;
       if (wasTriggered != hotSpot->IsTriggered())
 	changedHotSpots.push_back(hotSpot);
     }
-    PROF_BLOCK_END();
 
     if (rectHotSpots_.size() > 0) {
-      PROF_BLOCK_START("integralImage");
       // compute integral image
       static cv::Mat integralImg;
 
@@ -368,9 +366,7 @@ return result;
 #endif
 
       VNHotSpotPIMPL::SetIntegralImage(&integralImg);
-      PROF_BLOCK_END();
 
-      PROF_BLOCK_START("triggerRectHotSpots");
       for (std::vector<const VNHotSpot*>::iterator rhs = rectHotSpots_.begin();
 	   rhs != rectHotSpots_.end();
 	   ++rhs) {
@@ -386,7 +382,6 @@ return result;
 	if (wasTriggered != hotSpot->IsTriggered())
 	  changedHotSpots.push_back(hotSpot);
       }
-      PROF_BLOCK_END();
     }
     VNHotSpotPIMPL::SetIntegralImage(NULL);
 
@@ -511,13 +506,13 @@ return result;
 	      PROF_BLOCK_START("algorithm");
 	      algorithm_->Execute(cameraSurfaceMat_, outputImg_);
 	      PROF_BLOCK_END();
-
+	      
 #if defined(EMULATION)
 	      OpenCVDebug();
 #endif
 	      
+	      PROF_BLOCK_START("triggering");
 	      TriggerHotSpots();
-	      
 	      PROF_BLOCK_END();
 	      
 	      ++frameCount_;
@@ -527,7 +522,9 @@ return result;
 #endif
 	      //EndFrameProcessing();
 	    }
+	    return LeapFrog::Brio::kEventStatusOKConsumed;
 	  }
+	  PROF_BLOCK_END();
 	  return LeapFrog::Brio::kEventStatusOKConsumed;
 	}
       } else {
