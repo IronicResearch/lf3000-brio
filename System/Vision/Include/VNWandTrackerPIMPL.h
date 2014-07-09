@@ -46,13 +46,13 @@ namespace Vision {
 			    float &radius) const;
     void ScaleSubFrame(const cv::Mat &input,
 		       const cv::Point &p,
-		       const float radius);
+		       const float area);
     bool ScaleWandPoint(cv::Point &p) const;
     void SetProcessingFrameSize(LeapFrog::Brio::U16 width,
 				LeapFrog::Brio::U16 height);
-	void ConvertToRGB(const cv::Mat& in, cv::Mat& outrgb);
-	bool FindLight(const cv::Mat &integral, cv::Point &c);
-	int integralSum(const cv::Mat &integral, cv::Rect &roi);
+    void ConvertToRGB(const cv::Mat& in, cv::Mat& outrgb);
+    float FindLight(const cv::Mat &integral, cv::Point &c);
+    int integralSum(const cv::Mat &integral, cv::Rect &roi);
   };
 }
 }

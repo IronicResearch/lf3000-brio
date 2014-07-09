@@ -34,6 +34,9 @@ namespace Vision {
   static const float kVNDefaultMinPercentToScale = 0.3f;
   static const int kVNNoContourIndex = -1;
   static const int kVNMaxNumStepsToComputeCircle = 20;
+  
+  static const float kVNMinPercentOfPixelsDiffToIncludeInSum = 0.7f;
+  static const float kVNPercentOfMaxRadiusValueForAreaCalc = 0.8f;
 
   bool SameSize(const LeapFrog::Brio::tRect &lfr, const cv::Rect & r) {
     return (lfr.left == r.x &&
@@ -198,8 +201,7 @@ namespace Vision {
   void
   VNWandTrackerPIMPL::ScaleSubFrame(const cv::Mat &input,
 				    const cv::Point &p,
-				    const float radius) {
-    float area = M_PI*radius*radius;
+				    const float area) {
     float sf = 1.0f;
     if (area <= minArea_ ) {
       sf = minPercentToScale_;
@@ -231,13 +233,12 @@ namespace Vision {
     if (wand_) {
       PROF_BLOCK_START("VNWandTrackerPIMPL::Execute");  		  
       // switch to HSV color spave
-      
 
-	  PROF_BLOCK_START("YUYV to RGB");
-	  ConvertToRGB(input, rgb_);
-	  PROF_BLOCK_END();
-		
-	  PROF_BLOCK_START("RGBToHSV");
+      PROF_BLOCK_START("YUYV to RGB");
+      ConvertToRGB(input, rgb_);
+      PROF_BLOCK_END();
+      
+      PROF_BLOCK_START("RGBToHSV");
       RGBToHSV(rgb_, hsv_);
       PROF_BLOCK_END();
 		
@@ -259,29 +260,17 @@ namespace Vision {
       cv::namedWindow("threshold");
       cv::imshow("threshold", output);
 #endif
-      
+      float lightArea = 0.f;
+      cv::Point p;
 #if VN_USE_INTEGRAL_IMAGE_SEARCH
-		PROF_BLOCK_START("integral");
-		//cv::integral(output, integral);
-		LF::Vision::IntegralImage( output, integral_);
-		PROF_BLOCK_END();
-		
-		PROF_BLOCK_START("findLight");
-		cv::Point p;
-		bool foundLight = FindLight(integral_, p);
-		PROF_BLOCK_END();
-		
-		if ( foundLight ) {
-			wand_->pimpl_->VisibleOnScreen(p);
-			
-			static bool report = false;
-			if ( !report ) {
-				printf("\n\n\a\aFOUND LIGHT (%d, %d)\n", p.x, p.y);
-				report = true;
-			}
-		} else {
-			wand_->pimpl_->NotVisibleOnScreen();
-		}
+      PROF_BLOCK_START("integral");
+      //cv::integral(output, integral);
+      LF::Vision::IntegralImage( output, integral_);
+      PROF_BLOCK_END();
+      
+      PROF_BLOCK_START("findLight");
+      lightArea = FindLight(integral_, p);
+      PROF_BLOCK_END();
 
 #else // VN_USE_INTEGRAL_IMAGE_SEARCH
       
@@ -298,32 +287,32 @@ namespace Vision {
 	PROF_BLOCK_START("FitCircleToContour");
 	FitCircleToContour(contours[index], p, r);
 	PROF_BLOCK_END();
-	
-	bool inFrame = true;
-	if (scaleInput_) {
-	  // insure the size of the input image matches the translator source frame size
-	  assert(SameSize(translator_.GetSourceFrame(), cv::Rect(0,0,input.cols,input.rows)));
+	lightArea = M_PI*r*r;
+      }
+#endif // VN_USE_INTEGRAL_IMAGE_SEARCH
+
+      bool inFrame = true;
+      if (scaleInput_) {
+	// insure the size of the input image matches the translator source frame size
+	assert(SameSize(translator_.GetSourceFrame(), cv::Rect(0,0,input.cols,input.rows)));
 	  
-	  PROF_BLOCK_START("ScaleSubFrame");
-	  ScaleSubFrame(input,p,r);
-	  PROF_BLOCK_END();
+	PROF_BLOCK_START("ScaleSubFrame");
+	ScaleSubFrame(input,p,lightArea);
+	PROF_BLOCK_END();
 	  
-	  PROF_BLOCK_START("ScaleWandPoint");
-	  inFrame = ScaleWandPoint(p);
-	  PROF_BLOCK_END();
-	}
-	// insure we have at least a minimum circle area
-	if (inFrame && M_PI*r*r > minArea_) {
-	  wand_->pimpl_->VisibleOnScreen(p);
-	} else {
-	  wand_->pimpl_->NotVisibleOnScreen();
-	}
+	PROF_BLOCK_START("ScaleWandPoint");
+	inFrame = ScaleWandPoint(p);
+	PROF_BLOCK_END();
+      }
+
+      // insure we have at least a minimum circle area
+      if (inFrame && lightArea > minArea_) {
+	wand_->pimpl_->VisibleOnScreen(p);
       } else {
 	wand_->pimpl_->NotVisibleOnScreen();
       }
-#endif // VN_USE_INTEGRAL_IMAGE_SEARCH
-      PROF_BLOCK_END();	
-    }
+    }    
+    PROF_BLOCK_END();	
   }
 
   void
@@ -339,63 +328,109 @@ namespace Vision {
   void
   VNWandTrackerPIMPL::ConvertToRGB(const cv::Mat& in, cv::Mat& outrgb) {
 
-	  switch( in.type() ) {
-		  case CV_8UC2: // YUYV
-			  LF::Vision::YUYV2RGB(in, outrgb);
-			  break;
-
-		  case CV_8UC3:
-			  outrgb = in.clone();
-			  break;
-
-		  default:
-
-			  assert(!"Unsupported image format");
-	  }
+    switch( in.type() ) {
+    case CV_8UC2: // YUYV
+      LF::Vision::YUYV2RGB(in, outrgb);
+      break;
+      
+    case CV_8UC3:
+      outrgb = in.clone();
+      break;
+      
+    default:
+      
+      assert(!"Unsupported image format");
+    }
   }
 	
-     int VNWandTrackerPIMPL::integralSum(const cv::Mat &integral, cv::Rect &roi) {
-        int tl = integral.at<unsigned int>(roi.y, roi.x);
-        int tr = integral.at<unsigned int>(roi.y, roi.x+roi.width);
-        int bl = integral.at<unsigned int>(roi.y+roi.height, roi.x);
-        int br = integral.at<unsigned int>(roi.y+roi.height, roi.x+roi.width);
-        return br-bl-tr+tl;
+  int VNWandTrackerPIMPL::integralSum(const cv::Mat &integral, cv::Rect &roi) {
+    int tl = integral.at<unsigned int>(roi.y, roi.x);
+    int tr = integral.at<unsigned int>(roi.y, roi.x+roi.width);
+    int bl = integral.at<unsigned int>(roi.y+roi.height, roi.x);
+    int br = integral.at<unsigned int>(roi.y+roi.height, roi.x+roi.width);
+    return br-bl-tr+tl;
+  }
+
+  bool compare(float a, float b) {
+    return a < b;
+  }
+
+  float 
+  VNWandTrackerPIMPL::FindLight(const cv::Mat &integral, cv::Point &c) {
+    // This algorithm breaks the image up in to a grid and then looks at each
+    // box in the grid to determine if there is light present in that grid.  If
+    // there is it gets added to the total area of the light and the "center of mass"
+    // of the light.  
+    //
+    // The first two variables here define to size of each grid box in number of pixels
+    static const int dx = 5; // in the x direction
+    static const int dy = 5; // in the y direction
+
+    // these two variables represent what is the "center of mass" of the local box
+    // in the grid
+    static const int xMid = 2;
+    static const int yMid = 2;
+    c.x = 0;
+    c.y = 0;
+    
+    int numX = integral.cols/dx;
+    int numY = integral.rows/dy;
+    cv::Point result(0,0);
+    int sumX = 0, sumY = 0, sum = 0;
+    std::vector<cv::Point> centers;
+
+    for (int i = 0; i < numX; ++i) {
+      for (int j = 0; j < numY; ++j) {
+	cv::Rect rect(i*dx, j*dy, dx, dy);
+	// determine how many pixels are lit up
+	// divide by 255 since the threshold image is either 0 or 255
+	int val = integralSum(integral, rect)/255;
+
+	// Only grod boxes that contain a minimum percentage of light are accepted
+	// as being part of the LED colored light.  If it's there...
+	if (val > kVNMinPercentOfPixelsDiffToIncludeInSum*dx*dy) {
+	  // the the number of pixels lit up to the toal area lit up
+	  sum += val;
+
+	  // add to the variables used to compute the light center of mass
+	  sumX += val*(i*dx+xMid);
+	  sumY += val*(j*dy+yMid);
+
+	  // keep the center of each grid around to calculate a rough radius to the light
+	  centers.push_back(cv::Point(i*dx+xMid, j*dy+yMid));
+	}
+      }
     }
 
-	
-    bool VNWandTrackerPIMPL::FindLight(const cv::Mat &integral, cv::Point &c) {
-        static const int dx = 5;
-        static const int dy = 5;
-        static const int xMid = 2;
-        static const int yMid = 2;
-        c.x = 0;
-        c.y = 0;
-        
-        int numX = integral.cols/dx;
-        int numY = integral.rows/dy;
-        cv::Point result(0,0);
-        int sumX = 0, sumY = 0, sum = 0;
-        
-        for (int i = 0; i < numX; ++i) {
-            for (int j = 0; j < numY; ++j) {
-                cv::Rect rect(i*dx, j*dy, dx, dy);
-                int val = integralSum(integral, rect)/255;
-                if (val > 0.7*dx*dy) {
-                    sum += val;
-                    sumX += val*(i*dx+xMid);
-                    sumY += val*(j*dy+yMid);
-                }
-            }
-        }
-        //std::cout << "sum = " << sum << std::endl;
-        if (sum > 30) {
-            c.x = float(sumX)/float(sum);
-            c.y = float(sumY)/float(sum);
-            //std::cout << "center = " << c.x << ", " << c.y << std::endl;
-            return true;
-        }
-        return false;
+    float area = 0.f;
+    // if there is a prominent light source present
+    if (sum > 0) {
+      // find the center of mass, the location, of the light
+      c.x = float(sumX)/float(sum);
+      c.y = float(sumY)/float(sum);
+
+      // based on the location of the light, c, and the centers of all
+      // of the individual grod boxes that contributed to the overall light
+      // find the distance between c and all centers.
+      std::vector<float> rs;
+      for (int i = 0; i < centers.size(); ++i) {
+	float dx = centers[i].x - c.x;
+	float dy = centers[i].y - c.y;
+	rs.push_back(sqrtf(dx*dx + dy*dy));
+      }
+
+      // sort these distances from smalles to largest and then use one of the values
+      // as a representative radius of the light.  
+      std::sort(rs.begin(), rs.end(), compare);
+      float r = rs[(int)(kVNPercentOfMaxRadiusValueForAreaCalc*rs.size())];
+
+      // using the just computed radius, compute the area of the LED light on screen.
+      area = M_PI*r*r;
+      //std::cout << "sum = " << sum << ", area = " << area << ", r = " << r << ", max = " << rs[rs.size()-1] << ", min = " << rs[0] << ", num = " << rs.size() << std::endl;
     }
 
+    return area; //static_cast<float>(sum);
+  }
+  
 }
 }

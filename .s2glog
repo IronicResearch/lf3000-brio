@@ -42048,3 +42048,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/7/14 5:22 PM
 25,034 ms. (Cumulative: 26,288,228 ms)
 
 ----------------
+Revision 10,923 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+update wand algorithm to correctly include scaling regardless of approach
+
+By Alex Lindblad (alindblad@leapfrog.com) on 7/9/14 2:19 PM
+3 changed, 0 added, 0 deleted.
+25,081 ms. (Cumulative: 26,313,418 ms)
+
+----------------
