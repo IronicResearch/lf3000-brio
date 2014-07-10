@@ -42085,3 +42085,22 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/9/14 6:13 PM
 25,290 ms. (Cumulative: 26,389,223 ms)
 
 ----------------
+Revision 10,927 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,928 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,929 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,930 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,931 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,932 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,933 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+See https://jira.leapfrog.com/browse/FWGLAS-779
+
+Increased deadzone_ default value to be +/-7%, which turns out to be +/-0.14
+
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 7/10/14 12:19 PM
+1 changed, 0 added, 0 deleted.
+25,042 ms. (Cumulative: 26,414,437 ms)
+
+----------------
