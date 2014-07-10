@@ -42076,3 +42076,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/9/14 4:39 PM
 25,154 ms. (Cumulative: 26,363,840 ms)
 
 ----------------
+Revision 10,926 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+reset camera after wand algorithm finishes
+
+By Alex Lindblad (alindblad@leapfrog.com) on 7/9/14 6:13 PM
+10 changed, 0 added, 0 deleted.
+25,290 ms. (Cumulative: 26,389,223 ms)
+
+----------------

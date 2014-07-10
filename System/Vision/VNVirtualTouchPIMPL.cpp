@@ -44,45 +44,7 @@ namespace Vision {
   void
   VNVirtualTouchPIMPL::Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
 				  LeapFrog::Brio::U16 frameProcessingHeight) {
-    LeapFrog::Brio::tCameraControls controls;
-    LeapFrog::Brio::CCameraMPI cameraMPI;
-    LeapFrog::Brio::CDebugMPI dbg(LeapFrog::Brio::kGroupVision);
-
-    LeapFrog::Brio::Boolean err = cameraMPI.GetCameraControls(controls);
-    dbg.Assert(err, "VNWandTracker could get camera controls\n");
-
-    // turn on autowhitebalance
-    LeapFrog::Brio::tControlInfo *awb = FindCameraControl(controls,
-							  LeapFrog::Brio::kControlTypeAutoWhiteBalance);
-    if (awb) {
-      printf("AutoWhiteBalance (min,max,preset,current): %li %li %li %li\n", awb->min, awb->max, awb->preset, awb->current);
-      cameraMPI.SetCameraControl(awb, 1); // is a boolean, set to 0 for false
-      printf("New AutoWhiteBalance (min,max,preset,current): %li %li %li %li\n", awb->min, awb->max, awb->preset, awb->current);
-    } else {
-      dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for auto white balance\n");
-    }
-
-    // set exposure to default value
-    LeapFrog::Brio::tControlInfo *e = FindCameraControl(controls,
-							LeapFrog::Brio::kControlTypeExposure);
-    if (e) {
-      printf("Exposure (min,max,preset,current): %li %li %li %li\n", e->min, e->max, e->preset, e->current);
-      cameraMPI.SetCameraControl(e, e->preset);
-      printf("New Exposure(min,max,preset,current) : %li %li %li %li\n", e->min, e->max, e->preset, e->current);
-    } else {
-      dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for exposure\n");
-    }
-
-    // turn on auto exposure
-    LeapFrog::Brio::tControlInfo *ae = FindCameraControl(controls,
-							 LeapFrog::Brio::kControlTypeAutoExposure);
-    if (ae) {
-      printf("AutoExposure (min,max,preset,current): %li %li %li %li\n", ae->min, ae->max, ae->preset, ae->current);
-      cameraMPI.SetCameraControl(ae, 0); // V4L2_EXPOSURE_AUTO = 0
-      printf("New AutoExposure (min,max,preset,current): %li %li %li %li\n", ae->min, ae->max, ae->preset, ae->current);
-    } else {
-      dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for auto exposure\n");
-    }
+    ResetCamera();
   }
 
   void
