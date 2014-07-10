@@ -8,6 +8,9 @@ namespace Vision {
     // do nothing
   }
   
+  void VNAlgorithm::Shutdown(void) {
+    // do nothing
+  }
   
 } // namespace Vision
 } // namespace LF

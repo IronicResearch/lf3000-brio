@@ -128,6 +128,8 @@ namespace Vision {
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::DeleteTask(void) {
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
+    
+    // stop the video capture if it's still going
     if (videoCapture_ != kInvalidVidCapHndl)
       result = cameraMPI_.StopVideoCapture(videoCapture_);
     visionAlgorithmRunning_ = false;
@@ -142,9 +144,15 @@ namespace Vision {
     }
 #endif
 
+    // if the algorithm is still present, shut it down
+    if (algorithm_)
+      algorithm_->Shutdown();
+
+    // delete the memory for the surface buffer
     if (surface_.buffer) delete surface_.buffer;
     surface_.buffer = NULL;
-return result;
+    
+    return result;
   }
 
   LeapFrog::Brio::tErrType

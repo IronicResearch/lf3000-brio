@@ -62,6 +62,12 @@ namespace Vision {
     virtual void Execute(cv::Mat &input, cv::Mat &output);
 
     /*!
+     * \brief In this algorithm Shutdown resets the camera settings for
+     * normal camera operations
+     */
+    virtual void Shutdown(void);
+
+    /*!
      * \brief Wand Scaling refers to the mechanism that allows the WandTracker algorithm
      * to scale the physical space the wand moves in to the display space.  As a child moves
      * further away from the camera the physical space the camera sees is larger than

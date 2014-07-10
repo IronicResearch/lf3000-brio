@@ -15,7 +15,7 @@ namespace Vision {
 				  params)) {
   }
   
-  VNWandTracker::~VNWandTracker(void) {  
+  VNWandTracker::~VNWandTracker(void) {
   }
   
   void
@@ -28,6 +28,11 @@ namespace Vision {
   void
   VNWandTracker::Execute(cv::Mat &input, cv::Mat &output) {
     pimpl_->Execute(input, output);
+  }
+
+  void
+  VNWandTracker::Shutdown(void) {
+    pimpl_->Shutdown();
   }
 
   void

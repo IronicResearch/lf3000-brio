@@ -43,6 +43,13 @@ namespace Vision {
      *        hot spot triggering.  Must be of CV_8U format
      */
     virtual void Execute(cv::Mat &input, cv::Mat &output) = 0;
+
+    /*!
+     * \brief an optional method that gets called when the VNVisionMPI::Stop
+     * method is executed or upon deltion of the algorithm.
+     */
+    virtual void Shutdown(void);
+
   };
 
 } // namespace Vision
