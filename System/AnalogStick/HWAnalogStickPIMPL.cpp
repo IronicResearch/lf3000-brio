@@ -13,7 +13,7 @@ namespace Hardware {
   }
   
   HWAnalogStickPIMPL::HWAnalogStickPIMPL(void) 
-    :	deadZone_(0.07f) //Specified by EE team
+    :	deadZone_(0.14f) //Specified by EE team at +/-7%, which is -0.14..+0.14 in -1.0..+1.0 scale.  FWGLAS-779
     ,	mode_(kHWAnalogStickModeAnalog)
   {
   }
