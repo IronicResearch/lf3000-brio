@@ -42131,3 +42131,15 @@ By Lmoore (Lmoore@leapfrog.com) on 7/15/14 3:29 PM
 25,142 ms. (Cumulative: 26,490,072 ms)
 
 ----------------
+Revision 10,937 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,938 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,939 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,940 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+add wand led calibration app and vision update
+
+By Alex Lindblad (alindblad@leapfrog.com) on 7/15/14 4:38 PM
+19 changed, 2 added, 0 deleted.
+26,036 ms. (Cumulative: 26,516,233 ms)
+
+----------------

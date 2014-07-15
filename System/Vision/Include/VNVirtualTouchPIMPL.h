@@ -9,7 +9,7 @@ namespace Vision {
 
   class VNVirtualTouchPIMPL {
   public:
-    VNVirtualTouchPIMPL(float learningRate);
+    VNVirtualTouchPIMPL(float learningRate, int intensityThreshold);
     virtual ~VNVirtualTouchPIMPL(void);
 
     void Initialize(LeapFrog::Brio::U16 frameProcessingWidth,

@@ -52,14 +52,14 @@ namespace Hardware {
 
   class HWController;
 
-  /*!    
+  /*!
    * \class HWControllerMPIPIMPL
    */
   class HWControllerMPIPIMPL : public LeapFrog::Brio::IEventListener {
   public:
     static HWControllerMPIPIMPL* Instance(void);
     virtual ~HWControllerMPIPIMPL(void);
-    
+
     HWController* GetControllerByID(LeapFrog::Brio::U32 id);
     void GetAllControllers(std::vector<HWController*> &controller);
     LeapFrog::Brio::U8 GetNumberOfConnectedControllers(void) const;
@@ -71,6 +71,8 @@ namespace Hardware {
     int QueryStatus(HWController*, int command, void* data, int length);
 
     LeapFrog::Brio::tErrType EnableControllerSync(bool enable);
+
+    const char* GetBluetoothAddress(HWController* controller);
 
   private:
     HWControllerMPIPIMPL(void);
@@ -108,7 +110,7 @@ namespace Hardware {
 
     friend class HWControllerPIMPL;
   };
-  
+
 }	// namespace Hardware
 }	// namespace LF
 

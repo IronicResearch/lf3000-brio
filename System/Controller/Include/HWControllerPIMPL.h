@@ -20,7 +20,7 @@ namespace Hardware {
   public:
     HWControllerPIMPL(HWController* controller);
     virtual ~HWControllerPIMPL(void);
-    
+
     /*!
      * Broad Based Controller Methods
      */
@@ -68,13 +68,15 @@ namespace Hardware {
     void SetAccelerometerData(const LeapFrog::Brio::tAccelerometerData &data);
     LeapFrog::Brio::tAccelerometerMode GetAccelerometerMode(void) const;
     LeapFrog::Brio::tErrType SetAccelerometerMode(const LeapFrog::Brio::tAccelerometerMode mode);
-    
+
     /*!
     * Configuration Related Methods
     */
     void LocalCallback(void*, void*, int);
     void SetID(LeapFrog::Brio::U8 id);
     void SetVersionNumbers(LeapFrog::Brio::U8 hw, LeapFrog::Brio::U16 fw);
+    void SetBluetoothAddress(const char* btaddress);
+    const char* GetBluetoothAddress();
     void SetConnected(bool connected);
 
  private:
@@ -102,6 +104,7 @@ namespace Hardware {
     LeapFrog::Brio::tButtonData2 buttonData_;
     LF::Hardware::tHWAnalogStickData analogStickData_;
 
+    char blueToothAddress_[64];
     bool connected_;
 
     void ZeroAccelerometerData(void);
@@ -113,7 +116,7 @@ namespace Hardware {
     void ConvertAnalogStickToDpad(const tHWAnalogStickData& theData);
 
   };
-  
+
 }	// namespace Hardware
 }	// namespace LF
 

@@ -17,11 +17,10 @@ namespace Vision {
    *
    * Developers can create their own algorithms derived off of VNAlgorithm as
    * long as they implement the Execute method.  If the custom algorithm will
-   * interact with hotspots, the output cv::Mat must be of form CV_8UC and 
+   * interact with hotspots, the output cv::Mat must be of form CV_8UC and
    * indicate where "change" has occured in the viewframe as this is used as
    * the basis for detecting if a hot spot has been triggered.
    */
-  class VNVirtualTouch;
   class VNAlgorithm {
   public:
     /*!

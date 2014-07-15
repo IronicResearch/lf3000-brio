@@ -16,7 +16,7 @@ namespace Vision {
   public:
     VNWandPIMPL(void);
     virtual ~VNWandPIMPL(void);
-    
+
     void NotVisibleOnScreen(void);
     void VisibleOnScreen(const cv::Point &p);
 
@@ -28,6 +28,9 @@ namespace Vision {
     LeapFrog::Brio::U8 GetID(void) const;
     void SetID(LeapFrog::Brio::U8 id);
 
+    char* GetBluetoothAddress();
+    void SetBluetoothAddress( const char* btaddress );
+
     cv::Scalar hsvMin_;
     cv::Scalar hsvMax_;
 
@@ -38,6 +41,8 @@ namespace Vision {
     LeapFrog::Brio::CDebugMPI debugMPI_;
 
     VNCoordinateTranslator *translator_;
+
+    char    btaddress_[64];
   };
 }
 }

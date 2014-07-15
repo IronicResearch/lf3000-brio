@@ -13,6 +13,13 @@ namespace Vision {
    */
   extern const float kVNDefaultVirtualTouchLearningRate;
 
+  /*!
+   * kVNDefaultVirtualTouchThreshold
+   * The default threshold used in creating the binary representation
+   * of the current frame from the camera
+   */
+  extern const int kVNDefaultVirtualTouchThreshold;
+
   // foprward declaration
   class VNVirtualTouchPIMPL;
 
@@ -22,19 +29,21 @@ namespace Vision {
    * VNVirtualTouch is a foreground/background segmentation algorithm that gives the
    * VNVisionMPI the ability to determine the foreground object.  The VNVirtualTouch
    * algorithm uses a learning rate that affects how fast the background is updated.
-   * Moving objects are part of the foreground.  An object that was moving, and part 
+   * Moving objects are part of the foreground.  An object that was moving, and part
    * of the foregroud, will become part of the background at rate proportional to
    * the learning rate.  This larger the value the fast an object moves to the background.
    * The smaller the learning rate the slower an object moved to the background.
    */
   class VNVirtualTouch : public VNAlgorithm {
   public:
-    
+
     /*!
      * \brief Constuctor
      * \param learningRate the value of the learning rate for this algorithm
+     * \param gray intensity threshold.
      */
-    VNVirtualTouch(float learningRate = kVNDefaultVirtualTouchLearningRate);
+    VNVirtualTouch(float learningRate = kVNDefaultVirtualTouchLearningRate, 
+		   int intensityThreshold = kVNDefaultVirtualTouchThreshold);
 
     /*!
      * \brief Default destructor
@@ -53,7 +62,7 @@ namespace Vision {
 			    LeapFrog::Brio::U16 frameProcessingHeight);
 
     /*!
-     * \brief SetLearningRate Valid ranges are 0.001 to 1.0 
+     * \brief SetLearningRate Valid ranges are 0.001 to 1.0
      * the large the value of the learning rate the faster an object, that was moving,
      * will move in to the background.
      * \param rate is the learning rate that is used to update the evolving background
@@ -83,7 +92,7 @@ namespace Vision {
     VNVirtualTouch(const VNVirtualTouch&);
     VNVirtualTouch& operator =(const VNVirtualTouch&);
   };
-  
+
 
 } // namespace Vision
 } // namespace LF

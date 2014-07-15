@@ -10,6 +10,8 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace LeapFrog::Brio;
 
@@ -50,18 +52,21 @@ namespace Hardware {
 	debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL found /flags/joystick-10k\n");
     }
     debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL setting has100KOhmJoystick_ to %d\n", has100KOhmJoystick_);
+
+    sprintf( blueToothAddress_, "0xdeadbeef" );
   }
 
   HWControllerPIMPL::~HWControllerPIMPL(void) {
     if (wand_) delete wand_;
   }
-  
+
   void
   HWControllerPIMPL::SetID(LeapFrog::Brio::U8 id) {
     id_ = id;
+    //BADBAD: should not be accessing pimpl from here.  SetID should be a private member in Wand and HWControllerPIMPL as friend.
     wand_->pimpl_->SetID(id_);
   }
-  
+
   void
   HWControllerPIMPL::ZeroAllData(void) {
 	    ZeroAccelerometerData();
@@ -93,7 +98,7 @@ namespace Hardware {
     analogStickData_.y = 0.f;
     analogStickData_.id = id_;
     analogStickData_.time.seconds = id_;
-    analogStickData_.time.microSeconds = id_;    
+    analogStickData_.time.microSeconds = id_;
   }
 
   void HWControllerPIMPL::ZeroVersionData() {
@@ -104,11 +109,11 @@ namespace Hardware {
   /*!
    * Broad Based Controller Methods
    */
-  LeapFrog::Brio::U8 
+  LeapFrog::Brio::U8
   HWControllerPIMPL::GetID(void) const {
     return id_;
   }
-  
+
   LeapFrog::Brio::U8
   HWControllerPIMPL::GetHwVersion(void) const {
 	  return hw_version_;
@@ -119,22 +124,22 @@ namespace Hardware {
 	  return fw_version_;
   }
 
-  HWControllerMode 
+  HWControllerMode
   HWControllerPIMPL::GetCurrentMode(void) const {
     return mode_;
   }
-  
-  bool 
+
+  bool
   HWControllerPIMPL::IsConnected(void) const {
 	  return connected_;
   }
-  
-  LeapFrog::Brio::U32 
+
+  LeapFrog::Brio::U32
   HWControllerPIMPL::GetControllerUpdateRate(void) const {
     return updateRate_;
   }
-  
-  LeapFrog::Brio::tErrType 
+
+  LeapFrog::Brio::tErrType
   HWControllerPIMPL::SetControllerUpdateRate(LeapFrog::Brio::U32 rate) {
     // error checking
     if (rate >= kHWControllerDefaultRate) {
@@ -150,8 +155,8 @@ namespace Hardware {
 
     return kNoErr;
   }
-  
-  HWControllerFunctionalityMask 
+
+  HWControllerFunctionalityMask
   HWControllerPIMPL::GetFunctionality(void) const {
     // TOOD: prgrammatically check
     return (kHWControllerHasAccelerometer |
@@ -159,11 +164,11 @@ namespace Hardware {
 	    kHWControllerHasButtons |
 	    kHWControllerHasLED);
   }
-  
+
   /*!
    * Color LED Tip Methods
    */
-  HWControllerLEDColorMask 
+  HWControllerLEDColorMask
   HWControllerPIMPL::GetAvailableLEDColors(void) const {
     //TODO: programmatically check
     return (kHWControllerLEDGreen    |
@@ -173,13 +178,13 @@ namespace Hardware {
 	    kHWControllerLEDCyan     |
 	    kHWControllerLEDMagenta);
   }
-  
-  HWControllerLEDColor 
+
+  HWControllerLEDColor
   HWControllerPIMPL::GetLEDColor(void) const {
     return color_;
   }
-  
-  void 
+
+  void
   HWControllerPIMPL::SetLEDColor(HWControllerLEDColor color) {
 	debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::SetLEDColor %08x\n", (unsigned int)color);
 	if( (color == kHWControllerLEDOff) || (color & GetAvailableLEDColors())) {
@@ -191,13 +196,13 @@ namespace Hardware {
 		debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::SetLEDColor Color not available %08x\n", (unsigned int)color);
 	}
   }
-  
-  Vision::VNPoint 
+
+  Vision::VNPoint
   HWControllerPIMPL::GetLocation(void) const {
     return wand_->GetLocation();
   }
-  
-  bool 
+
+  bool
   HWControllerPIMPL::IsVisible(void) const {
     wand_->IsVisible();
   }
@@ -213,7 +218,7 @@ namespace Hardware {
   }
 
 #else
-  
+
   LeapFrog::Brio::tErrType
   HWControllerPIMPL::StartTracking(HWControllerLEDColor color) {
     if (GetCurrentMode() == kHWControllerWandMode) {
@@ -228,30 +233,30 @@ namespace Hardware {
   /*!
    * Button Related Methods
    */
-  LeapFrog::Brio::tButtonData2 
+  LeapFrog::Brio::tButtonData2
   HWControllerPIMPL::GetButtonData(void) const {
     //TODO: determine how to get button data for a specific controller
     return buttonData_;
   }
-  
+
   void
   HWControllerPIMPL::SetButtonData(const LeapFrog::Brio::tButtonData2 &data) {
     memcpy(&buttonData_, &data, sizeof(data));
   }
 
-  HWControllerButtonMask 
+  HWControllerButtonMask
   HWControllerPIMPL::GetAvailableButtons(void) const {
     return (kButtonA | kButtonB | kButtonMenu | kButtonHint);
   }
-  
+
   /*!
    * AnalogStick Related Methods
    */
-  tHWAnalogStickData 
+  tHWAnalogStickData
   HWControllerPIMPL::GetAnalogStickData(void) const {
     return analogStickData_;
   }
-  
+
   void
   HWControllerPIMPL::SetAnalogStickData(const tHWAnalogStickData &data) {
     memcpy(&analogStickData_, &data, sizeof(data));
@@ -309,7 +314,7 @@ namespace Hardware {
 	  }
   }
 
-  tHWAnalogStickMode 
+  tHWAnalogStickMode
   HWControllerPIMPL::GetAnalogStickMode(void) const {
     return analogStickMPI_.GetAnalogStickMode(id_);
   }
@@ -361,43 +366,43 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
   HWControllerPIMPL::SetAnalogStickMode(tHWAnalogStickMode mode) {
     return analogStickMPI_.SetAnalogStickMode(mode, id_);
   }
-  
-  float 
+
+  float
   HWControllerPIMPL::GetAnalogStickDeadZone(void) const {
     return analogStickMPI_.GetAnalogStickDeadZone(id_);
   }
-  
-  LeapFrog::Brio::tErrType 
+
+  LeapFrog::Brio::tErrType
   HWControllerPIMPL::SetAnalogStickDeadZone(const float deadZone) {
     return analogStickMPI_.SetAnalogStickDeadZone(deadZone, id_);
   }
-  
+
   /*!
    * Accelerometer Related Methods
    */
-  LeapFrog::Brio::tAccelerometerData 
+  LeapFrog::Brio::tAccelerometerData
   HWControllerPIMPL::GetAccelerometerData(void) const {
     //TODO: figure out how to do this on a per controller basis
     return accelerometerData_;
   }
-  
+
   void
   HWControllerPIMPL::SetAccelerometerData(const LeapFrog::Brio::tAccelerometerData &data) {
     memcpy(&accelerometerData_, &data, sizeof(data));
   }
 
-  LeapFrog::Brio::tAccelerometerMode 
+  LeapFrog::Brio::tAccelerometerMode
   HWControllerPIMPL::GetAccelerometerMode(void) const {
     //TODO: figure out how to do this on a per controller basis
     accelerometerMPI_.GetAccelerometerMode();
   }
-  
-  LeapFrog::Brio::tErrType 
+
+  LeapFrog::Brio::tErrType
   HWControllerPIMPL::SetAccelerometerMode(const LeapFrog::Brio::tAccelerometerMode mode) {
     //TODO: figure out to do this on a per controller basis
     accelerometerMPI_.SetAccelerometerMode(mode);
   }
-  
+
   void
   HWControllerPIMPL::SetVersionNumbers(LeapFrog::Brio::U8 hw, LeapFrog::Brio::U16 fw)
   {
@@ -557,5 +562,18 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
 	  }
   }
 
+    const char*
+    HWControllerPIMPL::GetBluetoothAddress() {
+        return blueToothAddress_;
+    }
+
+    void
+    HWControllerPIMPL::SetBluetoothAddress( const char* btaddress ) {
+        const int btval = *((int*)btaddress);
+        memset( blueToothAddress_, 0, sizeof(blueToothAddress_) );
+        sprintf( blueToothAddress_, "0x%x", btval );
+        //BADBAD accessing pimpl directly
+        wand_->pimpl_->SetBluetoothAddress(blueToothAddress_);
+    }
 }	// namespace Hardware
 }	// namespace LF
