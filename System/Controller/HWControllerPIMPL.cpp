@@ -14,6 +14,7 @@
 using namespace LeapFrog::Brio;
 
 static const U32 kHWControllerDefaultRate = 50;
+static const float kHWControllerDpadThreshold = 0.20f;
 
 namespace LF {
 namespace Hardware {
@@ -28,6 +29,7 @@ namespace Hardware {
     updateDivider_(1),
     updateCounter_(0),
     has100KOhmJoystick_(1), // Production defaults to 100K; FEP had 10K
+    connected_(false),
     debugMPI_(kGroupController) {
 #ifdef DEBUG
 	debugMPI_.SetDebugLevel(kDbgLvlVerbose);
@@ -124,8 +126,7 @@ namespace Hardware {
   
   bool 
   HWControllerPIMPL::IsConnected(void) const {
-    //TODO:
-    return true;
+	  return connected_;
   }
   
   LeapFrog::Brio::U32 
@@ -313,6 +314,49 @@ namespace Hardware {
     return analogStickMPI_.GetAnalogStickMode(id_);
   }
   
+ bool
+HWControllerPIMPL::ApplyAnalogStickMode(tHWAnalogStickData& theData) {
+	bool retVal = true;
+
+	switch(GetAnalogStickMode()) {
+	case kHWAnalogStickModeDisable:
+		theData.x = 0.0f;
+		theData.y = 0.0f;
+		retVal = false;
+		break;
+	case kHWAnalogStickModeDPad:
+		ConvertAnalogStickToDpad(theData);
+		theData.x = 0.0f;
+		theData.y = 0.0f;
+		retVal = false;
+		break;
+	case kHWAnalogStickModeAnalog:
+		retVal = true;
+		break;
+	default:
+		retVal = true;
+		debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::ApplyAnalogStickMode - Unknown mode detected %08x\n", (unsigned int)GetAnalogStickMode());
+		break;
+	}
+
+  return retVal;
+}
+
+void
+HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
+
+	U32 originalButtonState = buttonData_.buttonState;
+
+	buttonData_.buttonState &= ~(kButtonLeft | kButtonRight | kButtonDown | kButtonUp);
+
+	if(theData.x <= -kHWControllerDpadThreshold) buttonData_.buttonState |= kButtonLeft;
+	if(theData.x >= kHWControllerDpadThreshold)  buttonData_.buttonState |= kButtonRight;
+	if(theData.y <= -kHWControllerDpadThreshold) buttonData_.buttonState |= kButtonDown;
+	if(theData.y >= kHWControllerDpadThreshold)  buttonData_.buttonState |= kButtonUp;
+
+	buttonData_.buttonTransition |= (originalButtonState ^ buttonData_.buttonState);
+}
+
   LeapFrog::Brio::tErrType 
   HWControllerPIMPL::SetAnalogStickMode(tHWAnalogStickMode mode) {
     return analogStickMPI_.SetAnalogStickMode(mode, id_);
@@ -359,6 +403,12 @@ namespace Hardware {
   {
 	  hw_version_ = hw; fw_version_ = fw;
 	  debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::SetVersionNumbers hw=%08x, fw=%08x\n", (unsigned int)hw_version_, (unsigned int)fw_version_);
+  }
+
+  void
+  HWControllerPIMPL::SetConnected(bool connected)
+  {
+	  connected_ = connected;
   }
 
   inline float BYTE_TO_FLOAT(U8 byte) {
@@ -484,15 +534,11 @@ namespace Hardware {
 
 	  DeadZoneAnalogStickData(pModule->analogStickData_);
 	  if (memcmp(&stick, &analogStickData_, sizeof(tHWAnalogStickData)) != 0) {
-		  pModule->analogStickData_.time.seconds = time.tv_sec;
-		  pModule->analogStickData_.time.microSeconds = time.tv_usec;
-		  if (pModule->id_ > 0) {
-		      HWControllerEventMessage cmsg(kHWControllerAnalogStickDataChanged, pModule->controller_);
+		  if(ApplyAnalogStickMode(pModule->analogStickData_)) {
+			  pModule->analogStickData_.time.seconds = time.tv_sec;
+			  pModule->analogStickData_.time.microSeconds = time.tv_usec;
+			  HWControllerEventMessage cmsg(kHWControllerAnalogStickDataChanged, pModule->controller_);
 			  pModule->eventMPI_.PostEvent(cmsg, 128);
-		  }
-		  else {
-			  HWAnalogStickMessage amsg(pModule->analogStickData_);
-			  pModule->eventMPI_.PostEvent(amsg, 128);
 		  }
 	  }
 

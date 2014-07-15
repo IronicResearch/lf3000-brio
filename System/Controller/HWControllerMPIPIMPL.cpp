@@ -164,6 +164,7 @@ namespace Hardware {
 	      HWController* controller = FindController(link);
 	      HWControllerLEDColor color = controller->GetLEDColor();
 	      int r = SendCommand(controller, kBTIOCmdSetLEDState, &color, sizeof(color));
+	      controller->pimpl_->SetConnected(r >= 0);
 	      HWControllerEventMessage qmsg((r < 0) ? kHWControllerDisconnected : kHWControllerConnected, controller);
 	      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
 	      return;
@@ -179,6 +180,7 @@ namespace Hardware {
       listControllers_.push_back(controller);
       mapControllers_.insert(std::pair<BtAdrWrap, HWController*>(key, controller));
       numControllers_++;
+      controller->pimpl_->SetConnected(true);
       HWControllerEventMessage qmsg(kHWControllerConnected, controller);
       eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
 
@@ -285,6 +287,7 @@ namespace Hardware {
     // Internally generated timer event
     if (type == LeapFrog::Brio::kTimerFiredEvent) {
         debugMPI_.DebugOut(kDbgLvlImportant, "Notify: timer event type %08x\n", (unsigned)type);
+        controller->pimpl_->SetConnected(false);
         HWControllerEventMessage qmsg(kHWControllerDisconnected, controller);
 
         //Zero out all data and post messages stating that there has been a change
