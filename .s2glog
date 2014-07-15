@@ -42104,3 +42104,12 @@ By Rob Dowling (rdowling@leapfrog.com) on 7/10/14 12:19 PM
 25,042 ms. (Cumulative: 26,414,437 ms)
 
 ----------------
+Revision 10,934 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-707: Revert: Restore the broadcast of legacy accelerometer and button events in HWController to allow SI UI to work until they can catch up to to the event changes.
+
+By Lmoore (Lmoore@leapfrog.com) on 7/14/14 5:43 PM
+2 changed, 0 added, 0 deleted.
+25,143 ms. (Cumulative: 26,439,674 ms)
+
+----------------
