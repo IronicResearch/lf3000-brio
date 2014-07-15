@@ -42122,3 +42122,12 @@ By Lmoore (Lmoore@leapfrog.com) on 7/15/14 11:43 AM
 25,053 ms. (Cumulative: 26,464,820 ms)
 
 ----------------
+Revision 10,936 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixes unimplemented functionality in the controller. IsConnected() and SetAnalogStickMode(). (FWGLAS-714, 556, 550)
+
+By Lmoore (Lmoore@leapfrog.com) on 7/15/14 3:29 PM
+3 changed, 0 added, 0 deleted.
+25,142 ms. (Cumulative: 26,490,072 ms)
+
+----------------

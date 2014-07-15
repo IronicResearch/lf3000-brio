@@ -75,6 +75,7 @@ namespace Hardware {
     void LocalCallback(void*, void*, int);
     void SetID(LeapFrog::Brio::U8 id);
     void SetVersionNumbers(LeapFrog::Brio::U8 hw, LeapFrog::Brio::U16 fw);
+    void SetConnected(bool connected);
 
  private:
     Vision::VNVisionMPI visionMPI_;
@@ -101,11 +102,15 @@ namespace Hardware {
     LeapFrog::Brio::tButtonData2 buttonData_;
     LF::Hardware::tHWAnalogStickData analogStickData_;
 
+    bool connected_;
+
     void ZeroAccelerometerData(void);
     void ZeroButtonData(void);
     void ZeroAnalogStickData(void);
     void ZeroVersionData(void);
     void DeadZoneAnalogStickData(tHWAnalogStickData& theData);
+    bool ApplyAnalogStickMode(tHWAnalogStickData& theData);
+    void ConvertAnalogStickToDpad(const tHWAnalogStickData& theData);
 
   };
   
