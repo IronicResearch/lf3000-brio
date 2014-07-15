@@ -11,7 +11,7 @@
 #include <FlatProfiler.h>
 
 
-const LeapFrog::Brio::tEventType 
+const LeapFrog::Brio::tEventType
   kHWControllerListenerTypes[] = {LeapFrog::Brio::kAccelerometerDataChanged,
 				  LeapFrog::Brio::kOrientationChanged,
 				  LeapFrog::Brio::kButtonStateChanged,
@@ -40,8 +40,8 @@ namespace Hardware {
     }
     return sharedInstance;
   }
-  
-  
+
+
 
   HWControllerMPIPIMPL::HWControllerMPIPIMPL(void) :
     IEventListener(kHWControllerListenerTypes, ArrayCount(kHWControllerListenerTypes)),
@@ -81,7 +81,7 @@ namespace Hardware {
 		FlatProfilerInit(kHWMaximumNumberOfControllers, 0);
 #endif
   }
-  
+
   HWControllerMPIPIMPL::~HWControllerMPIPIMPL() {
 	  std::vector<HWController*>::iterator it;
 	  for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
@@ -104,7 +104,7 @@ namespace Hardware {
 		  pBTIO_Exit_(handle_);
 		  dlclose(dll_);
 	  }
-  }  
+  }
 
   void
   HWControllerMPIPIMPL::ScanCallback(void* context, void* data, int length) {
@@ -127,7 +127,7 @@ namespace Hardware {
       BtAdrWrap key(addr);
       if (pModule->mapControllers_.count(key) > 0)
     	  controller = pModule->mapControllers_.at(key);
-      if (!controller)   
+      if (!controller)
     	  return;
 
 #ifdef ENABLE_PROFILING
@@ -176,11 +176,14 @@ namespace Hardware {
 	  }
 
       HWController* controller = new HWController();
+      //BADBAD: should not be accessing pimpl_ directly!
       controller->pimpl_->SetID(numControllers_);
       listControllers_.push_back(controller);
       mapControllers_.insert(std::pair<BtAdrWrap, HWController*>(key, controller));
       numControllers_++;
+      controller->pimpl_->SetBluetoothAddress( FindControllerLink(controller) );
       controller->pimpl_->SetConnected(true);
+
       HWControllerEventMessage qmsg(kHWControllerConnected, controller);
       eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
 
@@ -243,7 +246,7 @@ namespace Hardware {
   }
 
 
-  LeapFrog::Brio::tEventStatus 
+  LeapFrog::Brio::tEventStatus
   HWControllerMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msgIn) {
     LeapFrog::Brio::tEventType type = msgIn.GetEventType();
     LeapFrog::Brio::tEventPriority priority = kHWControllerDefaultEventPriority;
@@ -309,10 +312,10 @@ namespace Hardware {
 	type == LF::Hardware::kHWAnalogStickDataChanged) {
 
       LeapFrog::Brio::tEventType newType = kHWControllerDataChanged;
-      if (type == LeapFrog::Brio::kAccelerometerDataChanged) { 
+      if (type == LeapFrog::Brio::kAccelerometerDataChanged) {
 	newType = kHWControllerAccelerometerDataChanged;
 	priority = kHWControllerHighPriorityEvent;
-	const LeapFrog::Brio::CAccelerometerMessage& 
+	const LeapFrog::Brio::CAccelerometerMessage&
 	  msg = reinterpret_cast<const LeapFrog::Brio::CAccelerometerMessage&>(msgIn);
 	controller->pimpl_->SetAccelerometerData(msg.GetAccelerometerData());
 
@@ -337,11 +340,11 @@ namespace Hardware {
 	priority = kHWControllerHighPriorityEvent;
 	const HWAnalogStickMessage &msg = reinterpret_cast<const HWAnalogStickMessage&>(msgIn);
 	controller->pimpl_->SetAnalogStickData(msg.GetAnalogStickData());
-      }	       
+      }
 
       HWControllerEventMessage newMsg(newType, controller);
       eventMPI_.PostEvent(newMsg, 0); // FIXME -- priority?
-    } 
+    }
     return LeapFrog::Brio::kEventStatusOK;
   }
 
@@ -367,7 +370,7 @@ namespace Hardware {
 	  }
   }
 
-  HWController* 
+  HWController*
   HWControllerMPIPIMPL::GetControllerByID(LeapFrog::Brio::U32 id) {
     //TODO: handle multiple controllers
     // FIXME -- emulation controller instance
@@ -394,8 +397,8 @@ namespace Hardware {
     return controller;
 #endif
   }
-  
-  void 
+
+  void
   HWControllerMPIPIMPL::GetAllControllers(std::vector<HWController*> &controller) {
     //TODO: fill all controllers
     // controller.push_back(this->GetControllerByID(kHWDefaultControllerID));
@@ -403,13 +406,18 @@ namespace Hardware {
 		ScanForDevices();
     controller = listControllers_;
   }
-  
-  LeapFrog::Brio::U8 
+
+  LeapFrog::Brio::U8
   HWControllerMPIPIMPL::GetNumberOfConnectedControllers(void) const {
     //TODO: determine number of connected controllers
 //	if (numControllers_ == 0)
 //		ScanForDevices();
     return numControllers_; //1;
+  }
+
+  const char*
+  HWControllerMPIPIMPL::GetBluetoothAddress(HWController* controller) {
+      return FindControllerLink(controller);
   }
 
 }	// namespace Hardware

@@ -18,31 +18,31 @@ namespace Hardware {
   class HWControllerPIMPL;
   class HWControllerMPIPIMPL;
 
-  /*!    
+  /*!
    * \class HWController
    *
    * HWController class is the software interface to the physical controller
    * on Glasgow devices.  Controllers have the following functionality:
    * Button input
    * Analog stick input
-   * Accelerometer 
+   * Accelerometer
    * Color wand pointer
    *
-   * This class allows accessing information for each of these input types.  Developers can 
+   * This class allows accessing information for each of these input types.  Developers can
    * register for event notifications for controllers using the HWControllerMPI class.
    *
    * HWController classes are created by the LF SDK and handed out via the HWControllerMPI.
    * Physical controllers communicate with the Glasgow device to notify the device that they
    * are ready to interact.  The device then creates an instance of a HWController class.
    */
-  
+
   class HWController {
-  public:	    
+  public:
     /*!
      * \brief Returns the ID of the controller
      */
     LeapFrog::Brio::U8 GetID(void) const;
-    
+
     /*!
      * \brief Returns the hardware version/revision of the controller
      */
@@ -67,7 +67,7 @@ namespace Hardware {
 
     /*!
      * \return The frequency at which the controller is sending data
-     * back to the console.  
+     * back to the console.
      */
     LeapFrog::Brio::U32 GetControllerUpdateRate(void) const;
 
@@ -110,12 +110,12 @@ namespace Hardware {
      * \brief sets the wand pointer color.  This method will turn the LED
      * on if it is currently off and the value of color passed in is not
      * kHWControllerLEDOff.
-     * \param color The color from the HWControllerLEDColor enumeration 
+     * \param color The color from the HWControllerLEDColor enumeration
      */
     void SetLEDColor(HWControllerLEDColor color);
 
     /*!
-     * \brief Used in conjunction with the VNWandTrackingAlgorithm for 
+     * \brief Used in conjunction with the VNWandTrackingAlgorithm for
      * determining the x,y coordinates of the color tip on the screen.
      */
     Vision::VNPoint GetLocation(void) const;
@@ -124,7 +124,7 @@ namespace Hardware {
      * \return true if the LED wand tip is currently visible in the camera viewport
      */
     bool IsVisible(void) const;
-    
+
     /*!
      * \brief Tells the system that this is the controller to start tracking
      * inside of the VisionMPI.  This method should only be called when the
@@ -162,7 +162,7 @@ namespace Hardware {
     HWControllerButtonMask GetAvailableButtons(void) const;
 
     /*!
-     * \brief Obtains the data for the analog stick associated with this 
+     * \brief Obtains the data for the analog stick associated with this
      * controller
      * \return The data associated with the analog stick.  If the controller
      * is not connected this data will be zeroed out.
@@ -171,7 +171,7 @@ namespace Hardware {
 
     /*!
      * \brief Obtains the mode of the analog stick associated with this controller
-     * \return the mode the stick is in 
+     * \return the mode the stick is in
      */
     tHWAnalogStickMode GetAnalogStickMode(void) const;
 
@@ -191,16 +191,16 @@ namespace Hardware {
 
     /*!
      * \brief Set the dead zone
-     * The deadzone is the area at which the sticks do not report any events. 
-     * The default is zero, which gives the best sensitifity but might also 
-     * cause trouble in some games in that the character or camera might move 
-     * without moving the stick. To fix this one has to set the value to 
+     * The deadzone is the area at which the sticks do not report any events.
+     * The default is zero, which gives the best sensitifity but might also
+     * cause trouble in some games in that the character or camera might move
+     * without moving the stick. To fix this one has to set the value to
      * something higher.  A normalized value between 0 .. 1
      * \param deadZone the desired dead zone value
      * \return Returns kNoErr on success.
      */
     LeapFrog::Brio::tErrType SetAnalogStickDeadZone(const float deadZone);
-    
+
     //-----------------------------------------------------------------------
     /*!
      * Methods associated with the accelerometer
@@ -223,11 +223,17 @@ namespace Hardware {
      */
     LeapFrog::Brio::tErrType SetAccelerometerMode(const LeapFrog::Brio::tAccelerometerMode mode);
 
+    /*!
+     * \brief Gets the bluetooth address of this controller.
+     * \return character string of bluetooth address.
+     */
+     const char* GetBluetoothAddress();
+
   private:
     boost::shared_ptr<HWControllerPIMPL> pimpl_;
-    
+
     /*!
-     * Explicitly disable copy semantics 
+     * Explicitly disable copy semantics
      * default constructor and destructor
      */
     HWController(const HWController&);

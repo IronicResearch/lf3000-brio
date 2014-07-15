@@ -27,13 +27,12 @@
 namespace LF {
 namespace Vision {
 
-  static const int kVNDefaultVirtualTouchThreshold = 10;
   static const float kVNDownScale = 0.5f;
   static const float kVNUpScale = 1.0f/kVNDownScale;
 
-  VNVirtualTouchPIMPL::VNVirtualTouchPIMPL(float learningRate) :
+  VNVirtualTouchPIMPL::VNVirtualTouchPIMPL(float learningRate, int intensityThreshold) :
     learningRate_(learningRate),
-    threshold_(kVNDefaultVirtualTouchThreshold) {
+    threshold_(intensityThreshold) {
 
   }
 
@@ -83,8 +82,8 @@ namespace Vision {
 			  LF::Vision::YUYV2Gray(in, outgray);
 			  break;
 
-		  case CV_8UC3:
-			  fast_rgb_to_gray(in, outgray);
+		  case CV_8UC3: // RGB
+			  LF::Vision::RGB2Gray(in, outgray);
 			  break;
 
 		  default:

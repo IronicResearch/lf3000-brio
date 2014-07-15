@@ -7,14 +7,14 @@
 namespace LF {
 namespace Hardware {
 
-  
+
   HWController::HWController(void)  {
 		  pimpl_ = boost::shared_ptr<HWControllerPIMPL>(new HWControllerPIMPL(this));
   }
-  
+
   HWController::~HWController(void) {
   }
- 
+
   LeapFrog::Brio::U8
   HWController::GetHwVersion(void) const {
 	  return pimpl_->GetHwVersion();
@@ -25,115 +25,119 @@ namespace Hardware {
 	  return pimpl_->GetFwVersion();
   }
 
-  LeapFrog::Brio::U8 
+  LeapFrog::Brio::U8
   HWController::GetID(void) const {
     return pimpl_->GetID();
   }
-    
-  HWControllerMode 
+
+  HWControllerMode
   HWController::GetCurrentMode(void) const {
     return pimpl_->GetCurrentMode();
   }
 
-  bool 
+  bool
   HWController::IsConnected(void) const {
     return pimpl_->IsConnected();
   }
 
-  LeapFrog::Brio::U32 
+  LeapFrog::Brio::U32
   HWController::GetControllerUpdateRate(void) const {
     return pimpl_->GetControllerUpdateRate();
   }
 
-  LeapFrog::Brio::tErrType 
+  LeapFrog::Brio::tErrType
   HWController::SetControllerUpdateRate(LeapFrog::Brio::U32 rate) {
     return pimpl_->SetControllerUpdateRate(rate);
   }
 
-  HWControllerFunctionalityMask 
+  HWControllerFunctionalityMask
   HWController::GetFunctionality(void) const {
     return pimpl_->GetFunctionality();
   }
 
-  HWControllerLEDColorMask 
+  HWControllerLEDColorMask
   HWController::GetAvailableLEDColors(void) const {
     return pimpl_->GetAvailableLEDColors();
   }
 
-  HWControllerLEDColor 
+  HWControllerLEDColor
   HWController::GetLEDColor(void) const {
     return pimpl_->GetLEDColor();
   }
 
-  void 
+  void
   HWController::SetLEDColor(HWControllerLEDColor color) {
     pimpl_->SetLEDColor(color);
   }
 
-  Vision::VNPoint 
+  Vision::VNPoint
   HWController::GetLocation(void) const {
     return pimpl_->GetLocation();
   }
 
-  bool 
+  bool
   HWController::IsVisible(void) const {
     return pimpl_->IsVisible();
   }
-    
+
   LeapFrog::Brio::tErrType
   HWController::StartTracking(HWControllerLEDColor color) {
     return pimpl_->StartTracking(color);
   }
 
-  LeapFrog::Brio::tButtonData2 
+  LeapFrog::Brio::tButtonData2
   HWController::GetButtonData(void) const {
     return pimpl_->GetButtonData();
   }
 
-  HWControllerButtonMask 
+  HWControllerButtonMask
   HWController::GetAvailableButtons(void) const {
     return pimpl_->GetAvailableButtons();
   }
 
-  tHWAnalogStickData 
+  tHWAnalogStickData
   HWController::GetAnalogStickData(void) const {
     return pimpl_->GetAnalogStickData();
   }
 
-  tHWAnalogStickMode 
+  tHWAnalogStickMode
   HWController::GetAnalogStickMode(void) const {
     return pimpl_->GetAnalogStickMode();
   }
 
-  LeapFrog::Brio::tErrType 
+  LeapFrog::Brio::tErrType
   HWController::SetAnalogStickMode(tHWAnalogStickMode mode) {
     return pimpl_->SetAnalogStickMode(mode);
   }
 
-  float 
+  float
   HWController::GetAnalogStickDeadZone(void) const {
     return pimpl_->GetAnalogStickDeadZone();
   }
 
-  LeapFrog::Brio::tErrType 
+  LeapFrog::Brio::tErrType
   HWController::SetAnalogStickDeadZone(const float deadZone) {
     return pimpl_->SetAnalogStickDeadZone(deadZone);
   }
-    
-  LeapFrog::Brio::tAccelerometerData 
+
+  LeapFrog::Brio::tAccelerometerData
   HWController::GetAccelerometerData(void) const {
     return pimpl_->GetAccelerometerData();
   }
 
-  LeapFrog::Brio::tAccelerometerMode 
+  LeapFrog::Brio::tAccelerometerMode
   HWController::GetAccelerometerMode(void) const {
     return pimpl_->GetAccelerometerMode();
   }
 
-  LeapFrog::Brio::tErrType 
+  LeapFrog::Brio::tErrType
   HWController::SetAccelerometerMode(const LeapFrog::Brio::tAccelerometerMode mode) {
     return pimpl_->SetAccelerometerMode(mode);
   }
-  
+
+  const char*
+  HWController::GetBluetoothAddress() {
+      return pimpl_->GetBluetoothAddress();
+  }
 } // namespace Hardware
 } // namespace LF
