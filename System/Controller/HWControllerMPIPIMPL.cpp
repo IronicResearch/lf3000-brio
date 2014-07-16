@@ -415,10 +415,5 @@ namespace Hardware {
     return numControllers_; //1;
   }
 
-  const char*
-  HWControllerMPIPIMPL::GetBluetoothAddress(HWController* controller) {
-      return FindControllerLink(controller);
-  }
-
 }	// namespace Hardware
 }	// namespace LF
