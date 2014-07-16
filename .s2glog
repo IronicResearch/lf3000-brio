@@ -42152,3 +42152,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/15/14 5:30 PM
 26,503 ms. (Cumulative: 26,542,861 ms)
 
 ----------------
+Revision 10,942 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+remove accidentally added getter, redundant
+
+By Alex Lindblad (alindblad@leapfrog.com) on 7/16/14 10:05 AM
+4 changed, 0 added, 0 deleted.
+25,992 ms. (Cumulative: 26,568,963 ms)
+
+----------------

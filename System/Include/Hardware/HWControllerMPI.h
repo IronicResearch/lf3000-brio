@@ -94,14 +94,6 @@ namespace Hardware {
      */
     LeapFrog::Brio::tErrType EnableControllerSync(bool enable);
 
-    /*!
-     * \brief Gets the controller bluetooth address
-     * \param Hardware controller
-     * \return character string containing the bluetooth address.
-     */
-     const char* GetBluetoothAddress(HWController* controller);
-
-
   private:
     boost::shared_ptr<HWControllerMPIPIMPL> pimpl_;
 

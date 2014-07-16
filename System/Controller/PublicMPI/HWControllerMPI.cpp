@@ -85,12 +85,6 @@ namespace Hardware {
 	  return pimpl_->EnableControllerSync(enable);
   }
 
-  const char*
-  HWControllerMPI::GetBluetoothAddress(HWController* controller) {
-      return pimpl_->GetBluetoothAddress(controller);
-  }
-
-
 
 } // namespace Hardware
 } // namespace LF

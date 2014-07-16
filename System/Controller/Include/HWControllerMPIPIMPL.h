@@ -72,8 +72,6 @@ namespace Hardware {
 
     LeapFrog::Brio::tErrType EnableControllerSync(bool enable);
 
-    const char* GetBluetoothAddress(HWController* controller);
-
   private:
     HWControllerMPIPIMPL(void);
     HWControllerMPIPIMPL(const HWControllerMPIPIMPL&);
