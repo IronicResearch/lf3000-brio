@@ -42143,3 +42143,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/15/14 4:38 PM
 26,036 ms. (Cumulative: 26,516,233 ms)
 
 ----------------
+Revision 10,941 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+revert wand alg to prev version, contour version
+
+By Alex Lindblad (alindblad@leapfrog.com) on 7/15/14 5:30 PM
+1 changed, 0 added, 0 deleted.
+26,503 ms. (Cumulative: 26,542,861 ms)
+
+----------------
