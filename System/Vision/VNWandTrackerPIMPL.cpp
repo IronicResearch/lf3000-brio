@@ -20,7 +20,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #endif
 
-#define VN_USE_INTEGRAL_IMAGE_SEARCH 1
+#define VN_USE_INTEGRAL_IMAGE_SEARCH 0
 
 namespace LF {
 namespace Vision {
@@ -281,7 +281,6 @@ namespace Vision {
       PROF_BLOCK_END();
       
       if (index != kVNNoContourIndex) {
-	cv::Point p(0,0);
 	float r = 0.f;
 	
 	PROF_BLOCK_START("FitCircleToContour");
