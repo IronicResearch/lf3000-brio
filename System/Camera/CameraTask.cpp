@@ -347,6 +347,13 @@ void* CameraTaskMain(void* arg)
 
 		if(!pCtx->module->PollFrame(pCtx->hndl))
 		{
+			struct timeval tvx;
+			gettimeofday(&tvx, NULL);
+			CalcTimeDiff(tvx, tvx, tvn);
+			if (tvx.tv_sec > tvn.tv_sec + 1) {
+				dbg.DebugOut( kDbgLvlCritical, "PollFrame failed to query next V4L frame=%d\n", framecount);
+			}
+
 			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
 													  "Couldn't unlock mutex.\n");
 			// Yield timeslice if neither audio nor video input ready 

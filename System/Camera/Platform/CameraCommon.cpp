@@ -445,8 +445,12 @@ static Boolean InitCameraHWInt(tCameraContext *pCamCtx)
 	struct v4l2_capability *cap =  &pCamCtx->cap;
 
 	int flags = O_RDWR;
+#if defined(LF1000)
 	if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR)
 		flags |= O_NONBLOCK;
+#else
+	flags |= O_NONBLOCK;
+#endif
 
 	if((cam = open(pCamCtx->file, O_RDWR | flags)) == -1)
 	{
@@ -1333,9 +1337,9 @@ static Boolean GetFrameInt(tCameraContext *pCtx, int index)
 	{
 		if (errno != EAGAIN)
 			return false;
-		pCtx->kernel->TaskSleep(10);
 		if (--timeout == 0)
 			return false;
+		pCtx->kernel->TaskSleep(1);
     }
 
 	return true;
