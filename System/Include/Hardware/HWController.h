@@ -142,9 +142,9 @@ namespace Hardware {
      * Methods associated with the buttons
      */
     /*!
-     * \brief Returns the currnet button data associated with this controller
+     * \brief Returns the current button data associated with this controller
      * \return the button data, including the current state and transition
-     * of the buttons associated with this controller.  If the contorller is
+     * of the buttons associated with this controller.  If the controller is
      * not connected this data be zeroed out.
      */
     LeapFrog::Brio::tButtonData2 GetButtonData(void) const;
@@ -191,11 +191,11 @@ namespace Hardware {
 
     /*!
      * \brief Set the dead zone
-     * The deadzone is the area at which the sticks do not report any events.
-     * The default is zero, which gives the best sensitifity but might also
-     * cause trouble in some games in that the character or camera might move
-     * without moving the stick. To fix this one has to set the value to
-     * something higher.  A normalized value between 0 .. 1
+     * The dead zone is the area at which the sticks do not report any events.
+     * The default is 0.14, which provides a balance between sensitivity
+     * and no movement when the stick is centered. Decreasing the value
+     * will increase sensitivity. Increasing the value will prevent movement.
+     * The range is a normalized value between 0 .. 1
      * \param deadZone the desired dead zone value
      * \return Returns kNoErr on success.
      */
@@ -212,14 +212,15 @@ namespace Hardware {
     LeapFrog::Brio::tAccelerometerData GetAccelerometerData(void) const;
 
     /*!
-     * \return the current accelerometer mode, disabled, continuous sampling
-     * one-shot sampling, orientation changes
+     * \return the current accelerometer mode, currently only continuous sampling
+     * is supported.
      */
     LeapFrog::Brio::tAccelerometerMode GetAccelerometerMode(void) const;
 
     /*!
      * \brief sets the mode of the accelerometer associated with this controller
-     * \param mode The mode to set the accelerometer
+     * \param mode The mode to set the accelerometer, currently only kAccelerometerModeContinuous
+     * is supported. Any other mode will return kInvalidParamErr.
      */
     LeapFrog::Brio::tErrType SetAccelerometerMode(const LeapFrog::Brio::tAccelerometerMode mode);
 

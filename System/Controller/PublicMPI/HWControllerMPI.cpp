@@ -9,7 +9,7 @@ namespace Hardware {
 
   static const LeapFrog::Brio::CString kHWControllerMPIName("HWControllerMPI");
   static const LeapFrog::Brio::CString kHWControllerMPIModuleName("HWControllerMPI-Module");
-  static const LeapFrog::Brio::CURI kHWControllerMPIURI("NotSureWhatToPutHere");
+  static const LeapFrog::Brio::CURI kHWControllerMPIURI("/LF/System/Controller");
   static const LeapFrog::Brio::tVersion kHWControllerMPIVersion(0.9);
 
   /*!
