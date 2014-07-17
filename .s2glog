@@ -42161,3 +42161,13 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/16/14 10:05 AM
 25,992 ms. (Cumulative: 26,568,963 ms)
 
 ----------------
+Revision 10,943 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Enable V4L DQ step in non-blocking mode so apps won't deadlock if next V4L frame is not ready. (FWGLAS-860)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/16/14 8:53 PM
+2 changed, 0 added, 0 deleted.
+25,097 ms. (Cumulative: 26,594,154 ms)
+
+----------------
