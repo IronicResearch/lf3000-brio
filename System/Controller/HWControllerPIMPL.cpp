@@ -235,7 +235,6 @@ namespace Hardware {
    */
   LeapFrog::Brio::tButtonData2
   HWControllerPIMPL::GetButtonData(void) const {
-    //TODO: determine how to get button data for a specific controller
     return buttonData_;
   }
 
@@ -382,7 +381,6 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
    */
   LeapFrog::Brio::tAccelerometerData
   HWControllerPIMPL::GetAccelerometerData(void) const {
-    //TODO: figure out how to do this on a per controller basis
     return accelerometerData_;
   }
 
@@ -393,14 +391,15 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
 
   LeapFrog::Brio::tAccelerometerMode
   HWControllerPIMPL::GetAccelerometerMode(void) const {
-    //TODO: figure out how to do this on a per controller basis
-    accelerometerMPI_.GetAccelerometerMode();
+	return kAccelerometerModeContinuous;
   }
 
   LeapFrog::Brio::tErrType
   HWControllerPIMPL::SetAccelerometerMode(const LeapFrog::Brio::tAccelerometerMode mode) {
-    //TODO: figure out to do this on a per controller basis
-    accelerometerMPI_.SetAccelerometerMode(mode);
+    if(mode == kAccelerometerModeContinuous)
+    	return kNoErr;
+    else
+    	return kInvalidParamErr;
   }
 
   void
