@@ -11,8 +11,13 @@ namespace Vision {
   const int kVNDefaultVirtualTouchThreshold = 10;
 
 
-  VNVirtualTouch::VNVirtualTouch(float learningRate, int intensityThreshold) :
-    pimpl_(new VNVirtualTouchPIMPL(learningRate, intensityThreshold)) {
+  VNVirtualTouch::VNVirtualTouch(float learningRate) :
+    pimpl_(new VNVirtualTouchPIMPL(learningRate)) {
+
+  }
+
+  VNVirtualTouch::VNVirtualTouch(VNInputParameters *params) :
+    pimpl_(new VNVirtualTouchPIMPL(params)) {
 
   }
 
