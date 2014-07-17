@@ -2,6 +2,8 @@
 #define __INCLUDE_VISION_VNVIRTUALTOUCH_H__
 
 #include <Vision/VNAlgorithm.h>
+#include <Vision/VNVisionTypes.h>
+#include <StringTypes.h>
 #include <boost/shared_ptr.hpp>
 
 namespace LF {
@@ -12,6 +14,7 @@ namespace Vision {
    * The default learning rate used when no learning rate is specified
    */
   extern const float kVNDefaultVirtualTouchLearningRate;
+  extern const LeapFrog::Brio::CString kVNVirtualTouchLearningRateKey;
 
   /*!
    * kVNDefaultVirtualTouchThreshold
@@ -19,6 +22,7 @@ namespace Vision {
    * of the current frame from the camera
    */
   extern const int kVNDefaultVirtualTouchThreshold;
+  extern const LeapFrog::Brio::CString kVNVirtualTouchThresholdKey;
 
   // foprward declaration
   class VNVirtualTouchPIMPL;
@@ -38,12 +42,19 @@ namespace Vision {
   public:
 
     /*!
-     * \brief Constuctor
+     * \brief DEPRECATED Constuctor
      * \param learningRate the value of the learning rate for this algorithm
-     * \param gray intensity threshold.
      */
-    VNVirtualTouch(float learningRate = kVNDefaultVirtualTouchLearningRate, 
-		   int intensityThreshold = kVNDefaultVirtualTouchThreshold);
+    VNVirtualTouch(float learningRate = kVNDefaultVirtualTouchLearningRate);
+
+    /*!
+     * \brief Constructor with parameters list
+     * \param params list of input parameters to adjust various aspects of
+     * the VNVirtualTouch algorithm.  Currently can set the following params:
+     *  - learningRate
+     *  - intensityThreshold
+     */
+    VNVirtualTouch(VNInputParameters *params);
 
     /*!
      * \brief Default destructor

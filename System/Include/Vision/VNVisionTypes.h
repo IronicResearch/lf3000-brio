@@ -59,9 +59,10 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupVision), VN_VISION_ERRORS)
   static const VNPixelType kVNMaxPixelValue = 255;
 
   /*!
-   * A list of key-value pairs representing ptoential input for vision classes
+   * A list of key-value pairs representing potential input for vision classes
    */
-  typedef std::vector<std::pair<LeapFrog::Brio::CString, float> > VNInputParameters;
+  typedef std::pair<LeapFrog::Brio::CString, float> VNInputParameter;
+  typedef std::vector<VNInputParameter> VNInputParameters;
   
   /*!
    * \class VNPoint

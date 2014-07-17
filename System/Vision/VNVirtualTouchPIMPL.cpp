@@ -1,4 +1,5 @@
 #include <VNVirtualTouchPIMPL.h>
+#include <Vision/VNVirtualTouch.h>
 #include "VNRGB2Gray.h"
 #undef VN_PROFILE
 //#define VN_PROFILE 1
@@ -26,14 +27,43 @@
 
 namespace LF {
 namespace Vision {
+  const LeapFrog::Brio::CString kVNVirtualTouchLearningRateKey = "VNVirtualTouchLearningRate";
+  const LeapFrog::Brio::CString kVNVirtualTouchThresholdKey = "VNVirtualTouchThreshold";
 
   static const float kVNDownScale = 0.5f;
   static const float kVNUpScale = 1.0f/kVNDownScale;
+  
+  void
+  VNVirtualTouchPIMPL::SetParams(VNInputParameters *params) {
 
-  VNVirtualTouchPIMPL::VNVirtualTouchPIMPL(float learningRate, int intensityThreshold) :
+    if (params) {
+      VNInputParameters::const_iterator it = params->begin();
+      for ( ; it != params->end(); ++it) {
+	LeapFrog::Brio::CString key = (*it).first;
+	float val = (*it).second;
+
+	// we potentially need to do more error checking on these parameters
+	if (key.compare(kVNVirtualTouchLearningRateKey) == 0) {
+	  if (val > 0)
+	    learningRate_ = val;
+	} else if (key.compare(kVNVirtualTouchThresholdKey) == 0) {
+	  if (val > 0)
+	    threshold_ = val;
+	}
+      }
+    }
+  }
+
+  VNVirtualTouchPIMPL::VNVirtualTouchPIMPL(float learningRate) :
     learningRate_(learningRate),
-    threshold_(intensityThreshold) {
+    threshold_(kVNDefaultVirtualTouchThreshold) {
 
+  }
+
+  VNVirtualTouchPIMPL::VNVirtualTouchPIMPL(VNInputParameters *params) :
+    learningRate_(kVNDefaultVirtualTouchLearningRate),
+    threshold_(kVNDefaultVirtualTouchThreshold) {
+    SetParams(params);
   }
 
   VNVirtualTouchPIMPL::~VNVirtualTouchPIMPL(void) {
