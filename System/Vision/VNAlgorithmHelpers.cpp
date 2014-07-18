@@ -13,14 +13,16 @@ namespace Vision {
 	++i) {
 
       c = *i;
-      if (!c)
+      if (!c) {
 	continue;
+      }
 
-      if (c->type == type)
-	break;
+      if (c->type == type) {
+	return c;
+      }
     }
     
-    return c;
+    return NULL;
   }
 
   void
@@ -32,31 +34,17 @@ namespace Vision {
     LeapFrog::Brio::Boolean err = cameraMPI.GetCameraControls(controls);
     dbg.Assert(err, "VNWandTracker could get camera controls\n");
 
-    // turn on autowhitebalance
-    LeapFrog::Brio::tControlInfo *awb = FindCameraControl(controls,
-							  LeapFrog::Brio::kControlTypeAutoWhiteBalance);
-    if (awb) {
-      cameraMPI.SetCameraControl(awb, 1); // is a boolean, set to 0 for false
-    } else {
-      dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for auto white balance\n");
-    }
+    LeapFrog::Brio::tControlInfo *c = NULL;
+    for(LeapFrog::Brio::tCameraControls::const_iterator i = controls.begin();
+	i != controls.end();
+	++i) {
 
-    // set exposure to default value
-    LeapFrog::Brio::tControlInfo *e = FindCameraControl(controls,
-							LeapFrog::Brio::kControlTypeExposure);
-    if (e) {
-      cameraMPI.SetCameraControl(e, e->preset);
-    } else {
-      dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for exposure\n");
-    }
-
-    // turn on auto exposure
-    LeapFrog::Brio::tControlInfo *ae = FindCameraControl(controls,
-							 LeapFrog::Brio::kControlTypeAutoExposure);
-    if (ae) {
-      cameraMPI.SetCameraControl(ae, 0); // V4L2_EXPOSURE_AUTO = 0
-    } else {
-      dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for auto exposure\n");
+      c = *i;
+      if (c) {
+	cameraMPI.SetCameraControl(c, c->preset);
+      } else {
+	dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control\n");
+      }
     }
   }
 }

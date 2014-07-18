@@ -265,6 +265,98 @@ public:
 		delete pKernelMPI_;
 	}
 
+	//------------------------------------------------------------------------
+	void testWhiteBalanceTemperature()
+	{
+		PRINT_TEST_NAME();
+
+		tVidCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+		tVideoSurf					surf;
+		tDisplayHandle				disp;
+		tControlInfo				ctrl;
+		tControlType				types[3] = { kControlTypeBrightness, kControlTypeContrast, kControlTypeSaturation };
+		tCaptureMode*				mode;
+		tCameraControls				controls;
+		tCameraControls::iterator	it;
+
+		pKernelMPI_ = new CKernelMPI;
+		pDisplayMPI_ = new CDisplayMPI;
+		CameraListener* pListener = new CameraListener;
+
+		disp = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatYUV420);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		mode = pCameraMPI_->GetCurrentFormat();
+		mode->width  = WIDTH;
+		mode->height = HEIGHT;
+		err = pCameraMPI_->SetCurrentFormat(mode);
+		TS_ASSERT_EQUALS( err, kNoErr );
+
+		bRet = pCameraMPI_->GetCameraControls(controls);
+		for (it = controls.begin(); it != controls.end(); it++)
+		{
+			tControlInfo* ctrlx = *it;
+			if (ctrlx->type == kControlTypeTemperature) 
+			{
+				ctrl = *ctrlx;
+				break;
+			}
+		}
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			capture = pCameraMPI_->StartVideoCapture(&surf);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			tControlInfo autowb;
+			autowb.type = kControlTypeAutoWhiteBalance;
+			bRet = pCameraMPI_->SetCameraControl(&autowb, 0);
+			TS_ASSERT_EQUALS( bRet, true );
+			S32 range = ctrl.max-ctrl.min;
+			S32 steps = 20;
+			S32 delta = range/steps;
+			for (S32 i = ctrl.preset; i <= ctrl.max; i += delta)
+			{
+				bRet = pCameraMPI_->SetCameraControl(&ctrl, i);
+				TS_ASSERT_EQUALS( bRet, true );
+				pKernelMPI_->TaskSleep(DELAY);
+			}
+			for (S32 i = ctrl.max; i >= ctrl.min; i -= delta)
+			{
+				bRet = pCameraMPI_->SetCameraControl(&ctrl, i);
+				TS_ASSERT_EQUALS( bRet, true );
+				pKernelMPI_->TaskSleep(DELAY);
+			}
+			for (S32 i = ctrl.min; i <= ctrl.preset; i += delta)
+			{
+				bRet = pCameraMPI_->SetCameraControl(&ctrl, i);
+				TS_ASSERT_EQUALS( bRet, true );
+				pKernelMPI_->TaskSleep(DELAY);
+			}
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+		}
+		else
+			TS_FAIL("MPI was deemed invalid");
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, true);
+		delete pListener;
+		delete pDisplayMPI_;
+		delete pKernelMPI_;
+	}
+
 };
 
 // EOF
