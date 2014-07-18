@@ -792,6 +792,12 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 		case V4L2_CID_EXPOSURE_AUTO:
 			control->type = kControlTypeAutoExposure;
 			break;
+		case V4L2_CID_GAIN:
+  		        control->type = kControlTypeGain;
+		        break;
+		case V4L2_CID_WHITE_BALANCE_TEMPERATURE:
+		        control->type = kControlTypeTemperature;
+		        break;
 		default:
 			control->type = kControlTypeError;
 			pCamCtx->dbg->DebugOut(kDbgLvlVerbose, "%s: v4l2 cid %08x: ctl=%d, min=%d, max=%d, def=%d, cur=%d, name=%s\n", __FUNCTION__, query.id, (int)control->type, (int)control->min, (int)control->max, (int)control->preset, (int)control->current, query.name);
@@ -1074,7 +1080,6 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 	struct v4l2_format		fmt;
 	struct v4l2_streamparm	fps;
 
-	printf("1\n");
 	/* format and resolution */
 	memset(&fmt, 0, sizeof(struct v4l2_format));
 	fmt.type				= V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -1098,7 +1103,6 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
     if(ioctl(camCtx_.fd, VIDIOC_S_FMT, &fmt) < 0)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::SetCameraMode: mode selection failed for %s, %d\n", camCtx_.file, errno);
-		printf("2\n");
 		return false;
 	}
 
@@ -1114,7 +1118,6 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 	if(ioctl(camCtx_.fd, VIDIOC_S_PARM, &fps) < 0)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::SetCameraMode: fps selection failed for %s\n", camCtx_.file);
-		printf("3\n");
 		return false;
 	}
 
@@ -1227,12 +1230,19 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 	case kControlTypeAutoExposure:
 		ctrl.id = V4L2_CID_EXPOSURE_AUTO;
 		break;
+	case kControlTypeGain:
+	        ctrl.id = V4L2_CID_GAIN;
+	        break;
+	case kControlTypeTemperature:
+	        ctrl.id = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
+	        break;
 	default:
 		bRet = false;
 	}
 
 	ctrl.value = value;
 
+	THREAD_LOCK
 	CAMERA_LOCK;
 
 	bRet = SetControlInt(camCtx_.fd, &ctrl);
@@ -1248,6 +1258,7 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 	}
 
 	CAMERA_UNLOCK;
+	THREAD_UNLOCK
 
 	return bRet;
 }

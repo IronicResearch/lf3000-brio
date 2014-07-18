@@ -51,6 +51,8 @@ enum tControlType {
 	kControlTypeAutoWhiteBalance,
 	kControlTypeExposure,
 	kControlTypeAutoExposure,
+	kControlTypeGain,
+	kControlTypeTemperature
 };
 
 enum tColorOrder {
