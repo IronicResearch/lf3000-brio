@@ -71,7 +71,7 @@ void ServiceBrowser::ItemNew(const int32_t& interface,
 	}
 	
 	//Make sure it looks like a LeapFrog device
-	if( name.compare(0, 8, "Explorer") != 0 )
+	if( name.compare(0, 8, "Explorer") != 0 && name.compare(0,3, "LF-") != 0 )
 	{
 		mDebug.DebugOut(LeapFrog::Brio::kDbgLvlValuable, "Host was not an LF device, skipping\n");
 		return;

@@ -42198,3 +42198,13 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/18/14 3:42 PM
 25,226 ms. (Cumulative: 26,670,061 ms)
 
 ----------------
+Revision 10,947 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Wireless: LF- is in fact a LF device.
+
+
+By Bryant Hetherington (bhetherington@leapfrog.com) on 7/20/14 12:59 PM
+1 changed, 0 added, 0 deleted.
+25,113 ms. (Cumulative: 26,695,268 ms)
+
+----------------
