@@ -42208,3 +42208,13 @@ By Bryant Hetherington (bhetherington@leapfrog.com) on 7/20/14 12:59 PM
 25,113 ms. (Cumulative: 26,695,268 ms)
 
 ----------------
+Revision 10,948 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,949 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Controller logs now only active if /flags/controllerlog is present.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/21/14 1:14 PM
+1 changed, 0 added, 0 deleted.
+25,119 ms. (Cumulative: 26,720,497 ms)
+
+----------------
