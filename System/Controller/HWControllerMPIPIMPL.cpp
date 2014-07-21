@@ -4,6 +4,7 @@
 #include <Hardware/HWControllerEventMessage.h>
 #include <Timer.h>
 #include <iostream> // AJL DEBUG
+#include <stdio.h>
 #include <dlfcn.h>
 #include <string.h>
 
@@ -69,7 +70,12 @@ namespace Hardware {
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputCallback, (void*)&InputCallback, sizeof(void*), NULL);
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetScanCallback, (void*)&ScanCallback, sizeof(void*), NULL);
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputContext, this, sizeof(void*), NULL);
-			pBTIO_EnableBluetoothDebug_(true, 3, 1, "ControllerLog.btsnoop");
+			FILE* fp = fopen("/flags/controllerlog", "r");
+			if(fp)
+			{
+				pBTIO_EnableBluetoothDebug_(true, 3, 1, "ControllerLog.btsnoop");
+				fclose(fp);
+			}
 		}
 		else {
 			debugMPI_.DebugOut(kDbgLvlImportant, "%s: dlopen failed to load %s, error=%s\n", __func__, BTIO_LIB_NAME, dlerror());
