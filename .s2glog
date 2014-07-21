@@ -42218,3 +42218,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/21/14 1:14 PM
 25,119 ms. (Cumulative: 26,720,497 ms)
 
 ----------------
+Revision 10,950 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Removed kHWControllerAccelerometerOrientationChanged event from Controller MPI - controllers don't have an orientation (FWGLAS-548)
+
+By Lmoore (Lmoore@leapfrog.com) on 7/21/14 2:11 PM
+3 changed, 0 added, 0 deleted.
+25,488 ms. (Cumulative: 26,746,095 ms)
+
+----------------

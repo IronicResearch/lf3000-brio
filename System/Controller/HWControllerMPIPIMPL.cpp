@@ -325,10 +325,6 @@ namespace Hardware {
 	  msg = reinterpret_cast<const LeapFrog::Brio::CAccelerometerMessage&>(msgIn);
 	controller->pimpl_->SetAccelerometerData(msg.GetAccelerometerData());
 
-      } else if (type == LeapFrog::Brio::kOrientationChanged) {
-	newType = kHWControllerAccelerometerOrientationChanged;
-	priority = kHWControllerHighPriorityEvent;
-
 #if 0      
 	} else if (type == LeapFrog::Brio::kButtonStateChanged) {
 	newType = kHWControllerButtonStateChanged;

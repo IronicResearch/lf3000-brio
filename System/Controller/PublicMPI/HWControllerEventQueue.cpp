@@ -21,7 +21,6 @@
 
 const LeapFrog::Brio::tEventType
   kHWControllerQueueListenerTypes[] = {LF::Hardware::kHWControllerAccelerometerDataChanged,
-		  	  	  	  	  	  	  	   LF::Hardware::kHWControllerAccelerometerOrientationChanged,
 		  	  	  	  	  	  	  	   LF::Hardware::kHWControllerButtonStateChanged,
 		  	  	  	  	  	  	  	   LF::Hardware::kHWControllerAnalogStickDataChanged
 									  };

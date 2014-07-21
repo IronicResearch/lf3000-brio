@@ -22,7 +22,7 @@ namespace Hardware {
 #define HW_CONTROLLER_EVENTS						\
   (kHWControllerDataChanged)						\
   (kHWControllerAccelerometerDataChanged)				\
-  (kHWControllerAccelerometerOrientationChanged)			\
+  (kHWControllerDeprecatedEvent)			/*Do not use */		\
   (kHWControllerAnalogStickDataChanged) 				\
   (kHWControllerButtonStateChanged)					\
   (kHWControllerModeChanged)						\
