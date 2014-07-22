@@ -42236,3 +42236,18 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/21/14 8:16 PM
 25,237 ms. (Cumulative: 26,771,441 ms)
 
 ----------------
+Revision 10,952 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,995 ms. (Cumulative: 26,796,530 ms)
+
+----------------
+Revision 10,953 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-812: Do Brio SDK modifications in inactivity behavior. 1) Create kPowerKeepAlive event in PowerMPI. 2) Create CPowerMPI::KeepAlive() method. 3) Add a call CPowerMPI::KeepAlive() in HWControllerPIMPL during button push event. 4) Call EnableInactivity method in AppManager2.cpp to reset timer in AppServer(IdleTimeout).
+
+By pjusuf (pjusuf@leapfrog.com) on 7/22/14 3:13 PM
+4 changed, 0 added, 0 deleted.
+25,138 ms. (Cumulative: 26,821,668 ms)
+
+----------------
