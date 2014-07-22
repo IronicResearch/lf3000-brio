@@ -42251,3 +42251,19 @@ By pjusuf (pjusuf@leapfrog.com) on 7/22/14 3:13 PM
 25,138 ms. (Cumulative: 26,821,668 ms)
 
 ----------------
+Revision 10,954 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change Linux input event search-for-string from "USB", which was the
+name of the legacy VBUS detect in device mode still used by the
+Surgeon to detect end-of-update.
+
+Now search for "usb-host" (case sensitive) for use by Brio, which
+cares about the camera.
+
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 7/22/14 4:35 PM
+2 changed, 0 added, 0 deleted.
+26,225 ms. (Cumulative: 26,848,002 ms)
+
+----------------
