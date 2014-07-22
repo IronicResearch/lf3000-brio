@@ -90,7 +90,7 @@ namespace
 	#define INPUT_KEYBOARD		"gpio-keys"
 	#define INPUT_TOUCHSCREEN	"touchscreen interface"
 	#define	INPUT_POWER			"Power Button"
-	#define INPUT_USB			"USB"
+	#define INPUT_USB			"usb-host"
 	#define INPUT_ACLMTR		"Accelerometer"
 
 	const tEventPriority	kButtonEventPriority	= 0;

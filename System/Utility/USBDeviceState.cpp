@@ -53,7 +53,7 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 		}
 		else
 		{
-			usb_input_fd = open_input_device("USB");
+			usb_input_fd = open_input_device("usb-host");
 			if(usb_input_fd >= 0)
 			{
 				ioctl(usb_input_fd, EVIOCGSW(sizeof(int)), &usbState);
