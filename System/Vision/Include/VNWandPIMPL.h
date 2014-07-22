@@ -31,8 +31,8 @@ namespace Vision {
     char* GetBluetoothAddress();
     void SetBluetoothAddress( const char* btaddress );
 
-    cv::Scalar hsvMin_;
-    cv::Scalar hsvMax_;
+    cv::Scalar yuvMin_;
+    cv::Scalar yuvMax_;
 
   protected:
     LeapFrog::Brio::U8 id_;

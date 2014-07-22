@@ -21,10 +21,12 @@
 #endif
 
 #define VN_USE_INTEGRAL_IMAGE_SEARCH 0
+#define VN_USE_IMAGE_COPY_FOR_CONTOURS 0   // TODO: make sure this is 0 for release builds
+#define VN_USE_YUV_COLORSPACE 1
 
 namespace LF {
 namespace Vision {
-  
+
   static const LeapFrog::Brio::CString kVNAreaToStartScalingKey = "VNWTAreaToStartScaling";
   static const LeapFrog::Brio::CString kVNMinPercentToScaleKey = "VNWTMinPercentToScale";
   static const LeapFrog::Brio::CString kVNMinWandAreaKey = "VNWTMinWandArea";
@@ -33,8 +35,8 @@ namespace Vision {
   static const float kVNWandMinAreaDefault = 50.f;
   static const float kVNDefaultMinPercentToScale = 0.3f;
   static const int kVNNoContourIndex = -1;
-  static const int kVNMaxNumStepsToComputeCircle = 20;
-  
+  static const int kVNMaxNumStepsToComputeCircle = 30;
+
   static const float kVNMinPercentOfPixelsDiffToIncludeInSum = 0.7f;
   static const float kVNPercentOfMaxRadiusValueForAreaCalc = 0.8f;
 
@@ -79,11 +81,11 @@ namespace Vision {
 
     SetParams(params);
   }
-  
+
   VNWandTrackerPIMPL::~VNWandTrackerPIMPL(void) {
     Shutdown();
   }
-  
+
   void
   VNWandTrackerPIMPL::SetWand(VNWand *wand) {
     wand_ = wand;
@@ -109,18 +111,18 @@ namespace Vision {
 
     LeapFrog::Brio::Boolean err = cameraMPI.GetCameraControls(controls);
     dbg.Assert(err, "VNWandTracker could get camera controls\n");
-    
-    // turn off autowhitebalance 
-    LeapFrog::Brio::tControlInfo *awb = FindCameraControl(controls, 
+
+    // turn off autowhitebalance
+    LeapFrog::Brio::tControlInfo *awb = FindCameraControl(controls,
 							  LeapFrog::Brio::kControlTypeAutoWhiteBalance);
     if (awb) {
-      cameraMPI.SetCameraControl(awb, 0); // is a boolean, set to 0 for false 
+      cameraMPI.SetCameraControl(awb, 0); // is a boolean, set to 0 for false
     } else {
       dbg.DebugOut(kDbgLvlCritical, "null camera control for auto white balance\n");
     }
 
     // turn off auto exposure
-    LeapFrog::Brio::tControlInfo *ae = FindCameraControl(controls, 
+    LeapFrog::Brio::tControlInfo *ae = FindCameraControl(controls,
 							 LeapFrog::Brio::kControlTypeAutoExposure);
     if (ae) {
       cameraMPI.SetCameraControl(ae, 1); // V4L2_EXPOSURE_MANUAL == 1
@@ -129,10 +131,14 @@ namespace Vision {
     }
 
     // set exposure to minimum
-    LeapFrog::Brio::tControlInfo *e = FindCameraControl(controls, 
+    LeapFrog::Brio::tControlInfo *e = FindCameraControl(controls,
 							LeapFrog::Brio::kControlTypeExposure);
     if (e) {
-      cameraMPI.SetCameraControl(e, e->min);
+      // NOTE: the rickteck camera has a min value of 8 for the exposure setting.  We are manually setting
+      // to a value slightly above that to increase the intensity of the wand light to better capture the
+      // wand further away from the camera.  This value will need to be addressed if/when a new camera
+      // is introduced to the system 
+      cameraMPI.SetCameraControl(e, 14);
     } else {
       dbg.DebugOut(kDbgLvlCritical, "null camera control for exposure\n");
     }
@@ -145,16 +151,29 @@ namespace Vision {
   }
 
   void
-  VNWandTrackerPIMPL::ComputeLargestContour(cv::Mat &img, 
+  VNWandTrackerPIMPL::ComputeLargestContour(cv::Mat &img,
 					    std::vector<std::vector<cv::Point> > &contours,
 					    int &index) {
     std::vector<cv::Vec4i> hierarchy;
-    cv::findContours(img, 
-		     contours, 
-		     hierarchy, 
-		     CV_RETR_LIST, 
-		     CV_CHAIN_APPROX_SIMPLE, 
+
+#if VN_USE_IMAGE_COPY_FOR_CONTOURS
+    static cv::Mat imgCopy;
+    img.copyTo(imgCopy);
+    cv::findContours(imgCopy,
+             contours,
+             hierarchy,
+             CV_RETR_LIST,
+             CV_CHAIN_APPROX_SIMPLE,
+             cv::Point(0,0));
+
+#else
+    cv::findContours(img,
+		     contours,
+		     hierarchy,
+		     CV_RETR_LIST,
+		     CV_CHAIN_APPROX_SIMPLE,
 		     cv::Point(0,0));
+#endif // VN_USE_IMAGE_COPY_FOR_CONTOURS
 
     float maxArea = 0.f;
     for (unsigned int i = 0; i < contours.size(); ++i) {
@@ -190,7 +209,7 @@ namespace Vision {
 	}
       }
     }
-    
+
     if (found) {
       center.x = 0.5*(m1.x + m2.x);
       center.y = 0.5*(m1.y + m2.y);
@@ -206,7 +225,7 @@ namespace Vision {
     if (area <= minArea_ ) {
       sf = minPercentToScale_;
     } else if (area < wandAreaToStartScaling_) {
-      // a linear interpolation from 1.0 down to minPercentToScale_  
+      // a linear interpolation from 1.0 down to minPercentToScale_
       sf = 1.0f - ((wandAreaToStartScaling_ - area)*(1.0f - minPercentToScale_)/(wandAreaToStartScaling_ - minArea_));
     }
 
@@ -231,31 +250,36 @@ namespace Vision {
   void
   VNWandTrackerPIMPL::Execute(cv::Mat &input, cv::Mat &output) {
     if (wand_) {
-      PROF_BLOCK_START("VNWandTrackerPIMPL::Execute");  		  
-      // switch to HSV color spave
+      PROF_BLOCK_START("VNWandTrackerPIMPL::Execute");
 
+#if VN_USE_YUV_COLORSPACE
+    PROF_BLOCK_START("YUYV to YUV");
+    ConvertToYUV(input, yuv_);
+    PROF_BLOCK_END();
+
+    // filter out the valid pixels based on hue, saturation and intensity
+    PROF_BLOCK_START("inRange");
+    inRange3( yuv_, wand_->pimpl_->yuvMin_, wand_->pimpl_->yuvMax_, output );
+    PROF_BLOCK_END();
+
+
+#else // VN_USE_YUV_COLORSPACE
+      // switch to HSV color spave
       PROF_BLOCK_START("YUYV to RGB");
       ConvertToRGB(input, rgb_);
       PROF_BLOCK_END();
-      
+
       PROF_BLOCK_START("RGBToHSV");
       RGBToHSV(rgb_, hsv_);
       PROF_BLOCK_END();
-		
+
       // filter out the valid pixels based on hue, saturation and intensity
       PROF_BLOCK_START("inRange");
-      inRange3( hsv_, wand_->pimpl_->hsvMin_, wand_->pimpl_->hsvMax_, output );
+      inRange3( hsv_, wand_->pimpl_->yuvMin_, wand_->pimpl_->yuvMax_, output );
       PROF_BLOCK_END();
-      
-	/* redundant from inrange???
-      PROF_BLOCK_START("threshold");
-      cv::threshold(output, 
-		    output, 
-		    kVNMinPixelValue, 
-		    kVNMaxPixelValue, 
-		    cv::THRESH_BINARY);
-      PROF_BLOCK_END();
-      */
+
+#endif // VN_USE_YUV_COLORSPACE
+
 #if defined(EMULATION)
       cv::namedWindow("threshold");
       cv::imshow("threshold", output);
@@ -267,22 +291,22 @@ namespace Vision {
       //cv::integral(output, integral);
       LF::Vision::IntegralImage( output, integral_);
       PROF_BLOCK_END();
-      
+
       PROF_BLOCK_START("findLight");
       lightArea = FindLight(integral_, p);
       PROF_BLOCK_END();
 
 #else // VN_USE_INTEGRAL_IMAGE_SEARCH
-      
+
       PROF_BLOCK_START("ComputeLargestContour");
       std::vector<std::vector<cv::Point> > contours;
       int index = kVNNoContourIndex;
       ComputeLargestContour(output, contours, index);
       PROF_BLOCK_END();
-      
+
       if (index != kVNNoContourIndex) {
 	float r = 0.f;
-	
+
 	PROF_BLOCK_START("FitCircleToContour");
 	FitCircleToContour(contours[index], p, r);
 	PROF_BLOCK_END();
@@ -294,11 +318,11 @@ namespace Vision {
       if (scaleInput_) {
 	// insure the size of the input image matches the translator source frame size
 	assert(SameSize(translator_.GetSourceFrame(), cv::Rect(0,0,input.cols,input.rows)));
-	  
+
 	PROF_BLOCK_START("ScaleSubFrame");
 	ScaleSubFrame(input,p,lightArea);
 	PROF_BLOCK_END();
-	  
+
 	PROF_BLOCK_START("ScaleWandPoint");
 	inFrame = ScaleWandPoint(p);
 	PROF_BLOCK_END();
@@ -310,8 +334,8 @@ namespace Vision {
       } else {
 	wand_->pimpl_->NotVisibleOnScreen();
       }
-    }    
-    PROF_BLOCK_END();	
+    }
+    PROF_BLOCK_END();
   }
 
   void
@@ -331,17 +355,35 @@ namespace Vision {
     case CV_8UC2: // YUYV
       LF::Vision::YUYV2RGB(in, outrgb);
       break;
-      
+
     case CV_8UC3:
       outrgb = in.clone();
       break;
-      
+
     default:
-      
+
       assert(!"Unsupported image format");
     }
   }
-	
+
+  void
+  VNWandTrackerPIMPL::ConvertToYUV(const cv::Mat& in, cv::Mat& outyuv) {
+        switch( in.type() ) {
+        case CV_8UC2: // YUYV
+          LF::Vision::YUYV2YUV(in, outyuv);
+          break;
+
+        case CV_8UC3:
+            cv::cvtColor(in, outyuv, CV_BGR2YUV); // BGR or RGB???
+          break;
+
+        default:
+
+          assert(!"Unsupported image format");
+        }
+
+  }
+
   int VNWandTrackerPIMPL::integralSum(const cv::Mat &integral, cv::Rect &roi) {
     int tl = integral.at<unsigned int>(roi.y, roi.x);
     int tr = integral.at<unsigned int>(roi.y, roi.x+roi.width);
@@ -354,12 +396,12 @@ namespace Vision {
     return a < b;
   }
 
-  float 
+  float
   VNWandTrackerPIMPL::FindLight(const cv::Mat &integral, cv::Point &c) {
     // This algorithm breaks the image up in to a grid and then looks at each
     // box in the grid to determine if there is light present in that grid.  If
     // there is it gets added to the total area of the light and the "center of mass"
-    // of the light.  
+    // of the light.
     //
     // The first two variables here define to size of each grid box in number of pixels
     static const int dx = 5; // in the x direction
@@ -371,7 +413,7 @@ namespace Vision {
     static const int yMid = 2;
     c.x = 0;
     c.y = 0;
-    
+
     int numX = integral.cols/dx;
     int numY = integral.rows/dy;
     cv::Point result(0,0);
@@ -419,7 +461,7 @@ namespace Vision {
       }
 
       // sort these distances from smalles to largest and then use one of the values
-      // as a representative radius of the light.  
+      // as a representative radius of the light.
       std::sort(rs.begin(), rs.end(), compare);
       float r = rs[(int)(kVNPercentOfMaxRadiusValueForAreaCalc*rs.size())];
 
@@ -430,6 +472,6 @@ namespace Vision {
 
     return area; //static_cast<float>(sum);
   }
-  
+
 }
 }

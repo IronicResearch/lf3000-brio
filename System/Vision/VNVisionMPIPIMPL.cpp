@@ -128,7 +128,7 @@ namespace Vision {
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::DeleteTask(void) {
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
-    
+
     // stop the video capture if it's still going
     if (videoCapture_ != kInvalidVidCapHndl)
       result = cameraMPI_.StopVideoCapture(videoCapture_);
@@ -151,7 +151,7 @@ namespace Vision {
     // delete the memory for the surface buffer
     if (surface_.buffer) delete surface_.buffer;
     surface_.buffer = NULL;
-    
+
     return result;
   }
 
@@ -171,7 +171,7 @@ namespace Vision {
 
 	  // the pixel format supported by the glasgow camera is RAWYUYV
 	  mode->pixelformat = LeapFrog::Brio::kCaptureFormatRAWYUYV;
-	  
+
 	  mode->fps_numerator = 1;
 	  // if we are in VGA mode set the fps to 30, if in QVGA mode set it to 60
 	  mode->fps_denominator = (frameProcessingWidth_ == kVNVGAWidth) ? 30 : 60;
@@ -355,7 +355,7 @@ namespace Vision {
       wasTriggered = hotSpot->IsTriggered();
 
       hotSpot->Trigger(outputImg_);
-    
+
       // add hot spot to appropriate group of hot spots
       if (hotSpot->IsTriggered())
 	triggeredHotSpots.push_back(hotSpot);
@@ -444,21 +444,21 @@ namespace Vision {
 #if defined(EMULATION)
 	      pthis->OpenCVDebug();
 #endif
-	      
+
 	      pthis->TriggerHotSpots();
 
 	      PROF_BLOCK_END();
-	      
-	      ++pthis->frameCount_;
-	      if (pthis->frameCount_ % 30 == 0) {
-	          std::cout << "FPS = " << pthis->frameCount_ / ((float)(time(0) - pthis->frameTime_)) << std::endl;
-	      }
+
+	    //   ++pthis->frameCount_;
+	    //   if (pthis->frameCount_ % 30 == 0) {
+	    //       std::cout << "FPS = " << pthis->frameCount_ / ((float)(time(0) - pthis->frameTime_)) << std::endl;
+	    //   }
 	  } else {
 	      pthis->kernelMPI_.TaskSleep(1); // yield
 	  }
 
 	}
-	
+
 	return pctx; // optional
   }
 #endif
@@ -470,17 +470,17 @@ namespace Vision {
 	dynamic_cast<const LeapFrog::Brio::CCameraEventMessage*>(&msg);
       if (cemsg) {
 	if (cemsg->GetEventType() == LeapFrog::Brio::kCaptureFrameEvent) {
-	  
+
 	  LeapFrog::Brio::tCaptureFrameMsg frameMsg = cemsg->data.framed;
 	  LeapFrog::Brio::tVideoSurf *surf = cameraMPI_.GetCaptureVideoSurface(frameMsg.vhndl);
-	  
+
 	  if (surf) {
 	    unsigned char *buffer = surf->buffer;
 	    if (buffer) {
 	      //BeginFrameProcessing();
-	      
+
 	      PROF_BLOCK_START("Vision::Update");
-	      
+
 	      surface_.width  = surf->width;
 	      surface_.height = surf->height;
 	      surface_.pitch  = surf->pitch;
@@ -488,8 +488,8 @@ namespace Vision {
 	      memcpy(surface_.buffer,
 		     buffer,
 		     surface_.height * surface_.pitch);
-	      
-	      
+
+
 	      // create a camera surface cv::Mat
 	      switch(surf->format) {
 	      case LeapFrog::Brio::kPixelFormatRGB888:
@@ -506,7 +506,7 @@ namespace Vision {
 	      default:
 		assert( !"unsupported surface format" );
 	      }
-	      
+
 #if VN_USE_IMAGE_PROCESS_THREAD
 	      // Signal vision thread to process frame
 	      isFramePending_ = true;
@@ -514,15 +514,15 @@ namespace Vision {
 	      PROF_BLOCK_START("algorithm");
 	      algorithm_->Execute(cameraSurfaceMat_, outputImg_);
 	      PROF_BLOCK_END();
-	      
+
 #if defined(EMULATION)
 	      OpenCVDebug();
 #endif
-	      
+
 	      PROF_BLOCK_START("triggering");
 	      TriggerHotSpots();
 	      PROF_BLOCK_END();
-	      
+
 	      ++frameCount_;
 	      if (frameCount_ % 30 == 0) {
 		std::cout << "FPS = " << frameCount_ / ((float)(time(0) - frameTime_)) << std::endl;
