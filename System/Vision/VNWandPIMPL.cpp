@@ -7,12 +7,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <CameraMPI.h>
+#include <VNAlgorithmHelpers.h>
 
 namespace LF {
 namespace Vision {
 
-  static const cv::Scalar kVNWandDefaultHSVMin = kVNWandGreenMin;
-  static const cv::Scalar kVNWandDefaultHSVMax = kVNWandGreenMax;
+  static const cv::Scalar kVNWandDefaultYUVMin = kVNWandGreenMin;
+  static const cv::Scalar kVNWandDefaultYUVMax = kVNWandGreenMax;
 
   const LeapFrog::Brio::S16 kVNNoWandLocationX = -10000;
   const LeapFrog::Brio::S16 kVNNoWandLocationY = -10000;
@@ -22,58 +24,58 @@ namespace Vision {
                                                         "    \"controllers\" : {\n"
                                                         "        \"default\" : {\n"
                                                         "            \"green\" : {\n"
-                                                        "                \"hmin\" : 71,\n"
-                                                        "                \"hmax\" : 107,\n"
-                                                        "                \"smin\" : 0,\n"
-                                                        "                \"smax\" : 255,\n"
-                                                        "                \"vmin\" : 77,\n"
-                                                        "                \"vmax\" : 255\n"
+                                                        "                \"ymin\" : 1,\n"
+                                                        "                \"ymax\" : 255,\n"
+                                                        "                \"umin\" : 184,\n"
+                                                        "                \"umax\" : 254,\n"
+                                                        "                \"vmin\" : 144,\n"
+                                                        "                \"vmax\" : 214\n"
                                                         "            },\n"
                                                         "            \"red\" : {\n"
-                                                        "                \"hmin\" : 0,\n"
-                                                        "                \"hmax\" : 36,\n"
-                                                        "                \"smin\" : 0,\n"
-                                                        "                \"smax\" : 255,\n"
-                                                        "                \"vmin\" : 77,\n"
-                                                        "                \"vmax\" : 255\n"
+                                                        "                \"ymin\" : 1,\n"
+                                                        "                \"ymax\" : 255,\n"
+                                                        "                \"umin\" : 32,\n"
+                                                        "                \"umax\" : 102,\n"
+                                                        "                \"vmin\" : 56,\n"
+                                                        "                \"vmax\" : 126\n"
                                                         "            },\n"
                                                         "            \"blue\" : {\n"
-                                                        "                \"hmin\" : 141,\n"
-                                                        "                \"hmax\" : 177,\n"
-                                                        "                \"smin\" : 0,\n"
-                                                        "                \"smax\" : 255,\n"
-                                                        "                \"vmin\" : 77,\n"
-                                                        "                \"vmax\" : 255\n"
+                                                        "                \"ymin\" : 1,\n"
+                                                        "                \"ymax\" : 255,\n"
+                                                        "                \"umin\" : 36,\n"
+                                                        "                \"umax\" : 106,\n"
+                                                        "                \"vmin\" : 178,\n"
+                                                        "                \"vmax\" : 248\n"
                                                         "            },\n"
                                                         "            \"yellow\" : {\n"
-                                                        "                \"hmin\" : 0,\n"
-                                                        "                \"hmax\" : 36,\n"
-                                                        "                \"smin\" : 0,\n"
-                                                        "                \"smax\" : 255,\n"
-                                                        "                \"vmin\" : 77,\n"
-                                                        "                \"vmax\" : 255\n"
+                                                        "                \"ymin\" : 40,\n"
+                                                        "                \"ymax\" : 255,\n"
+                                                        "                \"umin\" : 8,\n"
+                                                        "                \"umax\" : 78,\n"
+                                                        "                \"vmin\" : 17,\n"
+                                                        "                \"vmax\" : 87\n"
                                                         "            },\n"
                                                         "            \"cyan\" : {\n"
-                                                        "                \"hmin\" : 77,\n"
-                                                        "                \"hmax\" : 113,\n"
-                                                        "                \"smin\" : 0,\n"
-                                                        "                \"smax\" : 255,\n"
-                                                        "                \"vmin\" : 77,\n"
-                                                        "                \"vmax\" : 255\n"
+                                                        "                \"ymin\" : 1,\n"
+                                                        "                \"ymax\" : 255,\n"
+                                                        "                \"umin\" : 0,\n"
+                                                        "                \"umax\" : 70,\n"
+                                                        "                \"vmin\" : 173,\n"
+                                                        "                \"vmax\" : 243\n"
                                                         "            },\n"
                                                         "            \"magenta\" : {\n"
-                                                        "                \"hmin\" : 0,\n"
-                                                        "                \"hmax\" : 36,\n"
-                                                        "                \"smin\" : 0,\n"
-                                                        "                \"smax\" : 255,\n"
-                                                        "                \"vmin\" : 77,\n"
-                                                        "                \"vmax\" : 255\n"
+                                                        "                \"ymin\" : 1,\n"
+                                                        "                \"ymax\" : 255,\n"
+                                                        "                \"umin\" : 37,\n"
+                                                        "                \"umax\" : 107,\n"
+                                                        "                \"vmin\" : 38,\n"
+                                                        "                \"vmax\" : 108\n"
                                                         "            },\n"
                                                         "            \"off\" : {\n"
-                                                        "                \"hmin\" : 0,\n"
-                                                        "                \"hmax\" : 0,\n"
-                                                        "                \"smin\" : 0,\n"
-                                                        "                \"smax\" : 0,\n"
+                                                        "                \"ymin\" : 0,\n"
+                                                        "                \"ymax\" : 0,\n"
+                                                        "                \"umin\" : 0,\n"
+                                                        "                \"umax\" : 0,\n"
                                                         "                \"vmin\" : 0,\n"
                                                         "                \"vmax\" : 0\n"
                                                         "            }\n"
@@ -84,12 +86,30 @@ namespace Vision {
                                                         "\n"
                                                         "}\n";
 
+  void
+  SetCameraTemperature(bool warm) {
+    LeapFrog::Brio::tCameraControls controls;
+    LeapFrog::Brio::CCameraMPI cameraMPI;
+    LeapFrog::Brio::CDebugMPI dbg(kGroupVision);
+
+    LeapFrog::Brio::Boolean err = cameraMPI.GetCameraControls(controls);
+    dbg.Assert(err, "VNWandPIMPL could get camera controls\n");
+
+    // turn off autowhitebalance
+    LeapFrog::Brio::tControlInfo *temp = FindCameraControl(controls,
+							   LeapFrog::Brio::kControlTypeTemperature);
+    if (temp) {
+      cameraMPI.SetCameraControl(temp, ((warm) ? temp->max : temp->min)); // is a boolean, set to 0 for false
+    } else {
+      dbg.DebugOut(kDbgLvlCritical, "null camera control for auto white balance\n");
+    }
+  }
 
   VNWandPIMPL::VNWandPIMPL(void) :
     visible_(false),
     location_(VNPoint(kVNNoWandLocationX, kVNNoWandLocationY)),
-    hsvMin_(kVNWandDefaultHSVMin),
-    hsvMax_(kVNWandDefaultHSVMax),
+    yuvMin_(kVNWandDefaultYUVMin),
+    yuvMax_(kVNWandDefaultYUVMax),
     debugMPI_(kGroupVision),
     translator_(VNCoordinateTranslator::Instance()) {
   }
@@ -145,29 +165,36 @@ namespace Vision {
             zo::Object jsonColor;
 
             if (color == LF::Hardware::kHWControllerLEDGreen) {
+	        SetCameraTemperature(true);
                 jsonColor = defaultConfig["green"].get<zo::Object>();
             } else if(color == LF::Hardware::kHWControllerLEDRed) {
+	        SetCameraTemperature(false);
                 jsonColor = defaultConfig["red"].get<zo::Object>();
             } else if (color == LF::Hardware::kHWControllerLEDBlue) {
+	        SetCameraTemperature(true);
                 jsonColor = defaultConfig["blue"].get<zo::Object>();
             } else if (color == LF::Hardware::kHWControllerLEDYellow) {
+	        SetCameraTemperature(false);
                 jsonColor = defaultConfig["yellow"].get<zo::Object>();
             } else if (color == LF::Hardware::kHWControllerLEDCyan) {
+	        SetCameraTemperature(true);
                 jsonColor = defaultConfig["cyan"].get<zo::Object>();
             } else if (color == LF::Hardware::kHWControllerLEDMagenta) {
+	        SetCameraTemperature(false);
                 jsonColor = defaultConfig["magenta"].get<zo::Object>();
             } else {
+	        SetCameraTemperature(true);
                 // this handles kHWControllerLEDOff case
                 jsonColor = defaultConfig["green"].get<zo::Object>();
             }
 
-            hsvMin_[0] = jsonColor["hmin"].get<int>();
-            hsvMin_[1] = jsonColor["smin"].get<int>();
-            hsvMin_[2] = jsonColor["vmin"].get<int>();
+            yuvMin_[0] = jsonColor["ymin"].get<int>();
+            yuvMin_[1] = jsonColor["umin"].get<int>();
+            yuvMin_[2] = jsonColor["vmin"].get<int>();
 
-            hsvMax_[0] = jsonColor["hmax"].get<int>();
-            hsvMax_[1] = jsonColor["smax"].get<int>();
-            hsvMax_[2] = jsonColor["vmax"].get<int>();
+            yuvMax_[0] = jsonColor["ymax"].get<int>();
+            yuvMax_[1] = jsonColor["umax"].get<int>();
+            yuvMax_[2] = jsonColor["vmax"].get<int>();
 
             configfile.close();
 
@@ -176,33 +203,40 @@ namespace Vision {
             debugMPI_.DebugOut(kDbgLvlValuable, "VNWandPIMPL::SetColor %08x\n", (unsigned int)color);
 
             if (color == LF::Hardware::kHWControllerLEDGreen) {
-                hsvMin_ = kVNWandGreenMin;
-                hsvMax_ = kVNWandGreenMax;
+	        SetCameraTemperature(true);
+                yuvMin_ = kVNWandGreenMin;
+                yuvMax_ = kVNWandGreenMax;
 
             } else if(color == LF::Hardware::kHWControllerLEDRed) {
-                hsvMin_ = kVNWandRedMin;
-                hsvMax_ = kVNWandRedMax;
+	        SetCameraTemperature(false);
+                yuvMin_ = kVNWandRedMin;
+                yuvMax_ = kVNWandRedMax;
 
             } else if (color == LF::Hardware::kHWControllerLEDBlue) {
-                hsvMin_ = kVNWandBlueMin;
-                hsvMax_ = kVNWandBlueMax;
+	        SetCameraTemperature(true);
+                yuvMin_ = kVNWandBlueMin;
+                yuvMax_ = kVNWandBlueMax;
 
             } else if (color == LF::Hardware::kHWControllerLEDYellow) {
-                hsvMin_ = kVNWandYellowMin;
-                hsvMax_ = kVNWandYellowMax;
+	        SetCameraTemperature(false);
+                yuvMin_ = kVNWandYellowMin;
+                yuvMax_ = kVNWandYellowMax;
 
             } else if (color == LF::Hardware::kHWControllerLEDCyan) {
-                hsvMin_ = kVNWandCyanMin;
-                hsvMax_ = kVNWandCyanMax;
+	        SetCameraTemperature(true);
+                yuvMin_ = kVNWandCyanMin;
+                yuvMax_ = kVNWandCyanMax;
 
             } else if (color == LF::Hardware::kHWControllerLEDMagenta) {
-                hsvMin_ = kVNWandMagentaMin;
-                hsvMax_ = kVNWandMagentaMax;
+	        SetCameraTemperature(false);
+                yuvMin_ = kVNWandMagentaMin;
+                yuvMax_ = kVNWandMagentaMax;
 
             } else {
+	        SetCameraTemperature(true);
                 // this handles kHWControllerLEDOff case
-                hsvMin_ = kVNWandDefaultHSVMin;
-                hsvMax_ = kVNWandDefaultHSVMax;
+                yuvMin_ = kVNWandDefaultYUVMin;
+                yuvMax_ = kVNWandDefaultYUVMax;
 
             }
 
