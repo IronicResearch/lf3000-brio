@@ -5,6 +5,7 @@
 #include <Vision/VNWand.h>
 #include <VNWandPIMPL.h>
 #include <VNVisionMPIPIMPL.h>
+#include <PowerMPI.h>
 #include <string.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -558,7 +559,8 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
 		  pModule->buttonData_.time.microSeconds = time.tv_usec;
 	      HWControllerEventMessage cmsg(kHWControllerButtonStateChanged, pModule->controller_);
 	      pModule->eventMPI_.PostEvent(cmsg, 128);
-	  }
+	      CPowerMPI::KeepAlive();
+	  }	  
   }
 
     const char*

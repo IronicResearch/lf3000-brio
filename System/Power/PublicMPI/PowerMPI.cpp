@@ -43,6 +43,127 @@ inline const char* SYSFS_POWER_PATH(const char* path)
 }
 
 //============================================================================
+// CKeepAliveDelegate
+//============================================================================
+//------------------------------------------------------------------------------	
+struct CKeepAliveDelegate {
+	CKeepAliveDelegate(class CPowerMPI* pPowerMPI);
+	~CKeepAliveDelegate();
+
+	static void KeepAlive();
+	static void GetInactivityTimeouts(int& firstInterval, int& secondInterval);
+
+private:
+	void InitializeKeepAlive();
+	static void GetActivityTimeoutIntervalValues(int& firstInterval, int& secondInterval);
+			
+private:
+	static const int ONE_SECOND_IN_MS = 1*1000;
+	static const int ONE_MINUTE_IN_MS = 1*60*1000;
+	static const int DISABLED_INTERVAL = 0;
+
+	static long int	mLastEventPostTime;
+	static long int	mKeepAliveLoopTime; 
+	
+	static int mFirstInterval;
+	static int mSecondInterval;
+};
+
+//------------------------------------------------------------------------------	
+long int CKeepAliveDelegate::mLastEventPostTime = 0;
+long int CKeepAliveDelegate::mKeepAliveLoopTime = 0; 
+int CKeepAliveDelegate::mFirstInterval = 0;
+int CKeepAliveDelegate::mSecondInterval = 0; 
+	
+//------------------------------------------------------------------------------	
+CKeepAliveDelegate::CKeepAliveDelegate(CPowerMPI* powerMPI)
+{
+	InitializeKeepAlive();
+}
+
+//------------------------------------------------------------------------------
+CKeepAliveDelegate::~CKeepAliveDelegate()
+{
+}
+
+//------------------------------------------------------------------------------
+void CKeepAliveDelegate::InitializeKeepAlive()
+{
+	mLastEventPostTime = time(NULL)*1000; // Current time in ms
+
+	GetActivityTimeoutIntervalValues(mFirstInterval, mSecondInterval);
+	if (mFirstInterval <= DISABLED_INTERVAL && mSecondInterval <= DISABLED_INTERVAL) {
+		mKeepAliveLoopTime = DISABLED_INTERVAL;
+	}
+	else {
+		mKeepAliveLoopTime = ((mFirstInterval < ONE_MINUTE_IN_MS) ? ONE_SECOND_IN_MS : ONE_MINUTE_IN_MS);
+	}
+	
+	// Set minimum second interval to 1 minute
+	if (mSecondInterval < ONE_MINUTE_IN_MS) 
+		mSecondInterval = ONE_MINUTE_IN_MS;
+}
+
+//------------------------------------------------------------------------------
+void CKeepAliveDelegate::KeepAlive()
+{
+	// If timeout interval values in /flags/idle_timeouts is 0, timer is disabled, 
+	// no kPowerKeepAlive event will be posted.
+	if (mKeepAliveLoopTime == DISABLED_INTERVAL) return;
+		
+	// Post kPowerKeepAlive event at most once a second or once a minute, 
+	// depending on timeout interval values in /flags/idle_timeouts file
+	if (time(NULL)*1000 - mLastEventPostTime > mKeepAliveLoopTime)
+	{
+		CDebugMPI debugMPI(kGroupPower);
+		debugMPI.DebugOut(kDbgLvlImportant, "\nPost kPowerKeepAlive event\n");	
+		
+		CPowerKeepAliveMessage msg(kPowerKeepAlive);
+		LeapFrog::Brio::CEventMPI eventMPI;
+		eventMPI.PostEvent(msg, 128);
+		
+		mLastEventPostTime = time(NULL)*1000;
+	}
+}
+
+//------------------------------------------------------------------------------
+void CKeepAliveDelegate::GetInactivityTimeouts(int& firstInterval, int& secondInterval)
+{
+	firstInterval = mFirstInterval;
+	secondInterval = mSecondInterval;
+}
+	
+//------------------------------------------------------------------------------
+void CKeepAliveDelegate::GetActivityTimeoutIntervalValues(int& firstInterval, int& secondInterval)
+{
+	// Setting default timer intervals to (30 mins / 60 mins) in ms.
+	firstInterval = 30*ONE_MINUTE_IN_MS; 
+	secondInterval = 60*ONE_MINUTE_IN_MS;
+	
+	FILE *flag = fopen("/flags/idle_timeouts", "r");
+	if(flag)
+	{
+		fscanf(flag, "%d %d", &firstInterval, &secondInterval);
+		fclose(flag);
+	}
+}
+
+//============================================================================
+// CPowerKeepAliveMessage
+//============================================================================
+//------------------------------------------------------------------------------
+CPowerKeepAliveMessage::CPowerKeepAliveMessage(tEventType type) 
+	: IEventMessage(type)
+{
+}
+
+//------------------------------------------------------------------------------
+U16	CPowerKeepAliveMessage::GetSizeInBytes() const
+{
+	return sizeof(CPowerKeepAliveMessage);
+}
+
+//============================================================================
 // CPowerMessage
 //============================================================================
 //------------------------------------------------------------------------------
@@ -71,18 +192,22 @@ enum tPowerState CPowerMessage::GetPowerState() const
 	return mData.powerState;
 }
 
-
 //============================================================================
 // CPowerMPI
 //============================================================================
 //----------------------------------------------------------------------------
+CKeepAliveDelegate* CPowerMPI::pKeepAliveDelegate = 0;
+
+//----------------------------------------------------------------------------
 CPowerMPI::CPowerMPI() : pModule_(NULL)
 {
+	pKeepAliveDelegate = new CKeepAliveDelegate(this);
 }
 
 //----------------------------------------------------------------------------
 CPowerMPI::~CPowerMPI()
 {
+	delete pKeepAliveDelegate;
 }
 
 //----------------------------------------------------------------------------
@@ -247,6 +372,20 @@ S32	CPowerMPI::GetPowerParam(tPowerParam param)
 Boolean CPowerMPI::SetPowerParam(tPowerParam param, S32 value)
 {
 	return false;
+}
+
+//----------------------------------------------------------------------------
+void CPowerMPI::KeepAlive()
+{	
+	if (pKeepAliveDelegate)
+		pKeepAliveDelegate->KeepAlive();
+}
+
+//------------------------------------------------------------------------------
+void CPowerMPI::GetInactivityTimeouts(int& firstInterval, int& secondInterval)
+{
+	if (pKeepAliveDelegate)
+		pKeepAliveDelegate->GetInactivityTimeouts(firstInterval, secondInterval);
 }
 
 //----------------------------------------------------------------------------

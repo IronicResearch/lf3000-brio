@@ -20,6 +20,7 @@
 #include <SystemTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
+struct CKeepAliveDelegate;
 
 //==============================================================================
 class CPowerMPI : public ICoreMPI {
@@ -72,9 +73,22 @@ public:
 	/// \param	value Power parameter value
 	/// \return	Returns true if successful, false otherwise.
 	Boolean SetPowerParam(tPowerParam param, S32 value);
-
+	
+	/// KeepAlive() keeps the system alive when there are activities.This function is 
+	/// called internally by the SDK to keep the system alive when buttons are pushed.
+	/// This function can also be called directly by game/application to keep the system 
+	/// alive when buttons are not pushed (e.g.: wand games, movies). 
+	static void KeepAlive();
+		
+	/// GetInactivityTimeouts() gets first and second inactivity timeout values.
+	/// Currently supported only in Glasgow.
+	/// \param	firstInterval First inactivity timeout interval in miliseconds
+	/// \param	secondInterval Second inactivity timeout interval in miliseconds	
+	static void GetInactivityTimeouts(int& firstInterval, int& secondInterval);
+			
 private:
 	class CPowerModule*		pModule_;
+	static struct CKeepAliveDelegate* pKeepAliveDelegate;
 };
 
 

@@ -25,8 +25,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Power events
 //==============================================================================
 #define POWER_EVENTS				\
-	(kPowerStateChanged)
-
+	(kPowerStateChanged)			\
+	(kPowerKeepAlive)
+  
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupPower), POWER_EVENTS)
 
 const tEventType kAllPowerEvents = AllEvents(kGroupPower);
@@ -59,6 +60,13 @@ enum tPowerState {
 
 struct tPowerData {
 	enum tPowerState powerState;
+};
+
+//------------------------------------------------------------------------------
+class CPowerKeepAliveMessage : public IEventMessage {
+public:
+	CPowerKeepAliveMessage(tEventType type);
+	virtual U16 GetSizeInBytes() const;
 };
 
 //------------------------------------------------------------------------------
