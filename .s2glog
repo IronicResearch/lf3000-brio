@@ -42276,3 +42276,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/23/14 5:00 PM
 25,942 ms. (Cumulative: 26,874,054 ms)
 
 ----------------
+Revision 10,956 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,957 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,958 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+revert camera reset to only set auto exposure and auto white balance
+
+By Alex Lindblad (alindblad@leapfrog.com) on 7/24/14 12:53 AM
+2 changed, 0 added, 0 deleted.
+24,971 ms. (Cumulative: 26,899,150 ms)
+
+----------------

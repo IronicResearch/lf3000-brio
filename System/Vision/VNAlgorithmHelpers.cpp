@@ -32,20 +32,26 @@ namespace Vision {
     LeapFrog::Brio::CDebugMPI dbg(LeapFrog::Brio::kGroupVision);
 
     LeapFrog::Brio::Boolean err = cameraMPI.GetCameraControls(controls);
-    dbg.Assert(err, "VNWandTracker could get camera controls\n");
+    dbg.Assert(err, "VNAlgorithmHelpers could get camera controls\n");
 
-    LeapFrog::Brio::tControlInfo *c = NULL;
-    for(LeapFrog::Brio::tCameraControls::const_iterator i = controls.begin();
-	i != controls.end();
-	++i) {
-
-      c = *i;
-      if (c) {
-	cameraMPI.SetCameraControl(c, c->preset);
-      } else {
-	dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control\n");
-      }
+    // turn on autowhitebalance
+    LeapFrog::Brio::tControlInfo *awb = FindCameraControl(controls,
+							  LeapFrog::Brio::kControlTypeAutoWhiteBalance);
+    if (awb) {
+      cameraMPI.SetCameraControl(awb, 1);
+    } else {
+      dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for auto white balance\n");
     }
+
+    // turn on auto exposure
+    LeapFrog::Brio::tControlInfo *ae = FindCameraControl(controls,
+							 LeapFrog::Brio::kControlTypeAutoExposure);
+    if (ae) {
+      cameraMPI.SetCameraControl(ae, 3);
+    } else {
+      dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for auto exposure\n");
+    }
+
   }
 }
 }
