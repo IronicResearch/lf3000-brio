@@ -449,10 +449,10 @@ namespace Vision {
 
 	      PROF_BLOCK_END();
 
-	    //   ++pthis->frameCount_;
-	    //   if (pthis->frameCount_ % 30 == 0) {
-	    //       std::cout << "FPS = " << pthis->frameCount_ / ((float)(time(0) - pthis->frameTime_)) << std::endl;
-	    //   }
+	      ++pthis->frameCount_;
+	      if (pthis->frameCount_ % 30 == 0) {
+	          std::cout << "FPS = " << pthis->frameCount_ / ((float)(time(0) - pthis->frameTime_)) << std::endl;
+	      }
 	  } else {
 	      pthis->kernelMPI_.TaskSleep(1); // yield
 	  }
