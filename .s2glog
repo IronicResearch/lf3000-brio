@@ -42267,3 +42267,12 @@ By Rob Dowling (rdowling@leapfrog.com) on 7/22/14 4:35 PM
 26,225 ms. (Cumulative: 26,848,002 ms)
 
 ----------------
+Revision 10,955 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-947.  Removed "using namespace std" from Wrappers.h.  It was instead added to Mixer.cpp and Loader.cpp.  Brio builds properly without the namespace in the header.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/23/14 5:00 PM
+3 changed, 0 added, 0 deleted.
+25,942 ms. (Cumulative: 26,874,054 ms)
+
+----------------

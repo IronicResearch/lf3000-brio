@@ -24,6 +24,7 @@
 #include "Wrappers.h"
 #include "Utility.h"
 
+using namespace std;
 LF_BEGIN_BRIO_NAMESPACE()
 
 /****************************************************************************

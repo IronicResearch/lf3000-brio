@@ -90,6 +90,7 @@
 int kAudioSampleRate     = 32000; // formerly constant
 int kAudioFramesPerBuffer = 1024; // formerly constant
 
+using namespace std;
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================

@@ -7,8 +7,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-using namespace std;
-
 //============================================================================
 // EFdWrapper class
 //============================================================================
@@ -20,10 +18,10 @@ class EFdWrapper
 	// from a routine that has an open file descriptor.
 public:
 	EFdWrapper( int fd = -1 );
-	EFdWrapper( const string& strFile, int oflag, int pmode = S_IWRITE );
+	EFdWrapper( const std::string& strFile, int oflag, int pmode = S_IWRITE );
 	~EFdWrapper( );
 	
-	bool Open( const string& strFile, int oflag, int pmode = S_IWRITE );
+	bool Open( const std::string& strFile, int oflag, int pmode = S_IWRITE );
 	void Close( );
 	void Assign( int fd )	{ Close (); mfd = fd; }
 	bool IsValid( )			{ return (mfd != -1); }
@@ -44,7 +42,7 @@ inline EFdWrapper::EFdWrapper( int fd ) : mfd (fd)
 	// Create from an open file descriptor
 }
 	
-inline EFdWrapper::EFdWrapper( const string& strFile, int oflag, int pmode )
+inline EFdWrapper::EFdWrapper( const std::string& strFile, int oflag, int pmode )
 	: mfd (-1)
 {
 	// Open the named file
@@ -63,7 +61,7 @@ inline EFdWrapper::~EFdWrapper( )
 //----------------------------------------------------------------------------
 // EFdWrapper::Open( )
 //----------------------------------------------------------------------------
-inline bool EFdWrapper::Open( const string& strFile, int oflag, int pmode )
+inline bool EFdWrapper::Open( const std::string& strFile, int oflag, int pmode )
 {
 	// Close any previous files
 	Close ();
