@@ -37,29 +37,40 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 		FILE *usb_device_fd;
 		int usb_input_fd;
 		int ret;
-		U32 usbState;
+		U32 usbState_host, usbState_device, usbState;
 		tUSBDeviceData data;
 
 		// Emerald is Ethernet device type
 		data.USBDeviceSupports = kUSBDeviceIsEthernet;
 		data.USBDeviceDriver   = kUSBDeviceIsEthernet;
-		usbState = 0;
+		usbState_host = usbState_device = usbState = 0;
 
 		usb_device_fd =
 			fopen("/sys/devices/platform/lf1000-usbgadget/vbus", "r");
 		if(usb_device_fd != NULL) {
-			ret = fscanf(usb_device_fd, "%ld\n", &usbState);
+			ret = fscanf(usb_device_fd, "%ld\n", &usbState_device);
 			fclose(usb_device_fd);
 		}
 		else
 		{
+			// Check for device-mode connection state
+			usb_input_fd = open_input_device("USB");
+			if(usb_input_fd >= 0)
+			{
+				ioctl(usb_input_fd, EVIOCGSW(sizeof(int)), &usbState_device);
+				close(usb_input_fd);
+			}
+			// Check for host-mode connection state
 			usb_input_fd = open_input_device("usb-host");
 			if(usb_input_fd >= 0)
 			{
-				ioctl(usb_input_fd, EVIOCGSW(sizeof(int)), &usbState);
+				ioctl(usb_input_fd, EVIOCGSW(sizeof(int)), &usbState_host);
 				close(usb_input_fd);
 			}
 		}
+
+		// Merge usbState_device and usbState_host
+		usbState = usbState_device || usbState_host;
 		
 		data.USBDeviceState = (usbState != 0) ? kUSBDeviceConnected : 0;
 		return data;

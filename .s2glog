@@ -42287,3 +42287,19 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/24/14 12:53 AM
 24,971 ms. (Cumulative: 26,899,150 ms)
 
 ----------------
+Revision 10,959 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,960 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-933 / FWGLAS-828
+
+Per DaveM, check for both device-mode and host-mode connect status and
+return OR of them.  Since there is only 1 connector, it is impossible
+for both to be connected at once.
+
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 7/25/14 1:57 PM
+2 changed, 0 added, 0 deleted.
+25,104 ms. (Cumulative: 26,924,348 ms)
+
+----------------
