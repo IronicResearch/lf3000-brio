@@ -61,7 +61,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define MAX_CART_X_ICONS	3
 
 //Maximum number of input drivers to discover
-#define NUM_INPUTS	6
+#define NUM_INPUTS	7
 
 namespace
 {
@@ -90,7 +90,8 @@ namespace
 	#define INPUT_KEYBOARD		"gpio-keys"
 	#define INPUT_TOUCHSCREEN	"touchscreen interface"
 	#define	INPUT_POWER			"Power Button"
-	#define INPUT_USB			"usb-host"
+	#define INPUT_USB_DEVICE		"USB"
+	#define INPUT_USB_HOST			"usb-host"
 	#define INPUT_ACLMTR		"Accelerometer"
 
 	const tEventPriority	kButtonEventPriority	= 0;
@@ -448,22 +449,37 @@ server:
 		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_POWER);
 	}
 	
-	int usb_index = -1;
+	int usb_index_host = -1;
+	int usb_index_device = -1;
 	int vbus;
 	tUSBDeviceData	usb_data;	
 
 	// init USB driver and state
 	usb_data = GetCurrentUSBDeviceState();
 	vbus = usb_data.USBDeviceState;
-	event_fd[last_fd].fd = open_input_device(INPUT_USB);
+
+	// Listen to host-mode linux input events
+	event_fd[last_fd].fd = open_input_device(INPUT_USB_HOST);
 	event_fd[last_fd].events = POLLIN;
 	if(event_fd[last_fd].fd >= 0)
 	{
-		usb_index = last_fd++;
+		usb_index_host = last_fd++;
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_USB);
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_USB_HOST);
+	}
+
+	// Listen to device-mode linux input events
+	event_fd[last_fd].fd = open_input_device(INPUT_USB_DEVICE);
+	event_fd[last_fd].events = POLLIN;
+	if(event_fd[last_fd].fd >= 0)
+	{
+		usb_index_device = last_fd++;
+	}
+	else
+	{
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_USB_DEVICE);
 	}
 	
 	// init USB socket
@@ -665,13 +681,32 @@ skip_usb_socket:
 				}
 			}
 
-			// USB driver event ?
-			if(usb_index >= 0 && event_fd[usb_index].revents & POLLIN) {
-				size = read(event_fd[usb_index].fd, &ev, sizeof(ev));
+			// USB host event ?
+			if(usb_index_host >= 0 && event_fd[usb_index_host].revents & POLLIN) {
+				size = read(event_fd[usb_index_host].fd, &ev, sizeof(ev));
 				if(ev.type == EV_SW && ev.code == SW_LID)
 				{
 					vbus = !!ev.value;
-					pThis->debug_.DebugOut(kDbgLvlCritical, "%s: vbus=%d\n", __FUNCTION__, vbus);
+					pThis->debug_.DebugOut(kDbgLvlCritical, "%s: usb-host vbus=%d\n", __FUNCTION__, vbus);
+					if((vbus == 1)) {
+						usb_data.USBDeviceState |= kUSBDeviceConnected;
+						CUSBDeviceMessage usb_msg(usb_data);
+						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
+					} else if((vbus == 0)) {
+						usb_data.USBDeviceState = 0; // clear all cached state
+						CUSBDeviceMessage usb_msg(usb_data);
+						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
+					}
+				}
+			}
+
+			// USB device event ?
+			if(usb_index_device >= 0 && event_fd[usb_index_device].revents & POLLIN) {
+				size = read(event_fd[usb_index_device].fd, &ev, sizeof(ev));
+				if(ev.type == EV_SW && ev.code == SW_LID)
+				{
+					vbus = !!ev.value;
+					pThis->debug_.DebugOut(kDbgLvlCritical, "%s: usb-device vbus=%d\n", __FUNCTION__, vbus);
 					if((vbus == 1)) {
 						usb_data.USBDeviceState |= kUSBDeviceConnected;
 						CUSBDeviceMessage usb_msg(usb_data);
