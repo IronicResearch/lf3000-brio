@@ -495,24 +495,21 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
 			  break;
 		  case 8:
 			  pModule->accelerometerData_.accelX = packet[i];
+			  pModule->accelerometerData_.accelX = - WORD_TO_SIGNED(pModule->accelerometerData_.accelX);
 			  break;
 		  case 9:
-			  pModule->accelerometerData_.accelX |= (packet[i] << 8);
-			  pModule->accelerometerData_.accelX = - WORD_TO_SIGNED(pModule->accelerometerData_.accelX);
 			  break;
 		  case 10:
 			  pModule->accelerometerData_.accelZ = packet[i];
+			  pModule->accelerometerData_.accelZ = WORD_TO_SIGNED(pModule->accelerometerData_.accelZ);
 			  break;
 		  case 11:
-			  pModule->accelerometerData_.accelZ |= (packet[i] << 8);
-			  pModule->accelerometerData_.accelZ = WORD_TO_SIGNED(pModule->accelerometerData_.accelZ);
 			  break;
 		  case 12:
 			  pModule->accelerometerData_.accelY = packet[i];
+			  pModule->accelerometerData_.accelY = - WORD_TO_SIGNED(pModule->accelerometerData_.accelY);
 			  break;
 		  case 13:
-			  pModule->accelerometerData_.accelY |= (packet[i] << 8);
-			  pModule->accelerometerData_.accelY = - WORD_TO_SIGNED(pModule->accelerometerData_.accelY);
 			  break;
 		  }
 	  }
