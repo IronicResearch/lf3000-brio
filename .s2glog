@@ -42303,3 +42303,16 @@ By Rob Dowling (rdowling@leapfrog.com) on 7/25/14 1:57 PM
 25,104 ms. (Cumulative: 26,924,348 ms)
 
 ----------------
+Revision 10,961 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-979: Fixed HWController accelerometer data fields as only 8-bit values.
+
+http://wiki.leapfrog.com/display/FW/Glasgow+Controller+Profile+Information
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/25/14 6:24 PM
+1 changed, 0 added, 0 deleted.
+25,028 ms. (Cumulative: 26,949,479 ms)
+
+----------------
