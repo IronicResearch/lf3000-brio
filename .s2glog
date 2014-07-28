@@ -42316,3 +42316,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/25/14 6:24 PM
 25,028 ms. (Cumulative: 26,949,479 ms)
 
 ----------------
+Revision 10,962 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Issue an explicit disconnect command to all connected controllers when shutting down. (FWGLAS-904)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 7/28/14 8:02 AM
+2 changed, 0 added, 0 deleted.
+25,152 ms. (Cumulative: 26,974,741 ms)
+
+----------------

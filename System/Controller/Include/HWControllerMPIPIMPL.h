@@ -81,6 +81,7 @@ namespace Hardware {
     void AddController(char* link);
     HWController* FindController(char* link);
     char* FindControllerLink(HWController* controller);
+    void DisconnectAllControllers();
 
     int numControllers_;
     std::vector<HWController*> listControllers_;
@@ -101,6 +102,7 @@ namespace Hardware {
     pFnScanForDevices		pBTIO_ScanDevices_;
     pFnGetControllerVersion	pBTIO_GetControllerVersion_;
     pFnEnableBluetoothDebug	pBTIO_EnableBluetoothDebug_;
+    pFnDisconnectDevice 	pBTIO_DisconnectDevice_;
 
     static void DeviceCallback(void*, void*, int);
     static void InputCallback(void*, void*, int, char*);

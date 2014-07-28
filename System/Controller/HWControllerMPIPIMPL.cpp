@@ -63,6 +63,7 @@ namespace Hardware {
 			pBTIO_PairWithRemoteDevice_ = (pFnPairWithRemoteDevice)dlsym(dll_, "BTIO_PairWithRemoteDevice");
 			pBTIO_GetControllerVersion_ = (pFnGetControllerVersion)dlsym(dll_, "BTIO_GetControllerVersion");
 			pBTIO_EnableBluetoothDebug_ = (pFnEnableBluetoothDebug)dlsym(dll_, "BTIO_EnableBluetoothDebug");
+			pBTIO_DisconnectDevice_     = (pFnDisconnectDevice)dlsym(dll_, "BTIO_DisconnectDevice");
 
 			// Connect to Bluetooth client service?
 			handle_ = pBTIO_Init_(this);
@@ -97,8 +98,7 @@ namespace Hardware {
 #endif
 //		  delete controller; // FIXME: HWAnalogStickPIMPL crash
 	  }
-	  listControllers_.clear();
-	  mapControllers_.clear();
+	  DisconnectAllControllers();
 
 #ifdef ENABLE_PROFILING
 	  FlatProfilerDone();
@@ -415,6 +415,21 @@ namespace Hardware {
 //	if (numControllers_ == 0)
 //		ScanForDevices();
     return numControllers_; //1;
+  }
+
+  void
+  HWControllerMPIPIMPL::DisconnectAllControllers() {
+	  debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting all controllers n = %i\n", GetNumberOfConnectedControllers());
+
+	  std::vector<HWController*>::iterator it;
+	  for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
+		  HWController* controller = *(it);
+		  if(controller) pBTIO_DisconnectDevice_(FindControllerLink(controller), 0);
+	  }
+
+	  listControllers_.clear();
+	  mapControllers_.clear();
+	  numControllers_ = 0;
   }
 
 }	// namespace Hardware
