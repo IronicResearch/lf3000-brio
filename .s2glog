@@ -42355,3 +42355,14 @@ By Dave Milici (dmilici@leapfrog.com) on 7/28/14 7:21 PM
 25,119 ms. (Cumulative: 27,050,292 ms)
 
 ----------------
+Revision 10,967 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Skip rest of camera capture steps when thread is paused. (2:2)
+Maybe useful to keep running on legacy V4L devices, otherwise pointless.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/28/14 7:49 PM
+1 changed, 0 added, 0 deleted.
+25,053 ms. (Cumulative: 27,075,439 ms)
+
+----------------

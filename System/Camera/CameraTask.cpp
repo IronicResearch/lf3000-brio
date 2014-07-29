@@ -330,6 +330,13 @@ void* CameraTaskMain(void* arg)
 				CalcTimeDiff(tvt, tvn, tv0);
 			}
 		}
+		if(pCtx->bPaused)
+		{
+			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
+													  "Couldn't unlock mutex.\n");
+			kernel.TaskSleep(1);
+			continue;
+		}
 
 		bRet = false;
 		if(bFile && pCtx->bAudio && !pCtx->bPaused)
