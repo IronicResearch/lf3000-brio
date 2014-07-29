@@ -40,6 +40,9 @@ namespace Vision {
   static const float kVNMinPercentOfPixelsDiffToIncludeInSum = 0.7f;
   static const float kVNPercentOfMaxRadiusValueForAreaCalc = 0.8f;
 
+  static const int kVNNumTimesUseCachedPointerLocation = 5;
+  static const float kVNLocUpdateAlpha = 0.1f;
+
   bool SameSize(const LeapFrog::Brio::tRect &lfr, const cv::Rect & r) {
     return (lfr.left == r.x &&
 	    lfr.top == r.y &&
@@ -77,7 +80,9 @@ namespace Vision {
     scaleInput_(false),
     wandAreaToStartScaling_(kVNDefaultAreaToStartScaling),
     minPercentToScale_(kVNDefaultMinPercentToScale),
-    minArea_(kVNWandMinAreaDefault) {
+    minArea_(kVNWandMinAreaDefault),
+    prevLoc_(kVNNoWandLocationX, kVNNoWandLocationY),
+    numTimesUsedCachedLoc_(0) {
 
     SetParams(params);
   }
@@ -330,9 +335,17 @@ namespace Vision {
 
       // insure we have at least a minimum circle area
       if (inFrame && lightArea > minArea_) {
-	wand_->pimpl_->VisibleOnScreen(p);
+	numTimesUsedCachedLoc_ = 0;
+	wand_->pimpl_->VisibleOnScreen(kVNLocUpdateAlpha*p+(1.0f-kVNLocUpdateAlpha)*prevLoc_);
+	prevLoc_ = p;
       } else {
-	wand_->pimpl_->NotVisibleOnScreen();
+	if (numTimesUsedCachedLoc_ < kVNNumTimesUseCachedPointerLocation) {
+	  wand_->pimpl_->VisibleOnScreen(prevLoc_);
+	  numTimesUsedCachedLoc_++;
+	} else {
+	  wand_->pimpl_->NotVisibleOnScreen();
+	  prevLoc_ = cv::Point(kVNNoWandLocationX, kVNNoWandLocationY);
+	}
       }
     }
     PROF_BLOCK_END();
