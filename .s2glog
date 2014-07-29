@@ -42335,3 +42335,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/28/14 6:18 PM
 25,193 ms. (Cumulative: 27,000,044 ms)
 
 ----------------
+Revision 10,965 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-812. A fix for emulation build link errors. Changing from static const int member variables to #define variables.
+
+By pjusuf (pjusuf@leapfrog.com) on 7/28/14 6:35 PM
+1 changed, 0 added, 0 deleted.
+24,941 ms. (Cumulative: 27,025,079 ms)
+
+----------------
