@@ -28,6 +28,9 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+#define ONE_SECOND_IN_MS 1*1000
+#define ONE_MINUTE_IN_MS 1*60*1000
+#define DISABLED_INTERVAL 0
 
 const CString	kMPIName = "PowerMPI";
 
@@ -58,10 +61,6 @@ private:
 	static void GetActivityTimeoutIntervalValues(int& firstInterval, int& secondInterval);
 			
 private:
-	static const int ONE_SECOND_IN_MS = 1*1000;
-	static const int ONE_MINUTE_IN_MS = 1*60*1000;
-	static const int DISABLED_INTERVAL = 0;
-
 	static long int	mLastEventPostTime;
 	static long int	mKeepAliveLoopTime; 
 	
