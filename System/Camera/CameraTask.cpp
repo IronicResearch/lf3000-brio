@@ -350,7 +350,7 @@ void* CameraTaskMain(void* arg)
 			struct timeval tvx;
 			gettimeofday(&tvx, NULL);
 			CalcTimeDiff(tvx, tvx, tvn);
-			if (tvx.tv_sec > tvn.tv_sec + 1) {
+			if (tvx.tv_sec > tvn.tv_sec + 10 && !pCtx->bPaused) {
 				dbg.DebugOut( kDbgLvlCritical, "PollFrame failed to query next V4L frame=%d\n", framecount);
 			}
 

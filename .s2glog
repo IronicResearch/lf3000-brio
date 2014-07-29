@@ -42344,3 +42344,14 @@ By pjusuf (pjusuf@leapfrog.com) on 7/28/14 6:35 PM
 24,941 ms. (Cumulative: 27,025,079 ms)
 
 ----------------
+Revision 10,966 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Account for paused state when logging missed ready frames. (1:2)
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/28/14 7:21 PM
+1 changed, 0 added, 0 deleted.
+25,119 ms. (Cumulative: 27,050,292 ms)
+
+----------------
