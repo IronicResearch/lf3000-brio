@@ -39,6 +39,8 @@ namespace Vision {
     cv::Mat rgb_;
     cv::Mat hsv_;
     cv::Mat yuv_;
+    cv::Point prevLoc_;
+    int numTimesUsedCachedLoc_;
 
     void SetParams(VNInputParameters *params);
     void ComputeLargestContour(cv::Mat& img,
