@@ -54,7 +54,6 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::
   /*!
    * HWController constant definitions
    */
-  const LeapFrog::Brio::U8 kHWMaximumNumberOfControllers = 2; //< maximum number of simultaneously connected controllers
   const LeapFrog::Brio::U8 kHWDefaultControllerID = 0;
   
   /*!

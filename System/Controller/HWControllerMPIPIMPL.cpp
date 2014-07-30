@@ -85,7 +85,7 @@ namespace Hardware {
 		timer = new COneShotTimer(props);
 
 #ifdef ENABLE_PROFILING
-		FlatProfilerInit(kHWMaximumNumberOfControllers, 0);
+		FlatProfilerInit(GetMaximumNumberOfControllers(), 0);
 #endif
   }
 
@@ -176,7 +176,7 @@ namespace Hardware {
 	      return;
 	  }
 
-	  if (numControllers_ >= kHWMaximumNumberOfControllers) {
+	  if (numControllers_ >= GetMaximumNumberOfControllers()) {
 		  debugMPI_.DebugOut(kDbgLvlImportant, "AddController maxed out at %d\n", numControllers_);
 		  return;
 	  }
@@ -430,6 +430,13 @@ namespace Hardware {
 	  listControllers_.clear();
 	  mapControllers_.clear();
 	  numControllers_ = 0;
+  }
+
+  LeapFrog::Brio::U8
+  HWControllerMPIPIMPL::GetMaximumNumberOfControllers() {
+	  const LeapFrog::Brio::U8 kHWMaximumNumberOfControllers = 2; //< maximum number of simultaneously connected controllers
+
+	  return kHWMaximumNumberOfControllers;
   }
 
 }	// namespace Hardware

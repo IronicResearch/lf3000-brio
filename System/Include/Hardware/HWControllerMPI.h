@@ -94,6 +94,11 @@ namespace Hardware {
      */
     LeapFrog::Brio::tErrType EnableControllerSync(bool enable);
 
+    /*!
+     * \brief return the maximum number of simultaneously connected controllers
+     */
+    LeapFrog::Brio::U8 GetMaximumNumberOfControllers();
+
   private:
     boost::shared_ptr<HWControllerMPIPIMPL> pimpl_;
 
