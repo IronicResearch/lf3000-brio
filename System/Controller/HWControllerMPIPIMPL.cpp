@@ -11,14 +11,17 @@
 #undef ENABLE_PROFILING	// #define to enable profiling BT callbacks
 #include <FlatProfiler.h>
 
-
+#if defined(EMULATION)
 const LeapFrog::Brio::tEventType
   kHWControllerListenerTypes[] = {LeapFrog::Brio::kAccelerometerDataChanged,
 				  LeapFrog::Brio::kOrientationChanged,
 				  LeapFrog::Brio::kButtonStateChanged,
 				  LeapFrog::Brio::kTimerFiredEvent,
-				  LF::Hardware::kHWAllControllerEvents,
 				  LF::Hardware::kHWAnalogStickDataChanged};
+#else
+const LeapFrog::Brio::tEventType
+kHWControllerListenerTypes[] = {LeapFrog::Brio::kButtonStateChanged};
+#endif
 
 static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 128; // async
 static const LeapFrog::Brio::tEventPriority kHWControllerHighPriorityEvent = 0;  // immediate
@@ -84,12 +87,16 @@ namespace Hardware {
 
 		timer = new COneShotTimer(props);
 
+		// this is so we can get the sync button on device and wii mote events in emulation
+		RegisterSelfAsListener();
+
 #ifdef ENABLE_PROFILING
 		FlatProfilerInit(GetMaximumNumberOfControllers(), 0);
 #endif
   }
 
   HWControllerMPIPIMPL::~HWControllerMPIPIMPL() {
+          eventMPI_.UnregisterEventListener(this);
 	  std::vector<HWController*>::iterator it;
 	  for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
 		  HWController* controller = *(it);
@@ -251,41 +258,33 @@ namespace Hardware {
     	ScanForDevices();
   }
 
-
-  LeapFrog::Brio::tEventStatus
-  HWControllerMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msgIn) {
+  // returns true if the sync button was pressed, false otherwise
+  bool
+  HWControllerMPIPIMPL::HandleConsoleSyncButton(const LeapFrog::Brio::IEventMessage &msgIn,
+						LeapFrog::Brio::tEventPriority priority) {
     LeapFrog::Brio::tEventType type = msgIn.GetEventType();
-    LeapFrog::Brio::tEventPriority priority = kHWControllerDefaultEventPriority;
-//    HWController *controller = this->GetControllerByID(kHWDefaultControllerID);
-
-	 if (type == LeapFrog::Brio::kButtonStateChanged) {
-        debugMPI_.DebugOut(kDbgLvlImportant, "\nLeapFrog::Brio::kButtonStateChanged");
-
-         LeapFrog::Brio::tEventType newType = kHWControllerButtonStateChanged;
-        const LeapFrog::Brio::CButtonMessage &
-          msg = reinterpret_cast<const LeapFrog::Brio::CButtonMessage&>(msgIn);
-                tButtonData2 buttonData = msg.GetButtonState2();
-                if(buttonData.buttonTransition & kButtonSync)
-                {
-			debugMPI_.DebugOut(kDbgLvlImportant, "\nLeapFrog::Brio::kButtonSync");
-                        if( buttonData.buttonState & kButtonSync ) EnableControllerSync(true);
-                        return LeapFrog::Brio::kEventStatusOK;
-                }
-  //      controller->pimpl_->SetButtonData(msg.GetButtonState2());
-	}
-
-    // Internally generated event to start scanning for controllers
-    if (type == kHWControllerLowBattery) {
-        const HWControllerEventMessage& hwmsg = reinterpret_cast<const HWControllerEventMessage&>(msgIn);
-       	return LeapFrog::Brio::kEventStatusOK;
+    if (type == LeapFrog::Brio::kButtonStateChanged) {
+      debugMPI_.DebugOut(kDbgLvlImportant, "\nLeapFrog::Brio::kButtonStateChanged");
+      
+      LeapFrog::Brio::tEventType newType = kHWControllerButtonStateChanged;
+      const LeapFrog::Brio::CButtonMessage &
+	msg = reinterpret_cast<const LeapFrog::Brio::CButtonMessage&>(msgIn);
+      tButtonData2 buttonData = msg.GetButtonState2();
+      
+      if(buttonData.buttonTransition & kButtonSync) {
+	debugMPI_.DebugOut(kDbgLvlImportant, "\nLeapFrog::Brio::kButtonSync");
+	if( buttonData.buttonState & kButtonSync ) EnableControllerSync(true);
+	return true;
+      }
     }
+    return false;
+  }
 
-    // Internally generated event for creating new controllers
-    if (type == kHWControllerModeChanged) {
-        const HWControllerEventMessage& hwmsg = reinterpret_cast<const HWControllerEventMessage&>(msgIn);
-       	return LeapFrog::Brio::kEventStatusOK;
-    }
-
+#if defined(EMULATION)
+  LeapFrog::Brio::tEventStatus
+  HWControllerMPIPIMPL::HandleLegacyEvents(const LeapFrog::Brio::IEventMessage &msgIn,
+					   LeapFrog::Brio::tEventPriority priority) {
+    LeapFrog::Brio::tEventType type = msgIn.GetEventType();
     // Legacy event message handling for incoming Buttons, Accelerometer, and AnalogStick events
     HWController *controller = this->GetControllerByID(kHWDefaultControllerID);
     if (!controller) {
@@ -325,18 +324,15 @@ namespace Hardware {
 	  msg = reinterpret_cast<const LeapFrog::Brio::CAccelerometerMessage&>(msgIn);
 	controller->pimpl_->SetAccelerometerData(msg.GetAccelerometerData());
 
-#if 0      
-	} else if (type == LeapFrog::Brio::kButtonStateChanged) {
+      } else if (type == LeapFrog::Brio::kButtonStateChanged) {
 	newType = kHWControllerButtonStateChanged;
 	const LeapFrog::Brio::CButtonMessage &
 	  msg = reinterpret_cast<const LeapFrog::Brio::CButtonMessage&>(msgIn);
-		tButtonData2 buttonData = msg.GetButtonState2();
-		if(buttonData.buttonTransition & kButtonSync)
-		{
-			return LeapFrog::Brio::kEventStatusOK;
-		}
+	tButtonData2 buttonData = msg.GetButtonState2();
+	if(buttonData.buttonTransition & kButtonSync) {
+	  return LeapFrog::Brio::kEventStatusOK;
+	}
         controller->pimpl_->SetButtonData(msg.GetButtonState2());
-#endif
       } else if (type == LF::Hardware::kHWAnalogStickDataChanged) {
 	newType = kHWControllerAnalogStickDataChanged;
 	priority = kHWControllerHighPriorityEvent;
@@ -345,9 +341,25 @@ namespace Hardware {
       }
 
       HWControllerEventMessage newMsg(newType, controller);
-      eventMPI_.PostEvent(newMsg, 0); // FIXME -- priority?
+      eventMPI_.PostEvent(newMsg, kHWControllerHighPriorityEvent); // FIXME -- priority? default??
     }
     return LeapFrog::Brio::kEventStatusOK;
+  }
+
+#endif
+
+  LeapFrog::Brio::tEventStatus
+  HWControllerMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msgIn) {
+    LeapFrog::Brio::tEventPriority priority = kHWControllerDefaultEventPriority;
+
+    if (HandleConsoleSyncButton(msgIn, priority)) {
+      return LeapFrog::Brio::kEventStatusOK;
+    }
+
+#if defined(EMULATION)
+    return HandleLegacyEvents(msgIn, priority);
+#endif
+
   }
 
   LeapFrog::Brio::tErrType
