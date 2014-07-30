@@ -53,7 +53,6 @@ namespace Hardware {
 
   LeapFrog::Brio::tErrType
   HWControllerMPI::RegisterEventListener(const LeapFrog::Brio::IEventListener *listener) {
-    pimpl_->RegisterSelfAsListener();
     LeapFrog::Brio::CEventMPI evtmgr;
     return evtmgr.RegisterEventListener(listener);
   }

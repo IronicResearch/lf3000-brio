@@ -84,6 +84,12 @@ namespace Hardware {
     HWController* FindController(char* link);
     char* FindControllerLink(HWController* controller);
     void DisconnectAllControllers();
+    bool HandleConsoleSyncButton(const LeapFrog::Brio::IEventMessage &msgIn,
+				 LeapFrog::Brio::tEventPriority priority);
+#if defined(EMULATION)
+    LeapFrog::Brio::tEventStatus HandleLegacyEvents(const LeapFrog::Brio::IEventMessage &msgIn,
+						    LeapFrog::Brio::tEventPriority priority);
+#endif
 
     int numControllers_;
     std::vector<HWController*> listControllers_;

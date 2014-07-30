@@ -158,8 +158,10 @@ namespace Vision {
             debugMPI_.DebugOut(kDbgLvlValuable, "Controller BT Address: %s\n", btaddress_);
 
             if( controllersConfig.has( btaddress_ ) ) {
+	        debugMPI_.DebugOut(kDbgLvlValuable, "Controller has been calibrated");
                 defaultConfig = controllersConfig[btaddress_].get<zo::Object>();
             } else {    // has not been calibrated so get default configuration
+  	        debugMPI_.DebugOut(kDbgLvlValuable, "Controller has NOT been calibrated");
                 defaultConfig = controllersConfig["default"].get<zo::Object>();
             }
             zo::Object jsonColor;
