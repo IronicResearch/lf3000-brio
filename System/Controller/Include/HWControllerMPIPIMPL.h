@@ -72,6 +72,8 @@ namespace Hardware {
 
     LeapFrog::Brio::tErrType EnableControllerSync(bool enable);
 
+    LeapFrog::Brio::U8 GetMaximumNumberOfControllers();
+
   private:
     HWControllerMPIPIMPL(void);
     HWControllerMPIPIMPL(const HWControllerMPIPIMPL&);

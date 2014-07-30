@@ -121,13 +121,16 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsLF1000:
 		return (0 == stat("/sys/devices/platform/lf1000-alvgpio", &stbuf));
 	case kCapsLF2000:
-		return (0 == stat("/sys/devices/platform/lf2000-alive", &stbuf));
+		return (0 == stat("/sys/devices/platform/lf2000-alive", &stbuf) &&
+				"GLASGOW" != GetPlatformFamily());
 	case kCapsLF3000:
 		return (0 == stat("/sys/devices/platform/mali-utgard.0", &stbuf)); // FIXME
 	case kCapsTouchscreen:
 		return (0 == stat("/sys/devices/platform/lf1000-touchscreen", &stbuf)) ||
 		       (0 == stat("/sys/devices/platform/lf2000-touchscreen", &stbuf));
 	case kCapsCamera:
+		if("GLASGOW" == GetPlatformFamily())
+			return false;
 		if ("Madrid" == GetPlatformName())
 			return (0 == stat("/sys/devices/platform/lf1000-ohci/usb1", &stbuf));
 		return (0 == stat("/sys/class/video4linux/video0", &stbuf));
@@ -145,19 +148,24 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsScreenLPAD:
 		return ("LPAD" == GetPlatformFamily());
 	case kCapsWifi:
-		return (0 == stat("/sys/class/net/wlan0", &stbuf));
+		return (0 == stat("/sys/class/net/wlan0", &stbuf) &&
+				("GLASGOW" != GetPlatformFamily()) );
 	case kCapsCameraFront:
 		return (0 == stat("/sys/class/video4linux/video1", &stbuf));
 	case kCapsMultiTouch:
 		return ("RIO" == GetPlatformFamily() ||
 				"CABO" == GetPlatformName()); // FIXME: query input device?
-	case kCapsAnalogController:
-		return ("GLASGOW" == GetPlatformFamily()); // FIXME
+	case kCapsAnalogStick:
+		return false;
+	case kCapsGamePadController:
+		return ("GLASGOW" == GetPlatformFamily());
+	case kCapsVision:
+		return ("GLASGOW" == GetPlatformFamily());
 	case kCapsButtonMask(kButtonUp):
 	case kCapsButtonMask(kButtonDown):
 	case kCapsButtonMask(kButtonRight):
 	case kCapsButtonMask(kButtonLeft):
-		return true;
+		return ("GLASGOW" != GetPlatformFamily());
 	case kCapsButtonMask(kButtonA):
 	case kCapsButtonMask(kButtonB):
 	case kCapsButtonMask(kButtonLeftShoulder):
@@ -169,10 +177,12 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsButtonMask(kButtonBrightness):
 		return ("Emerald" == GetPlatformName());
 	case kCapsButtonMask(kHeadphoneJackDetect):
+		return ("GLASGOW" != GetPlatformFamily());
 	case kCapsButtonMask(kCartridgeDetect):
+		return true;
 	case kCapsButtonMask(kButtonVolumeDown):
 	case kCapsButtonMask(kButtonVolumeUp):
-		return true;
+		return ("GLASGOW" != GetPlatformFamily());
 	case kCapsButtonMask(kButtonEscape):
 		return ("LPAD" == GetPlatformFamily() ||
 				"RIO" == GetPlatformFamily());

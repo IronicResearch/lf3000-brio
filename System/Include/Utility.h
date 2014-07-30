@@ -228,18 +228,20 @@ CString GetPlatformFamily();
 //----------------------------------------------------------------------------
 enum tPlatformCaps {
 	kCapsTouchscreen,				///< Has Touchscreen device?
-	kCapsCamera,					///< Has Camera device?
+	kCapsCamera,					///< Has a rear facing Camera device?
 	kCapsAccelerometer,				///< Has Accelerometer device?
 	kCapsMicrophone,				///< Has Microphone device?
 	kCapsScreenLEX,					///< Has LEX screen?
 	kCapsScreenLPAD,				///< Has LPAD screen?
 	kCapsLF1000,					///< Has LF1000 CPU?
 	kCapsLF2000,					///< Has LF2000 CPU?
-	kCapsWifi,						///< Has WiFi device?
+	kCapsWifi,						///< Has WiFi device that is capable of forming an ad-hoc network connection?
 	kCapsCameraFront,				///< Has Front-Facing Camera device?
 	kCapsMultiTouch,				///< Has Multi-Touch device?
 	kCapsLF3000,					///< Has LF3000 CPU?
-	kCapsAnalogController,			///< Has Analog controller device?
+	kCapsAnalogStick,				///< Has Analog controller device?
+	kCapsGamePadController, 		///< Has one or more hand-held gaming controllers
+	kCapsVision,					///< Has a vision based controller system
 	kCapsReserved1 = 0x10000000,
 	kCapsReserved2 = 0x20000000,
 	kCapsButtonSet = 0x40000000,	///< Has Button in kCapsButtonMask() set?

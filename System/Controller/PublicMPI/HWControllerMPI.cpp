@@ -85,6 +85,10 @@ namespace Hardware {
 	  return pimpl_->EnableControllerSync(enable);
   }
 
+  LeapFrog::Brio::U8
+  HWControllerMPI::GetMaximumNumberOfControllers() {
+	  return pimpl_->GetMaximumNumberOfControllers();
+  }
 
 } // namespace Hardware
 } // namespace LF
