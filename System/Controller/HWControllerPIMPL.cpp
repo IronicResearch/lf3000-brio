@@ -364,6 +364,12 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
 
   LeapFrog::Brio::tErrType 
   HWControllerPIMPL::SetAnalogStickMode(tHWAnalogStickMode mode) {
+	if(mode != kHWAnalogStickModeDPad)
+	{
+		U32 originalButtonState = buttonData_.buttonState;
+		buttonData_.buttonState &= ~(kButtonLeft | kButtonRight | kButtonDown | kButtonUp);
+		buttonData_.buttonTransition |= (originalButtonState ^ buttonData_.buttonState);
+	}
     return analogStickMPI_.SetAnalogStickMode(mode, id_);
   }
 

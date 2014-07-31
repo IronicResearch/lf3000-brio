@@ -42384,3 +42384,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/30/14 11:10 AM
 25,160 ms. (Cumulative: 27,126,065 ms)
 
 ----------------
+Revision 10,970 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-910.  When switching to any mode other than D-pad mode, clear out cached button directions.  This prevents cached direction from being posted along with the regular buttons (i.e. A button).
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/30/14 5:14 PM
+1 changed, 0 added, 0 deleted.
+25,034 ms. (Cumulative: 27,151,208 ms)
+
+----------------
