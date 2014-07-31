@@ -9,6 +9,58 @@ namespace LF {
 namespace Vision {
 
   /*!
+   * kVNAreaToStartScalingKey
+   * The string key used to override the default wand area (in pixels)
+   * when scaling begins.  In this case scaling referes to the scaling
+   * of the distance the LED moves to it's position on the screen.  Typical
+   * usage of this is to reduce the physical space the LED must move in to
+   * traverse the entire screen.  \sa SetAutomaticWandScaling
+   */
+  extern const LeapFrog::Brio::CString kVNAreaToStartScalingKey;
+
+  /*!
+   * kVNMinPercentToScaleKey
+   * The string key used to override the default minimum percent to scale
+   * the wand to.  This refers to the size of the scaled input box relative to 
+   * the size of the screen dimensions. \sa SetAutomaticWandScaling
+   */
+  extern const LeapFrog::Brio::CString kVNMinPercentToScaleKey;
+
+  /*!
+   * kVNMinWandAreaKey
+   * They key used to override the default minimum wand area (in pixels).  If the
+   * VNWandTracker Algorithm finds an LED that is smaller than the sie specified with
+   * this paramter it will ignore it as if there is no LED present on the screen.
+   */
+  extern const LeapFrog::Brio::CString kVNMinWandAreaKey;
+
+  /*!
+   * kVNUseWandSmoothingKey
+   * This is the key for turning on wand smoothing.  A corresponding value that is
+   * greater than or equal to 1.0 will turn on wand smoothing, any other value will not.
+   */
+  extern const LeapFrog::Brio::CString kVNUseWandSmoothingKey;
+
+  /*!
+   * kVNNumFramesToCacheLocationKey
+   * The key used to set the number of frames to cache the last known location 
+   * of the wand LED.  If wand smoothing is on, and the wand is no longer visible
+   * by the VNWandTracker algorithm, either by occlusion, off screen or noise, the
+   * location reported for the LED will be the last known location for n frames where
+   * n is the value associated with this key in the input params.
+   */
+  extern const LeapFrog::Brio::CString kVNNumFramesToCacheLocationKey;
+
+  /*!
+   * kVNWandSmoothingAlphaKey
+   * The key used to override the default wand smoothing alpha value.  If wand smoothing
+   * is on, the location of the LED is reported as: 
+   * alpha*currentLocation + (1.0-alpha)*previousLocation
+   * The value associated with this key is used as alpha as long as it lies in (0,1)
+   */
+  extern const LeapFrog::Brio::CString kVNWandSmoothingAlphaKey;
+
+  /*!
    * \class VNWandTracker
    *
    * \brief The VNWandTracker class is a discrete algorithm used to track the 

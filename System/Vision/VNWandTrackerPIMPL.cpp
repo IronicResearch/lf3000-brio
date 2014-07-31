@@ -27,9 +27,13 @@
 namespace LF {
 namespace Vision {
 
-  static const LeapFrog::Brio::CString kVNAreaToStartScalingKey = "VNWTAreaToStartScaling";
-  static const LeapFrog::Brio::CString kVNMinPercentToScaleKey = "VNWTMinPercentToScale";
-  static const LeapFrog::Brio::CString kVNMinWandAreaKey = "VNWTMinWandArea";
+  const LeapFrog::Brio::CString kVNAreaToStartScalingKey = "VNWTAreaToStartScaling";
+  const LeapFrog::Brio::CString kVNMinPercentToScaleKey = "VNWTMinPercentToScale";
+  const LeapFrog::Brio::CString kVNMinWandAreaKey = "VNWTMinWandArea";
+
+  const LeapFrog::Brio::CString kVNUseWandSmoothingKey = "VNWTUseWandScaling";
+  const LeapFrog::Brio::CString kVNNumFramesToCacheLocationKey = "VNWTNumFramesCacheLoc";
+  const LeapFrog::Brio::CString kVNWandSmoothingAlphaKey = "VNWTSmoothingAlpha";
 
   static const float kVNDefaultAreaToStartScaling = 1000.0f;
   static const float kVNWandMinAreaDefault = 50.f;
@@ -40,8 +44,8 @@ namespace Vision {
   static const float kVNMinPercentOfPixelsDiffToIncludeInSum = 0.7f;
   static const float kVNPercentOfMaxRadiusValueForAreaCalc = 0.8f;
 
-  static const int kVNNumTimesUseCachedPointerLocation = 5;
-  static const float kVNLocUpdateAlpha = 0.1f;
+  static const int kVNDefaultNumTimesUseCachedLocBeforeReset = 5;
+  static const float kVNDefaultLocUpdateAlpha = 0.1f;
 
   bool SameSize(const LeapFrog::Brio::tRect &lfr, const cv::Rect & r) {
     return (lfr.left == r.x &&
@@ -61,14 +65,32 @@ namespace Vision {
 
 	// we potentially need to do more error checking on these parameters
 	if (key.compare(kVNAreaToStartScalingKey) == 0) {
-	  if (val > 0)
+	  if (val > 0) {
 	    wandAreaToStartScaling_ = val;
+	  }
 	} else if (key.compare(kVNMinPercentToScaleKey) == 0) {
-	  if (val > 0)
+	  if (val > 0) {
 	    minPercentToScale_ = val;
+	  }
 	} else if (key.compare(kVNMinWandAreaKey) == 0) {
-	  if (val > 0)
+	  if (val > 0) {
 	    minArea_ = val;
+	  }
+	} else if (key.compare(kVNUseWandSmoothingKey) == 0) {
+	  if (val >= 1.0f) {
+	    useWandSmoothing_ = true;
+	  }
+	  std::cout << "useWandSmoothing = " << ((useWandSmoothing_) ? "true" : "false") << std::endl;
+	} else if (key.compare(kVNNumFramesToCacheLocationKey) == 0) {
+	  if (val > 0) {
+	    numTimesUsedCachedLocBeforeReset_ = val;
+	  }
+	  std::cout << "numTimesUsedCachedLocBeforeReset = " << numTimesUsedCachedLocBeforeReset_ << std::endl;
+	} else if (key.compare(kVNWandSmoothingAlphaKey) == 0) {
+	  if (val > 0 && val < 1.0f) {
+	    wandSmoothingAlpha_ = val;
+	  }
+	  std::cout << "wandSmoothingAlpha_ = " << wandSmoothingAlpha_ << std::endl;
 	}
       }
     }
@@ -82,7 +104,10 @@ namespace Vision {
     minPercentToScale_(kVNDefaultMinPercentToScale),
     minArea_(kVNWandMinAreaDefault),
     prevLoc_(kVNNoWandLocationX, kVNNoWandLocationY),
-    numTimesUsedCachedLoc_(0) {
+    numTimesUsedCachedLoc_(0),
+    numTimesUsedCachedLocBeforeReset_(kVNDefaultNumTimesUseCachedLocBeforeReset),
+    wandSmoothingAlpha_(kVNDefaultLocUpdateAlpha),
+    useWandSmoothing_(false) {
 
     SetParams(params);
   }
@@ -335,11 +360,15 @@ namespace Vision {
 
       // insure we have at least a minimum circle area
       if (inFrame && lightArea > minArea_) {
-	numTimesUsedCachedLoc_ = 0;
-	wand_->pimpl_->VisibleOnScreen(kVNLocUpdateAlpha*p+(1.0f-kVNLocUpdateAlpha)*prevLoc_);
-	prevLoc_ = p;
+	if (useWandSmoothing_) {
+	  wand_->pimpl_->VisibleOnScreen(wandSmoothingAlpha_*p+(1.0f-wandSmoothingAlpha_)*prevLoc_);
+	  numTimesUsedCachedLoc_ = 0;
+	  prevLoc_ = p;
+	} else {
+	  wand_->pimpl_->VisibleOnScreen(p);
+	}
       } else {
-	if (numTimesUsedCachedLoc_ < kVNNumTimesUseCachedPointerLocation) {
+	if (useWandSmoothing_ && (numTimesUsedCachedLoc_ < numTimesUsedCachedLocBeforeReset_)) {
 	  wand_->pimpl_->VisibleOnScreen(prevLoc_);
 	  numTimesUsedCachedLoc_++;
 	} else {

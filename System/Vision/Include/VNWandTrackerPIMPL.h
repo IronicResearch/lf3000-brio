@@ -41,6 +41,9 @@ namespace Vision {
     cv::Mat yuv_;
     cv::Point prevLoc_;
     int numTimesUsedCachedLoc_;
+    int numTimesUsedCachedLocBeforeReset_;
+    float wandSmoothingAlpha_;
+    bool useWandSmoothing_;
 
     void SetParams(VNInputParameters *params);
     void ComputeLargestContour(cv::Mat& img,
