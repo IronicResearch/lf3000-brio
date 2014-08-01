@@ -42418,3 +42418,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/31/14 8:17 PM
 24,781 ms. (Cumulative: 27,226,152 ms)
 
 ----------------
+Revision 10,974 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+change default min area for wand tracking, adjust WND min area as well
+
+By Alex Lindblad (alindblad@leapfrog.com) on 7/31/14 11:30 PM
+1 changed, 0 added, 0 deleted.
+25,270 ms. (Cumulative: 27,251,515 ms)
+
+----------------
