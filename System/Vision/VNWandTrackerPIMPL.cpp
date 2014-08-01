@@ -36,7 +36,7 @@ namespace Vision {
   const LeapFrog::Brio::CString kVNWandSmoothingAlphaKey = "VNWTSmoothingAlpha";
 
   static const float kVNDefaultAreaToStartScaling = 1000.0f;
-  static const float kVNWandMinAreaDefault = 50.f;
+  static const float kVNWandMinAreaDefault = 25.f;
   static const float kVNDefaultMinPercentToScale = 0.3f;
   static const int kVNNoContourIndex = -1;
   static const int kVNMaxNumStepsToComputeCircle = 30;
