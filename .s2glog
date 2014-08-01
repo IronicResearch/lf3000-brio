@@ -42402,3 +42402,19 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/30/14 5:52 PM
 25,037 ms. (Cumulative: 27,176,338 ms)
 
 ----------------
+Revision 10,972 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,892 ms. (Cumulative: 27,201,355 ms)
+
+----------------
+Revision 10,973 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Restart V4L stream after ready frames stall out. (FWGLAS-860, FWGLAS-802)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/31/14 8:17 PM
+1 changed, 0 added, 0 deleted.
+24,781 ms. (Cumulative: 27,226,152 ms)
+
+----------------
