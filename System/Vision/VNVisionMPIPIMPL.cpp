@@ -196,10 +196,6 @@ namespace Vision {
 	 it != hotSpots_.end(); ++it) {
       (*it)->pimpl_->UpdateVisionCoordinates();
     }
-    for (std::vector<const VNHotSpot*>::iterator it = rectHotSpots_.begin();
-	 it != rectHotSpots_.end(); ++it) {
-      (*it)->pimpl_->UpdateVisionCoordinates();
-    }
   }
 
   LeapFrog::Brio::tErrType
@@ -346,6 +342,19 @@ namespace Vision {
     std::vector<const VNHotSpot*> triggeredHotSpots;
     std::vector<const VNHotSpot*> changedHotSpots;
 
+    //-----
+    // compute integral image
+    static cv::Mat integralImg;
+#if VN_USE_FAST_INTEGRAL_IMAGE
+    LF::Vision::IntegralImage(outputImg_, integralImg);
+#else
+    cv::integral(outputImg_, integralImg);
+#endif
+    VNHotSpotPIMPL::SetIntegralImage(&integralImg);
+    //------
+
+    //------
+    // trigger hot spots
     bool wasTriggered = false;
     PROF_BLOCK_START("triggerHotSpots");
     for (std::vector<const VNHotSpot*>::iterator hs = hotSpots_.begin();
@@ -362,37 +371,10 @@ namespace Vision {
       if (wasTriggered != hotSpot->IsTriggered())
 	changedHotSpots.push_back(hotSpot);
     }
+    //-----
 
-    if (rectHotSpots_.size() > 0) {
-      // compute integral image
-      static cv::Mat integralImg;
-
-#if VN_USE_FAST_INTEGRAL_IMAGE
-	  LF::Vision::IntegralImage(outputImg_, integralImg);
-#else
-      cv::integral(outputImg_, integralImg);
-#endif
-
-      VNHotSpotPIMPL::SetIntegralImage(&integralImg);
-
-      for (std::vector<const VNHotSpot*>::iterator rhs = rectHotSpots_.begin();
-	   rhs != rectHotSpots_.end();
-	   ++rhs) {
-
-	const VNHotSpot* hotSpot = *rhs;
-	wasTriggered = hotSpot->IsTriggered();
-
-	hotSpot->Trigger(outputImg_);
-
-	// add hot spot to appropriate group of hot spots
-	if (hotSpot->IsTriggered())
-	  triggeredHotSpots.push_back(hotSpot);
-	if (wasTriggered != hotSpot->IsTriggered())
-	  changedHotSpots.push_back(hotSpot);
-      }
-    }
-    VNHotSpotPIMPL::SetIntegralImage(NULL);
-
+    //-------
+    // Send out group triggering notifications
     if (triggeredHotSpots.size() > 0) {
       VNHotSpotEventMessage msg(LF::Vision::kVNHotSpotGroupTriggeredEvent, triggeredHotSpots);
       eventMPI_.PostEvent(msg, 0);
@@ -402,6 +384,7 @@ namespace Vision {
       VNHotSpotEventMessage msg(LF::Vision::kVNHotSpotGroupTriggerChangeEvent, changedHotSpots);
       eventMPI_.PostEvent(msg, 0);
     }
+    //------
   }
 
   void
@@ -558,52 +541,29 @@ namespace Vision {
 #endif
 
   void
-  VNVisionMPIPIMPL::AddHotSpot(const VNHotSpot* hotSpot,
-			       std::vector<const VNHotSpot*> & hotSpots) {
-    if (std::find(hotSpots.begin(),
-		  hotSpots.end(),
-		  hotSpot) == (hotSpots.end())) {
-      hotSpots.push_back(hotSpot);
-    }
-  }
-
-  void
   VNVisionMPIPIMPL::AddHotSpot(const VNHotSpot* hotSpot) {
-    const VNRectHotSpot* rhs = dynamic_cast<const VNRectHotSpot*>(hotSpot);
-    const VNCircleHotSpot *chs = dynamic_cast<const VNCircleHotSpot*>(rhs);
-    const VNArbitraryShapeHotSpot *ahs = dynamic_cast<const VNArbitraryShapeHotSpot*>(rhs);
-    // only add VNRectHotSpot not any children of VNRectHotSpot
-    if (rhs && (chs == NULL) && (ahs == NULL)) {
-      AddHotSpot(hotSpot, rectHotSpots_);
-    } else {
-      AddHotSpot(hotSpot, hotSpots_);
-    }
-  }
-
-  bool
-  VNVisionMPIPIMPL::RemoveHotSpot(const VNHotSpot *hotSpot,
-				  std::vector<const VNHotSpot*> &hotSpots) {
-    std::vector<const VNHotSpot*>::iterator it;
-    it = std::find(hotSpots.begin(), hotSpots.end(), hotSpot);
-    if (it != hotSpots.end()) {
-      hotSpots.erase(it);
+    if (std::find(hotSpots_.begin(),
+		  hotSpots_.end(),
+		  hotSpot) == (hotSpots_.end())) {
+      hotSpots_.push_back(hotSpot);
     }
   }
 
   void
   VNVisionMPIPIMPL::RemoveHotSpot(const VNHotSpot* hotSpot) {
-    if (!RemoveHotSpot(hotSpot, hotSpots_)) {
-      RemoveHotSpot(hotSpot, rectHotSpots_);
+    std::vector<const VNHotSpot*>::iterator it;
+    it = std::find(hotSpots_.begin(), hotSpots_.end(), hotSpot);
+    if (it != hotSpots_.end()) {
+      hotSpots_.erase(it);
     }
   }
 
   void
-  VNVisionMPIPIMPL::RemoveHotSpotByID(const LeapFrog::Brio::U32 tag,
-				      std::vector<const VNHotSpot*> &hotSpots) {
-    std::vector<const VNHotSpot*>::iterator it = hotSpots.begin();
-    for ( ; it != hotSpots.end(); ++it) {
+  VNVisionMPIPIMPL::RemoveHotSpotByID(const LeapFrog::Brio::U32 tag) {
+    std::vector<const VNHotSpot*>::iterator it = hotSpots_.begin();
+    for ( ; it != hotSpots_.end(); ++it) {
       if ((*it)->GetTag() == tag) {
-	it = hotSpots.erase(it);
+	it = hotSpots_.erase(it);
 	// because erase returns an iterator to the "next" spot we need
 	// to decrement the iterator since we icrement it at the end of each loop
 	it--;
@@ -612,14 +572,7 @@ namespace Vision {
   }
 
   void
-  VNVisionMPIPIMPL::RemoveHotSpotByID(const LeapFrog::Brio::U32 tag) {
-    RemoveHotSpotByID(tag, hotSpots_);
-    RemoveHotSpotByID(tag, rectHotSpots_);
-  }
-
-  void
   VNVisionMPIPIMPL::RemoveAllHotSpots(void) {
-    rectHotSpots_.clear();
     hotSpots_.clear();
   }
 
