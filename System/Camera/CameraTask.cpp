@@ -177,6 +177,7 @@ void* CameraTaskMain(void* arg)
 	JPEG_METHOD			method = JPEG_FAST;
 	
 	bool				bFirst = false;
+	bool				bRestart = false;
 	struct timeval		tv0, tvn, tvt = {0, 0};
 	int					framecount = 0;
 
@@ -314,6 +315,16 @@ void* CameraTaskMain(void* arg)
 
 	while(bRunning && !timeout)
 	{
+		if (bRestart)
+		{
+			// Restarting V4L stream via GrabFrame() outside of thread lock
+			dbg.DebugOut( kDbgLvlCritical, "Restarting V4L stream at frame=%d\n", framecount);
+			frame.width = pCtx->mode.width;
+			frame.height = pCtx->mode.height;
+			bRet = pCtx->module->GrabFrame(pCtx->hndl, &frame);
+			bRestart = false;
+		}
+
 		if(0 != kernel.TryLockMutex(pCtx->mThread))
 		{
 			continue;
@@ -359,6 +370,7 @@ void* CameraTaskMain(void* arg)
 			CalcTimeDiff(tvx, tvx, tvn);
 			if (tvx.tv_sec > tvn.tv_sec + 10 && !pCtx->bPaused) {
 				dbg.DebugOut( kDbgLvlCritical, "PollFrame failed to query next V4L frame=%d\n", framecount);
+				bRestart = true;
 			}
 
 			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
