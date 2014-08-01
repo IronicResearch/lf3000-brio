@@ -69,12 +69,6 @@ namespace Vision {
     void Wait(double secondsToWait) const;
     void UpdateHotSpotVisionCoordinates(void);
     void SetFrameProcessingSize(void);
-    void AddHotSpot(const VNHotSpot *hotSpot,
-		    std::vector<const VNHotSpot*> &hotSpots);
-    bool RemoveHotSpot(const VNHotSpot *hotSpot,
-		       std::vector<const VNHotSpot*> &hotSpots);
-    void RemoveHotSpotByID(const LeapFrog::Brio::U32 tag,
-			   std::vector<const VNHotSpot*> &hotSpots);
 
 #ifdef EMULATION
     void OpenCVDebug(void);
@@ -88,9 +82,7 @@ namespace Vision {
     LeapFrog::Brio::CDebugMPI dbg_;
     LeapFrog::Brio::CEventMPI eventMPI_;
 
-    // all rectangular hot spots
-    std::vector<const VNHotSpot*> rectHotSpots_;
-    // all other hot spots
+    // all hot spots
     std::vector<const VNHotSpot*> hotSpots_;
 
     time_t frameTime_;

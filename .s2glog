@@ -42427,3 +42427,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 7/31/14 11:30 PM
 25,270 ms. (Cumulative: 27,251,515 ms)
 
 ----------------
+Revision 10,975 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+towards vision thread safety, consolidate hot spots
+
+By Alex Lindblad (alindblad@leapfrog.com) on 8/1/14 12:00 AM
+2 changed, 0 added, 0 deleted.
+26,394 ms. (Cumulative: 27,278,051 ms)
+
+----------------
