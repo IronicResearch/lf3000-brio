@@ -47,13 +47,21 @@ namespace Vision {
     virtual ~VNHotSpotEventMessage(void);
     
     /*!
-     * \brief GetHotSpot returns the VNHotSpot associated with this message
+     * \brief GetHotSpot returns the VNHotSpot associated with this message.  If
+     * the event type for the listener is kVNHotSpotTriggeredEvent or 
+     * kVNHotSpotTriggerChangeEvent this method will return a non-NULL value
+     * associated with the VNHotSpot.  If the event type for the listener is
+     * kVNHotSpotGroupTriggeredEvent or kVNHotSpotGroupTriggerChangeEvent this
+     * method returns NULL
      * \return A const pointer to the VNHotSpot associated with this message
      */
     const VNHotSpot* GetHotSpot(void) const;
 
     /*!
-     * \brief GetHotSpots returns the vector of VNHotSpot associated with this message
+     * \brief GetHotSpots returns the vector of VNHotSpot associated with this message.  In the
+     * case where the event listener is listening for kVNHotSpotTriggeredEvent or a 
+     * kVNHotSpotTriggerChangeEvent the vector returned will always be length 1 containing the
+     * single hot spots associated witht his message.
      * \return A vector of const pointers to the the VNHotSpots associated with this message
      */
     std::vector<const VNHotSpot*> GetHotSpots(void) const;
