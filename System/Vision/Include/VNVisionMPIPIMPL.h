@@ -69,6 +69,8 @@ namespace Vision {
     void Wait(double secondsToWait) const;
     void UpdateHotSpotVisionCoordinates(void);
     void SetFrameProcessingSize(void);
+    void UpdatePendingHotSpots(void);
+    void CheckForImmediateHotSpotUpdate(void);
 
 #ifdef EMULATION
     void OpenCVDebug(void);
@@ -85,8 +87,21 @@ namespace Vision {
     // all hot spots
     std::vector<const VNHotSpot*> hotSpots_;
 
+    //-------
+    // used for updating hot spots (adding/removing)
+    enum VNHotSpotUpdateKey {
+      VN_ADD_HOT_SPOT,
+      VN_REMOVE_HOT_SPOT
+    };
+    typedef std::pair<VNHotSpotUpdateKey, const VNHotSpot*> VNHotSpotUpdate;
+    std::vector<VNHotSpotUpdate> hotSpotsToUpdate_;
+    //------
+
+    //mutexes
+    LeapFrog::Brio::tMutex hsUpdateLock_;
+
     time_t frameTime_;
-    int frameCount_;
+    unsigned int frameCount_;
     LeapFrog::Brio::U16 frameProcessingWidth_;
     LeapFrog::Brio::U16 frameProcessingHeight_;
     VNWand *currentWand_;
@@ -101,7 +116,7 @@ namespace Vision {
 #endif
 
     friend void* VisionTask(void*);
-    volatile bool isFramePending_;
+    volatile bool isFramePending_; 
     volatile bool isThreadRunning_;
     LeapFrog::Brio::tTaskHndl hndlVisionThread_;
 

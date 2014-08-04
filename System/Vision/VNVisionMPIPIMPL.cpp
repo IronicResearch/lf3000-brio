@@ -34,6 +34,11 @@ const LeapFrog::Brio::tEventType gVNEventKey[] = {LeapFrog::Brio::kCaptureFrameE
 
 namespace LF {
 namespace Vision {
+  // LOCKING AND UNLOCKING 
+#define HS_UPDATE_LOCK dbg_.Assert((kNoErr == kernelMPI_.LockMutex(hsUpdateLock_)), \
+				    "Couldn't lock hot spot update mutex.\n");
+#define HS_UPDATE_UNLOCK dbg_.Assert((kNoErr == kernelMPI_.UnlockMutex(hsUpdateLock_)),\
+				     "Couldn't unlock hot spot update mutex.\n");
 
   static const double kVNMillisecondsInASecond = 1000.0;
   static const float kVNDefaultFrameProcessingRate = 0.03125; // 32 fps
@@ -116,12 +121,22 @@ namespace Vision {
 
     SetFrameProcessingSize();
 
+    // Setup mutexes
+    const LeapFrog::Brio::tMutexAttr attr = {0};
+    LeapFrog::Brio::tErrType err = kNoErr;
+    err = kernelMPI_.InitMutex(hsUpdateLock_, attr);
+    dbg_.Assert((err == kNoErr), "VNVisionMPIPIMPL::ctor: Could not init hot spot removal mutex.\n");
+
     dbg_.SetDebugLevel(kDbgLvlVerbose);
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [ctor]\n");
   }
 
   VNVisionMPIPIMPL::~VNVisionMPIPIMPL(void) {
     DeleteTask();
+
+    // delete mutexes
+    kernelMPI_.DeInitMutex(hsUpdateLock_);
+
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [dtor]\n");
   }
 
@@ -129,16 +144,17 @@ namespace Vision {
   VNVisionMPIPIMPL::DeleteTask(void) {
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
 
+    visionAlgorithmRunning_ = false;
+
     // stop the video capture if it's still going
     if (videoCapture_ != kInvalidVidCapHndl)
       result = cameraMPI_.StopVideoCapture(videoCapture_);
-    visionAlgorithmRunning_ = false;
 
 #if VN_USE_IMAGE_PROCESS_THREAD
     // Signal vision thread to exit
     if (hndlVisionThread_ != kInvalidTaskHndl) {
-       void* retval = NULL;
        isThreadRunning_ = false;
+       void* retval = NULL;
        kernelMPI_.JoinTask(hndlVisionThread_, retval);
        hndlVisionThread_ = kInvalidTaskHndl;
     }
@@ -166,7 +182,8 @@ namespace Vision {
 	LeapFrog::Brio::tCaptureMode* mode = *it;
 
 	// Glasgow camera only has three settings
-	if (mode->width  == frameProcessingWidth_ &&
+	if (mode &&
+	    mode->width  == frameProcessingWidth_ &&
 	    mode->height == frameProcessingHeight_) {
 
 	  // the pixel format supported by the glasgow camera is RAWYUYV
@@ -194,7 +211,9 @@ namespace Vision {
   VNVisionMPIPIMPL::UpdateHotSpotVisionCoordinates(void) {
     for (std::vector<const VNHotSpot*>::iterator it = hotSpots_.begin();
 	 it != hotSpots_.end(); ++it) {
-      (*it)->pimpl_->UpdateVisionCoordinates();
+      if (*it) {
+	(*it)->pimpl_->UpdateVisionCoordinates();
+      }
     }
   }
 
@@ -216,37 +235,39 @@ namespace Vision {
   void
   VNVisionMPIPIMPL::SetCoordinateTranslatorFrames(const LeapFrog::Brio::tRect *displayRect) {
     VNCoordinateTranslator *translator = VNCoordinateTranslator::Instance();
-    LeapFrog::Brio::tRect visionFrame;
-    visionFrame.left = visionFrame.top = 0;
-    visionFrame.right = frameProcessingWidth_;
-    visionFrame.bottom = frameProcessingHeight_;
-    translator->SetVisionFrame(visionFrame);
-
-    //initialize frame
-    LeapFrog::Brio::tRect displayFrame;
-    displayFrame.left = 0;
-    displayFrame.top = 0;
-    displayFrame.right = 0;
-    displayFrame.bottom = 0;
-
-    if (displayRect) {
-      displayFrame.left = displayRect->left;
-      displayFrame.right = displayRect->right;
-      displayFrame.top = displayRect->top;
-      displayFrame.bottom = displayRect->bottom;
-    } else if (videoSurf_) {
-      displayFrame.right = videoSurf_->width;
-      displayFrame.bottom = videoSurf_->height;
-    } else {
-      const LeapFrog::Brio::tDisplayScreenStats*
-	screenStats = LeapFrog::Brio::CDisplayMPI().GetScreenStats(0);
-      if (screenStats) {
-	displayFrame.right = screenStats->width;
-	displayFrame.bottom = screenStats->height;
+    if (translator) {
+      LeapFrog::Brio::tRect visionFrame;
+      visionFrame.left = visionFrame.top = 0;
+      visionFrame.right = frameProcessingWidth_;
+      visionFrame.bottom = frameProcessingHeight_;
+      translator->SetVisionFrame(visionFrame);
+      
+      //initialize frame
+      LeapFrog::Brio::tRect displayFrame;
+      displayFrame.left = 0;
+      displayFrame.top = 0;
+      displayFrame.right = 0;
+      displayFrame.bottom = 0;
+      
+      if (displayRect) {
+	displayFrame.left = displayRect->left;
+	displayFrame.right = displayRect->right;
+	displayFrame.top = displayRect->top;
+	displayFrame.bottom = displayRect->bottom;
+      } else if (videoSurf_) {
+	displayFrame.right = videoSurf_->width;
+	displayFrame.bottom = videoSurf_->height;
+      } else {
+	const LeapFrog::Brio::tDisplayScreenStats*
+	  screenStats = LeapFrog::Brio::CDisplayMPI().GetScreenStats(0);
+	if (screenStats) {
+	  displayFrame.right = screenStats->width;
+	  displayFrame.bottom = screenStats->height;
+	}
       }
+      translator->SetDisplayFrame(displayFrame);
+      UpdateHotSpotVisionCoordinates();
     }
-    translator->SetDisplayFrame(displayFrame);
-    UpdateHotSpotVisionCoordinates();
   }
 
   LeapFrog::Brio::tErrType
@@ -361,15 +382,17 @@ namespace Vision {
 	 hs != hotSpots_.end();
 	 ++hs) {
       const VNHotSpot* hotSpot = *hs;
-      wasTriggered = hotSpot->IsTriggered();
+      if (hotSpot) {
+	wasTriggered = hotSpot->IsTriggered();
 
-      hotSpot->Trigger(outputImg_);
+	hotSpot->Trigger(outputImg_);
 
-      // add hot spot to appropriate group of hot spots
-      if (hotSpot->IsTriggered())
-	triggeredHotSpots.push_back(hotSpot);
-      if (wasTriggered != hotSpot->IsTriggered())
-	changedHotSpots.push_back(hotSpot);
+	// add hot spot to appropriate group of hot spots
+	if (hotSpot->IsTriggered())
+	  triggeredHotSpots.push_back(hotSpot);
+	if (wasTriggered != hotSpot->IsTriggered())
+	  changedHotSpots.push_back(hotSpot);
+      }
     }
     //-----
 
@@ -409,46 +432,61 @@ namespace Vision {
   }
 
 #if VN_USE_IMAGE_PROCESS_THREAD
-  void* VisionTask(void* pctx)
-  {
-	VNVisionMPIPIMPL* pthis = (VNVisionMPIPIMPL*)pctx;
-
+  void* VisionTask(void* pctx) {
+      VNVisionMPIPIMPL* pthis = (VNVisionMPIPIMPL*)pctx;
+      
+      if (pthis) {
 	while (pthis->isThreadRunning_) {
+	  
+	  PROF_BLOCK_START("Vision:UpdatePendingHotSpots");
+	  pthis->UpdatePendingHotSpots();
+	  PROF_BLOCK_END();
+	  
+	  if (pthis->visionAlgorithmRunning_ && pthis->algorithm_ && pthis->isFramePending_) {
+	    PROF_BLOCK_START("Vision::Task");
+	    
+	    PROF_BLOCK_START("algorithm");
+	    pthis->algorithm_->Execute(pthis->cameraSurfaceMat_, pthis->outputImg_);
+	    PROF_BLOCK_END();
 
-	  if (pthis->isFramePending_) {
-	      PROF_BLOCK_START("Vision::Task");
-
-	      PROF_BLOCK_START("algorithm");
-	      pthis->algorithm_->Execute(pthis->cameraSurfaceMat_, pthis->outputImg_);
-	      PROF_BLOCK_END();
-
-	      pthis->isFramePending_ = false;
-
+	    pthis->isFramePending_ = false;
+	    
 #if defined(EMULATION)
-	      pthis->OpenCVDebug();
+	    pthis->OpenCVDebug();
 #endif
-
-	      pthis->TriggerHotSpots();
-
-	      PROF_BLOCK_END();
-
-	      ++pthis->frameCount_;
-	      if (pthis->frameCount_ % 30 == 0) {
-	          std::cout << "FPS = " << pthis->frameCount_ / ((float)(time(0) - pthis->frameTime_)) << std::endl;
-	      }
+	    PROF_BLOCK_START("triggering");
+	    pthis->TriggerHotSpots();
+	    PROF_BLOCK_END();
+	    
+	    PROF_BLOCK_END();
+	    
+	    ++pthis->frameCount_;
+	    if (pthis->frameCount_ % 30 == 0) {
+	      std::cout << "FPS = " << pthis->frameCount_ / ((float)(time(0) - pthis->frameTime_)) << std::endl;
+	    }
 	  } else {
-	      pthis->kernelMPI_.TaskSleep(1); // yield
+	    pthis->kernelMPI_.TaskSleep(1); // yield
 	  }
-
 	}
-
-	return pctx; // optional
+      }
+      return pctx; // optional
   }
 #endif
 
   LeapFrog::Brio::tEventStatus
   VNVisionMPIPIMPL::Notify(const LeapFrog::Brio::IEventMessage &msg) {
-    if (algorithm_) {
+
+#if VN_USE_IMAGE_PROCESS_THREAD
+    // If the vision thread does not process the previous frame fast enough
+    // this will drop the next frame from the camera
+    if (isFramePending_) {
+      return LeapFrog::Brio::kEventStatusOK;
+    } 
+#else
+    UpdatePendingHotSpots();
+#endif
+
+    if (visionAlgorithmRunning_ && algorithm_) {
       const LeapFrog::Brio::CCameraEventMessage *cemsg =
 	dynamic_cast<const LeapFrog::Brio::CCameraEventMessage*>(&msg);
       if (cemsg) {
@@ -541,39 +579,96 @@ namespace Vision {
 #endif
 
   void
+  VNVisionMPIPIMPL::CheckForImmediateHotSpotUpdate(void) {
+    // update immediately if the algorithm is not running
+    if (!visionAlgorithmRunning_) {
+      UpdatePendingHotSpots();
+    }
+  }
+
+  void
   VNVisionMPIPIMPL::AddHotSpot(const VNHotSpot* hotSpot) {
-    if (std::find(hotSpots_.begin(),
-		  hotSpots_.end(),
-		  hotSpot) == (hotSpots_.end())) {
-      hotSpots_.push_back(hotSpot);
+    // avoid adding NULL
+    if (hotSpot) {
+      if (std::find(hotSpots_.begin(),
+		    hotSpots_.end(),
+		    hotSpot) == (hotSpots_.end())) {
+	HS_UPDATE_LOCK
+	hotSpotsToUpdate_.push_back(VNHotSpotUpdate(VN_ADD_HOT_SPOT, hotSpot));
+	HS_UPDATE_UNLOCK
+	CheckForImmediateHotSpotUpdate();
+      }
     }
   }
 
   void
   VNVisionMPIPIMPL::RemoveHotSpot(const VNHotSpot* hotSpot) {
-    std::vector<const VNHotSpot*>::iterator it;
-    it = std::find(hotSpots_.begin(), hotSpots_.end(), hotSpot);
-    if (it != hotSpots_.end()) {
-      hotSpots_.erase(it);
+    // skip NULL
+    if (hotSpot) {
+      HS_UPDATE_LOCK
+      hotSpotsToUpdate_.push_back(VNHotSpotUpdate(VN_REMOVE_HOT_SPOT,hotSpot));
+      HS_UPDATE_UNLOCK
+      CheckForImmediateHotSpotUpdate();
     }
   }
 
   void
   VNVisionMPIPIMPL::RemoveHotSpotByID(const LeapFrog::Brio::U32 tag) {
     std::vector<const VNHotSpot*>::iterator it = hotSpots_.begin();
+    HS_UPDATE_LOCK
     for ( ; it != hotSpots_.end(); ++it) {
-      if ((*it)->GetTag() == tag) {
-	it = hotSpots_.erase(it);
-	// because erase returns an iterator to the "next" spot we need
-	// to decrement the iterator since we icrement it at the end of each loop
-	it--;
+      if ((*it) && (*it)->GetTag() == tag) {
+	hotSpotsToUpdate_.push_back(VNHotSpotUpdate(VN_REMOVE_HOT_SPOT,(*it)));
       }
     }
+    HS_UPDATE_UNLOCK
+    CheckForImmediateHotSpotUpdate();
   }
 
   void
   VNVisionMPIPIMPL::RemoveAllHotSpots(void) {
-    hotSpots_.clear();
+    HS_UPDATE_LOCK
+    // any hot spots that were added and not updated are also removed, hence the 
+    // clearning of the hotSpotsToUpdae vector
+    hotSpotsToUpdate_.clear();
+    std::vector<const VNHotSpot*>::iterator it = hotSpots_.begin();
+    for ( ; it != hotSpots_.end(); ++it) {
+      hotSpotsToUpdate_.push_back(VNHotSpotUpdate(VN_REMOVE_HOT_SPOT, (*it)));
+    }
+    HS_UPDATE_UNLOCK
+    CheckForImmediateHotSpotUpdate();
+  }
+
+  void
+  VNVisionMPIPIMPL::UpdatePendingHotSpots(void) {
+    if (hotSpotsToUpdate_.size() > 0 ) {
+      HS_UPDATE_LOCK
+      std::vector<VNHotSpotUpdate>::iterator tuIt = hotSpotsToUpdate_.begin();
+      for ( ; tuIt != hotSpotsToUpdate_.end(); ++tuIt) {
+	VNHotSpotUpdateKey key = (*tuIt).first;
+	const VNHotSpot* hs = (*tuIt).second;
+
+	// if the hot spot is not NULL, do something with it
+	if (hs) {
+	  
+	  // add the hot spot to the hot spot array
+	  if (key == VN_ADD_HOT_SPOT) {
+	    hotSpots_.push_back(hs);
+
+	  } else if (key == VN_REMOVE_HOT_SPOT) {
+	    // find where the hot spot is int he array and erase it
+	    std::vector<const VNHotSpot*>::iterator it;
+	    it = std::find(hotSpots_.begin(), hotSpots_.end(), hs);
+	    if (it != hotSpots_.end()) {
+	      hotSpots_.erase(it);
+	    }
+	  }
+	}
+      }
+      
+      hotSpotsToUpdate_.clear();
+      HS_UPDATE_UNLOCK
+    }
   }
 
 } // namespace Vision
