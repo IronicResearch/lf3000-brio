@@ -99,7 +99,9 @@ namespace Vision {
 	// TODO: Error check on clipped rect to insure it is inside of input image
 	triggerImage_ = (input)(clippedRect);
       }
-      isTriggered_ = trigger_->Triggered(hs);      
+      if (trigger_) {
+	isTriggered_ = trigger_->Triggered(hs);
+      }
     }
   }
 

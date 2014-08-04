@@ -42449,3 +42449,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 8/4/14 12:21 AM
 25,813 ms. (Cumulative: 27,303,974 ms)
 
 ----------------
+Revision 10,977 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+insure vision does not crash when a hs of the 'wrong' type is present
+
+By Alex Lindblad (alindblad@leapfrog.com) on 8/4/14 1:16 AM
+5 changed, 0 added, 0 deleted.
+25,222 ms. (Cumulative: 27,329,305 ms)
+
+----------------

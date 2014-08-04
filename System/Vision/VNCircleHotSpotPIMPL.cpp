@@ -120,7 +120,9 @@ namespace Vision {
 	// only keep the pixels that are in the circle
 	tmpMat_.copyTo(triggerImage_, clippedMask);
       }
-      isTriggered_ = trigger_->Triggered(hs);      
+      if (trigger_) {
+	isTriggered_ = trigger_->Triggered(hs);
+      }
     }
   }
 

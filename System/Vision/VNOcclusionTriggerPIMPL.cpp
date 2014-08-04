@@ -29,14 +29,17 @@ namespace Vision {
       // use -1 because the integral image is of size cols+1, rows+1
       cv::Rect imgRect(0,0,img.cols-1, img.rows-1);
       bb = bb & imgRect;
-      // TODO: Insure using at is as good as other accessor methods with
-      // respect to performance
-      int tl = img.at<unsigned int>(bb.y, bb.x);
-      int tr = img.at<unsigned int>(bb.y, bb.x+bb.width);
-      int bl = img.at<unsigned int>(bb.y+bb.height, bb.x);
-      int br = img.at<unsigned int>(bb.y+bb.height, bb.x+bb.width);
+      numPixels = bb.width*bb.height;
+      if (numPixels > 0) {
+	// TODO: Insure using at is as good as other accessor methods with
+	// respect to performance
+	int tl = img.at<unsigned int>(bb.y, bb.x);
+	int tr = img.at<unsigned int>(bb.y, bb.x+bb.width);
+	int bl = img.at<unsigned int>(bb.y+bb.height, bb.x);
+	int br = img.at<unsigned int>(bb.y+bb.height, bb.x+bb.width);
       
-      numDiffPixels = (br-bl-tr+tl)/static_cast<int>(kVNMaxPixelValue);
+	numDiffPixels = (br-bl-tr+tl)/static_cast<int>(kVNMaxPixelValue);
+      }
     }
   }
 
@@ -66,16 +69,17 @@ namespace Vision {
     int numPixels = 0;
     cv::Mat img;
     bool useIntegral = hs.GetIntegralImage(img);
+
     if (useIntegral) {
       TriggerWithIntegralImage(hs, 
 			       img, 
 			       numPixels, 
 			       numDiffPixels);
+
     } else {
       TriggerWithDiffImage(hs, 
 			   numPixels, 
 			   numDiffPixels);
-
     }
 
     if (numPixels <= 0) {
@@ -85,8 +89,7 @@ namespace Vision {
 
     // if the percentage of occluded pixels is greater than the threshold to trigger, return true.
     percentOccluded_ = (1.0f - (static_cast<float>(numPixels - numDiffPixels)/static_cast<float>(numPixels)));
-    return (percentOccluded_ > percentOccludedToTrigger_);    
-
+    return (percentOccluded_ > percentOccludedToTrigger_);
   }
 
 } // namespace Vision
