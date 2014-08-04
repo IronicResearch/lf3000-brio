@@ -17,6 +17,14 @@ namespace Vision {
   /*!
    * VN_VISION_EVENTS
    * \brief the events that can cause VNHotSpotEventMessages to fire
+   * kVNHotSpotTriggeredEvent 
+   *  - a single notify per hot spot that is triggered
+   * kVNHotSpotTriggerChangeEvent 
+   *  - a single notify per hot spot that changes it's triggered state
+   * kVNHotSpotGroupTriggeredEvent 
+   *  - a single notify per vision iteration containing all hot spots that were triggered
+   * kVNHotSpotGroupTriggerChangeEvent 
+   *  - a single notify per vision iteration containing all hot spots who's triggered state changed
    */
 #define VN_VISION_EVENTS		\
   (kVNHotSpotTriggeredEvent)		\

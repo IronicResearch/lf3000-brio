@@ -42436,3 +42436,16 @@ By Alex Lindblad (alindblad@leapfrog.com) on 8/1/14 12:00 AM
 26,394 ms. (Cumulative: 27,278,051 ms)
 
 ----------------
+Revision 10,976 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+make vision thread safe wrt hot spot addition and removal
+
+this was done with zero locks on the camera thread and vision
+thread while running in steady state.  The only time the vision
+thread is locked is if a hot spot is added/removed
+
+By Alex Lindblad (alindblad@leapfrog.com) on 8/4/14 12:21 AM
+3 changed, 0 added, 0 deleted.
+25,813 ms. (Cumulative: 27,303,974 ms)
+
+----------------
