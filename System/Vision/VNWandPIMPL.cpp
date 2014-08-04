@@ -112,6 +112,7 @@ namespace Vision {
     yuvMax_(kVNWandDefaultYUVMax),
     debugMPI_(kGroupVision),
     translator_(VNCoordinateTranslator::Instance()) {
+
   }
 
   VNWandPIMPL::~VNWandPIMPL(void) {

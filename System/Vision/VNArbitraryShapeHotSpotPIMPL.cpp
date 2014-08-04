@@ -121,7 +121,9 @@ namespace Vision {
 	tmpMat_ = (input)(clippedRect);
 	tmpMat_.copyTo(triggerImage_, clippedFilter);
       }
-      isTriggered_ = trigger_->Triggered(hs);      
+      if (trigger_) {
+	isTriggered_ = trigger_->Triggered(hs);      
+      }
     }
   }
 
