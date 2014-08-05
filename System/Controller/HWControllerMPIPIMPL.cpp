@@ -105,7 +105,6 @@ namespace Hardware {
 #endif
 //		  delete controller; // FIXME: HWAnalogStickPIMPL crash
 	  }
-	  DisconnectAllControllers();
 
 #ifdef ENABLE_PROFILING
 	  FlatProfilerDone();

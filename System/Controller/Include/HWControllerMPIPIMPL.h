@@ -73,6 +73,7 @@ namespace Hardware {
     LeapFrog::Brio::tErrType EnableControllerSync(bool enable);
 
     LeapFrog::Brio::U8 GetMaximumNumberOfControllers();
+    void DisconnectAllControllers();
 
   private:
     HWControllerMPIPIMPL(void);
@@ -83,7 +84,6 @@ namespace Hardware {
     void AddController(char* link);
     HWController* FindController(char* link);
     char* FindControllerLink(HWController* controller);
-    void DisconnectAllControllers();
     bool HandleConsoleSyncButton(const LeapFrog::Brio::IEventMessage &msgIn,
 				 LeapFrog::Brio::tEventPriority priority);
 #if defined(EMULATION)
