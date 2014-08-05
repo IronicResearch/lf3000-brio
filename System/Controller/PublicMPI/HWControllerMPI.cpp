@@ -89,5 +89,10 @@ namespace Hardware {
 	  return pimpl_->GetMaximumNumberOfControllers();
   }
 
+  void
+  HWControllerMPI::DisconnectAllControllers() {
+	  pimpl_->DisconnectAllControllers();
+  }
+
 } // namespace Hardware
 } // namespace LF

@@ -99,6 +99,12 @@ namespace Hardware {
      */
     LeapFrog::Brio::U8 GetMaximumNumberOfControllers();
 
+    /*!
+     * \brief Issue an explicit disconnect to each controller currently connected
+     */
+    void DisconnectAllControllers();
+
+
   private:
     boost::shared_ptr<HWControllerMPIPIMPL> pimpl_;
 
