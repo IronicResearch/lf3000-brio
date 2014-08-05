@@ -1,10 +1,10 @@
-Device="LeapPad3"
+Device="LeapTV"
 Type="System"
 Name="Brio"
 Publisher="LeapFrog, Inc."
 Developer="LeapFrog, Inc.  Firmware Team"
 Version="$BUILD_VERSION.$SVN_REVISION"
 ProductID=0x00170004
-PackageID="PAD3-0x00170004-000001"
+PackageID="THD1-0x00170004-000001"
 PartNumber="152-12221"
 Hidden=1
