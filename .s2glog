@@ -42489,3 +42489,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/4/14 7:18 PM
 24,989 ms. (Cumulative: 27,404,502 ms)
 
 ----------------
+Revision 10,981 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Another Small optimization to minimize viewfinder display updates when display state unchanged.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/4/14 7:58 PM
+1 changed, 0 added, 0 deleted.
+24,889 ms. (Cumulative: 27,429,485 ms)
+
+----------------

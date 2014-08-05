@@ -424,7 +424,7 @@ void* CameraTaskMain(void* arg)
 					ibuf ^= 1;
 					pSurf = &aSurf[ibuf];
 				}
-				else
+				else if (!bFirst)
 					display.Invalidate(0);
 			}
 #endif
