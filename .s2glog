@@ -42477,3 +42477,15 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 8/4/14 6:45 PM
 25,039 ms. (Cumulative: 27,379,420 ms)
 
 ----------------
+Revision 10,980 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Small optimization to post camera capture event synchronously. (FWGLAS-700)
+Optimum method to handoff capture frame for separate vision thread, dependent on minimal event handling.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/4/14 7:18 PM
+1 changed, 0 added, 0 deleted.
+24,989 ms. (Cumulative: 27,404,502 ms)
+
+----------------

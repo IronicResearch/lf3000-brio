@@ -401,7 +401,7 @@ void* CameraTaskMain(void* arg)
 			data.timestamp.seconds		= frame.timestamp.tv_sec;
 			data.timestamp.microSeconds	= frame.timestamp.tv_usec;
 			CCameraEventMessage 		msg(data);
-			pCtx->module->event_.PostEvent(msg, 128, pCtx->pListener);
+			pCtx->module->event_.PostEvent(msg, 0, pCtx->pListener);
 		}
 
 		if(bScreen && !pCtx->bVPaused
