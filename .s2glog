@@ -42508,3 +42508,12 @@ By Lloyd Moore (lmoore@leapfrog.com) on 8/4/14 8:05 PM
 25,178 ms. (Cumulative: 27,454,772 ms)
 
 ----------------
+Revision 10,983 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+fix loading of calibration data for LEDs in vision
+
+By Alex Lindblad (alindblad@leapfrog.com) on 8/5/14 5:11 PM
+3 changed, 0 added, 0 deleted.
+25,143 ms. (Cumulative: 27,480,024 ms)
+
+----------------
