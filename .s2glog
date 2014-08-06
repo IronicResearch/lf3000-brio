@@ -42539,3 +42539,13 @@ By Falguni Mirani (fmirani@leapfrog.com) on 8/6/14 9:38 AM
 24,955 ms. (Cumulative: 27,530,087 ms)
 
 ----------------
+Revision 10,986 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Prevent scanning immediately from ControllerMPI constructor to avoid deadlocks creating HWController objects. (FWGLAS-1074)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/6/14 1:27 PM
+1 changed, 0 added, 0 deleted.
+24,925 ms. (Cumulative: 27,555,122 ms)
+
+----------------
