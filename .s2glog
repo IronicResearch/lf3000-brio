@@ -42517,3 +42517,13 @@ By Alex Lindblad (alindblad@leapfrog.com) on 8/5/14 5:11 PM
 25,143 ms. (Cumulative: 27,480,024 ms)
 
 ----------------
+Revision 10,984 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove one-shot timer for controller inactivity, since BT handles disconnects. (FWGLAS-986)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/5/14 8:00 PM
+1 changed, 0 added, 0 deleted.
+24,904 ms. (Cumulative: 27,505,038 ms)
+
+----------------
