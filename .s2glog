@@ -42549,3 +42549,15 @@ By Dave Milici (dmilici@leapfrog.com) on 8/6/14 1:27 PM
 24,925 ms. (Cumulative: 27,555,122 ms)
 
 ----------------
+Revision 10,987 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change HWController event posting to synchronous types to reduce latency, per profiling. (FWGLAS-700)
+App listeners should do minimal processing, or use ControllerEventQueue objects for deferred processing. 
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/6/14 4:38 PM
+1 changed, 0 added, 0 deleted.
+25,003 ms. (Cumulative: 27,580,219 ms)
+
+----------------
