@@ -42527,3 +42527,15 @@ By Dave Milici (dmilici@leapfrog.com) on 8/5/14 8:00 PM
 24,904 ms. (Cumulative: 27,505,038 ms)
 
 ----------------
+Revision 10,985 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+ControllerMPI : (FWGLAS-863) - Removed the check for autopair flag from btio and moved it inside ControllerMPI's Sync button handler. 
+Dynabug or other apps could now call EnableControllerSync() and that would initiate pairing even without 'autopair' flag.
+
+
+
+By Falguni Mirani (fmirani@leapfrog.com) on 8/6/14 9:38 AM
+1 changed, 0 added, 0 deleted.
+24,955 ms. (Cumulative: 27,530,087 ms)
+
+----------------
