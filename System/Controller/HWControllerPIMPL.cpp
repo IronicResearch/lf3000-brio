@@ -523,19 +523,19 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
 	  // Initial connection event
 	  if (updateCounter_ <= updateDivider_) {
 	      HWControllerEventMessage cmsg(kHWControllerConnected, pModule->controller_);
-		  pModule->eventMPI_.PostEvent(cmsg, 128);
+		  pModule->eventMPI_.PostEvent(cmsg, 0);
 	  }
 
 	  if (mode != pModule->mode_) {
 	      HWControllerEventMessage cmsg(kHWControllerModeChanged, pModule->controller_);
-		  pModule->eventMPI_.PostEvent(cmsg, 128);
+		  pModule->eventMPI_.PostEvent(cmsg, 0);
 	  }
 
 #if 0 // FIXME -- distinguish composite event message from ala-carte event messages?
 	  // Compatibility events posted only for default controller
 	  if (pModule->id_ > 0) {
 	      HWControllerEventMessage cmsg(kHWControllerDataChanged, pModule->controller_);
-		  pModule->eventMPI_.PostEvent(cmsg, 128);
+		  pModule->eventMPI_.PostEvent(cmsg, 0);
 		  return;
 	  }
 #endif
@@ -546,7 +546,7 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
 			  pModule->analogStickData_.time.seconds = time.tv_sec;
 			  pModule->analogStickData_.time.microSeconds = time.tv_usec;
 			  HWControllerEventMessage cmsg(kHWControllerAnalogStickDataChanged, pModule->controller_);
-			  pModule->eventMPI_.PostEvent(cmsg, 128);
+			  pModule->eventMPI_.PostEvent(cmsg, 0);
 		  }
 	  }
 
@@ -554,14 +554,14 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
 		  pModule->accelerometerData_.time.seconds = time.tv_sec;
 		  pModule->accelerometerData_.time.microSeconds = time.tv_usec;
 	      HWControllerEventMessage cmsg(kHWControllerAccelerometerDataChanged, pModule->controller_);
-		  pModule->eventMPI_.PostEvent(cmsg, 128);
+		  pModule->eventMPI_.PostEvent(cmsg, 0);
 	  }
 
 	  if (pModule->buttonData_.buttonTransition) {
 		  pModule->buttonData_.time.seconds = time.tv_sec;
 		  pModule->buttonData_.time.microSeconds = time.tv_usec;
 	      HWControllerEventMessage cmsg(kHWControllerButtonStateChanged, pModule->controller_);
-	      pModule->eventMPI_.PostEvent(cmsg, 128);
+	      pModule->eventMPI_.PostEvent(cmsg, 0);
 	      CPowerMPI::KeepAlive();
 	  }	  
   }
