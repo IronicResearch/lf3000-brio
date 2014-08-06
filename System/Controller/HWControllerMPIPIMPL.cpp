@@ -252,6 +252,17 @@ namespace Hardware {
     	ScanForDevices();
   }
 
+// returns true if "/flags/autopair" flag present else returns false
+ bool 
+ FlagPresent() {
+
+	FILE *flag = fopen("/flags/autopair", "r");
+        if(flag)
+		return true;
+	else
+		return false;
+ }
+
   // returns true if the sync button was pressed, false otherwise
   bool
   HWControllerMPIPIMPL::HandleConsoleSyncButton(const LeapFrog::Brio::IEventMessage &msgIn,
@@ -267,7 +278,10 @@ namespace Hardware {
       
       if(buttonData.buttonTransition & kButtonSync) {
 	debugMPI_.DebugOut(kDbgLvlImportant, "\nLeapFrog::Brio::kButtonSync");
-	if( buttonData.buttonState & kButtonSync ) EnableControllerSync(true);
+
+	// Added a check for 'autopair' flag present and call EnableControllerSync() if so to initiate pairing 
+	if(( buttonData.buttonState & kButtonSync ) && (FlagPresent()))
+		EnableControllerSync(true);
 	return true;
       }
     }
@@ -362,11 +376,6 @@ namespace Hardware {
 	  debugMPI_.DebugOut(kDbgLvlImportant, "EnableControllerSync: Sync enabled changed %x\n", (unsigned)enable);
 
 	  int ret = pBTIO_PairWithRemoteDevice_(handle_);
-#if 1 //FIXME
-	  // ret == 1 indicates "/flags/autopair" not set - no pairing happens, post no events
-	  if (ret == 1)
-		return kNoErr; 
-#endif
 	  if (ret == 0){
 		HWControllerEventMessage newMsg(kHWControllerSyncSuccess, 0);
           	eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
