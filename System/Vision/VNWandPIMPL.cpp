@@ -19,6 +19,7 @@ namespace Vision {
   const LeapFrog::Brio::S16 kVNNoWandLocationX = -10000;
   const LeapFrog::Brio::S16 kVNNoWandLocationY = -10000;
 
+  static const std::string kVNDefaultBTAddress = "default";
   static const char kWandColorConfigurationFile[] = "/LF/Bulk/Data/Local/All/VNWandColorCalibration.json";
   static const char kWandDefaultColorConfiguration[] = "{\n"
                                                         "    \"controllers\" : {\n"
@@ -111,7 +112,8 @@ namespace Vision {
     yuvMin_(kVNWandDefaultYUVMin),
     yuvMax_(kVNWandDefaultYUVMax),
     debugMPI_(kGroupVision),
-    translator_(VNCoordinateTranslator::Instance()) {
+    translator_(VNCoordinateTranslator::Instance()),
+    btaddress_(kVNDefaultBTAddress) {
 
   }
 
@@ -156,11 +158,11 @@ namespace Vision {
             zo::Object defaultConfig;
 
             // get the controller bluetooth address
-            debugMPI_.DebugOut(kDbgLvlValuable, "Controller BT Address: %s\n", btaddress_);
+            debugMPI_.DebugOut(kDbgLvlValuable, "Controller BT Address: %s\n", btaddress_.c_str());
 
-            if( controllersConfig.has( btaddress_ ) ) {
+            if( controllersConfig.has( btaddress_.c_str() ) ) {
 	        debugMPI_.DebugOut(kDbgLvlValuable, "Controller has been calibrated");
-                defaultConfig = controllersConfig[btaddress_].get<zo::Object>();
+                defaultConfig = controllersConfig[btaddress_.c_str()].get<zo::Object>();
             } else {    // has not been calibrated so get default configuration
   	        debugMPI_.DebugOut(kDbgLvlValuable, "Controller has NOT been calibrated");
                 defaultConfig = controllersConfig["default"].get<zo::Object>();
@@ -272,13 +274,15 @@ namespace Vision {
     id_ = id;
   }
 
-    char*
+    const char*
     VNWandPIMPL::GetBluetoothAddress() {
-        return btaddress_;
+      return btaddress_.c_str();
     }
 
     void VNWandPIMPL::SetBluetoothAddress( const char* btaddress) {
-        strcpy( btaddress_, btaddress );
+        if (btaddress) {
+	  btaddress_ = std::string(btaddress);
+        }
     }
 
 } // namespace Vision

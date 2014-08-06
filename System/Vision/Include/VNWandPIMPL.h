@@ -28,7 +28,7 @@ namespace Vision {
     LeapFrog::Brio::U8 GetID(void) const;
     void SetID(LeapFrog::Brio::U8 id);
 
-    char* GetBluetoothAddress();
+    const char* GetBluetoothAddress();
     void SetBluetoothAddress( const char* btaddress );
 
     cv::Scalar yuvMin_;
@@ -42,7 +42,7 @@ namespace Vision {
 
     VNCoordinateTranslator *translator_;
 
-    char    btaddress_[64];
+    std::string    btaddress_;
   };
 }
 }

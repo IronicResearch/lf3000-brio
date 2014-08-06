@@ -573,11 +573,13 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
 
     void
     HWControllerPIMPL::SetBluetoothAddress( const char* btaddress ) {
+      if (btaddress) {
         const int btval = *((int*)btaddress);
         memset( blueToothAddress_, 0, sizeof(blueToothAddress_) );
         sprintf( blueToothAddress_, "0x%x", btval );
         //BADBAD accessing pimpl directly
         wand_->pimpl_->SetBluetoothAddress(blueToothAddress_);
+      } 
     }
 }	// namespace Hardware
 }	// namespace LF
