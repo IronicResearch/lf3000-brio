@@ -85,8 +85,6 @@ namespace Hardware {
 			debugMPI_.DebugOut(kDbgLvlImportant, "%s: dlopen failed to load %s, error=%s\n", __func__, BTIO_LIB_NAME, dlerror());
 		}
 
-		timer = new COneShotTimer(props);
-
 		// this is so we can get the sync button on device and wii mote events in emulation
 		RegisterSelfAsListener();
 
@@ -110,7 +108,6 @@ namespace Hardware {
 	  FlatProfilerDone();
 #endif
 
-	  delete timer;
 	  // Close Bluetooth client lib connection
 	  if (dll_) {
 		  pBTIO_Exit_(handle_);
@@ -149,8 +146,6 @@ namespace Hardware {
       HWControllerPIMPL* device = dynamic_cast<HWControllerPIMPL*>(controller->pimpl_.get());
       if (device)
     	  device->LocalCallback(device, data, length);
-      if (timer)
-		  timer->Start(props);
 
 #ifdef ENABLE_PROFILING
 	  TimeStampOn(controller->GetID());
