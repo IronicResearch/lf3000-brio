@@ -42561,3 +42561,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/6/14 4:38 PM
 25,003 ms. (Cumulative: 27,580,219 ms)
 
 ----------------
+Revision 10,988 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Controller unit test. Event name change and linking fix. (FWGLAS-1082
+
+By mharris (mharris@leapfrog.com) on 8/6/14 10:45 PM
+2 changed, 0 added, 0 deleted.
+25,100 ms. (Cumulative: 27,605,428 ms)
+
+----------------
