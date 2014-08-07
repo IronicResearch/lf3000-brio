@@ -136,7 +136,7 @@ public:
 		const CString*	pName;
 		const CURI*		pURI;
 		
-		tPlatformCaps test = kCapsAnalogController;
+		tPlatformCaps test = kCapsAnalogStick;
 		TS_ASSERT(HasPlatformCapability(test));
 
 		pName = pControllerMPI_->GetMPIName();
