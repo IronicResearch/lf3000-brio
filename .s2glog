@@ -42570,3 +42570,16 @@ By mharris (mharris@leapfrog.com) on 8/6/14 10:45 PM
 25,100 ms. (Cumulative: 27,605,428 ms)
 
 ----------------
+Revision 10,989 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,990 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,991 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert svn -r10986 to allow immediate controller scanning. (GLUI-470 1:2)
+Another method needed for immediately creating HWController objects. (FWGLAS-1074)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/8/14 12:52 PM
+1 changed, 0 added, 0 deleted.
+24,873 ms. (Cumulative: 27,630,410 ms)
+
+----------------
