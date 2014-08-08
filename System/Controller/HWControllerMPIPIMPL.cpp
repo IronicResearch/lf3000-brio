@@ -248,6 +248,8 @@ namespace Hardware {
   void
   HWControllerMPIPIMPL::RegisterSelfAsListener(void) {
     eventMPI_.RegisterEventListener(this);
+    if (!isScanning_)
+    	ScanForDevices();
   }
 
 // returns true if "/flags/autopair" flag present else returns false
