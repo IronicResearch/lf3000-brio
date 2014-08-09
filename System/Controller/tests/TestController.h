@@ -136,8 +136,11 @@ public:
 		const CString*	pName;
 		const CURI*		pURI;
 		
-		tPlatformCaps test = kCapsAnalogStick;
-		TS_ASSERT(HasPlatformCapability(test));
+		tPlatformCaps testAnalog = kCapsAnalogStick;
+		TS_ASSERT(!HasPlatformCapability(testAnalog));
+
+		tPlatformCaps testPad = kCapsGamePadController;
+		TS_ASSERT(HasPlatformCapability(testPad));
 
 		pName = pControllerMPI_->GetMPIName();
 		TS_ASSERT_EQUALS( *pName, "HWControllerMPI" );
