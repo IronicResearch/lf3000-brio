@@ -69,10 +69,6 @@ namespace Vision {
   void
   VNVisionMPIPIMPL::SetCurrentWand(VNWand *wand) {
     currentWand_ = wand;
-    VNWandTracker *wt = dynamic_cast<VNWandTracker*>(algorithm_);
-    if (wt) {
-      wt->pimpl_->SetWand(wand);
-    }
   }
 
   VNWand*
