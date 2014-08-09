@@ -19,6 +19,7 @@ namespace Vision {
   class VNAlgorithm;
   class VNWandTracker;
   class VNHotSpotPIMPL;
+  class VNWandTrackerPIMPL;
   class VNWand;
 
   /*!
@@ -199,6 +200,7 @@ namespace Vision {
 
     friend class VNWandTracker;
     friend class VNHotSpotPIMPL;
+    friend class VNWandTrackerPIMPL;
     friend class LF::Hardware::HWControllerPIMPL;
   };
 

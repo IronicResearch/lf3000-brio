@@ -117,11 +117,6 @@ namespace Vision {
   }
 
   void
-  VNWandTrackerPIMPL::SetWand(VNWand *wand) {
-    wand_ = wand;
-  }
-
-  void
   VNWandTrackerPIMPL::SetProcessingFrameSize(LeapFrog::Brio::U16 width,
 					     LeapFrog::Brio::U16 height) {
     translator_.SetSourceFrame(cv::Rect(0,
@@ -279,6 +274,7 @@ namespace Vision {
 
   void
   VNWandTrackerPIMPL::Execute(cv::Mat &input, cv::Mat &output) {
+    wand_ = visionMPI_.pimpl_->GetCurrentWand();
     if (wand_) {
       PROF_BLOCK_START("VNWandTrackerPIMPL::Execute");
 

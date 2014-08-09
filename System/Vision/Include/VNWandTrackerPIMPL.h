@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <VNTranslatorBase.h>
 #include <CameraTypes.h>
+#include <Vision/VNVisionMPI.h>
 
 namespace LF {
 namespace Vision {
@@ -24,10 +25,8 @@ namespace Vision {
     void SetAutomaticWandScaling(bool autoScale);
     bool GetAutomaticWandScaling(void) const;
 
-    void SetWand(VNWand *wand);
-
-
   private:
+    VNVisionMPI visionMPI_;
     VNWand* wand_;
     bool scaleInput_;
     cv::Rect subFrame_;
