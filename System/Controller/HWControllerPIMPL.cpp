@@ -17,7 +17,6 @@
 using namespace LeapFrog::Brio;
 
 static const U32 kHWControllerDefaultRate = 50;
-static const float kHWControllerDpadThreshold = 0.20f;
 
 namespace LF {
 namespace Hardware {
@@ -352,14 +351,25 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
 
 	U32 originalButtonState = buttonData_.buttonState;
 
-	buttonData_.buttonState &= ~(kButtonLeft | kButtonRight | kButtonDown | kButtonUp);
-
-	if(theData.x <= -kHWControllerDpadThreshold) buttonData_.buttonState |= kButtonLeft;
-	if(theData.x >= kHWControllerDpadThreshold)  buttonData_.buttonState |= kButtonRight;
-	if(theData.y <= -kHWControllerDpadThreshold) buttonData_.buttonState |= kButtonDown;
-	if(theData.y >= kHWControllerDpadThreshold)  buttonData_.buttonState |= kButtonUp;
+	ThresholdAnalogStickButton(-theData.x, kButtonLeft);
+	ThresholdAnalogStickButton(theData.x, kButtonRight);
+	ThresholdAnalogStickButton(-theData.y, kButtonDown);
+	ThresholdAnalogStickButton(theData.y, kButtonUp);
 
 	buttonData_.buttonTransition |= (originalButtonState ^ buttonData_.buttonState);
+}
+
+void
+HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
+	const float kHWControllerDpadOnThreshold = 0.25f;
+	const float kHWControllerDpadOffThreshold = 0.15f;
+
+	if(buttonData_.buttonState & buttonMask) {
+		if(stickPos < kHWControllerDpadOffThreshold) buttonData_.buttonState &= ~buttonMask;
+	}
+	else {
+		if(stickPos > kHWControllerDpadOnThreshold) buttonData_.buttonState |= buttonMask;
+	}
 }
 
   LeapFrog::Brio::tErrType 
@@ -541,8 +551,8 @@ HWControllerPIMPL::ConvertAnalogStickToDpad(const tHWAnalogStickData& theData) {
 #endif
 
 	  DeadZoneAnalogStickData(pModule->analogStickData_);
-	  if (memcmp(&stick, &analogStickData_, sizeof(tHWAnalogStickData)) != 0) {
-		  if(ApplyAnalogStickMode(pModule->analogStickData_)) {
+	  if(ApplyAnalogStickMode(pModule->analogStickData_)) {
+		  if (memcmp(&stick, &analogStickData_, sizeof(tHWAnalogStickData)) != 0) {
 			  pModule->analogStickData_.time.seconds = time.tv_sec;
 			  pModule->analogStickData_.time.microSeconds = time.tv_usec;
 			  HWControllerEventMessage cmsg(kHWControllerAnalogStickDataChanged, pModule->controller_);
