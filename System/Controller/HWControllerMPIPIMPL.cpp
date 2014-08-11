@@ -86,7 +86,12 @@ namespace Hardware {
 		}
 
 		// this is so we can get the sync button on device and wii mote events in emulation
-		RegisterSelfAsListener();
+	    eventMPI_.RegisterEventListener(this);
+
+	    // Post async event for deferred scanning
+	    tButtonData2 button = {kButtonUp, 0, 0, 0};
+	    CButtonMessage btnmsg = CButtonMessage(button);
+	    eventMPI_.PostEvent(btnmsg, kHWControllerDefaultEventPriority, this);
 
 #ifdef ENABLE_PROFILING
 		FlatProfilerInit(GetMaximumNumberOfControllers(), 0);
@@ -247,7 +252,6 @@ namespace Hardware {
 
   void
   HWControllerMPIPIMPL::RegisterSelfAsListener(void) {
-    eventMPI_.RegisterEventListener(this);
     if (!isScanning_)
     	ScanForDevices();
   }
@@ -276,6 +280,10 @@ namespace Hardware {
 	msg = reinterpret_cast<const LeapFrog::Brio::CButtonMessage&>(msgIn);
       tButtonData2 buttonData = msg.GetButtonState2();
       
+      // Scanning for devices deferred from startup
+      if (!isScanning_)
+    	  ScanForDevices();
+
       if(buttonData.buttonTransition & kButtonSync) {
 	debugMPI_.DebugOut(kDbgLvlImportant, "\nLeapFrog::Brio::kButtonSync");
 
@@ -425,10 +433,10 @@ namespace Hardware {
   }
 
   LeapFrog::Brio::U8
-  HWControllerMPIPIMPL::GetNumberOfConnectedControllers(void) const {
+  HWControllerMPIPIMPL::GetNumberOfConnectedControllers(void) {
     //TODO: determine number of connected controllers
-//	if (numControllers_ == 0)
-//		ScanForDevices();
+	if (numControllers_ == 0)
+		ScanForDevices();
     return numControllers_; //1;
   }
 
