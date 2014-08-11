@@ -42615,3 +42615,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/11/14 12:15 PM
 24,958 ms. (Cumulative: 27,706,064 ms)
 
 ----------------
+Revision 10,996 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix file handle leak in autopair flag check.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/11/14 12:21 PM
+1 changed, 0 added, 0 deleted.
+25,037 ms. (Cumulative: 27,731,194 ms)
+
+----------------
