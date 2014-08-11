@@ -261,8 +261,10 @@ namespace Hardware {
  FlagPresent() {
 
 	FILE *flag = fopen("/flags/autopair", "r");
-        if(flag)
+	if (flag) {
+		fclose(flag);
 		return true;
+	}
 	else
 		return false;
  }
