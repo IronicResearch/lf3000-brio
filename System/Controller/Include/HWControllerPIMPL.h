@@ -114,6 +114,7 @@ namespace Hardware {
     void DeadZoneAnalogStickData(tHWAnalogStickData& theData);
     bool ApplyAnalogStickMode(tHWAnalogStickData& theData);
     void ConvertAnalogStickToDpad(const tHWAnalogStickData& theData);
+    void ThresholdAnalogStickButton(float stickPos, U32 buttonMask);
 
   };
 
