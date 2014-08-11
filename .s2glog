@@ -42602,3 +42602,16 @@ By Alex Lindblad (alindblad@leapfrog.com) on 8/8/14 6:21 PM
 25,304 ms. (Cumulative: 27,680,997 ms)
 
 ----------------
+Revision 10,995 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Defer scanning for devices as async event. (GLUI-470 2:2)
+Deferred scanned controller creation prevents PetPad deadlock. (FWGLAS-1074)
+
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/11/14 12:15 PM
+2 changed, 0 added, 0 deleted.
+24,958 ms. (Cumulative: 27,706,064 ms)
+
+----------------

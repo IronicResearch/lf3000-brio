@@ -62,7 +62,7 @@ namespace Hardware {
 
     HWController* GetControllerByID(LeapFrog::Brio::U32 id);
     void GetAllControllers(std::vector<HWController*> &controller);
-    LeapFrog::Brio::U8 GetNumberOfConnectedControllers(void) const;
+    LeapFrog::Brio::U8 GetNumberOfConnectedControllers(void);
     void RegisterSelfAsListener(void);
 
     virtual LeapFrog::Brio::tEventStatus Notify(const LeapFrog::Brio::IEventMessage &msg);
