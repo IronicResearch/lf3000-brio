@@ -20,7 +20,9 @@ const LeapFrog::Brio::tEventType
 				  LF::Hardware::kHWAnalogStickDataChanged};
 #else
 const LeapFrog::Brio::tEventType
-kHWControllerListenerTypes[] = {LeapFrog::Brio::kButtonStateChanged};
+kHWControllerListenerTypes[] = {LeapFrog::Brio::kButtonStateChanged,
+				LeapFrog::Brio::kTimerFiredEvent};
+				
 #endif
 
 static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 128; // async
@@ -30,9 +32,8 @@ static LeapFrog::Brio::tMutex lock = PTHREAD_MUTEX_INITIALIZER;
 
 static LeapFrog::Brio::COneShotTimer* timer = NULL;
 static const LeapFrog::Brio::tTimerProperties props = {TIMER_RELATIVE_SET,
-										 	{{0, 0}, {1, 0}},
+										 	{{0, 0}, {30, 0}},
 	                                    };
-
 namespace LF {
 namespace Hardware {
 
@@ -85,7 +86,8 @@ namespace Hardware {
 		else {
 			debugMPI_.DebugOut(kDbgLvlImportant, "%s: dlopen failed to load %s, error=%s\n", __func__, BTIO_LIB_NAME, dlerror());
 		}
-
+		timer = new COneShotTimer(props);		
+		
 		// this is so we can get the sync button on device and wii mote events in emulation
 	    eventMPI_.RegisterEventListener(this);
 
@@ -113,7 +115,7 @@ namespace Hardware {
 #ifdef ENABLE_PROFILING
 	  FlatProfilerDone();
 #endif
-
+	   delete timer;
 	  // Close Bluetooth client lib connection
 	  if (dll_) {
 		  pBTIO_Exit_(handle_);
@@ -266,6 +268,25 @@ namespace Hardware {
     	ScanForDevices();
   }
 
+ // returns true if the timer event triggered, false otherwise
+  bool
+  HWControllerMPIPIMPL::HandleTimerEvent(const LeapFrog::Brio::IEventMessage &msgIn,
+                                                LeapFrog::Brio::tEventPriority priority) {
+    LeapFrog::Brio::tEventType type = msgIn.GetEventType();
+
+    // Internally generated timer event
+    if (type == LeapFrog::Brio::kTimerFiredEvent) {
+                if (isPairing_) {
+                        printf("\n HandleTimerEvent - Pairing timed out/failed!");
+                        HWControllerEventMessage newMsg(kHWControllerSyncFailure, 0);
+                        eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
+                }
+		return true;
+    }
+
+    return false;
+  }
+
 // returns true if "/flags/autopair" flag present else returns false
  bool 
  FlagPresent() {
@@ -284,6 +305,7 @@ namespace Hardware {
   HWControllerMPIPIMPL::HandleConsoleSyncButton(const LeapFrog::Brio::IEventMessage &msgIn,
 						LeapFrog::Brio::tEventPriority priority) {
     LeapFrog::Brio::tEventType type = msgIn.GetEventType();
+
     if (type == LeapFrog::Brio::kButtonStateChanged) {
       debugMPI_.DebugOut(kDbgLvlImportant, "\nLeapFrog::Brio::kButtonStateChanged");
       
@@ -384,6 +406,9 @@ namespace Hardware {
       return LeapFrog::Brio::kEventStatusOK;
     }
 
+    if (HandleTimerEvent(msgIn, priority)){
+      return LeapFrog::Brio::kEventStatusOK;
+    }
 #if defined(EMULATION)
     return HandleLegacyEvents(msgIn, priority);
 #endif
@@ -400,6 +425,9 @@ namespace Hardware {
 // 		HWControllerEventMessage newMsg(kHWControllerSyncSuccess, 0);
 //          	eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
 		isPairing_ = true;
+		if (timer)
+                timer->Start(props);
+
 		return kNoErr;
 	  } else {
 		printf("\n HWControllerMPIPIMPL::EnableControllerSync - Failed!");

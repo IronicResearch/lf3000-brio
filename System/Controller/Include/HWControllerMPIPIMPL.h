@@ -86,6 +86,8 @@ namespace Hardware {
     char* FindControllerLink(HWController* controller);
     bool HandleConsoleSyncButton(const LeapFrog::Brio::IEventMessage &msgIn,
 				 LeapFrog::Brio::tEventPriority priority);
+    bool HandleTimerEvent(const LeapFrog::Brio::IEventMessage &msgIn,
+                                 LeapFrog::Brio::tEventPriority priority);
 #if defined(EMULATION)
     LeapFrog::Brio::tEventStatus HandleLegacyEvents(const LeapFrog::Brio::IEventMessage &msgIn,
 						    LeapFrog::Brio::tEventPriority priority);
