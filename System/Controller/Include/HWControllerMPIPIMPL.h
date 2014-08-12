@@ -95,6 +95,7 @@ namespace Hardware {
     std::vector<HWController*> listControllers_;
     std::map<BtAdrWrap, HWController*> mapControllers_;
     bool isScanning_;
+    bool isPairing_;
 
     LeapFrog::Brio::CEventMPI eventMPI_;
     LeapFrog::Brio::CDebugMPI debugMPI_;
