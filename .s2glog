@@ -42655,3 +42655,15 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 8/12/14 8:39 AM
 24,847 ms. (Cumulative: 27,808,663 ms)
 
 ----------------
+Revision 11,001 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+ControllerMPI : (FWGLAS-693) - Modified so EnableControllerSync() does not wait for the response and post pairing success event. Instead waits for the scan callback event to do so. Note : This is just for pairing success case. 
+Need an additional set of changes to handle the failure/timeout case. 
+
+
+
+By Falguni Mirani (fmirani@leapfrog.com) on 8/12/14 11:00 AM
+2 changed, 0 added, 0 deleted.
+25,105 ms. (Cumulative: 27,833,862 ms)
+
+----------------

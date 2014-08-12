@@ -54,6 +54,7 @@ namespace Hardware {
 	    listControllers_.clear();
 	    mapControllers_.clear();
 	    isScanning_ = false;
+	    isPairing_ = false;
 
 	    // Dynamically load Bluetooth client lib
 		dll_ = dlopen(BTIO_LIB_NAME, RTLD_LAZY);
@@ -186,6 +187,15 @@ namespace Hardware {
 		  debugMPI_.DebugOut(kDbgLvlImportant, "AddController maxed out at %d\n", numControllers_);
 		  return;
 	  }
+
+	if (isPairing_) {
+                printf("\n HWControllerMPIPIMPL:: AddController - PairingSuccess!");
+                HWControllerEventMessage newMsg(kHWControllerSyncSuccess, 0);
+                eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
+                isPairing_ = false;
+		return;
+        }
+
 
       HWController* controller = new HWController();
       //BADBAD: should not be accessing pimpl_ directly!
@@ -382,15 +392,17 @@ namespace Hardware {
 
   LeapFrog::Brio::tErrType
   HWControllerMPIPIMPL::EnableControllerSync(bool enable) {
-
+	  isPairing_ = false;
 	  debugMPI_.DebugOut(kDbgLvlImportant, "EnableControllerSync: Sync enabled changed %x\n", (unsigned)enable);
 
 	  int ret = pBTIO_PairWithRemoteDevice_(handle_);
 	  if (ret == 0){
-		HWControllerEventMessage newMsg(kHWControllerSyncSuccess, 0);
-          	eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
+// 		HWControllerEventMessage newMsg(kHWControllerSyncSuccess, 0);
+//          	eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
+		isPairing_ = true;
 		return kNoErr;
 	  } else {
+		printf("\n HWControllerMPIPIMPL::EnableControllerSync - Failed!");
 		HWControllerEventMessage newMsg(kHWControllerSyncFailure, 0);
           	eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
 	  	return ret;
