@@ -42644,3 +42644,14 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 8/11/14 2:59 PM
 25,745 ms. (Cumulative: 27,783,707 ms)
 
 ----------------
+Revision 10,999 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,000 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change meta.inf to have THD1 prefix.
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 8/12/14 8:39 AM
+1 changed, 0 added, 0 deleted.
+24,847 ms. (Cumulative: 27,808,663 ms)
+
+----------------
