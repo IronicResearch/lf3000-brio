@@ -42667,3 +42667,13 @@ By Falguni Mirani (fmirani@leapfrog.com) on 8/12/14 11:00 AM
 25,105 ms. (Cumulative: 27,833,862 ms)
 
 ----------------
+Revision 11,002 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+ControllerMPI (FWGLAS-693) : Started 30sec OneShotTimer in EnableControllerSync that triggers a timeput/pairing failed event if pairing does not succeed within that time and post  kHWControllerSyncFailure in that case.
+
+
+By Falguni Mirani (fmirani@leapfrog.com) on 8/12/14 1:40 PM
+2 changed, 0 added, 0 deleted.
+25,158 ms. (Cumulative: 27,859,123 ms)
+
+----------------
