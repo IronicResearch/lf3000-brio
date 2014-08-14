@@ -32,6 +32,8 @@ namespace Hardware {
     updateCounter_(0),
     has100KOhmJoystick_(1), // Production defaults to 100K; FEP had 10K
     connected_(false),
+    analogStickDeadZone_(0.14f), //Specified by EE team at +/-7%, which is -0.14..+0.14 in -1.0..+1.0 scale.  FWGLAS-779)
+    analogStickMode_ (kHWAnalogStickModeAnalog),
     debugMPI_(kGroupController) {
 #ifdef DEBUG
 	debugMPI_.SetDebugLevel(kDbgLvlVerbose);
@@ -315,7 +317,7 @@ namespace Hardware {
 
   tHWAnalogStickMode
   HWControllerPIMPL::GetAnalogStickMode(void) const {
-    return analogStickMPI_.GetAnalogStickMode(id_);
+    return analogStickMode_;
   }
   
  bool
@@ -380,17 +382,22 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 		buttonData_.buttonState &= ~(kButtonLeft | kButtonRight | kButtonDown | kButtonUp);
 		buttonData_.buttonTransition |= (originalButtonState ^ buttonData_.buttonState);
 	}
-    return analogStickMPI_.SetAnalogStickMode(mode, id_);
+	analogStickMode_ = mode;
+
+	debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::SetAnalogStickMode  %08x\n", (unsigned int)mode);
+
+    return kNoErr;
   }
 
   float
   HWControllerPIMPL::GetAnalogStickDeadZone(void) const {
-    return analogStickMPI_.GetAnalogStickDeadZone(id_);
+    return analogStickDeadZone_;
   }
 
   LeapFrog::Brio::tErrType
   HWControllerPIMPL::SetAnalogStickDeadZone(const float deadZone) {
-    return analogStickMPI_.SetAnalogStickDeadZone(deadZone, id_);
+	  analogStickDeadZone_ = deadZone;
+    return kNoErr;
   }
 
   /*!

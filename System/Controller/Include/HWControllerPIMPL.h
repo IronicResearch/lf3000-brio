@@ -103,6 +103,8 @@ namespace Hardware {
     LeapFrog::Brio::tAccelerometerData accelerometerData_;
     LeapFrog::Brio::tButtonData2 buttonData_;
     LF::Hardware::tHWAnalogStickData analogStickData_;
+    LF::Hardware::tHWAnalogStickMode analogStickMode_;
+    float analogStickDeadZone_;
 
     char blueToothAddress_[64];
     bool connected_;
