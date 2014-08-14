@@ -42677,3 +42677,15 @@ By Falguni Mirani (fmirani@leapfrog.com) on 8/12/14 1:40 PM
 25,158 ms. (Cumulative: 27,859,123 ms)
 
 ----------------
+Revision 11,003 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,004 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,005 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,006 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Correct an issue where setting analog mode for one controller was setting it for all controllers. This change also correct a similar issue for setting the analog stick dead zone. (FWGLAS-1083)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 8/14/14 11:34 AM
+2 changed, 0 added, 0 deleted.
+25,011 ms. (Cumulative: 27,884,259 ms)
+
+----------------
