@@ -42689,3 +42689,12 @@ By Lloyd Moore (lmoore@leapfrog.com) on 8/14/14 11:34 AM
 25,011 ms. (Cumulative: 27,884,259 ms)
 
 ----------------
+Revision 11,007 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Unit test for VNWandTracker (FWGLAS-1020)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 8/14/14 4:06 PM
+0 changed, 1 added, 0 deleted.
+25,116 ms. (Cumulative: 27,909,500 ms)
+
+----------------
