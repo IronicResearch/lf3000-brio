@@ -42716,3 +42716,12 @@ By pjusuf (pjusuf@leapfrog.com) on 8/15/14 12:03 PM
 25,352 ms. (Cumulative: 27,959,920 ms)
 
 ----------------
+Revision 11,010 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1016: Write Unit Test for VNRectHotSpot.
+
+By pjusuf (pjusuf@leapfrog.com) on 8/15/14 12:05 PM
+0 changed, 1 added, 0 deleted.
+24,965 ms. (Cumulative: 27,984,994 ms)
+
+----------------
