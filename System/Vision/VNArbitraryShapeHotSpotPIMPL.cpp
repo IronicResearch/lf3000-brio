@@ -79,7 +79,7 @@ namespace Vision {
       for (int j = 0; j < filterImage.width; ++j) {
 	if (buffer[offset+j*bpp+1] == kVNMaxPixelValue &&
 	    buffer[offset+j*bpp+2] == kVNMaxPixelValue &&
-	    buffer[offset+j*bpp+2] == kVNMaxPixelValue) {
+	    buffer[offset+j*bpp+3] == kVNMaxPixelValue) {
 	  data[j] = kVNMaxPixelValue;
 	} else {
 	  data[j] = kVNMinPixelValue;
