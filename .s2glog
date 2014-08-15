@@ -42761,3 +42761,14 @@ By mharris (mharris@leapfrog.com) on 8/15/14 12:47 PM
 25,283 ms. (Cumulative: 28,085,992 ms)
 
 ----------------
+Revision 11,015 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Vision unit test for VNCompoundTrigger. (FWGLAS-1010)”
+
+
+
+By mharris (mharris@leapfrog.com) on 8/15/14 1:48 PM
+0 changed, 1 added, 0 deleted.
+25,097 ms. (Cumulative: 28,111,214 ms)
+
+----------------
