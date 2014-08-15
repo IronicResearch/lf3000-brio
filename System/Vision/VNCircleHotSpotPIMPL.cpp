@@ -79,11 +79,14 @@ namespace Vision {
 
   void
   VNCircleHotSpotPIMPL::SetRadius(float radius) {
-    if (radius > 0) {
+
       // store radius in display coordinates
-      radius_ = radius;
+      if (radius > 0.0f){
+    	  radius_ = radius;
+      } else {
+    	  radius_ = 0.0f;
+      }
       UpdateVisionCoordinates();
-    }
   }
 
   float
@@ -128,6 +131,11 @@ namespace Vision {
 
   bool
   VNCircleHotSpotPIMPL::ContainsPoint(const VNPoint &p) const {
+
+	// Guard against division by zero.
+	if ( (radiusY_* radiusY_) < 1.0f)
+		return false;
+
     float xd = p.x - visionCenter_.x;
     float yd = p.y - visionCenter_.y;
     return ((((xd*xd)/(radiusX_*radiusX_)) + ((yd*yd)/(radiusY_*radiusY_))) < 1.0f);
