@@ -27,7 +27,7 @@ namespace Vision {
     /*!
      * Default constructor
      * \param interval The amount of time a spatial trigger must not be triggered
-     * before the compund trigger registers an event.  The default value is
+     * before the compound trigger registers an event.  The default value is
      * set to kVNIntervalTriggerDefault
      */
     VNIntervalTrigger(float interval = kVNIntervalTriggerDefault);
@@ -46,8 +46,11 @@ namespace Vision {
     /*!
      * SetInterval
      * \brief Sets the interval value used to cause a temporal trigger event
+     * \param interval The amount of time a spatial trigger must not be triggered
+     * before the compound trigger registers an event.
+     * interval >= 0.0f
      */
-    void SetInterval(float duration);
+    void SetInterval(float interval);
 
     /*!
      * \brief This method is used from within a VNCompoundTrigger object and
