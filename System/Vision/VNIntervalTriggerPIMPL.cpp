@@ -4,13 +4,27 @@ namespace LF {
 namespace Vision {
 
   VNIntervalTriggerPIMPL::VNIntervalTriggerPIMPL(float interval) :
-    interval_(interval),
     firstTrigger_(false) {
-
+	  SetInterval(interval);
   }
 
   VNIntervalTriggerPIMPL::~VNIntervalTriggerPIMPL(void) {
 
+  }
+
+  float
+  VNIntervalTriggerPIMPL::GetInterval(void) const {
+	  return interval_;
+  }
+
+  void
+  VNIntervalTriggerPIMPL::SetInterval(float interval) {
+
+	if (interval >= 0.0f){
+	  interval_ = interval;
+	} else {
+	  interval_ = 0.0f;
+	}
   }
 
   bool

@@ -11,12 +11,17 @@ namespace Vision {
     VNIntervalTriggerPIMPL(float interval);
     virtual ~VNIntervalTriggerPIMPL(void);
     
+    float GetInterval(void) const;
+
+    void SetInterval(float interval);
+
     bool Triggered(bool spatiallyTriggered);
-    
-    float interval_;
-    
+
     bool firstTrigger_;
     boost::timer timer_;
+
+  private:
+    float interval_;
   };
     
 } // namespace Vision

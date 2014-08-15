@@ -42743,3 +42743,12 @@ By pjusuf (pjusuf@leapfrog.com) on 8/15/14 12:07 PM
 25,012 ms. (Cumulative: 28,035,390 ms)
 
 ----------------
+Revision 11,013 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Vision unit test for VNIntervalTrigger, plus production code changes Set/Get, range check. (FWGLAS-1013)
+
+By mharris (mharris@leapfrog.com) on 8/15/14 12:25 PM
+4 changed, 1 added, 0 deleted.
+25,115 ms. (Cumulative: 28,060,599 ms)
+
+----------------

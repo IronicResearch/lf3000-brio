@@ -13,9 +13,21 @@ namespace Vision {
 
   }
 
+
+  float
+  VNIntervalTrigger::GetInterval(void) const {
+	  return pimpl_->GetInterval();
+  }
+
+  void
+  VNIntervalTrigger::SetInterval(float duration){
+	  return pimpl_->SetInterval(duration);
+  }
+
   bool
   VNIntervalTrigger::Triggered(bool spatiallyTriggered) {
     return pimpl_->Triggered(spatiallyTriggered);
   }
+
 }
 }
