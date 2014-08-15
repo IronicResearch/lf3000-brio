@@ -42698,3 +42698,12 @@ By Lloyd Moore (lmoore@leapfrog.com) on 8/14/14 4:06 PM
 25,116 ms. (Cumulative: 27,909,500 ms)
 
 ----------------
+Revision 11,008 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+unit test for VNPointTrigger (FWGLAS-1015)
+
+By mharris (mharris@leapfrog.com) on 8/15/14 11:59 AM
+0 changed, 1 added, 0 deleted.
+24,881 ms. (Cumulative: 27,934,475 ms)
+
+----------------
