@@ -42707,3 +42707,12 @@ By mharris (mharris@leapfrog.com) on 8/15/14 11:59 AM
 24,881 ms. (Cumulative: 27,934,475 ms)
 
 ----------------
+Revision 11,009 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1008: Write Unit Tests for VNArbitraryShapeHotSpot. Fix bug in VNArbitraryShapeHotSpotPIMPL.cpp related to buffer index.
+
+By pjusuf (pjusuf@leapfrog.com) on 8/15/14 12:03 PM
+1 changed, 2 added, 0 deleted.
+25,352 ms. (Cumulative: 27,959,920 ms)
+
+----------------
