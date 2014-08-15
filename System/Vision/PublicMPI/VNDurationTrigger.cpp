@@ -13,6 +13,16 @@ namespace Vision {
 
   }
 
+  float
+  VNDurationTrigger::GetDuration(void) const {
+	  return pimpl_->GetDuration();
+  }
+
+  void
+  VNDurationTrigger::SetDuration(float duration){
+	  pimpl_->SetDuration(duration);
+  }
+
   bool
   VNDurationTrigger::Triggered(bool spatiallyTriggered) {
     return pimpl_->Triggered(spatiallyTriggered);

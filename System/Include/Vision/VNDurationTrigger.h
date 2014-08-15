@@ -27,8 +27,9 @@ namespace Vision {
     /*!
      * Default constructor
      * \param duration The amount of time a spatial trigger must be triggered
-     * before the compund trigger registers an event.  The default value is
-     * set to kVNDurationTriggerDefault
+     * before the compound trigger registers an event.  The default value is
+     * set to kVNDurationTriggerDefault.
+     * The value should >= 0.0f.
      */
     VNDurationTrigger(float duration = kVNDurationTriggerDefault);
 
@@ -46,6 +47,7 @@ namespace Vision {
     /*!
      * SetDuration
      * \brief Sets the duration value used to cause a temporal trigger event
+     * \param The value should >= 0.0f.
      */
     void SetDuration(float duration);
 

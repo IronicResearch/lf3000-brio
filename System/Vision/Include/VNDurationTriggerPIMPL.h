@@ -11,12 +11,17 @@ namespace Vision {
     VNDurationTriggerPIMPL(float duration);
     virtual ~VNDurationTriggerPIMPL(void);
     
-    bool Triggered(bool spatiallyTriggered);
+    float GetDuration(void) const;
 
-    float duration_;
+    void SetDuration(float duration);
+
+    bool Triggered(bool spatiallyTriggered);
 
     bool wasSpatiallyTriggered_;
     boost::timer timer_;
+
+  private:
+    float duration_;
   };
   
 } // namespace Vision
