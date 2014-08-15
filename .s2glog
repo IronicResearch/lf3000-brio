@@ -42734,3 +42734,12 @@ By pjusuf (pjusuf@leapfrog.com) on 8/15/14 12:06 PM
 25,180 ms. (Cumulative: 28,010,284 ms)
 
 ----------------
+Revision 11,012 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1019: Write Unit Test for VNPoint.
+
+By pjusuf (pjusuf@leapfrog.com) on 8/15/14 12:07 PM
+0 changed, 1 added, 0 deleted.
+25,012 ms. (Cumulative: 28,035,390 ms)
+
+----------------
