@@ -42725,3 +42725,12 @@ By pjusuf (pjusuf@leapfrog.com) on 8/15/14 12:05 PM
 24,965 ms. (Cumulative: 27,984,994 ms)
 
 ----------------
+Revision 11,011 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1012: Write Unit Test for VNHotSpotEventMessage.
+
+By pjusuf (pjusuf@leapfrog.com) on 8/15/14 12:06 PM
+0 changed, 1 added, 0 deleted.
+25,180 ms. (Cumulative: 28,010,284 ms)
+
+----------------
