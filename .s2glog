@@ -42799,3 +42799,12 @@ By mharris (mharris@leapfrog.com) on 8/18/14 2:49 PM
 25,682 ms. (Cumulative: 28,187,718 ms)
 
 ----------------
+Revision 11,019 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1018: Write Unit Tests for VNVisionMPI. Add Null check to surface size (surf) in VNVisionMPIPIMPL.cpp.
+
+By pjusuf (pjusuf@leapfrog.com) on 8/18/14 2:51 PM
+1 changed, 1 added, 0 deleted.
+26,674 ms. (Cumulative: 28,214,502 ms)
+
+----------------

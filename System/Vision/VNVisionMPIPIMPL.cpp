@@ -285,9 +285,9 @@ namespace Vision {
       // make sure the surface size is at least as big as the processing size
       // TODO: This may/should go away once we resolve issues around different
       // sized between processing and display
-      if (surf &&
+      if (!surf || (surf &&
 	  (surf->width < frameProcessingWidth_ ||
-	   surf->height < frameProcessingHeight_)) {
+	   surf->height < frameProcessingHeight_))) {
 	return kVNVideoSurfaceNotOfCorrectSizeForVisionCapture;
       }
 
