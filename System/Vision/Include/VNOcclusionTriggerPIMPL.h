@@ -21,8 +21,14 @@ namespace Vision {
 			      int &numPixles,
 			      int &numDiffPixels);
 
-    float percentOccludedToTrigger_;
+    void SetOcclusionTriggerPercentage(float percentOccluded);
+
+    float GetOcclusionTriggerPercentage(void) const;
+
     float percentOccluded_;
+
+  private:
+    float percentOccludedToTrigger_;
   };
 
 } // namespace Vision

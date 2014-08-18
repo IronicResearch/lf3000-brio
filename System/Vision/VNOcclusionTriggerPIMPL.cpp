@@ -1,12 +1,13 @@
 #include <VNOcclusionTriggerPIMPL.h>
+#include <DebugMPI.h>
 
 namespace LF {
 namespace Vision {
 
   VNOcclusionTriggerPIMPL::VNOcclusionTriggerPIMPL(float percentOccludedToTrigger) :
-    percentOccludedToTrigger_(percentOccludedToTrigger),
     percentOccluded_(0) {
-    
+
+	SetOcclusionTriggerPercentage(percentOccludedToTrigger);
   }
   
   VNOcclusionTriggerPIMPL::~VNOcclusionTriggerPIMPL(void) {
@@ -60,7 +61,7 @@ namespace Vision {
 	  }
 	}
       }    
-    }  
+    }
   }
 
   bool
@@ -91,6 +92,25 @@ namespace Vision {
     percentOccluded_ = (1.0f - (static_cast<float>(numPixels - numDiffPixels)/static_cast<float>(numPixels)));
     return (percentOccluded_ > percentOccludedToTrigger_);
   }
+
+  void
+  VNOcclusionTriggerPIMPL::SetOcclusionTriggerPercentage(float percentOccluded){
+
+	  if (percentOccluded <= 0.0f){
+		  percentOccludedToTrigger_ = 0.0f;
+	  }
+	  else if (percentOccluded >= 1.0f) {
+		  percentOccludedToTrigger_ = 1.0f;
+	  }else{
+		  percentOccludedToTrigger_ = percentOccluded;
+	  }
+  }
+
+  float
+  VNOcclusionTriggerPIMPL::GetOcclusionTriggerPercentage(void) const{
+	  return percentOccludedToTrigger_;
+  }
+
 
 } // namespace Vision
 } // namespace LF

@@ -42790,3 +42790,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 8/17/14 11:59 PM
 25,466 ms. (Cumulative: 28,161,927 ms)
 
 ----------------
+Revision 11,018 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Unit Tests for VNOcclusionTrigger  (FWGLAS-1014)
+
+By mharris (mharris@leapfrog.com) on 8/18/14 2:49 PM
+3 changed, 1 added, 0 deleted.
+25,682 ms. (Cumulative: 28,187,718 ms)
+
+----------------
