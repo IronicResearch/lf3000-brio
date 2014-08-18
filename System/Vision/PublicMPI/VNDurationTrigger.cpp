@@ -25,7 +25,10 @@ namespace Vision {
 
   bool
   VNDurationTrigger::Triggered(bool spatiallyTriggered) {
-    return pimpl_->Triggered(spatiallyTriggered);
+    if (pimpl_) {
+      return pimpl_->Triggered(spatiallyTriggered);
+    }
+    return false;
   }
 }
 }

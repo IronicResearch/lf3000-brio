@@ -14,27 +14,40 @@ namespace Vision {
   
   void
   VNHotSpot::SetTrigger(VNTrigger *trigger) {
-    pimpl_->trigger_ = trigger;
+    if (pimpl_) {
+      pimpl_->trigger_ = trigger;
+    }
   }
   
   VNTrigger*
   VNHotSpot::GetTrigger(void) const {
-    return pimpl_->trigger_;
+    if (pimpl_) {
+      return pimpl_->trigger_;
+    }
+    return NULL;
   }
   
   void
   VNHotSpot::SetTag(LeapFrog::Brio::U32 tag) {
-    pimpl_->tag_ = tag;
+    if (pimpl_) {
+      pimpl_->tag_ = tag;
+    }
   }
   
   LeapFrog::Brio::U32
   VNHotSpot::GetTag(void) const {
-    return pimpl_->tag_;
+    if (pimpl_) {
+      return pimpl_->tag_;
+    }
+    return 0;
   }
   
   bool
   VNHotSpot::IsTriggered(void) const {
-    return pimpl_->isTriggered_;
+    if (pimpl_) {
+      return pimpl_->isTriggered_;
+    }
+    return false;
   }
   
 } // namespace Vision

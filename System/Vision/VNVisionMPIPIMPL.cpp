@@ -139,12 +139,7 @@ namespace Vision {
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::DeleteTask(void) {
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
-
     visionAlgorithmRunning_ = false;
-
-    // stop the video capture if it's still going
-    if (videoCapture_ != kInvalidVidCapHndl)
-      result = cameraMPI_.StopVideoCapture(videoCapture_);
 
 #if VN_USE_IMAGE_PROCESS_THREAD
     // Signal vision thread to exit
@@ -156,12 +151,20 @@ namespace Vision {
     }
 #endif
 
+    // stop the video capture if it's still going
+    if (videoCapture_ != kInvalidVidCapHndl) {
+      result = cameraMPI_.StopVideoCapture(videoCapture_);
+    }
+
     // if the algorithm is still present, shut it down
-    if (algorithm_)
+    if (algorithm_) {
       algorithm_->Shutdown();
+    }
 
     // delete the memory for the surface buffer
-    if (surface_.buffer) delete surface_.buffer;
+    if (surface_.buffer) {
+      delete surface_.buffer;
+    }
     surface_.buffer = NULL;
 
     return result;
@@ -374,6 +377,7 @@ namespace Vision {
     // trigger hot spots
     bool wasTriggered = false;
     PROF_BLOCK_START("triggerHotSpots");
+    HS_UPDATE_LOCK
     for (std::vector<const VNHotSpot*>::iterator hs = hotSpots_.begin();
 	 hs != hotSpots_.end();
 	 ++hs) {
@@ -404,6 +408,7 @@ namespace Vision {
       eventMPI_.PostEvent(msg, 0);
     }
     //------
+    HS_UPDATE_UNLOCK
   }
 
   void
@@ -434,10 +439,6 @@ namespace Vision {
       if (pthis) {
 	while (pthis->isThreadRunning_) {
 	  
-	  PROF_BLOCK_START("Vision:UpdatePendingHotSpots");
-	  pthis->UpdatePendingHotSpots();
-	  PROF_BLOCK_END();
-	  
 	  if (pthis->visionAlgorithmRunning_ && pthis->algorithm_ && pthis->isFramePending_) {
 	    PROF_BLOCK_START("Vision::Task");
 	    
@@ -465,6 +466,7 @@ namespace Vision {
 	  }
 	}
       }
+      pthis->visionAlgorithmRunning_ = false;
       return pctx; // optional
   }
 #endif
@@ -478,8 +480,6 @@ namespace Vision {
     if (isFramePending_) {
       return LeapFrog::Brio::kEventStatusOK;
     } 
-#else
-    UpdatePendingHotSpots();
 #endif
 
     if (visionAlgorithmRunning_ && algorithm_) {
@@ -535,7 +535,7 @@ namespace Vision {
 #if defined(EMULATION)
 	      OpenCVDebug();
 #endif
-
+	      
 	      PROF_BLOCK_START("triggering");
 	      TriggerHotSpots();
 	      PROF_BLOCK_END();
@@ -553,7 +553,7 @@ namespace Vision {
 	  return LeapFrog::Brio::kEventStatusOKConsumed;
 	}
       } else {
-	std::cout << "DID NOT successfully cast the msg\n";
+	std::cout << "DID NOT successfully cast the msg" << std::endl;
       }
     }
     return LeapFrog::Brio::kEventStatusOK;
@@ -575,24 +575,16 @@ namespace Vision {
 #endif
 
   void
-  VNVisionMPIPIMPL::CheckForImmediateHotSpotUpdate(void) {
-    // update immediately if the algorithm is not running
-    if (!visionAlgorithmRunning_) {
-      UpdatePendingHotSpots();
-    }
-  }
-
-  void
   VNVisionMPIPIMPL::AddHotSpot(const VNHotSpot* hotSpot) {
     // avoid adding NULL
     if (hotSpot) {
       if (std::find(hotSpots_.begin(),
 		    hotSpots_.end(),
 		    hotSpot) == (hotSpots_.end())) {
+
 	HS_UPDATE_LOCK
-	hotSpotsToUpdate_.push_back(VNHotSpotUpdate(VN_ADD_HOT_SPOT, hotSpot));
+	hotSpots_.push_back(hotSpot);
 	HS_UPDATE_UNLOCK
-	CheckForImmediateHotSpotUpdate();
       }
     }
   }
@@ -602,9 +594,13 @@ namespace Vision {
     // skip NULL
     if (hotSpot) {
       HS_UPDATE_LOCK
-      hotSpotsToUpdate_.push_back(VNHotSpotUpdate(VN_REMOVE_HOT_SPOT,hotSpot));
+      // find where the hot spot is int he array and erase it
+      std::vector<const VNHotSpot*>::iterator it;
+      it = std::find(hotSpots_.begin(), hotSpots_.end(), hotSpot);
+      if (it != hotSpots_.end()) {
+	hotSpots_.erase(it);
+      }
       HS_UPDATE_UNLOCK
-      CheckForImmediateHotSpotUpdate();
     }
   }
 
@@ -614,57 +610,20 @@ namespace Vision {
     HS_UPDATE_LOCK
     for ( ; it != hotSpots_.end(); ++it) {
       if ((*it) && (*it)->GetTag() == tag) {
-	hotSpotsToUpdate_.push_back(VNHotSpotUpdate(VN_REMOVE_HOT_SPOT,(*it)));
+	hotSpots_.erase(it);
+	//decrement since it now points to the position past the one erased and 
+	// the update branch of the for loop will increment the iterator
+	--it; 
       }
     }
     HS_UPDATE_UNLOCK
-    CheckForImmediateHotSpotUpdate();
   }
 
   void
   VNVisionMPIPIMPL::RemoveAllHotSpots(void) {
     HS_UPDATE_LOCK
-    // any hot spots that were added and not updated are also removed, hence the 
-    // clearning of the hotSpotsToUpdae vector
-    hotSpotsToUpdate_.clear();
-    std::vector<const VNHotSpot*>::iterator it = hotSpots_.begin();
-    for ( ; it != hotSpots_.end(); ++it) {
-      hotSpotsToUpdate_.push_back(VNHotSpotUpdate(VN_REMOVE_HOT_SPOT, (*it)));
-    }
+    hotSpots_.clear();
     HS_UPDATE_UNLOCK
-    CheckForImmediateHotSpotUpdate();
-  }
-
-  void
-  VNVisionMPIPIMPL::UpdatePendingHotSpots(void) {
-    if (hotSpotsToUpdate_.size() > 0 ) {
-      HS_UPDATE_LOCK
-      std::vector<VNHotSpotUpdate>::iterator tuIt = hotSpotsToUpdate_.begin();
-      for ( ; tuIt != hotSpotsToUpdate_.end(); ++tuIt) {
-	VNHotSpotUpdateKey key = (*tuIt).first;
-	const VNHotSpot* hs = (*tuIt).second;
-
-	// if the hot spot is not NULL, do something with it
-	if (hs) {
-	  
-	  // add the hot spot to the hot spot array
-	  if (key == VN_ADD_HOT_SPOT) {
-	    hotSpots_.push_back(hs);
-
-	  } else if (key == VN_REMOVE_HOT_SPOT) {
-	    // find where the hot spot is int he array and erase it
-	    std::vector<const VNHotSpot*>::iterator it;
-	    it = std::find(hotSpots_.begin(), hotSpots_.end(), hs);
-	    if (it != hotSpots_.end()) {
-	      hotSpots_.erase(it);
-	    }
-	  }
-	}
-      }
-      
-      hotSpotsToUpdate_.clear();
-      HS_UPDATE_UNLOCK
-    }
   }
 
 } // namespace Vision

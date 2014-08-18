@@ -25,17 +25,24 @@ namespace Vision {
   
   void
   VNRectHotSpot::SetRect(const LeapFrog::Brio::tRect& rect) {
-    pimpl_->SetRect(rect);
+    if (pimpl_) {
+      pimpl_->SetRect(rect);
+    }
   }
   
   LeapFrog::Brio::tRect
   VNRectHotSpot::GetRect(void) const {
-    return pimpl_->GetRect();
+    if (pimpl_) {
+      return pimpl_->GetRect();
+    }
+    return LeapFrog::Brio::tRect();
   }
   
   void
   VNRectHotSpot::Trigger(cv::Mat &input) const {
-    pimpl_->Trigger(input, this);
+    if (pimpl_) {
+      pimpl_->Trigger(input, this);
+    }
   }
   
 } // namespace Vision

@@ -36,17 +36,24 @@ namespace Vision {
   
   void
   VNArbitraryShapeHotSpot::SetFilterImage(const cv::Mat &filterImage) {
-    pimpl_->SetFilterImage(filterImage);
+    if (pimpl_) {
+      pimpl_->SetFilterImage(filterImage);
+    }
   }
   
   void
   VNArbitraryShapeHotSpot::SetFilterImage(const LeapFrog::Brio::tFontSurf &filterImage) {
-    pimpl_->SetFilterImage(filterImage);
+    if (pimpl_) {
+      pimpl_->SetFilterImage(filterImage);
+    }
   }
   
   cv::Mat
   VNArbitraryShapeHotSpot::GetFilterImage(void) const {
-    return pimpl_->GetFilterImage();
+    if (pimpl_) {
+      return pimpl_->GetFilterImage();
+    }
+    return cv::Mat();
   }
     
 } // namespace Vision

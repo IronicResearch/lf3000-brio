@@ -16,7 +16,10 @@ namespace Vision {
 
   bool
   VNCompoundTrigger::Triggered(const VNHotSpot *hs) {
-    return pimpl_->Triggered(hs);
+    if (pimpl_) {
+      return pimpl_->Triggered(hs);
+    }
+    return false;
   }
 }
 }

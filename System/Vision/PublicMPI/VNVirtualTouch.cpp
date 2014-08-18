@@ -27,26 +27,36 @@ namespace Vision {
 
   float
   VNVirtualTouch::SetLearningRate(float rate) {
-    if (rate >= kVNMinLearningRate && rate <= kVNMaxLearningRate)
-      pimpl_->learningRate_ = rate;
-    return pimpl_->learningRate_;
+    if (pimpl_) {
+      if (rate >= kVNMinLearningRate && rate <= kVNMaxLearningRate)
+	pimpl_->learningRate_ = rate;
+      return pimpl_->learningRate_;
+    }
+    return kVNDefaultVirtualTouchLearningRate;
   }
 
   float
   VNVirtualTouch::GetLearningRate(void) const {
-    return pimpl_->learningRate_;
+    if (pimpl_) {
+      return pimpl_->learningRate_;
+    }
+    return kVNDefaultVirtualTouchLearningRate;
   }
 
   void
   VNVirtualTouch::Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
 			     LeapFrog::Brio::U16 frameProcessingHeight) {
-    pimpl_->Initialize(frameProcessingWidth,
-		       frameProcessingHeight);
+    if (pimpl_) {
+      pimpl_->Initialize(frameProcessingWidth,
+			 frameProcessingHeight);
+    }
   }
 
   void
   VNVirtualTouch::Execute(cv::Mat &input, cv::Mat &output) {
-    pimpl_->Execute(input, output);
+    if (pimpl_) {
+      pimpl_->Execute(input, output);
+    }
   }
 
 } // namespace Vision
