@@ -26,27 +26,39 @@ namespace Vision {
   
   void
   VNCircleHotSpot::SetCenter(const VNPoint &center) {
-    pimpl_->SetCenter(center);
+    if (pimpl_) {
+      pimpl_->SetCenter(center);
+    }
   }
   
   VNPoint
   VNCircleHotSpot::GetCenter(void) const {
-    return pimpl_->GetCenter();
+    if (pimpl_) {
+      return pimpl_->GetCenter();
+    }
+    return VNPoint();
   }
 
   void
   VNCircleHotSpot::SetRadius(float radius) {
-    pimpl_->SetRadius(radius);
+    if (pimpl_) {
+      pimpl_->SetRadius(radius);
+    }
   }
 
   float
   VNCircleHotSpot::GetRadius(void) const {
-    return pimpl_->GetRadius();
+    if (pimpl_) {
+      return pimpl_->GetRadius();
+    }
+    return kVNCircleHotSpotDefaultRadius;
   }
 
   void
   VNCircleHotSpot::Trigger(cv::Mat &input) const {
-    pimpl_->Trigger(input, this);
+    if (pimpl_) {
+      pimpl_->Trigger(input, this);
+    }
   }
   
 } // namespace Vision

@@ -16,8 +16,9 @@ namespace Vision {
   
   bool
   VNPointTrigger::Triggered(const VNHotSpot *hotSpot) {
-    if (hotSpot)
+    if (hotSpot && pimpl_) {
       return pimpl_->Triggered(*hotSpot->pimpl_);
+    }
     return false;
   }
     

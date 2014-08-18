@@ -24,12 +24,18 @@ namespace Vision {
   
   const VNHotSpot*
   VNHotSpotEventMessage::GetHotSpot(void) const {
-    return pimpl_->hotSpot_;
+    if (pimpl_) {
+      return pimpl_->hotSpot_;
+    }
+    return NULL;
   }
   
   std::vector<const VNHotSpot*>
   VNHotSpotEventMessage::GetHotSpots(void) const {
-    return pimpl_->hotSpots_;
+    if (pimpl_) {
+      return pimpl_->hotSpots_;
+    }
+    return std::vector<const VNHotSpot*>();
   }
   
   LeapFrog::Brio::U16

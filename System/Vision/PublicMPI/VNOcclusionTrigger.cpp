@@ -18,24 +18,33 @@ namespace Vision {
   
   bool
   VNOcclusionTrigger::Triggered(const VNHotSpot *hotSpot) {
-    if (hotSpot)
+    if (hotSpot && pimpl_) {
       return pimpl_->Triggered(*hotSpot->pimpl_);
+    }
     return false;
   }
   
   void
   VNOcclusionTrigger::SetOcclusionTriggerPercentage(float percentOccluded) {
-    pimpl_->percentOccludedToTrigger_ = percentOccluded;
+    if (pimpl_) {
+      pimpl_->percentOccludedToTrigger_ = percentOccluded;
+    }
   }
   
   float
   VNOcclusionTrigger::GetOcclusionTriggerPercentage(void) const {
-    return pimpl_->percentOccludedToTrigger_;
+    if (pimpl_) {
+      return pimpl_->percentOccludedToTrigger_;
+    }
+    return kVNDefaultPercentOccludedToTrigger;
   }
 
   float
   VNOcclusionTrigger::GetPercentOccluded(void) const {
-    return pimpl_->percentOccluded_;
+    if (pimpl_) {
+      return pimpl_->percentOccluded_;
+    }
+    return 0.0f;
   }
   
 } // namespace Vision

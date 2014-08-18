@@ -59,12 +59,17 @@ namespace Vision {
    */
   void
   VNVisionMPI::SetAlgorithm(VNAlgorithm* algorithm) {
-    pimpl_->algorithm_ = algorithm;
+    if (pimpl_) {
+      pimpl_->algorithm_ = algorithm;
+    }
   }
   
   VNAlgorithm*
   VNVisionMPI::GetAlgorithm(void) const {
-    return pimpl_->algorithm_;
+    if (pimpl_) {
+      return pimpl_->algorithm_;
+    }
+    return NULL;
   }
   
   VNWand*
@@ -77,22 +82,30 @@ namespace Vision {
    */
   void
   VNVisionMPI::AddHotSpot(const VNHotSpot* hotSpot) {
-    pimpl_->AddHotSpot(hotSpot);
+    if (pimpl_) {
+      pimpl_->AddHotSpot(hotSpot);
+    }
   }
   
   void
   VNVisionMPI::RemoveHotSpot(const VNHotSpot* hotSpot) {
-    pimpl_->RemoveHotSpot(hotSpot);
+    if (pimpl_) {
+      pimpl_->RemoveHotSpot(hotSpot);
+    }
   }
   
   void
   VNVisionMPI::RemoveHotSpotByID(const LeapFrog::Brio::U32 tag) {
-    pimpl_->RemoveHotSpotByID(tag);
+    if (pimpl_) {
+      pimpl_->RemoveHotSpotByID(tag);
+    }
   }
 
   void
   VNVisionMPI::RemoveAllHotSpots(void) {
-    pimpl_->RemoveAllHotSpots();
+    if (pimpl_) {
+      pimpl_->RemoveAllHotSpots();
+    }
   }
 
   /*!
@@ -102,7 +115,10 @@ namespace Vision {
   VNVisionMPI::Start(LeapFrog::Brio::tVideoSurf* surf,
 		     bool dispatchSynchronously,
 		     const LeapFrog::Brio::tRect *displayRect) {
-    return pimpl_->Start(surf, dispatchSynchronously, displayRect);
+    if (pimpl_) {
+      return pimpl_->Start(surf, dispatchSynchronously, displayRect);
+    }
+    return kNoErr;
   }
   
   void
@@ -113,32 +129,49 @@ namespace Vision {
 
   LeapFrog::Brio::Boolean
   VNVisionMPI::Stop(void) {
-    return pimpl_->Stop();
+    if (pimpl_) {
+      return pimpl_->Stop();
+    }
+    return static_cast<LeapFrog::Brio::Boolean>(1);
   }
   
   LeapFrog::Brio::Boolean
   VNVisionMPI::Pause(void) {
-    return pimpl_->Pause();
+    if (pimpl_) {
+      return pimpl_->Pause();
+    }
+    return static_cast<LeapFrog::Brio::Boolean>(1);
   }
   
   LeapFrog::Brio::Boolean
   VNVisionMPI::Resume(void) {
-    return pimpl_->Resume();
+    if (pimpl_) {
+      return pimpl_->Resume();
+    }
+    return static_cast<LeapFrog::Brio::Boolean>(1);
   }
 
   bool
   VNVisionMPI::IsRunning(void) const {
-    return pimpl_->visionAlgorithmRunning_;
+    if (pimpl_) {
+      return pimpl_->visionAlgorithmRunning_;
+    }
+    return false;
   }
 
   void
   VNVisionMPI::SetFrameProcessingRate(float frameProcessingRate) {
-    pimpl_->frameProcessingRate_ = frameProcessingRate;
+    if (pimpl_) {
+      pimpl_->frameProcessingRate_ = frameProcessingRate;
+    }
   }
   
   float
   VNVisionMPI::GetFrameProcessingRate(void) const {
-    return pimpl_->frameProcessingRate_;
+    if (pimpl_) {
+      return pimpl_->frameProcessingRate_;
+    }
+    return 0.0f;
   }
   
 } // namespace Vision

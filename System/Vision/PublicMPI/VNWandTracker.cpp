@@ -21,28 +21,39 @@ namespace Vision {
   void
   VNWandTracker::Initialize(LeapFrog::Brio::U16 frameProcessingWidth,
 			    LeapFrog::Brio::U16 frameProcessingHeight) {
-    pimpl_->Initialize(frameProcessingWidth,
-		       frameProcessingHeight);
+    if (pimpl_) {
+      pimpl_->Initialize(frameProcessingWidth,
+			 frameProcessingHeight);
+    }
   }
 
   void
   VNWandTracker::Execute(cv::Mat &input, cv::Mat &output) {
-    pimpl_->Execute(input, output);
+    if (pimpl_) {
+      pimpl_->Execute(input, output);
+    }
   }
 
   void
   VNWandTracker::Shutdown(void) {
-    pimpl_->Shutdown();
+    if (pimpl_) {
+      pimpl_->Shutdown();
+    }
   }
 
   void
   VNWandTracker::SetAutomaticWandScaling(bool autoScale) {
-    pimpl_->SetAutomaticWandScaling(autoScale);
+    if (pimpl_) {
+      pimpl_->SetAutomaticWandScaling(autoScale);
+    }
   }
 
   bool
   VNWandTracker::GetAutomaticWandScaling(void) const {
-    return pimpl_->GetAutomaticWandScaling();
+    if (pimpl_) {
+      return pimpl_->GetAutomaticWandScaling();
+    }
+    return false;
   }
 
 } // namespace Vision

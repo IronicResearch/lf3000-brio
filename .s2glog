@@ -42781,3 +42781,12 @@ By mharris (mharris@leapfrog.com) on 8/15/14 4:31 PM
 25,028 ms. (Cumulative: 28,136,367 ms)
 
 ----------------
+Revision 11,017 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+fix vision crash on exit, make hot spot updates synchronous
+
+By Alex Lindblad (alindblad@leapfrog.com) on 8/17/14 11:59 PM
+16 changed, 0 added, 0 deleted.
+25,466 ms. (Cumulative: 28,161,927 ms)
+
+----------------

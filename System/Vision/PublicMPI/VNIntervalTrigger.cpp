@@ -26,7 +26,10 @@ namespace Vision {
 
   bool
   VNIntervalTrigger::Triggered(bool spatiallyTriggered) {
-    return pimpl_->Triggered(spatiallyTriggered);
+    if (pimpl_) {
+      return pimpl_->Triggered(spatiallyTriggered);
+    }
+    return false;
   }
 
 }

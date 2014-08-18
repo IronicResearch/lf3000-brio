@@ -69,8 +69,6 @@ namespace Vision {
     void Wait(double secondsToWait) const;
     void UpdateHotSpotVisionCoordinates(void);
     void SetFrameProcessingSize(void);
-    void UpdatePendingHotSpots(void);
-    void CheckForImmediateHotSpotUpdate(void);
 
 #ifdef EMULATION
     void OpenCVDebug(void);
