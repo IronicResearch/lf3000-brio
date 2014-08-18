@@ -27,14 +27,14 @@ namespace Vision {
   void
   VNOcclusionTrigger::SetOcclusionTriggerPercentage(float percentOccluded) {
     if (pimpl_) {
-      pimpl_->percentOccludedToTrigger_ = percentOccluded;
+      pimpl_->SetOcclusionTriggerPercentage(percentOccluded);
     }
   }
   
   float
   VNOcclusionTrigger::GetOcclusionTriggerPercentage(void) const {
     if (pimpl_) {
-      return pimpl_->percentOccludedToTrigger_;
+      return pimpl_->GetOcclusionTriggerPercentage();
     }
     return kVNDefaultPercentOccludedToTrigger;
   }
