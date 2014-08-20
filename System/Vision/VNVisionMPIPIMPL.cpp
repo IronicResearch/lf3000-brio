@@ -94,6 +94,7 @@ namespace Vision {
     visionAlgorithmRunning_(false),
     frameProcessingRate_(kVNDefaultFrameProcessingRate),
     algorithm_(NULL),
+    videoCapture_(kInvalidVidCapHndl),
     frameTime_(time(0)),
     frameCount_(0),
     frameProcessingWidth_(kVNDefaultProcessingFrameWidth),
@@ -285,9 +286,9 @@ namespace Vision {
       // make sure the surface size is at least as big as the processing size
       // TODO: This may/should go away once we resolve issues around different
       // sized between processing and display
-      if (!surf || (surf &&
+      if (surf &&
 	  (surf->width < frameProcessingWidth_ ||
-	   surf->height < frameProcessingHeight_))) {
+	   surf->height < frameProcessingHeight_)) {
 	return kVNVideoSurfaceNotOfCorrectSizeForVisionCapture;
       }
 
@@ -342,18 +343,24 @@ namespace Vision {
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::Pause(void) {
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
-    if (videoCapture_ != kInvalidVidCapHndl)
+    if (videoCapture_ != kInvalidVidCapHndl) {
       result = cameraMPI_.PauseVideoCapture(videoCapture_);
-    visionAlgorithmRunning_ = false;
+      if (result) {
+        visionAlgorithmRunning_ = false;
+      }
+    }
     return result;
   }
 
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::Resume(void) {
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
-    if (videoCapture_ != kInvalidVidCapHndl)
+    if (videoCapture_ != kInvalidVidCapHndl) {
       result = cameraMPI_.ResumeVideoCapture(videoCapture_);
-    visionAlgorithmRunning_ = true;
+      if (result) {
+        visionAlgorithmRunning_ = true;
+      }
+    }
     return result;
   }
 

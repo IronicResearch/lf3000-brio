@@ -29,13 +29,12 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 		}
 
 		void setUp(void) {
-			usleep(1000);
 		}
 
 		void testConstructorWithNoArgumentShouldSucceed() {
 			PRINT_TEST_NAME();
-			VNVisionMPI VisionMPI;
-			
+			std::auto_ptr<VNVisionMPI> VisionMPI (new VNVisionMPI);
+			TS_ASSERT(VisionMPI.get());
 		}
 		
 		void testGetAlgorithmAfterConstructionShouldSucceed() {
@@ -196,155 +195,148 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 
 		void testStartWithNullVideoSurfFalseDispatchSynchronouslyNullRectShouldSucceed() {
 			PRINT_TEST_NAME();
+			TS_FAIL("When run, this test will go to Segmentation fault in VNVisionMPIPIMPL::SetCoordinateTranslatorFrames.\n"
+			"tDisplayScreenStats* seems to be invalid. Per Alex, the unit test is run independent of AppServer/AppManager,"
+			"which sets up the display. This test may not be accurate without display present");
+			/*
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(NULL, false, NULL);
 			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
+			*/
 		}
 
 		void testStartWithNullVideoSurfFalseDispatchSynchronouslySmallerThanVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(NULL, false, displayRectSmallerThanVisionFrame);
-			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(error == kNoErr);
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithNullVideoSurfFalseDispatchSynchronouslySameAsVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(NULL, false, displayRectSameAsVisionFrame);
-			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(error == kNoErr);
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithNullVideoSurfFalseDispatchSynchronouslyBiggerThanVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(NULL, false, displayRectBiggerThanVisionFrame);
-			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(error == kNoErr);
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithNullVideoSurfTrueDispatchSynchronouslyNullRectShouldSucceed() {
 			PRINT_TEST_NAME();
+			TS_FAIL("When run, this test will go to Segmentation fault in VNVisionMPIPIMPL::SetCoordinateTranslatorFrames.\n"
+			"tDisplayScreenStats* seems to be invalid. Per Alex, the unit test is run independent of AppServer/AppManager,"
+			"which sets up the display. This test may not be accurate without display present");
+			/*
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(NULL, true, NULL);
 			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
+			*/
 		}
 
 		void testStartWithNullVideoSurfTrueDispatchSynchronouslySmallerThanVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(NULL, true, displayRectSmallerThanVisionFrame);
-			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(error == kNoErr);
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithNullVideoSurfTrueDispatchSynchronouslySameAsVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(NULL, true, displayRectSameAsVisionFrame);
-			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(error == kNoErr);
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithNullVideoSurfTrueDispatchSynchronouslyBiggerThanVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(NULL, true, displayRectBiggerThanVisionFrame);
-			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(error == kNoErr);
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithSmallerThanVisionRectVideoSurfFalseDispatchSynchronouslyNullRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(videoSurfSmallerThanVisionFrame, false, NULL);
 			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(!VisionMPI.Stop());
 		}
 
 		void testStartWithSmallerThanVisionRectVideoSurfFalseDispatchSynchronouslySmallerThanVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(videoSurfSmallerThanVisionFrame, false, displayRectSmallerThanVisionFrame);
 			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(!VisionMPI.Stop());
 		}
 
 		void testStartWithSmallerThanVisionRectVideoSurfFalseDispatchSynchronouslySameAsVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(videoSurfSmallerThanVisionFrame, false, displayRectSameAsVisionFrame);
 			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(!VisionMPI.Stop());
 		}
 
 		void testStartWithSmallerThanVisionRectVideoSurfFalseDispatchSynchronouslyBiggerThanVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(videoSurfSmallerThanVisionFrame, false, displayRectBiggerThanVisionFrame);
 			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(!VisionMPI.Stop());
 		}
 
 		void testStartWithSmallerThanVisionRectVideoSurfTrueDispatchSynchronouslyNullRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(videoSurfSmallerThanVisionFrame, true, NULL);
 			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(!VisionMPI.Stop());
 		}
 
 		void testStartWithSmallerThanVisionRectVideoSurfTrueDispatchSynchronouslySmallerThanVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(videoSurfSmallerThanVisionFrame, true, displayRectSmallerThanVisionFrame);
 			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(!VisionMPI.Stop());
 		}
 
 		void testStartWithSmallerThanVisionRectVideoSurfTrueDispatchSynchronouslySameAsVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(videoSurfSmallerThanVisionFrame, true, displayRectSameAsVisionFrame);
 			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(!VisionMPI.Stop());
 		}
 
 		void testStartWithSmallerThanVisionRectVideoSurfTrueDispatchSynchronouslyBiggerThanVisionFrameRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(videoSurfSmallerThanVisionFrame, true, displayRectBiggerThanVisionFrame);
 			TS_ASSERT(error != kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(!VisionMPI.Stop());
 		}
 
 		void testStartWithBiggerThanVisionRectVideoSurfFalseDispatchSynchronouslyNullRectShouldSucceed() {
 			PRINT_TEST_NAME();
 			VNVisionMPI VisionMPI;
-			TS_ASSERT(VisionMPI.Stop());
 			tErrType error = VisionMPI.Start(videoSurfBiggerThanVisionFrame, false, NULL);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithBiggerThanVisionRectVideoSurfFalseDispatchSynchronouslySmallerThanVisionFrameRectShouldSucceed() {
@@ -352,7 +344,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfBiggerThanVisionFrame, false, displayRectSmallerThanVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithBiggerThanVisionRectVideoSurfFalseDispatchSynchronouslySameAsVisionFrameRectShouldSucceed() {
@@ -360,7 +352,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfBiggerThanVisionFrame, false, displayRectSameAsVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithBiggerThanVisionRectVideoSurfFalseDispatchSynchronouslyBiggerThanVisionFrameRectShouldSucceed() {
@@ -368,7 +360,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfBiggerThanVisionFrame, false, displayRectBiggerThanVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithBiggerThanVisionRectVideoSurfTrueDispatchSynchronouslyNullRectShouldSucceed() {
@@ -376,7 +368,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfBiggerThanVisionFrame, true, NULL);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithBiggerThanVisionRectVideoSurfTrueDispatchSynchronouslySmallerThanVisionFrameRectShouldSucceed() {
@@ -384,7 +376,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfBiggerThanVisionFrame, true, displayRectSmallerThanVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithBiggerThanVisionRectVideoSurfTrueDispatchSynchronouslySameAsVisionFrameRectShouldSucceed() {
@@ -392,7 +384,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfBiggerThanVisionFrame, true, displayRectSameAsVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithBiggerThanVisionRectVideoSurfTrueDispatchSynchronouslyBiggerThanVisionFrameRectShouldSucceed() {
@@ -400,7 +392,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfBiggerThanVisionFrame, true, displayRectBiggerThanVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithSameAsVisionRectVideoSurfFalseDispatchSynchronouslyNullRectShouldSucceed() {
@@ -408,7 +400,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfSameAsVisionFrame, false, NULL);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithSameAsVisionRectVideoSurfFalseDispatchSynchronouslySmallerThanVisionFrameRectShouldSucceed() {
@@ -416,7 +408,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfSameAsVisionFrame, false, displayRectSmallerThanVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithSameAsVisionRectVideoSurfFalseDispatchSynchronouslySameAsVisionFrameRectShouldSucceed() {
@@ -424,7 +416,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfSameAsVisionFrame, false, displayRectSameAsVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithSameAsVisionRectVideoSurfFalseDispatchSynchronouslyBiggerThanVisionFrameRectShouldSucceed() {
@@ -432,7 +424,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfSameAsVisionFrame, false, displayRectBiggerThanVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithSameAsVisionRectVideoSurfTrueDispatchSynchronouslyNullRectShouldSucceed() {
@@ -440,7 +432,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfSameAsVisionFrame, true, NULL);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithSameAsVisionRectVideoSurfTrueDispatchSynchronouslySmallerThanVisionFrameRectShouldSucceed() {
@@ -448,7 +440,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfSameAsVisionFrame, true, displayRectSmallerThanVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithSameAsVisionRectVideoSurfTrueDispatchSynchronouslySameAsVisionFrameRectShouldSucceed() {
@@ -456,7 +448,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfSameAsVisionFrame, true, displayRectSameAsVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testStartWithSameAsVisionRectVideoSurfTrueDispatchSynchronouslyBiggerThanVisionFrameRectShouldSucceed() {
@@ -464,7 +456,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			tErrType error = VisionMPI.Start(videoSurfSameAsVisionFrame, true, displayRectBiggerThanVisionFrame);
 			TS_ASSERT(error == kNoErr);
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testUpdateAfterConstructionBeforeCallToStartShouldSucceed() {
@@ -479,7 +471,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			tErrType error = VisionMPI.Start(videoSurfSameAsVisionFrame, true, displayRectSameAsVisionFrame);
 			TS_ASSERT(error == kNoErr);
 			VisionMPI.Update();
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testUpdateAfterNonSuccessfullCallToStartShouldSucceed() {
@@ -498,7 +490,7 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			TS_ASSERT(error == kNoErr);
 			TS_ASSERT(VisionMPI.Pause());
 			VisionMPI.Update();
-			TS_ASSERT( VisionMPI.Stop());
+			TS_ASSERT(VisionMPI.Stop());
 		}
 
 		void testUpdateAfterSuccessfullCallToStopShouldSucceed() {

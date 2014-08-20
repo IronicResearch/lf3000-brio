@@ -42808,3 +42808,12 @@ By pjusuf (pjusuf@leapfrog.com) on 8/18/14 2:51 PM
 26,674 ms. (Cumulative: 28,214,502 ms)
 
 ----------------
+Revision 11,020 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Another revision of TestVisionMPI.h (FWGLAS-1061). Initialize videoCapture_ in constructor. Back out changes to check Null surface size (Null surface is allowed). Update visionAlgorithmRunning_ value accordingly in Pause(void) and Resume(void) functions.
+
+By pjusuf (pjusuf@leapfrog.com) on 8/20/14 3:34 PM
+2 changed, 0 added, 0 deleted.
+25,653 ms. (Cumulative: 28,240,264 ms)
+
+----------------
