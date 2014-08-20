@@ -42826,3 +42826,15 @@ By pjusuf (pjusuf@leapfrog.com) on 8/20/14 3:39 PM
 25,225 ms. (Cumulative: 28,265,614 ms)
 
 ----------------
+Revision 11,022 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+ControllerMPI - (FWGLAS-1048) : Implemented a new counter 'numConnectedControllers' to track the number of actively connected controllers and there is a limit of max 2 controllers connected at any point. 
+'numControllers' now tracks currently paired controllers and there is no max set for that. 
+
+
+
+By Falguni Mirani (fmirani@leapfrog.com) on 8/20/14 3:43 PM
+2 changed, 0 added, 0 deleted.
+25,051 ms. (Cumulative: 28,290,774 ms)
+
+----------------
