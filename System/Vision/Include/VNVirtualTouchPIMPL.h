@@ -18,6 +18,8 @@ namespace LF {
 		     LeapFrog::Brio::U16 frameProcessingHeight);
      void Execute(cv::Mat &input, cv::Mat &output);
      
+     float SetLearningRate(float rate);
+     float GetLearningRate(void) const;
 
      float learningRate_;
      int threshold_;

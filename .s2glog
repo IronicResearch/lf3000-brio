@@ -42817,3 +42817,12 @@ By pjusuf (pjusuf@leapfrog.com) on 8/20/14 3:34 PM
 25,653 ms. (Cumulative: 28,240,264 ms)
 
 ----------------
+Revision 11,021 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1017: Write Unit Tests for VNVirtualTouch. Add SetLearningRate and GetLearningRate functions in VNVirtualTouchPIMPL.h&cpp. Call SetLearningRate function in constructor that has learningRate as its argument in VNVirtualTouchPIMPL.cpp. VNVirtualTouch.cpp respectively calls its pimpl's GetLearningRate and SetLearningRate functions.
+
+By pjusuf (pjusuf@leapfrog.com) on 8/20/14 3:39 PM
+4 changed, 0 added, 0 deleted.
+25,225 ms. (Cumulative: 28,265,614 ms)
+
+----------------
