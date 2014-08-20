@@ -5,8 +5,6 @@
 namespace LF {
 namespace Vision {
 
-  static const float kVNMinLearningRate = 0.001f;
-  static const float kVNMaxLearningRate = 1.f;
   const float kVNDefaultVirtualTouchLearningRate = 0.2f;
   const int kVNDefaultVirtualTouchThreshold = 10;
 
@@ -28,9 +26,7 @@ namespace Vision {
   float
   VNVirtualTouch::SetLearningRate(float rate) {
     if (pimpl_) {
-      if (rate >= kVNMinLearningRate && rate <= kVNMaxLearningRate)
-	pimpl_->learningRate_ = rate;
-      return pimpl_->learningRate_;
+      return pimpl_->SetLearningRate(rate);
     }
     return kVNDefaultVirtualTouchLearningRate;
   }
@@ -38,7 +34,7 @@ namespace Vision {
   float
   VNVirtualTouch::GetLearningRate(void) const {
     if (pimpl_) {
-      return pimpl_->learningRate_;
+      return pimpl_->GetLearningRate();
     }
     return kVNDefaultVirtualTouchLearningRate;
   }

@@ -30,6 +30,8 @@ namespace Vision {
   const LeapFrog::Brio::CString kVNVirtualTouchLearningRateKey = "VNVirtualTouchLearningRate";
   const LeapFrog::Brio::CString kVNVirtualTouchThresholdKey = "VNVirtualTouchThreshold";
 
+  static const float kVNMinLearningRate = 0.001f;
+  static const float kVNMaxLearningRate = 1.f;
   static const float kVNDownScale = 0.5f;
   static const float kVNUpScale = 1.0f/kVNDownScale;
   
@@ -55,9 +57,9 @@ namespace Vision {
   }
 
   VNVirtualTouchPIMPL::VNVirtualTouchPIMPL(float learningRate) :
-    learningRate_(learningRate),
+    learningRate_(kVNDefaultVirtualTouchLearningRate),
     threshold_(kVNDefaultVirtualTouchThreshold) {
-
+    SetLearningRate(learningRate);
   }
 
   VNVirtualTouchPIMPL::VNVirtualTouchPIMPL(VNInputParameters *params) :
@@ -101,6 +103,18 @@ namespace Vision {
 	  PROF_BLOCK_END(); // Execute
 
     PROF_PRINT_REPORT_AFTER_COUNT(30);
+  }
+
+  float
+  VNVirtualTouchPIMPL::SetLearningRate(float rate) {
+    if (rate >= kVNMinLearningRate && rate <= kVNMaxLearningRate)
+      learningRate_ = rate;
+    return learningRate_;
+  }
+
+  float
+  VNVirtualTouchPIMPL::GetLearningRate(void) const {
+    return learningRate_;
   }
 
 
