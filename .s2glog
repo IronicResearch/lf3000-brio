@@ -42868,3 +42868,14 @@ By mharris (mharris@leapfrog.com) on 8/20/14 11:42 PM
 24,909 ms. (Cumulative: 28,366,549 ms)
 
 ----------------
+Revision 11,026 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,027 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,028 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Working now. Unit test for InRange3 against OpenCV version. FWGLAS-393
+
+By mharris (mharris@leapfrog.com) on 8/21/14 12:43 AM
+1 changed, 0 added, 0 deleted.
+24,940 ms. (Cumulative: 28,391,833 ms)
+
+----------------
