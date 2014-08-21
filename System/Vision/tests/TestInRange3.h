@@ -22,7 +22,6 @@ class TestInRange3 : public CxxTest::TestSuite,
 	void testInRange3VersusInRangesResultImageShouldBeEqual() {
 		PRINT_TEST_NAME();
 
-		// TODO Debug and fix. Not working right yet.
 		LeapFrog::Brio::CDebugMPI debug(kGroupVision);
 
 		const int ROWS = 10;
@@ -39,37 +38,23 @@ class TestInRange3 : public CxxTest::TestSuite,
 
 		cv::Mat sourceImage(ROWS, COLS, CV_8UC3, &data);
 
-		ShowData(sourceImage, "sourceImage"); // TODO remove after working
-
-		uchar EMPTY_DATA1[dataSize] = {0};  // To clean out memory
-		uchar EMPTY_DATA2[dataSize] = {0};  // To clean out memory
+		//ShowData(sourceImage, "sourceImage"); // Debugging
 
 		cv::Scalar min(3.0, 3.0, 3.0);
 		cv::Scalar max(7.0, 7.0, 7.0);
 
-		//cv::Mat resultInRange(ROWS, COLS, CV_8UC3,0);
-		cv::Mat resultInRange(ROWS, COLS, CV_8UC3, &EMPTY_DATA1);
-		//resultInRange.create( sourceImage.size(), CV_8UC3, EMPTY_DATA);
-		//resultInRange = 0; // clean out junk memory. Is this needed for the later comparison?
-
+		cv::Mat resultInRange;
 		// Comments from cv::inRange header:
 		//! set mask elements for those array elements which are within the element-specific bounding box
 		// (dst = lowerb <= src && src < upperb)
 		cv::inRange(sourceImage, min, max, resultInRange);
-		ShowData(resultInRange, "resultInRange");  // TODO remove after working
+		//ShowData(resultInRange, "resultInRange");  // Debugging
 
-		//cv::Mat resultInRange3(ROWS, COLS, CV_8UC3, 0);
-		cv::Mat resultInRange3(ROWS, COLS, CV_8UC3, &EMPTY_DATA2);
-		//resultInRange3.create( sourceImage.size(), CV_8UC3, EMPTY_DATA);
-		//resultInRange3 = 0;  // clean out junk memory. Is this needed for the later comparison?
-
+		cv::Mat resultInRange3;
 		inRange3(sourceImage, min, max, resultInRange3);
-		ShowData(resultInRange3, "resultInRange3");  // TODO remove after working
+		//ShowData(resultInRange3, "resultInRange3");  // Debugging
 
-		//assertMatImagesAreEqual(resultInRange, resultInRange3, dataSize);
-
-		TS_WARN("This test is not complete yet. It needs debugging and scrutiny.");
-		TS_ASSERT_SAME_DATA(resultInRange.data, resultInRange3.data, dataSize);
+		TS_ASSERT_SAME_DATA(resultInRange.data, resultInRange3.data, numPoints);
 	}
 
 
@@ -81,55 +66,25 @@ private:
 		LeapFrog::Brio::CDebugMPI debug(kGroupVision);
 
 		debug.DebugOut(kDbgLvlCritical, "ShowData start: %s\n", message);
-		debug.DebugOut(kDbgLvlCritical, "index\tdimage\n");
+		debug.DebugOut(kDbgLvlCritical, "index\timage\n");
 
 		uchar numPoints = image.total();
 		uchar* data = image.data;
 
 		for (int i = 0; i < numPoints; i++){
-			debug.DebugOut(kDbgLvlCritical, "%d\t%d, %d, %d\n", i, data[3*i + 0], data[3*i + 1], data[3*i + 2]);
+			switch(image.type()){
+				case CV_8U:
+					debug.DebugOut(kDbgLvlCritical, "%d\t%d\n", i, data[i]);
+					break;
+				case CV_8UC3:
+					debug.DebugOut(kDbgLvlCritical, "%d\t%d, %d, %d\n", i, data[3*i + 0], data[3*i + 1], data[3*i + 2]);
+					break;
+
+				default:
+					debug.DebugOut(kDbgLvlCritical, "ERROR in ShowData. Default case hit. Type not handled: %d\n", image.type());
+			}
 		}
 
 		debug.DebugOut(kDbgLvlCritical, "ShowData end\n");
 	}
-
-
-// For debugging.  Needs scrutiny and likely fixes.
-//	void assertMatImagesAreEqual(cv::Mat& image1, cv::Mat& image2, int size){
-//		TS_ASSERT_EQUALS( image1.size(), image2.size());
-//
-//		//TS_ASSERT_SAME_DATA(image1.data, image2.data, size); //image2.size());
-//		LeapFrog::Brio::CDebugMPI debug(kGroupVision);
-//
-//		bool areEqual = false;
-//
-//		size_t SIZE = image1.total();
-//
-//		for (int i = 0; i < SIZE; i++){
-//			if ( *(image1.data + i) != *(image2.data + i)) {
-//				areEqual = false;
-//
-//				char image1Point = (char)(*(image1.data + i));
-//				char image2Point = (char)(*(image2.data + i));
-//				debug.DebugOut(kDbgLvlCritical, "index = %d; image1: %d; image2: %d\n",
-//														i, image1Point, image2Point);
-//				break;
-//			} else {
-//				areEqual = true;
-//			}
-//		}
-//
-//		if (!areEqual) {
-//			// Show the contents
-//			debug.DebugOut(kDbgLvlCritical, "index\tdimage1\timage2\n");
-//
-//			for (int i = 0; i < SIZE; i++){
-//				char image1Point = (char)(*(image1.data + i));
-//				char image2Point = (char)(*(image2.data + i));
-//				debug.DebugOut(kDbgLvlCritical, "%d\t%d\t%d\n", i, image1Point, image2Point);
-//			}
-//		}
-//
-//		TS_ASSERT(areEqual);
-//	}
 };
