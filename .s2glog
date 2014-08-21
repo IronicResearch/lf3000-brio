@@ -42889,3 +42889,12 @@ By Bryant Hetherington (bhetherington@leapfrog.com) on 8/21/14 11:33 AM
 24,850 ms. (Cumulative: 28,416,949 ms)
 
 ----------------
+Revision 11,030 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added ControllerMPI test for multiple MPI instances.  
+
+By Dave Milici (dmilici@leapfrog.com) on 8/21/14 2:02 PM
+1 changed, 0 added, 0 deleted.
+25,057 ms. (Cumulative: 28,442,272 ms)
+
+----------------

@@ -177,7 +177,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testLEDs( )
+	void XXXXtestLEDs( )
 	{
 		PRINT_TEST_NAME();
 
@@ -234,6 +234,30 @@ public:
 		}
 
 		pControllerMPI_->UnregisterEventListener(&listener_);
+	}
+
+	//------------------------------------------------------------------------
+	void testMultiInstance( )
+	{
+		PRINT_TEST_NAME();
+
+		for (int i = 0; i < 5; i++) {
+			sleep(1); // async events?
+			if (pControllerMPI_->GetNumberOfConnectedControllers() > 1)
+				break;
+		}
+
+		U8 numConnected = pControllerMPI_->GetNumberOfConnectedControllers();
+		printf("%s: numConnected = %d\n", __FUNCTION__, (int)numConnected);
+
+		HWControllerMPI* pInstance2 = new HWControllerMPI();
+		TS_ASSERT( pInstance2 );
+
+		TS_ASSERT_EQUALS( pInstance2->GetNumberOfConnectedControllers(), numConnected );
+		delete pInstance2;
+
+		TS_ASSERT_EQUALS( pControllerMPI_->GetNumberOfConnectedControllers(), numConnected );
+		printf("%s: numConnected = %d\n", __FUNCTION__, (int)numConnected);
 	}
 
 };
