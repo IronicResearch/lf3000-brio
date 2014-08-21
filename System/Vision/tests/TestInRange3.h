@@ -23,62 +23,46 @@ class TestInRange3 : public CxxTest::TestSuite,
 		PRINT_TEST_NAME();
 
 		// TODO Debug and fix. Not working right yet.
+		LeapFrog::Brio::CDebugMPI debug(kGroupVision);
 
 		const int ROWS = 10;
 		const int COLS = 1;
-		//const int PLANES = 10;
-		//const int dataSize = ROWS*COLS*PLANES;
-		const int dataSize = ROWS*COLS;
-		//cv::Scalar_<uchar> data[dataSize];
-		uchar data[dataSize][3];  // three values per point
+		const int numPoints = ROWS*COLS;
+		const int VALUES_PER_POINT = 3;
+		const int dataSize = VALUES_PER_POINT* numPoints;
+		uchar data[dataSize];  // three values per point
 
-		// The goal is to generate 10 points with 3 values of the index
-
-		for (int i=0; i < dataSize; i++){
-			data[i][0] = (uchar)(i);
-			data[i][1] = (uchar)(i);
-			data[i][2] = (uchar)(i);
+		// Generate fake data. 10 points with 3 values of the index
+		for (int i=0; i < numPoints; i++){
+			data[3*i+0] = data[3*i+1] = data[3*i+2] = (uchar)(i);
 		}
 
 		cv::Mat sourceImage(ROWS, COLS, CV_8UC3, &data);
 
-		//const int dataSize = 15;
-
-		//cv::Mat sourceImage = (cv::Mat_<uchar>(2,3) << 1, 1, 1, 9, 9, 9, 12, 12, 12, 18, 18, 18, 25, 25, 25, 40, 40, 40);
-
-		//Mat(int ndims, const int* sizes, int type, void* data, const size_t* steps=0);
-		//Mat::Mat(Size size, int type, void* data, size_t step=AUTO_STEP)
-
-		// Wanted to use this constructor but not compiling. Seems confused about another version.
-		//cv::Mat sourceImage(dataSize, CV_8U,  &data);
-
-//		int sizes[3];
-//		sizes[0] = ROWS;
-//		sizes[1] = COLS;
-//		sizes[2] = PLANES;
-//		cv::Mat sourceImage(3, sizes, CV_8U, &data);
-
-		//Mat::Mat(Size size, int type, void* data, size_t step=AUTO_STEP)
-		//cv::Mat sourceImage(dataSize, CV_8UC3, &data);
-
 		ShowData(sourceImage, "sourceImage"); // TODO remove after working
 
+		uchar EMPTY_DATA1[dataSize] = {0};  // To clean out memory
+		uchar EMPTY_DATA2[dataSize] = {0};  // To clean out memory
 
 		cv::Scalar min(3.0, 3.0, 3.0);
 		cv::Scalar max(7.0, 7.0, 7.0);
 
+		//cv::Mat resultInRange(ROWS, COLS, CV_8UC3,0);
+		cv::Mat resultInRange(ROWS, COLS, CV_8UC3, &EMPTY_DATA1);
+		//resultInRange.create( sourceImage.size(), CV_8UC3, EMPTY_DATA);
+		//resultInRange = 0; // clean out junk memory. Is this needed for the later comparison?
 
-		cv::Mat resultInRange;
-
-		//resultPerOpenCV.create( sourceImage.size(), CV_8U );
 		// Comments from cv::inRange header:
 		//! set mask elements for those array elements which are within the element-specific bounding box
 		// (dst = lowerb <= src && src < upperb)
 		cv::inRange(sourceImage, min, max, resultInRange);
 		ShowData(resultInRange, "resultInRange");  // TODO remove after working
 
-		cv::Mat resultInRange3;
-		//resultPerInRange3Function.create( sourceImage.size(), CV_8U );
+		//cv::Mat resultInRange3(ROWS, COLS, CV_8UC3, 0);
+		cv::Mat resultInRange3(ROWS, COLS, CV_8UC3, &EMPTY_DATA2);
+		//resultInRange3.create( sourceImage.size(), CV_8UC3, EMPTY_DATA);
+		//resultInRange3 = 0;  // clean out junk memory. Is this needed for the later comparison?
+
 		inRange3(sourceImage, min, max, resultInRange3);
 		ShowData(resultInRange3, "resultInRange3");  // TODO remove after working
 
@@ -99,17 +83,18 @@ private:
 		debug.DebugOut(kDbgLvlCritical, "ShowData start: %s\n", message);
 		debug.DebugOut(kDbgLvlCritical, "index\tdimage\n");
 
-		uchar SIZE = image.total();
+		uchar numPoints = image.total();
+		uchar* data = image.data;
 
-		for (uchar i = 0; i < SIZE; i++){
-			uchar* imagePoint = (image.data + i);
-			//cv::Scalar_<uchar> imagePoint = *(image.data + i);
-			debug.DebugOut(kDbgLvlCritical, "%d\t%d, %d, %d\n", i, imagePoint[0], imagePoint[1], imagePoint[2]);
+		for (int i = 0; i < numPoints; i++){
+			debug.DebugOut(kDbgLvlCritical, "%d\t%d, %d, %d\n", i, data[3*i + 0], data[3*i + 1], data[3*i + 2]);
 		}
 
 		debug.DebugOut(kDbgLvlCritical, "ShowData end\n");
 	}
 
+
+// For debugging.  Needs scrutiny and likely fixes.
 //	void assertMatImagesAreEqual(cv::Mat& image1, cv::Mat& image2, int size){
 //		TS_ASSERT_EQUALS( image1.size(), image2.size());
 //

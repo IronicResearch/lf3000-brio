@@ -42859,3 +42859,12 @@ By Bryant Hetherington (bhetherington@leapfrog.com) on 8/20/14 7:32 PM
 25,065 ms. (Cumulative: 28,341,374 ms)
 
 ----------------
+Revision 11,025 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Improve Unit test for InRange3 against OpenCV version. FWGLAS-393
+
+By mharris (mharris@leapfrog.com) on 8/20/14 11:42 PM
+1 changed, 0 added, 0 deleted.
+24,909 ms. (Cumulative: 28,366,549 ms)
+
+----------------
