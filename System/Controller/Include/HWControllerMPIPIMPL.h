@@ -94,15 +94,10 @@ namespace Hardware {
 #endif
 
     int numControllers_;
-    int numConnectedControllers_;
     std::vector<HWController*> listControllers_;
     std::map<BtAdrWrap, HWController*> mapControllers_;
     bool isScanning_;
     bool isPairing_;
-    bool isDeviceCallback_;
-    bool isScanCallback_;
-    bool isMaxControllerDisconnect_;
-
 
     LeapFrog::Brio::CEventMPI eventMPI_;
     LeapFrog::Brio::CDebugMPI debugMPI_;

@@ -42847,3 +42847,15 @@ By mharris (mharris@leapfrog.com) on 8/20/14 6:07 PM
 24,987 ms. (Cumulative: 28,316,043 ms)
 
 ----------------
+Revision 11,024 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+A problem came up in QA testing, we believe that this checkin pair for FWGLAS-1048 leads to some odd state problems, for the sake of having a stable branch, this checkin will be backed out for now and put back in after the branch has been successfully created.
+Revert "ControllerMPI - (FWGLAS-1048) : Implemented a new counter 'numConnectedControllers' to track the number of actively connected controllers and there is a limit of max 2 controllers connected at any point. "
+This reverts svn commit 11022
+
+
+By Bryant Hetherington (bhetherington@leapfrog.com) on 8/20/14 7:32 PM
+2 changed, 0 added, 0 deleted.
+25,065 ms. (Cumulative: 28,341,374 ms)
+
+----------------
