@@ -52,14 +52,10 @@ namespace Hardware {
     IEventListener(kHWControllerListenerTypes, ArrayCount(kHWControllerListenerTypes)),
     debugMPI_(kGroupController) {
 	    numControllers_ = 0;
-	    numConnectedControllers_ = 0;
 	    listControllers_.clear();
 	    mapControllers_.clear();
 	    isScanning_ = false;
 	    isPairing_ = false;
-	    isDeviceCallback_ = false;
-	    isScanCallback_ = false;
-	    isMaxControllerDisconnect_ = false;
 
 	    // Dynamically load Bluetooth client lib
 		dll_ = dlopen(BTIO_LIB_NAME, RTLD_LAZY);
@@ -129,20 +125,16 @@ namespace Hardware {
 
   void
   HWControllerMPIPIMPL::ScanCallback(void* context, void* data, int length) {
-      HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
-      pModule->isDeviceCallback_ = false;
-      pModule->isScanCallback_ = true;
+	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       pModule->AddController((char*)data);
-      pModule->debugMPI_.DebugOut(kDbgLvlImportant, " \n **************************************** >>>  ScanCallback: numControllers=%d\n", pModule->numControllers_);
+      pModule->debugMPI_.DebugOut(kDbgLvlImportant, "ScanCallback: numControllers=%d\n", pModule->numControllers_);
   }
 
   void
   HWControllerMPIPIMPL::DeviceCallback(void* context, void* data, int length) {
-      HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
-      pModule->isDeviceCallback_ = true;
-      pModule->isScanCallback_ = false;
+	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       pModule->AddController((char*)data);
-      pModule->debugMPI_.DebugOut(kDbgLvlImportant, " \n *************************************** >>> DeviceCallback: numConnectedControllers=%d\n", pModule->numConnectedControllers_);
+      pModule->debugMPI_.DebugOut(kDbgLvlImportant, "DeviceCallback: numControllers=%d\n", pModule->numControllers_);
   }
 
   void
@@ -187,35 +179,15 @@ namespace Hardware {
 	      HWController* controller = FindController(link);
 	      HWControllerLEDColor color = controller->GetLEDColor();
 	      int r = SendCommand(controller, kBTIOCmdSetLEDState, &color, sizeof(color));
-	      if (r >= 0) {
-			if (numConnectedControllers_ >= GetMaximumNumberOfControllers()) {
-		                debugMPI_.DebugOut(kDbgLvlImportant, "AddController - Connected controllers maxed out at %d\n", numConnectedControllers_);
-				debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
-				// Should we send a disconnect to this controller ? 
-				isMaxControllerDisconnect_ = true;
-				pBTIO_DisconnectDevice_(link, 0);
-               			return;
-       			 }
-
-	 	      	controller->pimpl_->SetConnected(true);
-			controller->pimpl_->SetID(numConnectedControllers_);
-			numConnectedControllers_++;
-		      	HWControllerEventMessage qmsg(kHWControllerConnected, controller);
-			eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
-	      	} else {
-			if (isMaxControllerDisconnect_) {
-				debugMPI_.DebugOut(kDbgLvlImportant, "Controller Disconnected! \n");
-				isMaxControllerDisconnect_ = false;
-				return;
-			}
-			controller->pimpl_->SetConnected(false);
-			numConnectedControllers_--;
-			if (numConnectedControllers_ < 0)
-				numConnectedControllers_ = 0;
-                        HWControllerEventMessage qmsg(kHWControllerDisconnected, controller);
-			eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
-	      	}
+	      controller->pimpl_->SetConnected(r >= 0);
+	      HWControllerEventMessage qmsg((r < 0) ? kHWControllerDisconnected : kHWControllerConnected, controller);
+	      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
 	      return;
+	  }
+
+	  if (numControllers_ >= GetMaximumNumberOfControllers()) {
+		  debugMPI_.DebugOut(kDbgLvlImportant, "AddController maxed out at %d\n", numControllers_);
+		  return;
 	  }
 
 	if (isPairing_) {
@@ -229,10 +201,16 @@ namespace Hardware {
 
       HWController* controller = new HWController();
       //BADBAD: should not be accessing pimpl_ directly!
+      controller->pimpl_->SetID(numControllers_);
       listControllers_.push_back(controller);
       mapControllers_.insert(std::pair<BtAdrWrap, HWController*>(key, controller));
       numControllers_++;
       controller->pimpl_->SetBluetoothAddress( FindControllerLink(controller) );
+      controller->pimpl_->SetConnected(true);
+
+      HWControllerEventMessage qmsg(kHWControllerConnected, controller);
+      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
+
 
       unsigned char hwVersion;
       unsigned short fwVersion;
@@ -240,25 +218,6 @@ namespace Hardware {
       unsigned short* pFwVersion = &fwVersion;
       int resultVal = pBTIO_GetControllerVersion_(link, pHwVersion, pFwVersion);
       if(!resultVal) controller->pimpl_ ->SetVersionNumbers(hwVersion, fwVersion);
-
-      if (isDeviceCallback_) {
-	      if (numConnectedControllers_ >= GetMaximumNumberOfControllers()) {
-                    debugMPI_.DebugOut(kDbgLvlImportant, "AddController - Connected controllers maxed out at %d\n", numConnectedControllers_);
-  		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
-		    isMaxControllerDisconnect_ = true;
-                    // Should we send a disconnect to this controller ? 
-                    pBTIO_DisconnectDevice_(link, 0);
-                    return;
-              }
- 
-              controller->pimpl_->SetConnected(true);
-              controller->pimpl_->SetID(numConnectedControllers_);
-              numConnectedControllers_++;
-
-              HWControllerEventMessage qmsg(kHWControllerConnected, controller);
-              eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
-      }
-
 
 #ifdef ENABLE_PROFILING
       TimeStampOn(controller->GetID());
@@ -518,7 +477,9 @@ namespace Hardware {
   LeapFrog::Brio::U8
   HWControllerMPIPIMPL::GetNumberOfConnectedControllers(void) {
     //TODO: determine number of connected controllers
-    return numConnectedControllers_; 
+	if (numControllers_ == 0)
+		ScanForDevices();
+    return numControllers_; //1;
   }
 
   void
