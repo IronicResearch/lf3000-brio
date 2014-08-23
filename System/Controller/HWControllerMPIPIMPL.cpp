@@ -28,10 +28,7 @@ kHWControllerListenerTypes[] = {LeapFrog::Brio::kButtonStateChanged,
 static const LeapFrog::Brio::tEventPriority kHWControllerDefaultEventPriority = 128; // async
 static const LeapFrog::Brio::tEventPriority kHWControllerHighPriorityEvent = 0;  // immediate
 
-static LeapFrog::Brio::tMutex lock = PTHREAD_MUTEX_INITIALIZER;
-
-static LeapFrog::Brio::COneShotTimer* timer = NULL;
-static const LeapFrog::Brio::tTimerProperties props = {TIMER_RELATIVE_SET,
+static const LeapFrog::Brio::tTimerProperties kProps = {TIMER_RELATIVE_SET,
 										 	{{0, 0}, {30, 0}},
 	                                    };
 namespace LF {
@@ -60,6 +57,8 @@ namespace Hardware {
 	    isDeviceCallback_ = false;
 	    isScanCallback_ = false;
 	    isMaxControllerDisconnect_ = false;
+	    timer = NULL;
+	    props = kProps;
 
 	    // Dynamically load Bluetooth client lib
 		dll_ = dlopen(BTIO_LIB_NAME, RTLD_LAZY);
