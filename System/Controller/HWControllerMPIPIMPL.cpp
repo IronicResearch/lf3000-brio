@@ -197,7 +197,7 @@ namespace Hardware {
        			 }
 
 	 	      	controller->pimpl_->SetConnected(true);
-			controller->pimpl_->SetID(numConnectedControllers_);
+			// FIXME // controller->pimpl_->SetID(numConnectedControllers_);
 			numConnectedControllers_++;
 		      	HWControllerEventMessage qmsg(kHWControllerConnected, controller);
 			eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
@@ -228,6 +228,7 @@ namespace Hardware {
 
       HWController* controller = new HWController();
       //BADBAD: should not be accessing pimpl_ directly!
+      controller->pimpl_->SetID(numControllers_);
       listControllers_.push_back(controller);
       mapControllers_.insert(std::pair<BtAdrWrap, HWController*>(key, controller));
       numControllers_++;
@@ -240,7 +241,7 @@ namespace Hardware {
       int resultVal = pBTIO_GetControllerVersion_(link, pHwVersion, pFwVersion);
       if(!resultVal) controller->pimpl_ ->SetVersionNumbers(hwVersion, fwVersion);
 
-      if (isDeviceCallback_) {
+      { // FIXME // if (isDeviceCallback_) {
 	      if (numConnectedControllers_ >= GetMaximumNumberOfControllers()) {
                     debugMPI_.DebugOut(kDbgLvlImportant, "AddController - Connected controllers maxed out at %d\n", numConnectedControllers_);
   		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
@@ -251,7 +252,7 @@ namespace Hardware {
               }
  
               controller->pimpl_->SetConnected(true);
-              controller->pimpl_->SetID(numConnectedControllers_);
+              // FIXME // controller->pimpl_->SetID(numConnectedControllers_);
               numConnectedControllers_++;
 
               HWControllerEventMessage qmsg(kHWControllerConnected, controller);
