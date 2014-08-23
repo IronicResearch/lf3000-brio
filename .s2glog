@@ -42898,3 +42898,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/21/14 2:02 PM
 25,057 ms. (Cumulative: 28,442,272 ms)
 
 ----------------
+Revision 11,031 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Minor cleanup to move timer globals into member vars. 
+
+By Dave Milici (dmilici@leapfrog.com) on 8/23/14 2:29 PM
+2 changed, 0 added, 0 deleted.
+25,050 ms. (Cumulative: 28,467,572 ms)
+
+----------------

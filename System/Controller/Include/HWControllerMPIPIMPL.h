@@ -7,6 +7,7 @@
 #include <DebugMPI.h>
 #include <KernelMPI.h>
 #include <Bluetooth/BTIO.h>
+#include <Timer.h>
 #include <string.h>
 #include <vector>
 #include <map>
@@ -107,6 +108,9 @@ namespace Hardware {
     LeapFrog::Brio::CEventMPI eventMPI_;
     LeapFrog::Brio::CDebugMPI debugMPI_;
     LeapFrog::Brio::CKernelMPI kernelMPI_;
+
+    LeapFrog::Brio::COneShotTimer* timer;
+    LeapFrog::Brio::tTimerProperties props;
 
     void* dll_;
     int handle_;
