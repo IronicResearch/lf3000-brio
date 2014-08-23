@@ -241,7 +241,8 @@ namespace Hardware {
       int resultVal = pBTIO_GetControllerVersion_(link, pHwVersion, pFwVersion);
       if(!resultVal) controller->pimpl_ ->SetVersionNumbers(hwVersion, fwVersion);
 
-      { // FIXME // if (isDeviceCallback_) {
+      // FIXME //
+      if (isDeviceCallback_) {
 	      if (numConnectedControllers_ >= GetMaximumNumberOfControllers()) {
                     debugMPI_.DebugOut(kDbgLvlImportant, "AddController - Connected controllers maxed out at %d\n", numConnectedControllers_);
   		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
