@@ -187,6 +187,7 @@ namespace Hardware {
 	      HWControllerLEDColor color = controller->GetLEDColor();
 	      int r = SendCommand(controller, kBTIOCmdSetLEDState, &color, sizeof(color));
 	      if (r >= 0) {
+#if 0
 			if (numConnectedControllers_ >= GetMaximumNumberOfControllers()) {
 		                debugMPI_.DebugOut(kDbgLvlImportant, "AddController - Connected controllers maxed out at %d\n", numConnectedControllers_);
 				debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
@@ -195,18 +196,20 @@ namespace Hardware {
 				pBTIO_DisconnectDevice_(link, 0);
                			return;
        			 }
-
+#endif
 	 	      	controller->pimpl_->SetConnected(true);
 			// FIXME // controller->pimpl_->SetID(numConnectedControllers_);
 			numConnectedControllers_++;
 		      	HWControllerEventMessage qmsg(kHWControllerConnected, controller);
 			eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
 	      	} else {
+#if 0
 			if (isMaxControllerDisconnect_) {
 				debugMPI_.DebugOut(kDbgLvlImportant, "Controller Disconnected! \n");
 				isMaxControllerDisconnect_ = false;
 				return;
 			}
+#endif
 			controller->pimpl_->SetConnected(false);
 			numConnectedControllers_--;
 			if (numConnectedControllers_ < 0)
@@ -243,6 +246,7 @@ namespace Hardware {
 
       // FIXME //
       if (isDeviceCallback_) {
+#if 0
 	      if (numConnectedControllers_ >= GetMaximumNumberOfControllers()) {
                     debugMPI_.DebugOut(kDbgLvlImportant, "AddController - Connected controllers maxed out at %d\n", numConnectedControllers_);
   		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
@@ -251,7 +255,7 @@ namespace Hardware {
                     pBTIO_DisconnectDevice_(link, 0);
                     return;
               }
- 
+#endif
               controller->pimpl_->SetConnected(true);
               // FIXME // controller->pimpl_->SetID(numConnectedControllers_);
               numConnectedControllers_++;

@@ -42927,3 +42927,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/23/14 3:35 PM
 24,993 ms. (Cumulative: 28,518,036 ms)
 
 ----------------
+Revision 11,034 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1221 followup to disable limiting number of connected controllers. (FIXME -- too complicated)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/23/14 5:31 PM
+1 changed, 0 added, 0 deleted.
+25,062 ms. (Cumulative: 28,543,379 ms)
+
+----------------
