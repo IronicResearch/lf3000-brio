@@ -40,6 +40,8 @@ class TestHotplug : public CxxTest::TestSuite, TestSuiteBase
 						const CUSBDeviceMessage& usb_msg = dynamic_cast<const CUSBDeviceMessage&>(msg);
 						if(usb_msg.GetUSBDeviceState().USBDeviceState & kUSBDeviceHotPlug)
 							hotplug_occurred = true;
+						if(usb_msg.GetUSBDeviceState().USBDeviceState & kUSBDeviceConnected)
+							hotplug_occurred = true;
 					}
 					//Check for Camera removal event
 					if(msg.GetEventType() == kCameraRemovedEvent)

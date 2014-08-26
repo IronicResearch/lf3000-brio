@@ -42994,3 +42994,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/26/14 12:05 PM
 24,941 ms. (Cumulative: 28,694,523 ms)
 
 ----------------
+Revision 11,041 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added USB connect event to camera hot-plug unit test.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/26/14 12:46 PM
+1 changed, 0 added, 0 deleted.
+24,988 ms. (Cumulative: 28,719,621 ms)
+
+----------------
