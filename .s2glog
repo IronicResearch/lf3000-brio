@@ -42937,3 +42937,14 @@ By Dave Milici (dmilici@leapfrog.com) on 8/23/14 5:31 PM
 25,062 ms. (Cumulative: 28,543,379 ms)
 
 ----------------
+Revision 11,035 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-12144.  Disabling WirelessMPI's ServiceBrowser when running on Glasgow.  This prevents the crash Avahi isn't running.
+
+Technical Details - I tried every way I could think of to query DBus for whether or not the service is actually running.  It does not appear to be possible to know from DBus if the Avahi service is running.  Looks like you have to figure out yourself before calling invoke_method if the service is running.  So disabling ServiceBrowser for Glasgow (rather than do something more fancy).
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/25/14 7:58 PM
+2 changed, 0 added, 0 deleted.
+25,163 ms. (Cumulative: 28,568,824 ms)
+
+----------------
