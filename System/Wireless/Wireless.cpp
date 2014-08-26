@@ -21,6 +21,7 @@
 #include <EventListener.h>
 #include <EventMessage.h>
 #include <EventMPI.h>
+#include <Utility.h>
 
 #include <WirelessPriv.h>
 #include <connman-manager.h>
@@ -72,7 +73,7 @@ const CURI* CWirelessModule::GetModuleOrigin() const
 //============================================================================
 //----------------------------------------------------------------------------
 CWirelessModule::CWirelessModule() :
-	debug_(kGroupWireless)
+	debug_(kGroupWireless), mBrowser_(0)
 {
 	DBus::_init_threading();
 	mDispatcher_ = new DBus::BusDispatcher();
@@ -96,10 +97,14 @@ CWirelessModule::CWirelessModule() :
 	pWPANetworkCache_ = NULL;
 	
 	mServer_ = new org::freedesktop::Avahi::Server(*mConnection_);
-	DBus::Path service_browser_path = mServer_->ServiceBrowserNew( -1, 0, "_workstation._tcp", "local", 0 );
-	mBrowser_ = new org::freedesktop::Avahi::ServiceBrowser(*mConnection_, service_browser_path, mServer_);
-	mBrowser_->EnableSignals();
-	mBrowser_->Start();
+	if ("GLASGOW" != GetPlatformName())
+	{
+		DBus::Path service_browser_path = "";
+		service_browser_path = mServer_->ServiceBrowserNew( -1, 0, "_workstation._tcp", "local", 0);
+		mBrowser_ = new org::freedesktop::Avahi::ServiceBrowser(*mConnection_, service_browser_path, mServer_);
+		mBrowser_->EnableSignals();
+		mBrowser_->Start();
+	}
 	
 	wpa_supplicant1::Interface* tmp_interface = GetWPAInterface();
 	if(tmp_interface)
@@ -115,7 +120,8 @@ CWirelessModule::~CWirelessModule()
         
 	//Restore ConnMan to it's former state
 	SetConnManWirelessPower(bSavedConnManState_);
-	mBrowser_->Free();
+	if(mBrowser_)
+		mBrowser_->Free();
 	mDispatcher_->leave();
 	pthread_join(mDispatchTask_, NULL);
 	
@@ -365,6 +371,8 @@ tErrType CWirelessModule::LeaveAdhocNetwork()
 
 tErrType CWirelessModule::GetPossiblePlayers(PlayerList& players)
 {
+	if(!mBrowser_)
+		return kNoWirelessErr;
 	std::map<std::string, struct in_addr> services = mBrowser_->GetResolvedServices();
 	std::map<std::string, struct in_addr>::iterator it;
 	
