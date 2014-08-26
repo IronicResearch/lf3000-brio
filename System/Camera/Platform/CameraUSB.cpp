@@ -155,7 +155,7 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 		tUSBDeviceData usbData = usbmsg.GetUSBDeviceState();
 
 		/* a device was inserted or removed */
-		if(usbData.USBDeviceState & kUSBDeviceHotPlug)
+		if(usbData.USBDeviceState & (kUSBDeviceHotPlug | kUSBDeviceConnected))
 		{
 			/* enumerate sysfs to see if camera entry exists */
 			pMod->sysfs.clear();

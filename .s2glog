@@ -42948,3 +42948,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/25/14 7:58 PM
 25,163 ms. (Cumulative: 28,568,824 ms)
 
 ----------------
+Revision 11,036 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add USB connected state to USB camera hot-plug event listener.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/26/14 9:05 AM
+1 changed, 0 added, 0 deleted.
+25,062 ms. (Cumulative: 28,594,011 ms)
+
+----------------
