@@ -95,8 +95,6 @@ namespace Vision {
     frameProcessingRate_(kVNDefaultFrameProcessingRate),
     algorithm_(NULL),
     videoCapture_(kInvalidVidCapHndl),
-    frameTime_(time(0)),
-    frameCount_(0),
     frameProcessingWidth_(kVNDefaultProcessingFrameWidth),
     frameProcessingHeight_(kVNDefaultProcessingFrameHeight),
     currentWand_(NULL),
@@ -280,8 +278,6 @@ namespace Vision {
     surface_.buffer = new LeapFrog::Brio::U8[kVNDefaultBufferSize];
 
     if (!visionAlgorithmRunning_) {
-      frameCount_ = 0;
-      frameTime_ = time(0);
 
       // make sure the surface size is at least as big as the processing size
       // TODO: This may/should go away once we resolve issues around different
@@ -464,10 +460,6 @@ namespace Vision {
 	    
 	    PROF_BLOCK_END();
 	    
-	    ++pthis->frameCount_;
-	    if (pthis->frameCount_ % 30 == 0) {
-	      std::cout << "FPS = " << pthis->frameCount_ / ((float)(time(0) - pthis->frameTime_)) << std::endl;
-	    }
 	  } else {
 	    pthis->kernelMPI_.TaskSleep(1); // yield
 	  }
@@ -547,10 +539,6 @@ namespace Vision {
 	      TriggerHotSpots();
 	      PROF_BLOCK_END();
 
-	      ++frameCount_;
-	      if (frameCount_ % 30 == 0) {
-		std::cout << "FPS = " << frameCount_ / ((float)(time(0) - frameTime_)) << std::endl;
-	      }
 #endif
 	      //EndFrameProcessing();
 	    }

@@ -98,8 +98,6 @@ namespace Vision {
     //mutexes
     LeapFrog::Brio::tMutex hsUpdateLock_;
 
-    time_t frameTime_;
-    unsigned int frameCount_;
     LeapFrog::Brio::U16 frameProcessingWidth_;
     LeapFrog::Brio::U16 frameProcessingHeight_;
     VNWand *currentWand_;

@@ -43003,3 +43003,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/26/14 12:46 PM
 24,988 ms. (Cumulative: 28,719,621 ms)
 
 ----------------
+Revision 11,042 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove output of Vision's FPS debug messages. FWGLAS-1267
+
+By mharris (mharris@leapfrog.com) on 8/26/14 4:08 PM
+2 changed, 0 added, 0 deleted.
+25,948 ms. (Cumulative: 28,745,662 ms)
+
+----------------
