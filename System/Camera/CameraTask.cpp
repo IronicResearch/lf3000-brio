@@ -211,7 +211,8 @@ void* CameraTaskMain(void* arg)
 			break;
 		case kCaptureFormatRAWYUYV:
 			fourcc = V4L2_PIX_FMT_YUYV;
-			break;
+			// FIXME: LibAV MJPEG codec does not support YUYV
+			// break;
 		case kCaptureFormatYUV420:
 			fourcc = V4L2_PIX_FMT_YUV420;
 			break;
@@ -454,7 +455,11 @@ void* CameraTaskMain(void* arg)
 
 			if(bFile && bRet)
 			{
-				int r = AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe);
+				int r;
+				if (pCtx->mode.pixelformat == kCaptureFormatRAWYUYV && pSurf != NULL)
+					r = AVI_write_frame(avi, (char*)pSurf->buffer, pSurf->pitch * pSurf->height, keyframe);
+				else
+					r = AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe);
 
 				dbg.DebugOut( kDbgLvlVerbose, "v4l frame=%d, key frame=%d, mic frame=%d\n", framecount, keyframe, cam->micCtx_.counter);
 

@@ -42957,3 +42957,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/26/14 9:05 AM
 25,062 ms. (Cumulative: 28,594,011 ms)
 
 ----------------
+Revision 11,037 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-783, FWGLAS-987 1:2: Use YUV planar format for saving AVI when viewfinder surface available.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/26/14 9:10 AM
+1 changed, 0 added, 0 deleted.
+25,072 ms. (Cumulative: 28,619,192 ms)
+
+----------------
