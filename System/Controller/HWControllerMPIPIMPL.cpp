@@ -126,22 +126,24 @@ namespace Hardware {
 	  }
   }
 
+// ScanCallback - gets triggered during pairing or while scanning for paired controllers
   void
   HWControllerMPIPIMPL::ScanCallback(void* context, void* data, int length) {
       HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       pModule->isDeviceCallback_ = false;
       pModule->isScanCallback_ = true;
       pModule->AddController((char*)data);
-      pModule->debugMPI_.DebugOut(kDbgLvlImportant, " \n **************************************** >>>  ScanCallback: numControllers=%d\n", pModule->numControllers_);
+      pModule->debugMPI_.DebugOut(kDbgLvlImportant, " \n *********************************** >>>  ScanCallback: numControllers=%d\n", pModule->numControllers_);
   }
 
+// DeviceCallback - gets triggered only for connects/disconnects
   void
   HWControllerMPIPIMPL::DeviceCallback(void* context, void* data, int length) {
       HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       pModule->isDeviceCallback_ = true;
       pModule->isScanCallback_ = false;
       pModule->AddController((char*)data);
-      pModule->debugMPI_.DebugOut(kDbgLvlImportant, " \n *************************************** >>> DeviceCallback: numConnectedControllers=%d\n", pModule->numConnectedControllers_);
+      pModule->debugMPI_.DebugOut(kDbgLvlImportant, " \n ******************************* >>> DeviceCallback: numControllers=%d   numConnectedControllers=%d\n", pModule->numControllers_, pModule->numConnectedControllers_);
   }
 
   void
@@ -186,32 +188,33 @@ namespace Hardware {
 	      HWController* controller = FindController(link);
 	      HWControllerLEDColor color = controller->GetLEDColor();
 	      int r = SendCommand(controller, kBTIOCmdSetLEDState, &color, sizeof(color));
+		
 	      if (r >= 0) {
-#if 0
-			if (numConnectedControllers_ >= GetMaximumNumberOfControllers()) {
+			if ((!controller->pimpl_->IsConnected()) && ((numConnectedControllers_) >= GetMaximumNumberOfControllers())) {
 		                debugMPI_.DebugOut(kDbgLvlImportant, "AddController - Connected controllers maxed out at %d\n", numConnectedControllers_);
 				debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
-				// Should we send a disconnect to this controller ? 
+				// Send a disconnect to this controller  
 				isMaxControllerDisconnect_ = true;
 				pBTIO_DisconnectDevice_(link, 0);
                			return;
        			 }
-#endif
-	 	      	controller->pimpl_->SetConnected(true);
-			// FIXME // controller->pimpl_->SetID(numConnectedControllers_);
-			numConnectedControllers_++;
-		      	HWControllerEventMessage qmsg(kHWControllerConnected, controller);
+			if (!controller->pimpl_->IsConnected())
+				numConnectedControllers_++;
+			controller->pimpl_->SetConnected(true);
+	      		HWControllerEventMessage qmsg(kHWControllerConnected, controller);
 			eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
 	      	} else {
-#if 0
+			// return if the disconnect is due to numConnectedControllers_ exceeding max connections
+			// we do not want to adjust the counter or post event in that case
 			if (isMaxControllerDisconnect_) {
 				debugMPI_.DebugOut(kDbgLvlImportant, "Controller Disconnected! \n");
 				isMaxControllerDisconnect_ = false;
 				return;
 			}
-#endif
+		
+			if (controller->pimpl_->IsConnected())
+				numConnectedControllers_--;	
 			controller->pimpl_->SetConnected(false);
-			numConnectedControllers_--;
 			if (numConnectedControllers_ < 0)
 				numConnectedControllers_ = 0;
                         HWControllerEventMessage qmsg(kHWControllerDisconnected, controller);
@@ -229,6 +232,11 @@ namespace Hardware {
         }
 
 
+      // Controller object/s gets created on first connect (DeviceCallback) after pairing successfully or 
+      // after each reboot when scanning for the list of paired controllers (ScanCallback) or 
+      // paired+connected controllers (DeviceCallback) (Note that during initial scan if the  
+      // paired controller is already connected there is only DeviceCallback and no ScanCallback)
+
       HWController* controller = new HWController();
       //BADBAD: should not be accessing pimpl_ directly!
       controller->pimpl_->SetID(numControllers_);
@@ -244,10 +252,13 @@ namespace Hardware {
       int resultVal = pBTIO_GetControllerVersion_(link, pHwVersion, pFwVersion);
       if(!resultVal) controller->pimpl_ ->SetVersionNumbers(hwVersion, fwVersion);
 
-      // FIXME //
+      // check if isDeviceCallback_ to confirm the DeviceCallback was trigerred and that indicates a 
+      // connect/disconnect event. If so, adjust the numConnectedControllers_ counter and post events. 
+      // If the controllers are not active during the initial scan for paired controllers, we still want the 
+      // HWController object to be created but no actions to be taken for connections unless there is a 
+      // DeviceCallback
       if (isDeviceCallback_) {
-#if 0
-	      if (numConnectedControllers_ >= GetMaximumNumberOfControllers()) {
+	      if ((!controller->pimpl_->IsConnected()) && ((numConnectedControllers_) >= GetMaximumNumberOfControllers())) {
                     debugMPI_.DebugOut(kDbgLvlImportant, "AddController - Connected controllers maxed out at %d\n", numConnectedControllers_);
   		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
 		    isMaxControllerDisconnect_ = true;
@@ -255,11 +266,11 @@ namespace Hardware {
                     pBTIO_DisconnectDevice_(link, 0);
                     return;
               }
-#endif
-              controller->pimpl_->SetConnected(true);
-              // FIXME // controller->pimpl_->SetID(numConnectedControllers_);
-              numConnectedControllers_++;
-
+	     
+	      if (!controller->pimpl_->IsConnected())
+                    numConnectedControllers_++;
+ 
+	      controller->pimpl_->SetConnected(true);
               HWControllerEventMessage qmsg(kHWControllerConnected, controller);
               eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
       }

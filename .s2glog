@@ -42966,3 +42966,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/26/14 9:10 AM
 25,072 ms. (Cumulative: 28,619,192 ms)
 
 ----------------
+Revision 11,038 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+ControllerMPI : More fixes in AddController to handle connect/disconnect more reliably. This should fix FWGLAS-1222 and other incorrect behaviors seen during connect 
+
+
+By Falguni Mirani (fmirani@leapfrog.com) on 8/26/14 10:37 AM
+1 changed, 0 added, 0 deleted.
+25,035 ms. (Cumulative: 28,644,337 ms)
+
+----------------
