@@ -149,7 +149,7 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 	running = true;
 
 	tEventType event_type = msg.GetEventType();
-	if(event_type == kUSBDevicePriorityStateChange)
+	if(event_type == kUSBDevicePriorityStateChange || event_type == kUSBDeviceStateChange)
 	{
 		const CUSBDeviceMessage& usbmsg = dynamic_cast<const CUSBDeviceMessage&>(msg);
 		tUSBDeviceData usbData = usbmsg.GetUSBDeviceState();
