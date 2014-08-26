@@ -324,6 +324,8 @@ void* CameraTaskMain(void* arg)
 			frame.height = pCtx->mode.height;
 			bRet = pCtx->module->GrabFrame(pCtx->hndl, &frame);
 			bRestart = false;
+			if (!bRet)
+				break;
 		}
 
 		if(0 != kernel.TryLockMutex(pCtx->mThread))
