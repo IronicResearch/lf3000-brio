@@ -42976,3 +42976,12 @@ By Falguni Mirani (fmirani@leapfrog.com) on 8/26/14 10:37 AM
 25,035 ms. (Cumulative: 28,644,337 ms)
 
 ----------------
+Revision 11,039 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1274: Added normal USB event message type to camera listener to supplement one used for hot-plug socket messages.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/26/14 11:41 AM
+1 changed, 0 added, 0 deleted.
+25,041 ms. (Cumulative: 28,669,472 ms)
+
+----------------
