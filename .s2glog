@@ -42985,3 +42985,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/26/14 11:41 AM
 25,041 ms. (Cumulative: 28,669,472 ms)
 
 ----------------
+Revision 11,040 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add break out of V4L retry handler for cases when stream is broken by USB disconnection.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/26/14 12:05 PM
+1 changed, 0 added, 0 deleted.
+24,941 ms. (Cumulative: 28,694,523 ms)
+
+----------------
