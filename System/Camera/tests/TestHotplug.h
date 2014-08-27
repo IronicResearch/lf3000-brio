@@ -121,4 +121,29 @@ class TestHotplug : public CxxTest::TestSuite, TestSuiteBase
 			else
 				TS_FAIL("MPI was deemed invalid");
 		}
+
+		//------------------------------------------------------------------------
+		void testMultiInstance( )
+		{
+			PRINT_TEST_NAME();
+
+			for (int i = 0; i < 10; i++)
+			{
+
+			bool present = pCameraMPI_->IsCameraPresent();
+			printf("%s: IsCameraPresent = %d\n", __FUNCTION__, (int)present);
+
+			CCameraMPI* pInstance2 = new CCameraMPI();
+			TS_ASSERT( pInstance2 );
+
+			TS_ASSERT_EQUALS( pInstance2->IsCameraPresent(), present);
+			delete pInstance2;
+
+			TS_ASSERT_EQUALS( pCameraMPI_->IsCameraPresent(), present);
+			printf("%s: IsCameraPresent = %d\n", __FUNCTION__, (int)present);
+
+			sleep(1);
+			}
+		}
+
 };

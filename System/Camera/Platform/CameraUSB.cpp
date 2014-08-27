@@ -155,7 +155,7 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 		tUSBDeviceData usbData = usbmsg.GetUSBDeviceState();
 
 		/* a device was inserted or removed */
-		if(usbData.USBDeviceState & (kUSBDeviceHotPlug | kUSBDeviceConnected))
+		if((usbData.USBDeviceState & (kUSBDeviceHotPlug | kUSBDeviceConnected)) || usbData.USBDeviceState == 0)
 		{
 			/* enumerate sysfs to see if camera entry exists */
 			pMod->sysfs.clear();
@@ -169,6 +169,11 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 			if(!pMod->sysfs.empty() && !pMod->devpath.empty())
 			{
 				struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};
+
+				if (pMod->valid) {
+					pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera active %d at %s\n", pMod->valid, pMod->camCtx_.file);
+					goto out;
+				}
 
 				/* camera present or added */
 				pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera detected %s\n", pMod->sysfs.c_str());
@@ -211,6 +216,7 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 			}
 		}
 	}
+out:
 	running = false;
 	return kEventStatusOK;
 }
