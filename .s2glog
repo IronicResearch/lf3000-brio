@@ -43012,3 +43012,12 @@ By mharris (mharris@leapfrog.com) on 8/26/14 4:08 PM
 25,948 ms. (Cumulative: 28,745,662 ms)
 
 ----------------
+Revision 11,043 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Pre-emptively check for audio input prior to setting AVI streams.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/26/14 7:41 PM
+1 changed, 0 added, 0 deleted.
+25,662 ms. (Cumulative: 28,771,439 ms)
+
+----------------
