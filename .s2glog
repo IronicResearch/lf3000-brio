@@ -43030,3 +43030,13 @@ By Lloyd Moore (lmoore@leapfrog.com) on 8/27/14 10:57 AM
 24,994 ms. (Cumulative: 28,796,542 ms)
 
 ----------------
+Revision 11,045 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1274: Added case for USB disconnect event in camera hot-plug listener.
+Legacy hot-plug event was simple socket message for notifying USB/V4L sysfs changes.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/27/14 2:49 PM
+2 changed, 0 added, 0 deleted.
+25,192 ms. (Cumulative: 28,821,859 ms)
+
+----------------
