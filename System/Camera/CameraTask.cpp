@@ -195,6 +195,16 @@ void* CameraTaskMain(void* arg)
 	if(pCtx->path.length())
 	{
 #if !defined(EMULATION)
+		// Pre-flight microphone availability for AVI audio stream input
+		if (pCtx->bAudio) {
+			if (!cam->microphone_)
+				cam->microphone_ = new CMicrophoneMPI();
+			if (!cam->microphone_->IsMicrophonePresent()) {
+				pCtx->bAudio = false;
+				dbg.DebugOut( kDbgLvlCritical, "%s: no audio stream for AVI %s\n", __func__,  pCtx->path.c_str());
+			}
+		}
+
 		avi	= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()), pCtx->bAudio);
 
 		if (NULL == avi)
@@ -220,8 +230,6 @@ void* CameraTaskMain(void* arg)
 		// fps will be reset upon completion
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, pCtx->fps, fourcc);
 		if(pCtx->bAudio) {
-			if (!cam->microphone_)
-				cam->microphone_ = new CMicrophoneMPI();
 			audio_rate	= cam->microphone_->GetMicrophoneParam(kMicrophoneRate);	//cam->micCtx_.rate;
 			audio_chans	= MIC_CHANS;		//cam->micCtx_.channels;
 			audio_width	= MIC_WIDTH;		//cam->micCtx_.sbits;
