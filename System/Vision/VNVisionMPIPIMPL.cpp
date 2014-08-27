@@ -46,6 +46,9 @@ namespace Vision {
   static const std::string kVNQVGAFlagPath = "/flags/qvga_vision_mode";
   static const std::string kVNDebugOCVFlagPath = "/flags/showocv";
 
+  //Cause the VNVisionMPIPIMPL to instantiate during static construction
+  VNVisionMPIPIMPL* VNVisionMPIPIMPL::forceVNVisionMPIMPLToBe_ = VNVisionMPIPIMPL::Instance();
+
   bool
   FlagExists(const char *fileName) {
     struct stat buf;

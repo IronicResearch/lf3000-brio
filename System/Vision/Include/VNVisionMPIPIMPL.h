@@ -107,6 +107,9 @@ namespace Vision {
     LeapFrog::Brio::tVideoSurf surface_;
     cv::Mat cameraSurfaceMat_;
 
+    //Cause the VNVisionMPIPIMPL to instantiate during static construction
+    static VNVisionMPIPIMPL* forceVNVisionMPIMPLToBe_;
+
 #if defined(EMULATION)
     bool showOCVDebugOutput_;
 #endif

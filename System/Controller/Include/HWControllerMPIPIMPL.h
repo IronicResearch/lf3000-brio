@@ -11,6 +11,7 @@
 #include <string.h>
 #include <vector>
 #include <map>
+#include <boost/shared_ptr.hpp>
 
 namespace LF {
 namespace Hardware {
@@ -58,7 +59,7 @@ namespace Hardware {
    */
   class HWControllerMPIPIMPL : public LeapFrog::Brio::IEventListener {
   public:
-    static HWControllerMPIPIMPL* Instance(void);
+    static boost::shared_ptr<HWControllerMPIPIMPL> Instance(void);
     virtual ~HWControllerMPIPIMPL(void);
 
     HWController* GetControllerByID(LeapFrog::Brio::U32 id);
@@ -123,6 +124,8 @@ namespace Hardware {
     pFnGetControllerVersion	pBTIO_GetControllerVersion_;
     pFnEnableBluetoothDebug	pBTIO_EnableBluetoothDebug_;
     pFnDisconnectDevice 	pBTIO_DisconnectDevice_;
+
+    static boost::shared_ptr<HWControllerMPIPIMPL> forceHWControllerMPIMPLToBe_;
 
     static void DeviceCallback(void*, void*, int);
     static void InputCallback(void*, void*, int, char*);
