@@ -31,19 +31,21 @@ static const LeapFrog::Brio::tEventPriority kHWControllerHighPriorityEvent = 0; 
 static const LeapFrog::Brio::tTimerProperties kProps = {TIMER_RELATIVE_SET,
 										 	{{0, 0}, {30, 0}},
 	                                    };
+
 namespace LF {
 namespace Hardware {
 
-  HWControllerMPIPIMPL*
+  //The only purpose for this is to cause the HWControllerMPIMPL to instantiate during static construction
+  boost::shared_ptr<HWControllerMPIPIMPL> HWControllerMPIPIMPL::forceHWControllerMPIMPLToBe_ = HWControllerMPIPIMPL::Instance();
+
+  boost::shared_ptr<HWControllerMPIPIMPL>
   HWControllerMPIPIMPL::Instance(void) {
-    static HWControllerMPIPIMPL* sharedInstance = NULL;
+    static boost::shared_ptr<HWControllerMPIPIMPL> sharedInstance;
     if (sharedInstance == NULL) {
-      sharedInstance = new HWControllerMPIPIMPL();
+      sharedInstance.reset(new HWControllerMPIPIMPL());
     }
     return sharedInstance;
   }
-
-
 
   HWControllerMPIPIMPL::HWControllerMPIPIMPL(void) :
     IEventListener(kHWControllerListenerTypes, ArrayCount(kHWControllerListenerTypes)),

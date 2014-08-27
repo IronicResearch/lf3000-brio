@@ -43021,3 +43021,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/26/14 7:41 PM
 25,662 ms. (Cumulative: 28,771,439 ms)
 
 ----------------
+Revision 11,044 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Corrects several memory corruption issues in HWController and VNVision (FWGLAS-1153)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 8/27/14 10:57 AM
+4 changed, 0 added, 0 deleted.
+24,994 ms. (Cumulative: 28,796,542 ms)
+
+----------------
