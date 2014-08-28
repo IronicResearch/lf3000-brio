@@ -2,7 +2,7 @@
 #define __INCLUDE_HARDWARE_HWAnalogStickPIMPLEMUL_H__
 
 #include <Hardware/HWAnalogStickTypes.h>
-
+#include <boost/shared_ptr.hpp>
 
 namespace LF {
 namespace Hardware {
@@ -15,7 +15,7 @@ namespace Hardware {
    */
   class HWAnalogStickPIMPL {
   public:
-    static HWAnalogStickPIMPL* Instance(void);
+    static boost::shared_ptr<HWAnalogStickPIMPL> Instance(void);
     virtual ~HWAnalogStickPIMPL(void);
     
     
@@ -84,6 +84,8 @@ namespace Hardware {
     HWAnalogStickPIMPL(const HWAnalogStickPIMPL&);
     HWAnalogStickPIMPL& operator=(const HWAnalogStickPIMPL&);
     
+    static boost::shared_ptr<HWAnalogStickPIMPL> forceHWAnalogStickMPIMPLToBe_;
+
     tHWAnalogStickMode mode_;
     tHWAnalogStickData data_;
     float              deadZone_;   

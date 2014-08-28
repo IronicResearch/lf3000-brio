@@ -43040,3 +43040,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/27/14 2:49 PM
 25,192 ms. (Cumulative: 28,821,859 ms)
 
 ----------------
+Revision 11,046 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+fix analog stick singleton to fix controller destruction, same issue as FWGLAS-1153
+
+By Alex Lindblad (alindblad@leapfrog.com) on 8/27/14 11:53 PM
+3 changed, 0 added, 0 deleted.
+25,127 ms. (Cumulative: 28,847,095 ms)
+
+----------------
