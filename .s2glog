@@ -43049,3 +43049,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 8/27/14 11:53 PM
 25,127 ms. (Cumulative: 28,847,095 ms)
 
 ----------------
+Revision 11,047 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Forcably disconnect Controllers (FWGLAS-904)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 8/28/14 4:24 PM
+1 changed, 0 added, 0 deleted.
+25,575 ms. (Cumulative: 28,872,780 ms)
+
+----------------
