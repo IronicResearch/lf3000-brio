@@ -38,6 +38,8 @@ namespace Hardware {
   //The only purpose for this is to cause the HWControllerMPIMPL to instantiate during static construction
   boost::shared_ptr<HWControllerMPIPIMPL> HWControllerMPIPIMPL::forceHWControllerMPIMPLToBe_ = HWControllerMPIPIMPL::Instance();
 
+  const int ForceDisconnect = 0x00000001;		//Note this flag comes from SS1 SDK, duplicating here to avoid large header file changes at this time
+
   boost::shared_ptr<HWControllerMPIPIMPL>
   HWControllerMPIPIMPL::Instance(void) {
     static boost::shared_ptr<HWControllerMPIPIMPL> sharedInstance;
@@ -197,7 +199,7 @@ namespace Hardware {
 				debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
 				// Send a disconnect to this controller  
 				isMaxControllerDisconnect_ = true;
-				pBTIO_DisconnectDevice_(link, 0);
+				pBTIO_DisconnectDevice_(link, ForceDisconnect);
                			return;
        			 }
 			if (!controller->pimpl_->IsConnected())
@@ -265,7 +267,7 @@ namespace Hardware {
   		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
 		    isMaxControllerDisconnect_ = true;
                     // Should we send a disconnect to this controller ? 
-                    pBTIO_DisconnectDevice_(link, 0);
+                    pBTIO_DisconnectDevice_(link, ForceDisconnect);
                     return;
               }
 	     
@@ -542,11 +544,10 @@ namespace Hardware {
   void
   HWControllerMPIPIMPL::DisconnectAllControllers() {
 	  debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting all controllers n = %i\n", GetNumberOfConnectedControllers());
-
 	  std::vector<HWController*>::iterator it;
 	  for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
 		  HWController* controller = *(it);
-		  if(controller) pBTIO_DisconnectDevice_(FindControllerLink(controller), 0);
+		  if(controller) pBTIO_DisconnectDevice_(FindControllerLink(controller), ForceDisconnect);
 	  }
 
 	  listControllers_.clear();
