@@ -114,7 +114,7 @@ namespace Hardware {
 #ifdef ENABLE_PROFILING
 		  TimeStampOff(controller->GetID());
 #endif
-//		  delete controller; // FIXME: HWAnalogStickPIMPL crash
+		  delete controller; 
 	  }
 
 #ifdef ENABLE_PROFILING

@@ -3,11 +3,15 @@
 namespace LF {
 namespace Hardware {
 
-  HWAnalogStickPIMPL*
+  //The only purpose for this is to cause the HWAnalogStickPIMPL to instantiate during static construction
+  boost::shared_ptr<HWAnalogStickPIMPL> HWAnalogStickPIMPL::forceHWAnalogStickMPIMPLToBe_ = HWAnalogStickPIMPL::Instance();
+
+
+  boost::shared_ptr<HWAnalogStickPIMPL>
   HWAnalogStickPIMPL::Instance(void) {
-    static HWAnalogStickPIMPL* sharedInstance = NULL;
+    static boost::shared_ptr<HWAnalogStickPIMPL> sharedInstance;
     if (sharedInstance == NULL) {
-      sharedInstance = new HWAnalogStickPIMPL();
+      sharedInstance.reset(new HWAnalogStickPIMPL());
     }
     return sharedInstance;
   }
