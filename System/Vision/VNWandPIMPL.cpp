@@ -161,10 +161,10 @@ namespace Vision {
             debugMPI_.DebugOut(kDbgLvlValuable, "Controller BT Address: %s\n", btaddress_.c_str());
 
             if( controllersConfig.has( btaddress_.c_str() ) ) {
-	        debugMPI_.DebugOut(kDbgLvlValuable, "Controller has been calibrated");
+	        debugMPI_.DebugOut(kDbgLvlValuable, "Controller has been calibrated\n");
                 defaultConfig = controllersConfig[btaddress_.c_str()].get<zo::Object>();
             } else {    // has not been calibrated so get default configuration
-  	        debugMPI_.DebugOut(kDbgLvlValuable, "Controller has NOT been calibrated");
+  	        debugMPI_.DebugOut(kDbgLvlValuable, "Controller has NOT been calibrated\n");
                 defaultConfig = controllersConfig["default"].get<zo::Object>();
             }
             zo::Object jsonColor;
@@ -204,7 +204,7 @@ namespace Vision {
             configfile.close();
 
         } else {
-            debugMPI_.DebugOut(kDbgLvlValuable, "FAILED: Opening color calibration file");
+            debugMPI_.DebugOut(kDbgLvlValuable, "FAILED: Opening color calibration file\n");
             debugMPI_.DebugOut(kDbgLvlValuable, "VNWandPIMPL::SetColor %08x\n", (unsigned int)color);
 
             if (color == LF::Hardware::kHWControllerLEDGreen) {
