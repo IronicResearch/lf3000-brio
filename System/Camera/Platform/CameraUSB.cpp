@@ -146,6 +146,8 @@ CUSBCameraModule::CameraListener::~CameraListener()
 
 tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 {
+	if (running)
+		return kEventStatusOK;
 	running = true;
 
 	tEventType event_type = msg.GetEventType();
@@ -166,14 +168,9 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 			pMod->devpath.clear();
 			EnumFolder(V4L_DEV_ROOT, EnumVideoCallback, kFoldersOnly, pMod);
 
-			if(!pMod->sysfs.empty() && !pMod->devpath.empty())
+			if(!pMod->sysfs.empty() && !pMod->devpath.empty() && !pMod->valid)
 			{
 				struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};
-
-				if (pMod->valid) {
-					pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera active %d at %s\n", pMod->valid, pMod->camCtx_.file);
-					goto out;
-				}
 
 				/* camera present or added */
 				pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera detected %s\n", pMod->sysfs.c_str());
