@@ -80,17 +80,14 @@ namespace Vision {
 	  if (val >= 1.0f) {
 	    useWandSmoothing_ = true;
 	  }
-	  std::cout << "useWandSmoothing = " << ((useWandSmoothing_) ? "true" : "false") << std::endl;
 	} else if (key.compare(kVNNumFramesToCacheLocationKey) == 0) {
 	  if (val > 0) {
 	    numTimesUsedCachedLocBeforeReset_ = val;
 	  }
-	  std::cout << "numTimesUsedCachedLocBeforeReset = " << numTimesUsedCachedLocBeforeReset_ << std::endl;
 	} else if (key.compare(kVNWandSmoothingAlphaKey) == 0) {
 	  if (val > 0 && val < 1.0f) {
 	    wandSmoothingAlpha_ = val;
 	  }
-	  std::cout << "wandSmoothingAlpha_ = " << wandSmoothingAlpha_ << std::endl;
 	}
       }
     }

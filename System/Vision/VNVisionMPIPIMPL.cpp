@@ -194,12 +194,6 @@ namespace Vision {
 	  // if we are in VGA mode set the fps to 30, if in QVGA mode set it to 60
 	  mode->fps_denominator = (frameProcessingWidth_ == kVNVGAWidth) ? 30 : 60;
 
-	  std::cout << "Setting capture mode to:\n"
-		    << "    pixelformat = " << mode->pixelformat << std::endl
-		    << "          width = " << mode->width << std::endl
-		    << "         height = " << mode->height << std::endl
-		    << "  fps_numerator = " << mode->fps_numerator << std::endl
-		    << "fps_denominator = " << mode->fps_denominator << std::endl;
 	  error = cameraMPI_.SetCurrentFormat(mode);
 	  break;
 	}
@@ -551,7 +545,7 @@ namespace Vision {
 	  return LeapFrog::Brio::kEventStatusOKConsumed;
 	}
       } else {
-	std::cout << "DID NOT successfully cast the msg" << std::endl;
+	dbg_.DebugOut(kDbgLvlImportant, "DID NOT successfully cast the camera frame message for vision\n");
       }
     }
     return LeapFrog::Brio::kEventStatusOK;
