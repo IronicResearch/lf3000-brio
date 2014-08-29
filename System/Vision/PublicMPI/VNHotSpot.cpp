@@ -4,8 +4,8 @@
 namespace LF {
 namespace Vision {
   
-  VNHotSpot::VNHotSpot(void) :
-    pimpl_(new VNHotSpotPIMPL()) {
+  VNHotSpot::VNHotSpot(void) {
+    // intentionally do not initialize pimpl_
   }
   
   VNHotSpot::~VNHotSpot(void) {

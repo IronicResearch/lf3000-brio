@@ -31,6 +31,31 @@ class TestRectHotSpot : public CxxTest::TestSuite, TestSuiteBase, UnitTestVision
 			cleanup();
 		}
 
+		void testGetTagAfter1stHotSpotShouldSucceed() {
+			PRINT_TEST_NAME();
+			LF::Vision::VNRectHotSpot rectHotSpot;
+			TS_ASSERT_EQUALS(0, rectHotSpot.GetTag());
+		}
+
+		void testGetTagAfter5thHotSpotShouldSucceed() {
+			PRINT_TEST_NAME();
+			LF::Vision::VNRectHotSpot rectHotSpot1;
+			LF::Vision::VNRectHotSpot rectHotSpot2;
+			LF::Vision::VNRectHotSpot rectHotSpot3;
+			LF::Vision::VNRectHotSpot rectHotSpot4;
+			TS_ASSERT_EQUALS(4, rectHotSpot4.GetTag());
+		}
+
+		void testGetTagAfter10thHotSpotShouldSucceed() {
+			PRINT_TEST_NAME();
+			LF::Vision::VNRectHotSpot rectHotSpot5;
+			LF::Vision::VNRectHotSpot rectHotSpot6;
+			LF::Vision::VNRectHotSpot rectHotSpot7;
+			LF::Vision::VNRectHotSpot rectHotSpot8;
+			LF::Vision::VNRectHotSpot rectHotSpot9;
+			TS_ASSERT_EQUALS(9, rectHotSpot9.GetTag());
+		}
+
 		void testConstructionWithNoArgumentShouldSucceed() {
 			PRINT_TEST_NAME();
 			std::auto_ptr<LF::Vision::VNRectHotSpot> rectHotSpot (new LF::Vision::VNRectHotSpot());
@@ -301,37 +326,6 @@ class TestRectHotSpot : public CxxTest::TestSuite, TestSuiteBase, UnitTestVision
 			LF::Vision::VNRectHotSpot rectHotSpot;
 			rectHotSpot.SetTag(ULONG_MAX + 1);
 			TS_ASSERT_EQUALS(0, rectHotSpot.GetTag());
-		}
-
-		void testGetTagAfter1stHotSpotShouldSucceed() {
-			PRINT_TEST_NAME();
-			LF::Vision::VNRectHotSpot rectHotSpot;
-			TS_ASSERT_EQUALS(0, rectHotSpot.GetTag());
-		}
-
-		void testGetTagAfter5thHotSpotShouldSucceed() {
-			PRINT_TEST_NAME();
-			LF::Vision::VNRectHotSpot rectHotSpot0;
-			LF::Vision::VNRectHotSpot rectHotSpot1;
-			LF::Vision::VNRectHotSpot rectHotSpot2;
-			LF::Vision::VNRectHotSpot rectHotSpot3;
-			LF::Vision::VNRectHotSpot rectHotSpot4;
-			TS_ASSERT_EQUALS(4, rectHotSpot4.GetTag());
-		}
-
-		void testGetTagAfter10thHotSpotShouldSucceed() {
-			PRINT_TEST_NAME();
-			LF::Vision::VNRectHotSpot rectHotSpot0;
-			LF::Vision::VNRectHotSpot rectHotSpot1;
-			LF::Vision::VNRectHotSpot rectHotSpot2;
-			LF::Vision::VNRectHotSpot rectHotSpot3;
-			LF::Vision::VNRectHotSpot rectHotSpot4;
-			LF::Vision::VNRectHotSpot rectHotSpot5;
-			LF::Vision::VNRectHotSpot rectHotSpot6;
-			LF::Vision::VNRectHotSpot rectHotSpot7;
-			LF::Vision::VNRectHotSpot rectHotSpot8;
-			LF::Vision::VNRectHotSpot rectHotSpot9;
-			TS_ASSERT_EQUALS(9, rectHotSpot9.GetTag());
 		}
 
 		void testGetTagAfterSetTagTo0ShouldSucceed() {

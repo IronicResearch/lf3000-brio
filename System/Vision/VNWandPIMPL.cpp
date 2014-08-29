@@ -246,9 +246,6 @@ namespace Vision {
             }
 
         }
-	std::cout << "yuvMin_ = " << yuvMin_[0] << ", " << yuvMin_[1] << ", " << yuvMin_[2] << std::endl;
-	std::cout << "yuvMax_ = " << yuvMax_[0] << ", " << yuvMax_[1] << ", " << yuvMax_[2] << std::endl;
-
     }
 
   bool

@@ -43067,3 +43067,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/28/14 7:05 PM
 25,339 ms. (Cumulative: 28,898,213 ms)
 
 ----------------
+Revision 11,049 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+fix hot spot id counting, unit test and remove debug output from vision
+
+By Alex Lindblad (alindblad@leapfrog.com) on 8/29/14 11:03 AM
+5 changed, 0 added, 0 deleted.
+25,523 ms. (Cumulative: 28,923,845 ms)
+
+----------------
