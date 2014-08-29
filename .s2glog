@@ -43058,3 +43058,12 @@ By Lloyd Moore (lmoore@leapfrog.com) on 8/28/14 4:24 PM
 25,575 ms. (Cumulative: 28,872,780 ms)
 
 ----------------
+Revision 11,048 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1308: Camera hot-plug listener guard against duplicate events, and rely on USB/V4L sysfs for active state.  
+
+By Dave Milici (dmilici@leapfrog.com) on 8/28/14 7:05 PM
+1 changed, 0 added, 0 deleted.
+25,339 ms. (Cumulative: 28,898,213 ms)
+
+----------------
