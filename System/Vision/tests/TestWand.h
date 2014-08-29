@@ -75,7 +75,7 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 				LF::Vision::VNPoint p = wand_->GetLocation();
 				printf("found geen wand location: %d, %d\n", p.x, p.y);
 			} else {
-				printf("\aERROR could not find wand\n");
+				printf("\aERROR could not find GREEN wand\n");
 			}
 
 
@@ -88,7 +88,7 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 				LF::Vision::VNPoint p = wand_->GetLocation();
 				printf("found red wand location: %d, %d\n", p.x, p.y);
 			} else {
-				printf("\aERROR could not find wand\n");
+				printf("\aERROR could not find RED wand\n");
 			}
 
 			/// test blue
@@ -99,7 +99,7 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 				LF::Vision::VNPoint p = wand_->GetLocation();
 				printf("found blue wand location: %d, %d\n", p.x, p.y);
 			} else {
-				printf("\aERROR could not find wand\n");
+				printf("\aERROR could not find BLUE wand\n");
 			}
 
 			/// test yellow
@@ -110,7 +110,7 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 				LF::Vision::VNPoint p = wand_->GetLocation();
 				printf("found yellow wand location: %d, %d\n", p.x, p.y);
 			} else {
-				printf("\aERROR could not find wand\n");
+				printf("\aERROR could not find YELLOW wand\n");
 			}
 
 			/// test cyan
@@ -121,7 +121,7 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 				LF::Vision::VNPoint p = wand_->GetLocation();
 				printf("found cyan wand location: %d, %d\n", p.x, p.y);
 			} else {
-				printf("\aERROR could not find wand\n");
+				printf("\aERROR could not find CYAN wand\n");
 			}
 
 			/// test magenta
@@ -132,7 +132,7 @@ class TestWand : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 				LF::Vision::VNPoint p = wand_->GetLocation();
 				printf("found magenta wand location: %d, %d\n", p.x, p.y);
 			} else {
-				printf("\aERROR could not find wand\n");
+				printf("\aERROR could not find MAGENTA wand\n");
 			}
 
 		}
