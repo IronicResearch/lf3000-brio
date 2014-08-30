@@ -40,6 +40,9 @@ const CString* CUSBCameraModule::GetModuleName() const
 //============================================================================
 const tEventType LocalCameraEvents[] = {kAllUSBDeviceEvents};
 
+static tMutex				pidlock = PTHREAD_MUTEX_INITIALIZER;
+static int    				badpid = 0;
+
 Boolean EnumCameraCallback(const CPath& path, void* pctx)
 {
 	CUSBCameraModule* pObj	= (CUSBCameraModule*)pctx;
@@ -146,16 +149,21 @@ CUSBCameraModule::CameraListener::~CameraListener()
 
 tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 {
+	pMod->kernel_.LockMutex(pidlock);
 	running = true;
 
 	tEventType event_type = msg.GetEventType();
-	if(event_type == kUSBDevicePriorityStateChange)
+	if(event_type == kUSBDevicePriorityStateChange || event_type == kUSBDeviceStateChange)
 	{
 		const CUSBDeviceMessage& usbmsg = dynamic_cast<const CUSBDeviceMessage&>(msg);
 		tUSBDeviceData usbData = usbmsg.GetUSBDeviceState();
+		bool connected = (event_type == kUSBDeviceStateChange) && (usbData.USBDeviceState & kUSBDeviceConnected);
+		bool disconnect = (event_type == kUSBDeviceStateChange) && (usbData.USBDeviceState == 0);
+		bool hotplugged = (event_type == kUSBDevicePriorityStateChange) && (usbData.USBDeviceState & kUSBDeviceHotPlug);
+		pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: pid=%d, usb=%08x\n", getpid(), (unsigned)usbData.USBDeviceState);
 
 		/* a device was inserted or removed */
-		if(usbData.USBDeviceState & kUSBDeviceHotPlug)
+		if (connected || disconnect || hotplugged)
 		{
 			/* enumerate sysfs to see if camera entry exists */
 			pMod->sysfs.clear();
@@ -166,7 +174,7 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 			pMod->devpath.clear();
 			EnumFolder(V4L_DEV_ROOT, EnumVideoCallback, kFoldersOnly, pMod);
 
-			if(!pMod->sysfs.empty() && !pMod->devpath.empty())
+			if(!pMod->sysfs.empty() && !pMod->devpath.empty() && !pMod->valid)
 			{
 				struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};
 
@@ -182,6 +190,8 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 					QVGA.pixelformat = kCaptureFormatRAWYUYV;
 				}
 				pMod->valid = pMod->InitCameraInt(&QVGA);
+				if (getpid() == badpid)
+					pMod->valid = pMod->DeinitCameraInt(true);
 				pMod->kernel_.UnlockMutex(pMod->mutex_);
 			}
 			else
@@ -212,6 +222,7 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 		}
 	}
 	running = false;
+	pMod->kernel_.UnlockMutex(pidlock);
 	return kEventStatusOK;
 }
 
@@ -229,6 +240,15 @@ CUSBCameraModule::CUSBCameraModule()
 
 	// Enable USB host port
 	usbHost_ = CUsbHost::Instance();
+
+	// FIXME: Check for AppServer process instance which should *not* own the camera device
+	char buf[256] = "\0";
+	if (readlink("/proc/self/exe", buf, sizeof(buf)) != -1) {
+		if (strstr(buf, "AppServer") != NULL) {
+			badpid = getpid();
+			dbg_.DebugOut(kDbgLvlImportant, "CUSBCameraModule::ctor: pid=%d for %s\n", badpid, buf);
+		}
+	}
 
 	/* hotplug subsystem calls this handler upon device insertion/removal */
 	listener_ = new CameraListener(this);
