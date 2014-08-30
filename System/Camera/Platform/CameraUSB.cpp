@@ -146,18 +146,16 @@ CUSBCameraModule::CameraListener::~CameraListener()
 
 tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 {
-	if (running)
-		return kEventStatusOK;
 	running = true;
 
 	tEventType event_type = msg.GetEventType();
-	if(event_type == kUSBDevicePriorityStateChange || event_type == kUSBDeviceStateChange)
+	if(event_type == kUSBDevicePriorityStateChange)
 	{
 		const CUSBDeviceMessage& usbmsg = dynamic_cast<const CUSBDeviceMessage&>(msg);
 		tUSBDeviceData usbData = usbmsg.GetUSBDeviceState();
 
 		/* a device was inserted or removed */
-		if((usbData.USBDeviceState & (kUSBDeviceHotPlug | kUSBDeviceConnected)) || usbData.USBDeviceState == 0)
+		if(usbData.USBDeviceState & kUSBDeviceHotPlug)
 		{
 			/* enumerate sysfs to see if camera entry exists */
 			pMod->sysfs.clear();
@@ -168,7 +166,7 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 			pMod->devpath.clear();
 			EnumFolder(V4L_DEV_ROOT, EnumVideoCallback, kFoldersOnly, pMod);
 
-			if(!pMod->sysfs.empty() && !pMod->devpath.empty() && !pMod->valid)
+			if(!pMod->sysfs.empty() && !pMod->devpath.empty())
 			{
 				struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};
 
@@ -213,7 +211,6 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 			}
 		}
 	}
-out:
 	running = false;
 	return kEventStatusOK;
 }
