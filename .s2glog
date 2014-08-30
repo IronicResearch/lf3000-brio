@@ -43095,3 +43095,14 @@ By Dave Milici (dmilici@leapfrog.com) on 8/29/14 7:17 PM
 25,488 ms. (Cumulative: 28,975,063 ms)
 
 ----------------
+Revision 11,052 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1308, 1319, FWGLAS-1274.
+Rework hot-plug event handling to prevent AppServer from owning camera device.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/30/14 9:58 AM
+1 changed, 0 added, 0 deleted.
+25,520 ms. (Cumulative: 29,000,692 ms)
+
+----------------
