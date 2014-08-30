@@ -43085,3 +43085,13 @@ By Alex Lindblad (alindblad@leapfrog.com) on 8/29/14 12:05 PM
 25,511 ms. (Cumulative: 28,949,465 ms)
 
 ----------------
+Revision 11,051 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert CameraUSB svn -r11036:11048 for hot-plug event handling per FWQA request to unblock title testing.
+Unblocks FWGLAS-1308, 1319. Reverts FWGLAS-1274.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/29/14 7:17 PM
+1 changed, 0 added, 0 deleted.
+25,488 ms. (Cumulative: 28,975,063 ms)
+
+----------------
