@@ -161,9 +161,9 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 	{
 		const CUSBDeviceMessage& usbmsg = dynamic_cast<const CUSBDeviceMessage&>(msg);
 		tUSBDeviceData usbData = usbmsg.GetUSBDeviceState();
-		bool connected = (event_type == kUSBDeviceStateChange) && (usbData.USBDeviceState & kUSBDeviceConnected);
-		bool disconnect = (event_type == kUSBDeviceStateChange) && (usbData.USBDeviceState == 0);
-		bool hotplugged = (event_type == kUSBDevicePriorityStateChange) && (usbData.USBDeviceState & kUSBDeviceHotPlug);
+		bool connected = (event_type == kUSBDeviceStateChange) && (usbData.USBDeviceState & kUSBDeviceConnected) && (!pMod->valid);
+		bool disconnect = (event_type == kUSBDeviceStateChange) && (usbData.USBDeviceState == 0) && (pMod->valid);
+		bool hotplugged = (event_type == kUSBDevicePriorityStateChange) && (usbData.USBDeviceState & kUSBDeviceHotPlug) && (!pMod->valid);
 		pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: pid=%d, usb=%08x\n", getpid(), (unsigned)usbData.USBDeviceState);
 
 		/* a device was inserted or removed */
