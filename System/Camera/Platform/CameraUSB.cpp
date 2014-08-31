@@ -149,6 +149,10 @@ CUSBCameraModule::CameraListener::~CameraListener()
 
 tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 {
+	// FIXME HACK to block AppServer contention for camera device
+	if (getpid() == badpid)
+		return kEventStatusOK;
+
 	pMod->kernel_.LockMutex(pidlock);
 	running = true;
 

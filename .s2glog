@@ -43106,3 +43106,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/30/14 9:58 AM
 25,520 ms. (Cumulative: 29,000,692 ms)
 
 ----------------
+Revision 11,053 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1308: Followup hack to prevent AppServer from ever owning camera device.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/30/14 5:36 PM
+1 changed, 0 added, 0 deleted.
+25,392 ms. (Cumulative: 29,026,194 ms)
+
+----------------
