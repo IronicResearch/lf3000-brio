@@ -43125,3 +43125,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/31/14 4:57 PM
 25,409 ms. (Cumulative: 29,051,697 ms)
 
 ----------------
+Revision 11,055 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+HWController change to not filter out analog stick events in dpad mode.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/31/14 4:59 PM
+1 changed, 0 added, 0 deleted.
+25,486 ms. (Cumulative: 29,077,293 ms)
+
+----------------

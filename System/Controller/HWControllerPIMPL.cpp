@@ -332,9 +332,7 @@ HWControllerPIMPL::ApplyAnalogStickMode(tHWAnalogStickData& theData) {
 		break;
 	case kHWAnalogStickModeDPad:
 		ConvertAnalogStickToDpad(theData);
-		theData.x = 0.0f;
-		theData.y = 0.0f;
-		retVal = false;
+		retVal = true;
 		break;
 	case kHWAnalogStickModeAnalog:
 		retVal = true;
