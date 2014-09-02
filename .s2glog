@@ -43143,3 +43143,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/1/14 7:21 PM
 26,949 ms. (Cumulative: 29,104,367 ms)
 
 ----------------
+Revision 11,057 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1353: Reverting svn -r11055 dpad filter on analog stick data.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/1/14 7:38 PM
+1 changed, 0 added, 0 deleted.
+27,914 ms. (Cumulative: 29,132,406 ms)
+
+----------------
