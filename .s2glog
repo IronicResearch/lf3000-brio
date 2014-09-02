@@ -43134,3 +43134,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/31/14 4:59 PM
 25,486 ms. (Cumulative: 29,077,293 ms)
 
 ----------------
+Revision 11,056 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1376: Relax error checking when stopping camera capture, since stream interruption is possible error when unplugging camera device.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/1/14 7:21 PM
+1 changed, 0 added, 0 deleted.
+26,949 ms. (Cumulative: 29,104,367 ms)
+
+----------------
