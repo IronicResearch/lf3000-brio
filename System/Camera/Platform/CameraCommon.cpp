@@ -2547,17 +2547,12 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 
 	if(!StopVideoCaptureInt(camCtx_.fd))
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StopVideoCapture: failed to halt streaming from %s\n", camCtx_.file);
-		CAMERA_UNLOCK;
-		THREAD_UNLOCK;
-		return false;
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StopVideoCapture: failed to halt streaming from %s, errno=%d\n", camCtx_.file, errno);
     }
 
 	if(!DeinitCameraBufferInt(&camCtx_))
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StopVideoCapture: buffer unmapping failed for %s\n", camCtx_.file);
-		CAMERA_UNLOCK;
-		return hndl;
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StopVideoCapture: buffer unmapping failed for %s, errno=%d\n", camCtx_.file, errno);
 	}
 
 
