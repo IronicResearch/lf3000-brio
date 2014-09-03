@@ -43176,3 +43176,12 @@ By Lloyd Moore (lmoore@leapfrog.com) on 9/3/14 8:08 AM
 26,557 ms. (Cumulative: 29,211,415 ms)
 
 ----------------
+Revision 11,061 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Glasgow: ethernet will now suspend on StartVideoCapture and resume on StopVideoCapture in CameraMPI. FWGLAS-1378
+
+By Robert Alfaro (ralfaro@leapfrog.com) on 9/3/14 10:11 AM
+1 changed, 0 added, 0 deleted.
+25,928 ms. (Cumulative: 29,237,468 ms)
+
+----------------
