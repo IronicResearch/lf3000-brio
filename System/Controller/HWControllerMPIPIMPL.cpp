@@ -79,6 +79,7 @@ namespace Hardware {
 			pBTIO_PairWithRemoteDevice_ = (pFnPairWithRemoteDevice)dlsym(dll_, "BTIO_PairWithRemoteDevice");
 			pBTIO_GetControllerVersion_ = (pFnGetControllerVersion)dlsym(dll_, "BTIO_GetControllerVersion");
 			pBTIO_EnableBluetoothDebug_ = (pFnEnableBluetoothDebug)dlsym(dll_, "BTIO_EnableBluetoothDebug");
+			pBTIO_SetDebugZoneMaskPID_  = (pFnSetDebugZoneMaskPID)dlsym(dll_, "BTIO_SetDebugZoneMaskPID");
 			pBTIO_DisconnectDevice_     = (pFnDisconnectDevice)dlsym(dll_, "BTIO_DisconnectDevice");
 
 			// Connect to Bluetooth client service?
@@ -92,6 +93,21 @@ namespace Hardware {
 			{
 				pBTIO_EnableBluetoothDebug_(true, 3, 1, "ControllerLog.btsnoop");
 				fclose(fp);
+			}
+
+			FILE* fp2 = fopen("/flags/enable_controller_debug_zone", "r");
+			if(fp2)
+			{
+				unsigned long debugZoneMask = 0;
+				int scan = fscanf(fp2, "%lx", &debugZoneMask);
+				if (pBTIO_SetDebugZoneMaskPID_ && (scan == 1)) {
+					debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL Enabling Controller Debug Zone mask=0x%lx\n", debugZoneMask);
+					pBTIO_SetDebugZoneMaskPID_(debugZoneMask);
+				} else{
+					debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL could not Enable Controller Debug Zone.\n");
+				}
+
+				fclose(fp2);
 			}
 		}
 		else {

@@ -123,6 +123,7 @@ namespace Hardware {
     pFnScanForDevices		pBTIO_ScanDevices_;
     pFnGetControllerVersion	pBTIO_GetControllerVersion_;
     pFnEnableBluetoothDebug	pBTIO_EnableBluetoothDebug_;
+    pFnSetDebugZoneMaskPID	pBTIO_SetDebugZoneMaskPID_;
     pFnDisconnectDevice 	pBTIO_DisconnectDevice_;
 
     static LeapFrog::Brio::tMutex instanceMutex_;

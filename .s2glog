@@ -43167,3 +43167,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 9/2/14 11:45 PM
 26,200 ms. (Cumulative: 29,184,749 ms)
 
 ----------------
+Revision 11,060 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add the option to turn on SS1 stack debug zones using /flags/enable_controller_debug_zone. NOTE: This check in requires a tool chain update to pickup the updated BTIO.h. (FWGLAS-948)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 9/3/14 8:08 AM
+2 changed, 0 added, 0 deleted.
+26,557 ms. (Cumulative: 29,211,415 ms)
+
+----------------
