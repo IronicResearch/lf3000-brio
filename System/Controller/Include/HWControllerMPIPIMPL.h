@@ -125,7 +125,7 @@ namespace Hardware {
     pFnEnableBluetoothDebug	pBTIO_EnableBluetoothDebug_;
     pFnDisconnectDevice 	pBTIO_DisconnectDevice_;
 
-    static boost::shared_ptr<HWControllerMPIPIMPL> forceHWControllerMPIMPLToBe_;
+    static LeapFrog::Brio::tMutex instanceMutex_;
 
     static void DeviceCallback(void*, void*, int);
     static void InputCallback(void*, void*, int, char*);

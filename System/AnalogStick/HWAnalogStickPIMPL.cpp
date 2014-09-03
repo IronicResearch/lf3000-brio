@@ -3,15 +3,18 @@
 namespace LF {
 namespace Hardware {
 
-  //The only purpose for this is to cause the HWAnalogStickPIMPL to instantiate during static construction
-  boost::shared_ptr<HWAnalogStickPIMPL> HWAnalogStickPIMPL::forceHWAnalogStickMPIMPLToBe_ = HWAnalogStickPIMPL::Instance();
-
+  LeapFrog::Brio::tMutex HWAnalogStickPIMPL::instanceMutex_ = PTHREAD_MUTEX_INITIALIZER;
 
   boost::shared_ptr<HWAnalogStickPIMPL>
   HWAnalogStickPIMPL::Instance(void) {
     static boost::shared_ptr<HWAnalogStickPIMPL> sharedInstance;
     if (sharedInstance == NULL) {
-      sharedInstance.reset(new HWAnalogStickPIMPL());
+      LeapFrog::Brio::CKernelMPI kernelMPI;
+      kernelMPI.LockMutex(HWAnalogStickPIMPL::instanceMutex_);
+      if (sharedInstance == NULL) {
+	sharedInstance.reset(new HWAnalogStickPIMPL());
+      }
+      kernelMPI.UnlockMutex(HWAnalogStickPIMPL::instanceMutex_);
     }
     return sharedInstance;
   }
