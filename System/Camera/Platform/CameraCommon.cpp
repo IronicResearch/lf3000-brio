@@ -2387,9 +2387,9 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	struct statvfs buf;
 	U64 length;
 	int err;
-
+	
 	CAMERA_LOCK;
-
+	
 	if(camCtx_.hndl != kInvalidVidCapHndl || !valid)
 	{
 		CAMERA_UNLOCK;
@@ -2510,6 +2510,21 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	}
 
 	CAMERA_UNLOCK;
+	
+	/* FIXME: Hacks for Glasgow support */
+	if (GetPlatformName() == "GLASGOW") {
+		/* suspend ethernet link (power down) via sysfs */
+		dbg_.DebugOut( kDbgLvlImportant, "**** ETHERNET SUSPEND !!!!\n" );
+		FILE *pFile;
+		pFile = fopen ("/sys/devices/platform/asix-88772c/suspend", "w");
+		if ( pFile == NULL )
+			perror("failed to suspend ethernet link!\n");
+		else {
+			fputs ("1", pFile);
+			fclose (pFile);
+		}
+	}
+	
 	return hndl;
 }
 
@@ -2531,7 +2546,22 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 {
 	THREAD_LOCK;
 	CAMERA_LOCK;
-
+	
+	/* FIXME: Hacks for Glasgow support */
+	if (GetPlatformName() == "GLASGOW") {
+		/* resume ethernet link (power up) via sysfs */
+		dbg_.DebugOut( kDbgLvlImportant, "**** ETHERNET RESUME !!!!\n" );
+		FILE *pFile;
+		/* open sysfs file for writing */
+		pFile = fopen ("/sys/devices/platform/asix-88772c/suspend", "w");
+		if ( pFile == NULL )
+			perror("failed to resume ethernet link!\n");
+		else {
+			fputs ("0", pFile);
+			fclose (pFile);
+		}
+	}
+	
 	if(!IS_STREAMING_HANDLE(hndl))
 	{
 		CAMERA_UNLOCK;
