@@ -43152,3 +43152,18 @@ By Dave Milici (dmilici@leapfrog.com) on 9/1/14 7:38 PM
 27,914 ms. (Cumulative: 29,132,406 ms)
 
 ----------------
+Revision 11,058 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+26,017 ms. (Cumulative: 29,158,533 ms)
+
+----------------
+Revision 11,059 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1380 fix singleton instantiation for ControllerMPI, VisionMPI and AnalogStickMPI
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/2/14 11:45 PM
+6 changed, 0 added, 0 deleted.
+26,200 ms. (Cumulative: 29,184,749 ms)
+
+----------------

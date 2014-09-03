@@ -79,6 +79,8 @@ namespace Vision {
     VNVisionMPIPIMPL(const VNVisionMPIPIMPL&);
     VNVisionMPIPIMPL& operator=(const VNVisionMPIPIMPL&);
 
+    static LeapFrog::Brio::tMutex instanceMutex_;
+
     LeapFrog::Brio::CDebugMPI dbg_;
     LeapFrog::Brio::CEventMPI eventMPI_;
 
@@ -106,9 +108,6 @@ namespace Vision {
     LeapFrog::Brio::CKernelMPI kernelMPI_;
     LeapFrog::Brio::tVideoSurf surface_;
     cv::Mat cameraSurfaceMat_;
-
-    //Cause the VNVisionMPIPIMPL to instantiate during static construction
-    static VNVisionMPIPIMPL* forceVNVisionMPIMPLToBe_;
 
 #if defined(EMULATION)
     bool showOCVDebugOutput_;

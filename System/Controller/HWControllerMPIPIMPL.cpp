@@ -35,16 +35,20 @@ static const LeapFrog::Brio::tTimerProperties kProps = {TIMER_RELATIVE_SET,
 namespace LF {
 namespace Hardware {
 
-  //The only purpose for this is to cause the HWControllerMPIMPL to instantiate during static construction
-  boost::shared_ptr<HWControllerMPIPIMPL> HWControllerMPIPIMPL::forceHWControllerMPIMPLToBe_ = HWControllerMPIPIMPL::Instance();
-
+  LeapFrog::Brio::tMutex HWControllerMPIPIMPL::instanceMutex_ = PTHREAD_MUTEX_INITIALIZER;
+  
   const int ForceDisconnect = 0x00000001;		//Note this flag comes from SS1 SDK, duplicating here to avoid large header file changes at this time
 
   boost::shared_ptr<HWControllerMPIPIMPL>
   HWControllerMPIPIMPL::Instance(void) {
     static boost::shared_ptr<HWControllerMPIPIMPL> sharedInstance;
     if (sharedInstance == NULL) {
-      sharedInstance.reset(new HWControllerMPIPIMPL());
+      LeapFrog::Brio::CKernelMPI kernelMPI;
+      kernelMPI.LockMutex(HWControllerMPIPIMPL::instanceMutex_);
+      if (sharedInstance == NULL) {
+	sharedInstance.reset(new HWControllerMPIPIMPL());
+      }
+      kernelMPI.UnlockMutex(HWControllerMPIPIMPL::instanceMutex_);
     }
     return sharedInstance;
   }

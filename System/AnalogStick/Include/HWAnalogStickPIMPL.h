@@ -3,6 +3,8 @@
 
 #include <Hardware/HWAnalogStickTypes.h>
 #include <boost/shared_ptr.hpp>
+#include <KernelMPI.h>
+#include <KernelTypes.h>
 
 namespace LF {
 namespace Hardware {
@@ -84,7 +86,7 @@ namespace Hardware {
     HWAnalogStickPIMPL(const HWAnalogStickPIMPL&);
     HWAnalogStickPIMPL& operator=(const HWAnalogStickPIMPL&);
     
-    static boost::shared_ptr<HWAnalogStickPIMPL> forceHWAnalogStickMPIMPLToBe_;
+    static LeapFrog::Brio::tMutex instanceMutex_;
 
     tHWAnalogStickMode mode_;
     tHWAnalogStickData data_;

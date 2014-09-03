@@ -34,6 +34,10 @@ const LeapFrog::Brio::tEventType gVNEventKey[] = {LeapFrog::Brio::kCaptureFrameE
 
 namespace LF {
 namespace Vision {
+
+
+  LeapFrog::Brio::tMutex VNVisionMPIPIMPL::instanceMutex_ = PTHREAD_MUTEX_INITIALIZER;
+
   // LOCKING AND UNLOCKING 
 #define HS_UPDATE_LOCK dbg_.Assert((kNoErr == kernelMPI_.LockMutex(hsUpdateLock_)), \
 				    "Couldn't lock hot spot update mutex.\n");
@@ -45,9 +49,6 @@ namespace Vision {
   static const LeapFrog::Brio::U32 kVNDefaultBufferSize = 2*kVNDefaultProcessingFrameWidth*kVNDefaultProcessingFrameHeight;
   static const std::string kVNQVGAFlagPath = "/flags/qvga_vision_mode";
   static const std::string kVNDebugOCVFlagPath = "/flags/showocv";
-
-  //Cause the VNVisionMPIPIMPL to instantiate during static construction
-  VNVisionMPIPIMPL* VNVisionMPIPIMPL::forceVNVisionMPIMPLToBe_ = VNVisionMPIPIMPL::Instance();
 
   bool
   FlagExists(const char *fileName) {
@@ -64,7 +65,12 @@ namespace Vision {
   VNVisionMPIPIMPL::Instance(void) {
     static VNVisionMPIPIMPL* sharedInstance = NULL;
     if (sharedInstance == NULL) {
-      sharedInstance = new VNVisionMPIPIMPL();
+      LeapFrog::Brio::CKernelMPI kernelMPI;
+      kernelMPI.LockMutex(VNVisionMPIPIMPL::instanceMutex_);
+      if (sharedInstance == NULL) {
+	  sharedInstance = new VNVisionMPIPIMPL();
+      }
+      kernelMPI.UnlockMutex(VNVisionMPIPIMPL::instanceMutex_);
     }
     return sharedInstance;
   }
