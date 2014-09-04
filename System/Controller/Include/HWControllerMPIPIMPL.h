@@ -99,6 +99,7 @@ namespace Hardware {
     int numConnectedControllers_;
     std::vector<HWController*> listControllers_;
     std::map<BtAdrWrap, HWController*> mapControllers_;
+    std::map<BtAdrWrap, int> disconnectedControllers_;
     bool isScanning_;
     bool isPairing_;
     bool isDeviceCallback_;
