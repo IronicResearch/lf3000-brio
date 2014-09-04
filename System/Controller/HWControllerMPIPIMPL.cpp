@@ -60,6 +60,7 @@ namespace Hardware {
 	    numConnectedControllers_ = 0;
 	    listControllers_.clear();
 	    mapControllers_.clear();
+	    disconnectedControllers_.clear();
 	    isScanning_ = false;
 	    isPairing_ = false;
 	    isDeviceCallback_ = false;
@@ -207,6 +208,13 @@ namespace Hardware {
   void
   HWControllerMPIPIMPL::AddController(char* link) {
 	  BtAdrWrap key(link);
+
+	  //If the controller to add was just disconnected then skip this addition, also remove it from the disconnected set
+	  if(disconnectedControllers_.erase(key) == 1) {
+		  debugMPI_.DebugOut(kDbgLvlImportant, "AddController - skipping controller add as it was just deleted\n");
+		  return;
+	  }
+
 	  if (mapControllers_.count(key) > 0) {
 	      // If controller already exists, test its connectivity
 	      HWController* controller = FindController(link);
@@ -567,12 +575,18 @@ namespace Hardware {
 	  std::vector<HWController*>::iterator it;
 	  for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
 		  HWController* controller = *(it);
-		  if(controller) pBTIO_DisconnectDevice_(FindControllerLink(controller), ForceDisconnect);
+		  if(controller) {
+			  char *targetController = FindControllerLink(controller);
+			  disconnectedControllers_.insert(std::pair<BtAdrWrap, int>(BtAdrWrap(targetController), 1));
+			  pBTIO_DisconnectDevice_(targetController, ForceDisconnect);
+			  delete controller;
+		  }
 	  }
 
 	  listControllers_.clear();
 	  mapControllers_.clear();
 	  numControllers_ = 0;
+	  numConnectedControllers_ = 0;
   }
 
   LeapFrog::Brio::U8

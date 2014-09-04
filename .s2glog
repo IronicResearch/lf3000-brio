@@ -43194,3 +43194,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 9/4/14 11:39 AM
 25,428 ms. (Cumulative: 29,263,021 ms)
 
 ----------------
+Revision 11,063 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Corrects an issue where we are getting a controller connected message right after a forced disconnect. Also corrects a memory leak and counter issue in ControllerMPI. (FWGLAS-1382)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 9/4/14 1:55 PM
+2 changed, 0 added, 0 deleted.
+25,628 ms. (Cumulative: 29,288,774 ms)
+
+----------------
