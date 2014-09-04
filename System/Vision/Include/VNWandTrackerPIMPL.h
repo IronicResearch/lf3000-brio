@@ -6,6 +6,7 @@
 #include <VNTranslatorBase.h>
 #include <CameraTypes.h>
 #include <Vision/VNVisionMPI.h>
+#include <list>
 
 namespace LF {
 namespace Vision {
@@ -41,8 +42,9 @@ namespace Vision {
     cv::Point prevLoc_;
     int numTimesUsedCachedLoc_;
     int numTimesUsedCachedLocBeforeReset_;
-    float wandSmoothingAlpha_;
+    LeapFrog::Brio::U8 wandSmoothingAlpha_;
     bool useWandSmoothing_;
+    std::list<cv::Point> wandHistory_;
 
     void SetParams(VNInputParameters *params);
     void ComputeLargestContour(cv::Mat& img,
@@ -61,6 +63,7 @@ namespace Vision {
     void ConvertToYUV(const cv::Mat& in, cv::Mat& outrgb);
     float FindLight(const cv::Mat &integral, cv::Point &c);
     int integralSum(const cv::Mat &integral, cv::Rect &roi);
+    cv::Point ComputeWandLocation(cv::Point& p);
   };
 }
 }

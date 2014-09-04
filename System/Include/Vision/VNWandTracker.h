@@ -54,9 +54,9 @@ namespace Vision {
   /*!
    * kVNWandSmoothingAlphaKey
    * The key used to override the default wand smoothing alpha value.  If wand smoothing
-   * is on, the location of the LED is reported as: 
-   * alpha*currentLocation + (1.0-alpha)*previousLocation
-   * The value associated with this key is used as alpha as long as it lies in (0,1)
+   * is on, the location of the LED is reported as the average location over the past
+   * alpha frames where alpha is provided via this key.
+   * The value associated with this key is used as alpha as long as it lies in (1,UCHAR_MAX)
    */
   extern const LeapFrog::Brio::CString kVNWandSmoothingAlphaKey;
 
