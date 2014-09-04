@@ -15,6 +15,7 @@
 #include <VNInRange3.h>
 #include <VNAlgorithmHelpers.h>
 #include <VNYUYV2RGB.h>
+#include <limits.h>
 
 #if defined(EMULATION)
 #include <opencv2/highgui/highgui.hpp>
@@ -44,8 +45,8 @@ namespace Vision {
   static const float kVNMinPercentOfPixelsDiffToIncludeInSum = 0.7f;
   static const float kVNPercentOfMaxRadiusValueForAreaCalc = 0.8f;
 
-  static const int kVNDefaultNumTimesUseCachedLocBeforeReset = 5;
-  static const float kVNDefaultLocUpdateAlpha = 0.1f;
+  static const int kVNDefaultNumTimesUseCachedLocBeforeReset = 40;
+  static const LeapFrog::Brio::U8 kVNDefaultNumSmoothingFrames = 5;
 
   bool SameSize(const LeapFrog::Brio::tRect &lfr, const cv::Rect & r) {
     return (lfr.left == r.x &&
@@ -82,11 +83,11 @@ namespace Vision {
 	  }
 	} else if (key.compare(kVNNumFramesToCacheLocationKey) == 0) {
 	  if (val > 0) {
-	    numTimesUsedCachedLocBeforeReset_ = val;
+	    numTimesUsedCachedLocBeforeReset_ = static_cast<int>(val);
 	  }
 	} else if (key.compare(kVNWandSmoothingAlphaKey) == 0) {
-	  if (val > 0 && val < 1.0f) {
-	    wandSmoothingAlpha_ = val;
+	  if (val >= 1.f && val < UCHAR_MAX) {
+	    wandSmoothingAlpha_ = static_cast<LeapFrog::Brio::U8>(val);
 	  }
 	}
       }
@@ -103,7 +104,7 @@ namespace Vision {
     prevLoc_(kVNNoWandLocationX, kVNNoWandLocationY),
     numTimesUsedCachedLoc_(0),
     numTimesUsedCachedLocBeforeReset_(kVNDefaultNumTimesUseCachedLocBeforeReset),
-    wandSmoothingAlpha_(kVNDefaultLocUpdateAlpha),
+    wandSmoothingAlpha_(kVNDefaultNumSmoothingFrames),
     useWandSmoothing_(false) {
 
     SetParams(params);
@@ -353,13 +354,8 @@ namespace Vision {
 
       // insure we have at least a minimum circle area
       if (inFrame && lightArea > minArea_) {
-	if (useWandSmoothing_) {
-	  wand_->pimpl_->VisibleOnScreen(wandSmoothingAlpha_*p+(1.0f-wandSmoothingAlpha_)*prevLoc_);
-	  numTimesUsedCachedLoc_ = 0;
-	  prevLoc_ = p;
-	} else {
-	  wand_->pimpl_->VisibleOnScreen(p);
-	}
+	cv::Point final_p = ComputeWandLocation(p);
+	wand_->pimpl_->VisibleOnScreen(final_p);
       } else {
 	if (useWandSmoothing_ && (numTimesUsedCachedLoc_ < numTimesUsedCachedLocBeforeReset_)) {
 	  wand_->pimpl_->VisibleOnScreen(prevLoc_);
@@ -371,6 +367,29 @@ namespace Vision {
       }
     }
     PROF_BLOCK_END();
+  }
+
+  cv::Point
+  VNWandTrackerPIMPL::ComputeWandLocation(cv::Point &p) {
+    cv::Point result(0,0);
+      if (useWandSmoothing_) {
+	// add the current location to the history
+	wandHistory_.push_back(p);
+	if (wandHistory_.size() > wandSmoothingAlpha_) {
+	  wandHistory_.pop_front();
+	}
+	
+	for (std::list<cv::Point>::iterator it = wandHistory_.begin(); it != wandHistory_.end(); ++it) {
+	  result += (*it);
+	}
+	result *= 1.f/(static_cast<float>(wandHistory_.size()));
+	
+	numTimesUsedCachedLoc_ = 0;
+	prevLoc_ = result;
+      } else {
+	result = p;
+      }
+      return result;
   }
 
   void

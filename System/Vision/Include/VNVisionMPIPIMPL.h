@@ -87,16 +87,6 @@ namespace Vision {
     // all hot spots
     std::vector<const VNHotSpot*> hotSpots_;
 
-    //-------
-    // used for updating hot spots (adding/removing)
-    enum VNHotSpotUpdateKey {
-      VN_ADD_HOT_SPOT,
-      VN_REMOVE_HOT_SPOT
-    };
-    typedef std::pair<VNHotSpotUpdateKey, const VNHotSpot*> VNHotSpotUpdate;
-    std::vector<VNHotSpotUpdate> hotSpotsToUpdate_;
-    //------
-
     //mutexes
     LeapFrog::Brio::tMutex hsUpdateLock_;
 

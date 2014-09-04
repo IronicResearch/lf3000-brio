@@ -43185,3 +43185,12 @@ By Robert Alfaro (ralfaro@leapfrog.com) on 9/3/14 10:11 AM
 25,928 ms. (Cumulative: 29,237,468 ms)
 
 ----------------
+Revision 11,062 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1213 fixed wand smoothing, updated WND sample app
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/4/14 11:39 AM
+4 changed, 0 added, 0 deleted.
+25,428 ms. (Cumulative: 29,263,021 ms)
+
+----------------
