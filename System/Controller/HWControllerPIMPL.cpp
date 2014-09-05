@@ -534,6 +534,11 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 			  break;
 		  case 13:
 			  break;
+		  case 14:
+			  break;
+		  case 15:
+			  ProcessLowBatteryStatus(packet[i]);
+			  break;
 		  }
 	  }
 
@@ -582,6 +587,53 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	      CPowerMPI::KeepAlive();
 	  }	  
   }
+
+    void
+    HWControllerPIMPL::ProcessLowBatteryStatus(U8 batteryStatus) {
+    	static bool lastLowBatteryStatus = false;
+    	bool thisLowBatteryStatus = lastLowBatteryStatus;
+    	static int lowBatteryCounter = 0;
+    	static int goodBatteryCounter = 0;
+    	const int batteryStateCountThreshold = 25;
+
+        //Read the battery voltage and process low battery states
+        //FWGLAS1296 - Both battery counters count up to 25 so we
+        //are not updating power LED state either way till the
+        //reading is consistent for 500ms. The counters reset
+        //each other if the reading is not consistent for
+        //any time less than that.
+        if(batteryStatus)
+        {
+        	lowBatteryCounter++;
+        	goodBatteryCounter = 0;
+        }
+        else
+        {
+        	lowBatteryCounter = 0;
+        	goodBatteryCounter++;
+        }
+
+        if(lowBatteryCounter >= batteryStateCountThreshold)
+        {
+        	thisLowBatteryStatus = true;
+        	lowBatteryCounter = 0;
+        }
+
+        if (goodBatteryCounter >= batteryStateCountThreshold)
+        {
+        	thisLowBatteryStatus = false;
+        	goodBatteryCounter = 0;
+        }
+
+        if(thisLowBatteryStatus != lastLowBatteryStatus) {
+        	lastLowBatteryStatus = thisLowBatteryStatus;
+        	if(thisLowBatteryStatus) {
+        		HWControllerEventMessage cmsg(kHWControllerLowBattery, controller_);
+        		eventMPI_.PostEvent(cmsg, 128);
+        		debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::Posting  kHWControllerLowBattery\n");
+        	}
+        }
+    }
 
     const char*
     HWControllerPIMPL::GetBluetoothAddress() {

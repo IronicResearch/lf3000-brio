@@ -43212,3 +43212,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/4/14 7:03 PM
 25,116 ms. (Cumulative: 29,313,984 ms)
 
 ----------------
+Revision 11,065 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Hook up kHWControllerLowBattery event to controller messages (FWGLAS-1402)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 9/5/14 12:36 PM
+2 changed, 0 added, 0 deleted.
+25,597 ms. (Cumulative: 29,339,675 ms)
+
+----------------
