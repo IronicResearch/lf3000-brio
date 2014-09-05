@@ -43203,3 +43203,12 @@ By Lloyd Moore (lmoore@leapfrog.com) on 9/4/14 1:55 PM
 25,628 ms. (Cumulative: 29,288,774 ms)
 
 ----------------
+Revision 11,064 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1310: Discard camera preroll frames prior to active capture and viewfinder session.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/4/14 7:03 PM
+1 changed, 0 added, 0 deleted.
+25,116 ms. (Cumulative: 29,313,984 ms)
+
+----------------
