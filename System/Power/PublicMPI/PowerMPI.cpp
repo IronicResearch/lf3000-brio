@@ -200,13 +200,18 @@ CKeepAliveDelegate* CPowerMPI::pKeepAliveDelegate = 0;
 //----------------------------------------------------------------------------
 CPowerMPI::CPowerMPI() : pModule_(NULL)
 {
-	pKeepAliveDelegate = new CKeepAliveDelegate(this);
+	if(!pKeepAliveDelegate)
+		pKeepAliveDelegate = new CKeepAliveDelegate(this);
 }
 
 //----------------------------------------------------------------------------
 CPowerMPI::~CPowerMPI()
 {
-	delete pKeepAliveDelegate;
+	if(pKeepAliveDelegate)
+	{
+		delete pKeepAliveDelegate;
+		pKeepAliveDelegate = NULL;
+	}
 }
 
 //----------------------------------------------------------------------------
