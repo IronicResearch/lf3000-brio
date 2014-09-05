@@ -180,6 +180,7 @@ void* CameraTaskMain(void* arg)
 	bool				bRestart = false;
 	struct timeval		tv0, tvn, tvt = {0, 0};
 	int					framecount = 0;
+	int 				preroll = 0;
 
 	bool				bQueued = false;
 	int					viewframe = 0;
@@ -399,6 +400,14 @@ void* CameraTaskMain(void* arg)
 			// Yield timeslice if neither audio nor video input ready 
 			if (!bRet)
 				kernel.TaskSleep(1);
+			continue;
+		}
+		if (++preroll < pCtx->numBufs)
+		{
+			// Discard preroll frames and reloop
+			bRet = pCtx->module->ReturnFrame(pCtx->hndl, &frame);
+			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
+													"Couldn't unlock mutex.\n");
 			continue;
 		}
 		framecount++;
