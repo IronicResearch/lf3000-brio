@@ -117,6 +117,7 @@ namespace Hardware {
     bool ApplyAnalogStickMode(tHWAnalogStickData& theData);
     void ConvertAnalogStickToDpad(const tHWAnalogStickData& theData);
     void ThresholdAnalogStickButton(float stickPos, U32 buttonMask);
+    void ProcessLowBatteryStatus(U8 batteryStatus);
 
   };
 
