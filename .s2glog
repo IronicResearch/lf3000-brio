@@ -43221,3 +43221,12 @@ By Lloyd Moore (lmoore@leapfrog.com) on 9/5/14 12:36 PM
 25,597 ms. (Cumulative: 29,339,675 ms)
 
 ----------------
+Revision 11,066 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1397.  CPowerMPI now checks that pKeepAliveDelegate is null before creating it.  This prevents leaking of memory form creating more than 1 PowerMPI.  CPowerMPI now also checks to see if pKeepAliveDelegate is valid before deleting it, and NULLs the pointer after deletion.  This prevents double deletion, and prevents function calls with the dangling pointer.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/5/14 1:21 PM
+1 changed, 0 added, 0 deleted.
+25,537 ms. (Cumulative: 29,365,321 ms)
+
+----------------
