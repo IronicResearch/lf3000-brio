@@ -43230,3 +43230,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 9/5/14 1:21 PM
 25,537 ms. (Cumulative: 29,365,321 ms)
 
 ----------------
+Revision 11,067 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1417: Re-order calls to suspend/resume ethernet link relative to camera streaming on/off.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/6/14 11:25 AM
+1 changed, 0 added, 0 deleted.
+25,160 ms. (Cumulative: 29,390,591 ms)
+
+----------------
