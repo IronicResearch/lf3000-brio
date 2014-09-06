@@ -160,6 +160,23 @@ void CCameraModule::SetScaler(int width, int height, bool centered, tPixelFormat
 	dispmgr.SetVideoScaler(hvideo, width, height, centered);
 }
 
+//----------------------------------------------------------------------------
+void SuspendEthernetLink(bool suspend)
+{
+	/* FIXME: Hacks for Glasgow support */
+	if (GetPlatformName() == "GLASGOW") {
+		/* suspend ethernet link (power down) via sysfs */
+		CDebugMPI	dbg(kGroupCamera);
+		dbg.DebugOut( kDbgLvlImportant, "**** ETHERNET %s !!!!\n", suspend ? "SUSPEND" : "RESUME");
+		FILE *pFile = fopen ("/sys/devices/platform/asix-88772c/suspend", "w");
+		if ( pFile == NULL )
+			perror("failed to suspend ethernet link!\n");
+		else {
+			fputs (suspend ? "1" : "0", pFile);
+			fclose (pFile);
+		}
+	}
+}
 
 //============================================================================
 // Ctor & dtor
@@ -2476,9 +2493,12 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		return hndl;
 	}
 
+	SuspendEthernetLink(true);
+
 	if(!InitCameraStartInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: streaming failed for %s\n", camCtx_.file);
+		SuspendEthernetLink(false);
 		CAMERA_UNLOCK;
 		return hndl;
 	}
@@ -2511,20 +2531,6 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 
 	CAMERA_UNLOCK;
 	
-	/* FIXME: Hacks for Glasgow support */
-	if (GetPlatformName() == "GLASGOW") {
-		/* suspend ethernet link (power down) via sysfs */
-		dbg_.DebugOut( kDbgLvlImportant, "**** ETHERNET SUSPEND !!!!\n" );
-		FILE *pFile;
-		pFile = fopen ("/sys/devices/platform/asix-88772c/suspend", "w");
-		if ( pFile == NULL )
-			perror("failed to suspend ethernet link!\n");
-		else {
-			fputs ("1", pFile);
-			fclose (pFile);
-		}
-	}
-	
 	return hndl;
 }
 
@@ -2546,21 +2552,6 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 {
 	THREAD_LOCK;
 	CAMERA_LOCK;
-	
-	/* FIXME: Hacks for Glasgow support */
-	if (GetPlatformName() == "GLASGOW") {
-		/* resume ethernet link (power up) via sysfs */
-		dbg_.DebugOut( kDbgLvlImportant, "**** ETHERNET RESUME !!!!\n" );
-		FILE *pFile;
-		/* open sysfs file for writing */
-		pFile = fopen ("/sys/devices/platform/asix-88772c/suspend", "w");
-		if ( pFile == NULL )
-			perror("failed to resume ethernet link!\n");
-		else {
-			fputs ("0", pFile);
-			fclose (pFile);
-		}
-	}
 	
 	if(!IS_STREAMING_HANDLE(hndl))
 	{
@@ -2587,6 +2578,8 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 
 
 	camCtx_.hndl 	= kInvalidVidCapHndl;
+
+	SuspendEthernetLink(false);
 
 	CAMERA_UNLOCK;
 	THREAD_UNLOCK;
