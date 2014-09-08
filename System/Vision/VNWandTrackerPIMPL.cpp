@@ -45,7 +45,7 @@ namespace Vision {
   static const float kVNMinPercentOfPixelsDiffToIncludeInSum = 0.7f;
   static const float kVNPercentOfMaxRadiusValueForAreaCalc = 0.8f;
 
-  static const int kVNDefaultNumTimesUseCachedLocBeforeReset = 40;
+  static const int kVNDefaultNumTimesUseCachedLocBeforeReset = 5;
   static const LeapFrog::Brio::U8 kVNDefaultNumSmoothingFrames = 5;
 
   bool SameSize(const LeapFrog::Brio::tRect &lfr, const cv::Rect & r) {

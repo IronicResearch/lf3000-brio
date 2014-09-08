@@ -43248,3 +43248,12 @@ By spalav (spalav@leapfrog.com) on 9/8/14 1:56 PM
 25,455 ms. (Cumulative: 29,416,155 ms)
 
 ----------------
+Revision 11,069 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+adjust default number of frames to cache the wand to something smaller
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/8/14 4:31 PM
+1 changed, 0 added, 0 deleted.
+25,076 ms. (Cumulative: 29,441,325 ms)
+
+----------------
