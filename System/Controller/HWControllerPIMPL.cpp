@@ -455,6 +455,7 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  tHWAnalogStickData stick = pModule->analogStickData_;
 	  tAccelerometerData accel = pModule->accelerometerData_;
 	  struct timeval time;
+	  static U8 power_counter = 0; //FWGLAS-547: Counter for tracking when it's time to post low battery warning or KeepAlive.
 
 	  // Moderate device update rate fixed at 50Hz
 	  updateCounter_++;
@@ -472,75 +473,50 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  debugMPI_.DebugOut(kDbgLvlVerbose, "%s\n", buf);
 #endif
 
+	  //Parse the packet	
 	  pModule->buttonData_.buttonTransition = 0;
 
-	  for (int i = 0; i < length; i++) {
-		  switch (i) {
-		  case 0:
-			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonA : 0;
-			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonA);
-			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonA;
-			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonA : 0;
-			  break;
-		  case 1:
-			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonB : 0;
-			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonB);
-			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonB;
-			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonB : 0;
-			  break;
-		  case 2:
-			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonMenu : 0;
-			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonMenu);
-			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonMenu;
-			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonMenu : 0;
-			  break;
-		  case 3:
-			  pModule->buttonData_.buttonTransition |= (packet[i]) ? kButtonHint : 0;
-			  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonHint);
-			  pModule->buttonData_.buttonState      &= (packet[i]) ? ~0 : ~kButtonHint;
-			  pModule->buttonData_.buttonState      |= (packet[i]) ? kButtonHint : 0;
-			  break;
-		  case 4:
-			  break;
-		  case 5:
-			  if (packet[i] && !packet[i-1])
-				  pModule->mode_ = kHWControllerMode;
-			  else if (!packet[i] && packet[i-1])
-				  pModule->mode_ = kHWControllerWandMode;
-			  else
-				  pModule->mode_ = kHWControllerNoMode;
-			  break;
-		  case 6:
-			  pModule->analogStickData_.x = BYTE_TO_FLOAT(packet[i]);
-			  break;
-		  case 7:
-			  pModule->analogStickData_.y = BYTE_TO_FLOAT(packet[i]);
-			  break;
-		  case 8:
-			  pModule->accelerometerData_.accelX = packet[i];
-			  pModule->accelerometerData_.accelX = - WORD_TO_SIGNED(pModule->accelerometerData_.accelX);
-			  break;
-		  case 9:
-			  break;
-		  case 10:
-			  pModule->accelerometerData_.accelZ = packet[i];
-			  pModule->accelerometerData_.accelZ = WORD_TO_SIGNED(pModule->accelerometerData_.accelZ);
-			  break;
-		  case 11:
-			  break;
-		  case 12:
-			  pModule->accelerometerData_.accelY = packet[i];
-			  pModule->accelerometerData_.accelY = - WORD_TO_SIGNED(pModule->accelerometerData_.accelY);
-			  break;
-		  case 13:
-			  break;
-		  case 14:
-			  break;
-		  case 15:
-			  ProcessLowBatteryStatus(packet[i]);
-			  break;
-		  }
-	  }
+	  pModule->buttonData_.buttonTransition |= (packet[0]) ? kButtonA : 0;
+	  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonA);
+	  pModule->buttonData_.buttonState      &= (packet[0]) ? ~0 : ~kButtonA;
+	  pModule->buttonData_.buttonState      |= (packet[0]) ? kButtonA : 0;
+	  
+	  pModule->buttonData_.buttonTransition |= (packet[1]) ? kButtonB : 0;
+	  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonB);
+	  pModule->buttonData_.buttonState      &= (packet[1]) ? ~0 : ~kButtonB;
+	  pModule->buttonData_.buttonState      |= (packet[1]) ? kButtonB : 0;
+
+	  pModule->buttonData_.buttonTransition |= (packet[2]) ? kButtonMenu : 0;
+	  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonMenu);
+	  pModule->buttonData_.buttonState      &= (packet[2]) ? ~0 : ~kButtonMenu;
+	  pModule->buttonData_.buttonState      |= (packet[2]) ? kButtonMenu : 0;
+
+	  pModule->buttonData_.buttonTransition |= (packet[3]) ? kButtonHint : 0;
+	  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonHint);
+	  pModule->buttonData_.buttonState      &= (packet[3]) ? ~0 : ~kButtonHint;
+	  pModule->buttonData_.buttonState      |= (packet[3]) ? kButtonHint : 0;
+
+	  if (packet[5] && !packet[4])
+		  pModule->mode_ = kHWControllerMode;
+	  else if (!packet[5] && packet[4])
+		  pModule->mode_ = kHWControllerWandMode;
+	  else
+		  pModule->mode_ = kHWControllerNoMode;
+
+	  pModule->analogStickData_.x = BYTE_TO_FLOAT(packet[6]);
+
+	  pModule->analogStickData_.y = BYTE_TO_FLOAT(packet[7]);
+
+	  pModule->accelerometerData_.accelX = packet[8];
+	  pModule->accelerometerData_.accelX = - WORD_TO_SIGNED(pModule->accelerometerData_.accelX);
+
+	  pModule->accelerometerData_.accelZ = packet[10];
+	  pModule->accelerometerData_.accelZ = WORD_TO_SIGNED(pModule->accelerometerData_.accelZ);
+
+	  pModule->accelerometerData_.accelY = packet[12];
+	  pModule->accelerometerData_.accelY = - WORD_TO_SIGNED(pModule->accelerometerData_.accelY);
+
+	  ProcessLowBatteryStatus(packet[15]);
 
 	  // Initial connection event
 	  if (updateCounter_ <= updateDivider_) {
@@ -564,28 +540,41 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 
 	  DeadZoneAnalogStickData(pModule->analogStickData_);
 	  if(ApplyAnalogStickMode(pModule->analogStickData_)) {
-		  if (memcmp(&stick, &analogStickData_, sizeof(tHWAnalogStickData)) != 0) {
+		  //if (memcmp(&stick, &analogStickData_, sizeof(tHWAnalogStickData)) != 0) {
+		  if (stick.x != analogStickData_.x || stick.y != analogStickData_.y)
+		  {
 			  pModule->analogStickData_.time.seconds = time.tv_sec;
 			  pModule->analogStickData_.time.microSeconds = time.tv_usec;
 			  HWControllerEventMessage cmsg(kHWControllerAnalogStickDataChanged, pModule->controller_);
 			  pModule->eventMPI_.PostEvent(cmsg, 0);
 		  }
+		  //}
 	  }
 
-	  if (memcmp(&accel, &accelerometerData_, sizeof(tAccelerometerData)) != 0) {
+	  //if (memcmp(&accel, &accelerometerData_, sizeof(tAccelerometerData)) != 0) {
+	  if(accel.accelX != accelerometerData_.accelX || accel.accelY != accelerometerData_.accelY || accel.accelZ != accelerometerData_.accelZ)
+	  {
 		  pModule->accelerometerData_.time.seconds = time.tv_sec;
 		  pModule->accelerometerData_.time.microSeconds = time.tv_usec;
 	      HWControllerEventMessage cmsg(kHWControllerAccelerometerDataChanged, pModule->controller_);
 		  pModule->eventMPI_.PostEvent(cmsg, 0);
 	  }
+	  //}
 
 	  if (pModule->buttonData_.buttonTransition) {
 		  pModule->buttonData_.time.seconds = time.tv_sec;
 		  pModule->buttonData_.time.microSeconds = time.tv_usec;
 	      HWControllerEventMessage cmsg(kHWControllerButtonStateChanged, pModule->controller_);
 	      pModule->eventMPI_.PostEvent(cmsg, 0);
-	      CPowerMPI::KeepAlive();
-	  }	  
+	      power_counter++;
+	  }
+	  
+	  if (power_counter == 50)
+	  {
+		  CPowerMPI::KeepAlive();
+		  //ProcessLowBatteryStatus(packet[15]); //Do it here instead? 
+		  power_counter = 0;
+	  }
   }
 
     void
