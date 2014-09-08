@@ -43257,3 +43257,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 9/8/14 4:31 PM
 25,076 ms. (Cumulative: 29,441,325 ms)
 
 ----------------
+Revision 11,070 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-783 2:2: Use local buffer for saving AVI when viewfinder surface not available.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/8/14 4:33 PM
+1 changed, 0 added, 0 deleted.
+25,056 ms. (Cumulative: 29,466,490 ms)
+
+----------------

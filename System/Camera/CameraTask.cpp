@@ -299,6 +299,15 @@ void* CameraTaskMain(void* arg)
 	}
 	pCtx->frame = &frame;
 
+	if (pCtx->mode.pixelformat == kCaptureFormatRAWYUYV && pSurf == NULL) {
+		pSurf = &aSurf[0];
+		pSurf->width 	= pCtx->fmt.fmt.pix.width;
+		pSurf->height	= pCtx->fmt.fmt.pix.height;
+		pSurf->pitch	= 4096;
+		pSurf->buffer	= image.data = static_cast<U8*>(kernel.Malloc(pSurf->pitch * pSurf->height));
+		pSurf->format 	= kPixelFormatYUV420;
+	}
+
 	timeout = false;
 	timer = kernel.CreateTimer(TimerCallback, props, NULL);
 	props.timeout.it_value.tv_sec = pCtx->maxLength;
