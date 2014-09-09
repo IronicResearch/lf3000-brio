@@ -556,7 +556,9 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  {
 		  pModule->accelerometerData_.time.seconds = time.tv_sec;
 		  pModule->accelerometerData_.time.microSeconds = time.tv_usec;
-	      HWControllerEventMessage cmsg(kHWControllerAccelerometerDataChanged, pModule->controller_);
+		  if (pModule->buttonData_.buttonState & kButtonB)
+			  pModule->accelerometerData_.accelX = accel.accelX;
+		  HWControllerEventMessage cmsg(kHWControllerAccelerometerDataChanged, pModule->controller_);
 		  pModule->eventMPI_.PostEvent(cmsg, 0);
 	  }
 	  //}
