@@ -43266,3 +43266,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/8/14 4:33 PM
 25,056 ms. (Cumulative: 29,466,490 ms)
 
 ----------------
+Revision 11,071 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-547: Committing changes from Dave's patch for registering 2 separate GATT callbacks which create 2 threads for faster processing.
+
+By spalav (spalav@leapfrog.com) on 9/9/14 4:31 PM
+1 changed, 0 added, 0 deleted.
+25,085 ms. (Cumulative: 29,491,669 ms)
+
+----------------
