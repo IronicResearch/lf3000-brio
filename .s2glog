@@ -43275,3 +43275,12 @@ By spalav (spalav@leapfrog.com) on 9/9/14 4:31 PM
 25,085 ms. (Cumulative: 29,491,669 ms)
 
 ----------------
+Revision 11,072 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1456: Adding a fix for button B causing accelerometer x axis value to change to 1. If button B is pressed, just report the last known value of accelerometer x axis.
+
+By spalav (spalav@leapfrog.com) on 9/9/14 4:40 PM
+1 changed, 0 added, 0 deleted.
+25,133 ms. (Cumulative: 29,516,912 ms)
+
+----------------
