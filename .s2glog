@@ -43302,3 +43302,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/10/14 3:49 PM
 25,130 ms. (Cumulative: 29,567,327 ms)
 
 ----------------
+Revision 11,075 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1313: Skip redundant wand color updates as too expensive when spammed.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/10/14 4:55 PM
+1 changed, 0 added, 0 deleted.
+25,112 ms. (Cumulative: 29,592,548 ms)
+
+----------------

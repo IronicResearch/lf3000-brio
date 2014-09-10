@@ -191,6 +191,9 @@ namespace Hardware {
 	debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::SetLEDColor %08x\n", (unsigned int)color);
 	if( (color == kHWControllerLEDOff) || (color & GetAvailableLEDColors())) {
 		HWControllerMPIPIMPL::Instance()->SendCommand(controller_, kBTIOCmdSetLEDState, &color, sizeof(color));
+		// FIXME: updating wand color state is expensive
+		if (color_ == color)
+			return;
 		color_ = color;
 		wand_->pimpl_->SetColor(color);
 	}
