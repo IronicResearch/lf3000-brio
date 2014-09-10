@@ -703,6 +703,7 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 	v4l2_queryctrl	query;
 	v4l2_control	ctrl;
 	v4l2_control	overrides[] = {
+#ifdef LF1000
 			{V4L2_CID_BRIGHTNESS,				130},
 			{V4L2_CID_CONTRAST,					0},
 			{V4L2_CID_SATURATION,				165},
@@ -713,12 +714,17 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 			{V4L2_CID_SHARPNESS,				6},
 			{V4L2_CID_BACKLIGHT_COMPENSATION,	0},
 #endif /* V4L2_CID_POWER_LINE_FREQUENCY */
+#elif defined(LF3000)
+			{V4L2_CID_POWER_LINE_FREQUENCY, 	2},
+			{V4L2_CID_AUTO_WHITE_BALANCE,		1},
+			{V4L2_CID_EXPOSURE_AUTO,			3},
+#endif
 	};
 
 	memset(&query, 0, sizeof (v4l2_queryctrl));
 	memset(&ctrl, 0, sizeof(v4l2_control));
 
-#ifdef LF1000 // LF1000 defaults
+#if defined(LF1000) || defined(LF3000) // LF1000 defaults
 	/* override defaults - see L3B TTPro 2697 for value origins */
 	for(idx = 0; idx < sizeof(overrides) / sizeof(overrides[0]); idx++)
 	{

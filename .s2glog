@@ -43293,3 +43293,12 @@ By Robert Alfaro (ralfaro@leapfrog.com) on 9/9/14 7:32 PM
 25,082 ms. (Cumulative: 29,542,087 ms)
 
 ----------------
+Revision 11,074 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1148: Minimal camera control presets for line freq, auto-exp, auto-white-balance. (LF3000)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/10/14 3:49 PM
+1 changed, 0 added, 0 deleted.
+25,130 ms. (Cumulative: 29,567,327 ms)
+
+----------------
