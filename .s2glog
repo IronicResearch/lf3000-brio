@@ -43284,3 +43284,12 @@ By spalav (spalav@leapfrog.com) on 9/9/14 4:40 PM
 25,133 ms. (Cumulative: 29,516,912 ms)
 
 ----------------
+Revision 11,073 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Glasgow: commenting out ethernet suspend/resume on camera start/stop, per request.
+
+By Robert Alfaro (ralfaro@leapfrog.com) on 9/9/14 7:32 PM
+1 changed, 0 added, 0 deleted.
+25,082 ms. (Cumulative: 29,542,087 ms)
+
+----------------

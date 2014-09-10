@@ -2493,7 +2493,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		return hndl;
 	}
 
-	SuspendEthernetLink(true);
+	//SuspendEthernetLink(true);
 
 	if(!InitCameraStartInt(&camCtx_))
 	{
@@ -2579,7 +2579,7 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 
 	camCtx_.hndl 	= kInvalidVidCapHndl;
 
-	SuspendEthernetLink(false);
+	//SuspendEthernetLink(false);
 
 	CAMERA_UNLOCK;
 	THREAD_UNLOCK;
