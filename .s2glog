@@ -43327,3 +43327,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/10/14 7:23 PM
 25,410 ms. (Cumulative: 29,643,107 ms)
 
 ----------------
+Revision 11,078 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Backing out r11071 for registering 2 callbacks.
+
+By spalav (spalav@leapfrog.com) on 9/11/14 11:44 AM
+1 changed, 0 added, 0 deleted.
+26,504 ms. (Cumulative: 29,669,728 ms)
+
+----------------
