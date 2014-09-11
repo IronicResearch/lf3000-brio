@@ -43336,3 +43336,12 @@ By spalav (spalav@leapfrog.com) on 9/11/14 11:44 AM
 26,504 ms. (Cumulative: 29,669,728 ms)
 
 ----------------
+Revision 11,079 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-547: Optimizing low battery check in LocalCallback for performance improvements.
+
+By spalav (spalav@leapfrog.com) on 9/11/14 3:18 PM
+1 changed, 0 added, 0 deleted.
+25,631 ms. (Cumulative: 29,695,453 ms)
+
+----------------

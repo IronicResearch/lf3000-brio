@@ -18,6 +18,9 @@ using namespace LeapFrog::Brio;
 
 static const U32 kHWControllerDefaultRate = 50;
 
+#define BATTERY_STATE_COUNT_THRESHOLD 25
+#define POWER_STATE_COUNT_THRESHOLD 50
+
 namespace LF {
 namespace Hardware {
 
@@ -458,7 +461,9 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  tHWAnalogStickData stick = pModule->analogStickData_;
 	  tAccelerometerData accel = pModule->accelerometerData_;
 	  struct timeval time;
-	  static U8 power_counter = 0; //FWGLAS-547: Counter for tracking when it's time to post low battery warning or KeepAlive.
+	  static U8 power_counter = 0; //FWGLAS-547: Counter for tracking when it's time to post KeepAlive
+	  static U8 lowBatteryCounter = 0; //FWGLAS-547: Counter for tracking when it's time to post low battery warning
+	  bool lowBatteryStatus = false; 
 
 	  // Moderate device update rate fixed at 50Hz
 	  updateCounter_++;
@@ -519,7 +524,8 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  pModule->accelerometerData_.accelY = packet[12];
 	  pModule->accelerometerData_.accelY = - WORD_TO_SIGNED(pModule->accelerometerData_.accelY);
 
-	  ProcessLowBatteryStatus(packet[15]);
+	  //ProcessLowBatteryStatus(packet[15]);
+	  lowBatteryStatus = packet[15];
 
 	  // Initial connection event
 	  if (updateCounter_ <= updateDivider_) {
@@ -543,6 +549,7 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 
 	  DeadZoneAnalogStickData(pModule->analogStickData_);
 	  if(ApplyAnalogStickMode(pModule->analogStickData_)) {
+		//if(GetAnalogStickMode() == kHWAnalogStickModeAnalog) {
 		  //if (memcmp(&stick, &analogStickData_, sizeof(tHWAnalogStickData)) != 0) {
 		  if (stick.x != analogStickData_.x || stick.y != analogStickData_.y)
 		  {
@@ -559,8 +566,8 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  {
 		  pModule->accelerometerData_.time.seconds = time.tv_sec;
 		  pModule->accelerometerData_.time.microSeconds = time.tv_usec;
-		  if (pModule->buttonData_.buttonState & kButtonB)
-			  pModule->accelerometerData_.accelX = accel.accelX;
+		  if (pModule->buttonData_.buttonState & kButtonB) //FWGLAS-1456: If button B is pressed, x-axis value of accelerometer changes to 1. 								   	
+			  pModule->accelerometerData_.accelX = accel.accelX; //So for now, report the previous value if button B is pressed. 
 		  HWControllerEventMessage cmsg(kHWControllerAccelerometerDataChanged, pModule->controller_);
 		  pModule->eventMPI_.PostEvent(cmsg, 0);
 	  }
@@ -574,11 +581,28 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	      power_counter++;
 	  }
 	  
-	  if (power_counter == 50)
+	  //FWGLAS-547: Do KeepAlive and low battery checks less often.
+	  //These should probably be separate methods but trying to avoid the overhead of a function call...
+	  if (power_counter == BATTERY_STATE_COUNT_THRESHOLD)
 	  {
 		  CPowerMPI::KeepAlive();
-		  //ProcessLowBatteryStatus(packet[15]); //Do it here instead? 
 		  power_counter = 0;
+	  }
+	  
+	  if(lowBatteryStatus)
+	  {
+		  lowBatteryCounter++;
+	  }
+	  else
+	  {
+		  lowBatteryCounter = 0;
+	  }
+	  
+	  if(lowBatteryCounter == BATTERY_STATE_COUNT_THRESHOLD)
+	  {
+		  HWControllerEventMessage cmsg(kHWControllerLowBattery, controller_);
+		  eventMPI_.PostEvent(cmsg, 128);
+		  debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::Posting  kHWControllerLowBattery\n");
 	  }
   }
 
