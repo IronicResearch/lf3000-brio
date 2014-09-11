@@ -43311,3 +43311,19 @@ By Dave Milici (dmilici@leapfrog.com) on 9/10/14 4:55 PM
 25,112 ms. (Cumulative: 29,592,548 ms)
 
 ----------------
+Revision 11,076 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,056 ms. (Cumulative: 29,617,697 ms)
+
+----------------
+Revision 11,077 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1285: Add MfgData query for 50Hz camera control.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/10/14 7:23 PM
+2 changed, 1 added, 0 deleted.
+25,410 ms. (Cumulative: 29,643,107 ms)
+
+----------------

@@ -57,6 +57,7 @@
 
 // PNG wrapper function for saving file
 bool PNG_save(const char* file, int width, int height, int pitch, char* data);
+bool MFG_Is50Hz(void);
 
 #define USE_PROFILE			0
 
@@ -176,6 +177,20 @@ void SuspendEthernetLink(bool suspend)
 			fclose (pFile);
 		}
 	}
+}
+
+//----------------------------------------------------------------------------
+bool Is50Hz(void)
+{
+#ifdef LF3000
+	/* FIXME: Hacks for Glasgow support */
+	if (GetPlatformName() == "GLASGOW") {
+		if (MFG_Is50Hz()) {
+			return true;
+		}
+	}
+#endif
+	return false;
 }
 
 //============================================================================
@@ -715,7 +730,7 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 			{V4L2_CID_BACKLIGHT_COMPENSATION,	0},
 #endif /* V4L2_CID_POWER_LINE_FREQUENCY */
 #elif defined(LF3000)
-			{V4L2_CID_POWER_LINE_FREQUENCY, 	2},
+			{V4L2_CID_POWER_LINE_FREQUENCY, 	Is50Hz() ? 1 : 2},
 			{V4L2_CID_AUTO_WHITE_BALANCE,		1},
 			{V4L2_CID_EXPOSURE_AUTO,			3},
 #endif
