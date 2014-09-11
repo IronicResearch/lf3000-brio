@@ -39,6 +39,7 @@ myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
+myenv.Append(CPPPATH = ['#ThirdParty/MfgData/lib'])
 
 if env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/include'])
@@ -51,11 +52,14 @@ myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
+myenv.Append(LIBPATH = ['#ThirdParty/MfgData/lib/' + env['cpu']])
 
 myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 
 myenv.Append(CPPPATH=['Include'])
 if not env['cpu'] == 'x86':
+	if env['platform'] == 'LF3000':
+		modlibs		+=	['MfgData']
 	usbmodule	= MakeMyModule(myenv, usb_module_name, modsrcs + usbmodsrcs, modlibs, kBuildModule)
 	vipmodule	= MakeMyModule(myenv, vip_module_name, modsrcs + vipmodsrcs, modlibs, kBuildModule)
 	nxpmodule 	= ""
