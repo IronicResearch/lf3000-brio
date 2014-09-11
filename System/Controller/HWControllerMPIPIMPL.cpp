@@ -88,7 +88,7 @@ namespace Hardware {
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetDeviceCallback, (void*)&DeviceCallback, sizeof(void*), NULL);
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputCallback, (void*)&InputCallback, sizeof(void*), NULL);
 			pBTIO_SendCommand_(handle_, kBTIOCmdSetScanCallback, (void*)&ScanCallback, sizeof(void*), NULL);
-//			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputContext, this, sizeof(void*), NULL);
+			pBTIO_SendCommand_(handle_, kBTIOCmdSetInputContext, this, sizeof(void*), NULL);
 			FILE* fp = fopen("/flags/controllerlog", "r");
 			if(fp)
 			{
@@ -173,14 +173,12 @@ namespace Hardware {
 
   void
   HWControllerMPIPIMPL::InputCallback(void* context, void* data, int length, char* addr) {
-	  HWControllerMPIPIMPL* pModule = HWControllerMPIPIMPL::Instance().get(); //(HWControllerMPIPIMPL*)context;
+	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       HWController* controller = NULL;
       BtAdrWrap key(addr);
       if (pModule->mapControllers_.count(key) > 0)
     	  controller = pModule->mapControllers_.at(key);
       if (!controller)
-    	  return;
-      if (controller != context)
     	  return;
 
 #ifdef ENABLE_PROFILING
@@ -309,9 +307,6 @@ namespace Hardware {
               eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
       }
 
-      // Register GATT input callback per HWController
-      if (pBTIO_SendCommand_)
-          pBTIO_SendCommand_(handle_, kBTIOCmdSetInputContext, controller, sizeof(void*), NULL);
 
 #ifdef ENABLE_PROFILING
       TimeStampOn(controller->GetID());
