@@ -43345,3 +43345,12 @@ By spalav (spalav@leapfrog.com) on 9/11/14 3:18 PM
 25,631 ms. (Cumulative: 29,695,453 ms)
 
 ----------------
+Revision 11,080 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+removed addcontroller from scan callback. Scan callback is now only used to send a pairing success event to the app that sent sync button pressed event.
+
+By Falguni Mirani (fmirani@leapfrog.com) on 9/12/14 8:15 AM
+2 changed, 0 added, 0 deleted.
+25,238 ms. (Cumulative: 29,720,785 ms)
+
+----------------

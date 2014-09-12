@@ -157,7 +157,10 @@ namespace Hardware {
       HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       pModule->isDeviceCallback_ = false;
       pModule->isScanCallback_ = true;
-      pModule->AddController((char*)data);
+      //pModule->AddController((char*)data);
+
+      pModule->SendPairingSuccess();
+	
       pModule->debugMPI_.DebugOut(kDbgLvlImportant, " \n *********************************** >>>  ScanCallback: numControllers=%d\n", pModule->numControllers_);
   }
 
@@ -204,6 +207,19 @@ namespace Hardware {
 			pBTIO_ScanDevices_(handle_, 0);
   	  }
   }
+
+
+  void
+  HWControllerMPIPIMPL::SendPairingSuccess(void) {
+	   printf("\n In HWControllerMPIPIMPL:: SendPairingSuccess ");
+	if (isPairing_) {
+                printf("\n HWControllerMPIPIMPL:: SendPairingSuccess - PairingSuccess!");
+                HWControllerEventMessage newMsg(kHWControllerSyncSuccess, 0);
+                eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
+                isPairing_ = false;
+		return;
+        }
+}
 
   void
   HWControllerMPIPIMPL::AddController(char* link) {
@@ -254,7 +270,7 @@ namespace Hardware {
 	      	}
 	      return;
 	  }
-
+#if 0
 	if (isPairing_) {
                 printf("\n HWControllerMPIPIMPL:: AddController - PairingSuccess!");
                 HWControllerEventMessage newMsg(kHWControllerSyncSuccess, 0);
@@ -262,12 +278,15 @@ namespace Hardware {
                 isPairing_ = false;
 		return;
         }
-
+#endif
 
       // Controller object/s gets created on first connect (DeviceCallback) after pairing successfully or 
       // after each reboot when scanning for the list of paired controllers (ScanCallback) or 
       // paired+connected controllers (DeviceCallback) (Note that during initial scan if the  
       // paired controller is already connected there is only DeviceCallback and no ScanCallback)
+
+//new startegy...or rather going back to the old one create controller object only when the controller connects the first time during that power cycle. 
+     
 
       HWController* controller = new HWController();
       //BADBAD: should not be accessing pimpl_ directly!
@@ -289,7 +308,7 @@ namespace Hardware {
       // If the controllers are not active during the initial scan for paired controllers, we still want the 
       // HWController object to be created but no actions to be taken for connections unless there is a 
       // DeviceCallback
-      if (isDeviceCallback_) {
+ //     if (isDeviceCallback_) {
 	      if ((!controller->pimpl_->IsConnected()) && ((numConnectedControllers_) >= GetMaximumNumberOfControllers())) {
                     debugMPI_.DebugOut(kDbgLvlImportant, "AddController - Connected controllers maxed out at %d\n", numConnectedControllers_);
   		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
@@ -305,7 +324,7 @@ namespace Hardware {
 	      controller->pimpl_->SetConnected(true);
               HWControllerEventMessage qmsg(kHWControllerConnected, controller);
               eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
-      }
+  //    }
 
 
 #ifdef ENABLE_PROFILING

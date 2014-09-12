@@ -84,6 +84,7 @@ namespace Hardware {
 
     void ScanForDevices(void);
     void AddController(char* link);
+    void SendPairingSuccess(void);
     HWController* FindController(char* link);
     char* FindControllerLink(HWController* controller);
     bool HandleConsoleSyncButton(const LeapFrog::Brio::IEventMessage &msgIn,
