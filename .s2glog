@@ -43399,3 +43399,12 @@ By spalav (spalav@leapfrog.com) on 9/13/14 4:34 PM
 24,973 ms. (Cumulative: 29,847,486 ms)
 
 ----------------
+Revision 11,086 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+I guess the patch applied in r11084 had a typo... Power counter to post KeepAlive needs to be compared with POWER_STATE_COUNT_THRESHOLD.
+
+By spalav (spalav@leapfrog.com) on 9/13/14 4:45 PM
+1 changed, 0 added, 0 deleted.
+25,065 ms. (Cumulative: 29,872,645 ms)
+
+----------------
