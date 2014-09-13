@@ -43354,3 +43354,12 @@ By Falguni Mirani (fmirani@leapfrog.com) on 9/12/14 8:15 AM
 25,238 ms. (Cumulative: 29,720,785 ms)
 
 ----------------
+Revision 11,081 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1458.  IntegralImage now resizes dstMat if it's not the same size as srcMat.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/13/14 10:51 AM
+1 changed, 0 added, 0 deleted.
+25,171 ms. (Cumulative: 29,746,046 ms)
+
+----------------

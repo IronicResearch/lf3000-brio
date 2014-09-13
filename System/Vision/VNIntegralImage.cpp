@@ -8,6 +8,11 @@ namespace Vision {
 		if ( dstMat.empty() ) {
 			dstMat.create( srcMat.size(), CV_32S );
 		}
+		if(dstMat.size() != srcMat.size())
+		{
+			dstMat.release();
+			dstMat.create( srcMat.size(), CV_32S );
+		}
 
 
 		//	todo: see http://www.aishack.in/2010/07/integral-images/
