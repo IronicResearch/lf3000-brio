@@ -36,7 +36,7 @@ namespace Vision {
 		dst += dstStep;
 		src += srcStep;
 
-		for ( int y = 0; y < height; y++, src+=srcStep, dst+=dstStep) {
+		for ( int y = 0; y < height-1; y++, src+=srcStep, dst+=dstStep) {
 			rs = 0;
 			for ( int x = 0; x < width; x++ ) {
 				rs += src[x];

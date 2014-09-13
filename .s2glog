@@ -43372,3 +43372,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/13/14 12:18 PM
 25,373 ms. (Cumulative: 29,771,512 ms)
 
 ----------------
+Revision 11,083 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1458.  The second part of the IntegralImage now only adds up to "y < height-1".  Because the first row was added already, we already finished one row.  Doing till "y < height" will actually write one row too many.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/13/14 3:58 PM
+1 changed, 0 added, 0 deleted.
+25,182 ms. (Cumulative: 29,796,804 ms)
+
+----------------
