@@ -7,6 +7,7 @@
 #include <AccelerometerMPI.h>
 #include <Hardware/HWAnalogStickMPI.h>
 #include <DebugMPI.h>
+#include <Hardware/HWControllerEventMessage.h>
 
 namespace LF {
 
@@ -108,6 +109,10 @@ namespace Hardware {
 
     char blueToothAddress_[64];
     bool connected_;
+
+    HWControllerEventMessage analogStickMsg_;
+    HWControllerEventMessage accelerometerMsg_;
+    HWControllerEventMessage buttonMsg_;
 
     void ZeroAccelerometerData(void);
     void ZeroButtonData(void);
