@@ -43381,3 +43381,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 9/13/14 3:58 PM
 25,182 ms. (Cumulative: 29,796,804 ms)
 
 ----------------
+Revision 11,084 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-547: Checking in optimization changes from AlexL. These bring time taken by LocalCallback from 20ms to 7ms. Helps with 2 controller latency issues...
+
+By spalav (spalav@leapfrog.com) on 9/13/14 4:31 PM
+2 changed, 0 added, 0 deleted.
+25,506 ms. (Cumulative: 29,822,404 ms)
+
+----------------

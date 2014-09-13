@@ -1,7 +1,6 @@
 #include "HWControllerPIMPL.h"
 #include "HWControllerMPIPIMPL.h"
 #include <Hardware/HWControllerTypes.h>
-#include <Hardware/HWControllerEventMessage.h>
 #include <Vision/VNWand.h>
 #include <VNWandPIMPL.h>
 #include <VNVisionMPIPIMPL.h>
@@ -14,8 +13,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// flat profiler
+//#define VN_PROFILE 1
+#undef VN_PROFILE
+#include <VNProfiler.h>
+#define TIME_INTERNAL_METHODS 0
+
 using namespace LeapFrog::Brio;
 
+static const U32 kHWDefaultEventPriority = 0;
 static const U32 kHWControllerDefaultRate = 50;
 
 #define BATTERY_STATE_COUNT_THRESHOLD 25
@@ -37,7 +43,10 @@ namespace Hardware {
     connected_(false),
     analogStickDeadZone_(0.14f), //Specified by EE team at +/-7%, which is -0.14..+0.14 in -1.0..+1.0 scale.  FWGLAS-779)
     analogStickMode_ (kHWAnalogStickModeAnalog),
-    debugMPI_(kGroupController) {
+    debugMPI_(kGroupController),
+    analogStickMsg_(kHWControllerAnalogStickDataChanged, controller),
+    accelerometerMsg_(kHWControllerAccelerometerDataChanged, controller),
+    buttonMsg_(kHWControllerButtonStateChanged, controller) {
 #ifdef DEBUG
 	debugMPI_.SetDebugLevel(kDbgLvlVerbose);
 #endif
@@ -271,55 +280,61 @@ namespace Hardware {
 
   void
   HWControllerPIMPL::DeadZoneAnalogStickData(tHWAnalogStickData& theData) {
-	  const float centerDeadZoneThreshold = GetAnalogStickDeadZone();
-	  const float outerDeadZoneThreshold = 0.81f;		//0.9^2
-	  const float ordinalThreshold = 0.344f;			//sin(22.5 degrees) * 0.9
-
-	  //When dead zone is set to 0.0f, disable dead zone filter and pass through raw data from analog stick
-	  if(centerDeadZoneThreshold == 0.0f) {
-		  return;
-	  }
-
-	  //Compensate for a systematic non-linear error in joystick
-	  // data on production (100K Ohm) joysticks which would cause
-	  // the joystick rest position to be outside of the EE
-	  // specified center dead zone.  Right now, the average
-	  // production joystick X and Y at rest are (142-128)/128 =
-	  // +0.109.  We want a function f(raw)=cooked, where
-	  // f(-1)=-1, f(0.109)=0, f(1)=1.  We can fit a quadratic
-	  // through these three points, ax^2+bx+c. We get a=0.110699,
-	  // b=1, c=-a, which simplifies things a bit.  We can use
-	  // f(x)=a(x^2-1)+x
-
-#define LINEARIZE_100K(x) 0.110699*(x*x-1)+x
- 	  if (has100KOhmJoystick_)
-	  {
-		  theData.x = LINEARIZE_100K(theData.x);
-		  theData.y = LINEARIZE_100K(theData.y);
-	  }
-
-	  //Handle the dead zone in the center of the stick
-	  if(fabsf(theData.x) <= centerDeadZoneThreshold) theData.x = 0.0f;
-	  if(fabsf(theData.y) <= centerDeadZoneThreshold) theData.y = 0.0f;
-
-	  //Handle the dead zone at the outer edge of the stick
-	  float stickR2 = (theData.x * theData.x) + (theData.y * theData.y);
-	  if(stickR2 >= outerDeadZoneThreshold) {
-		  if(fabsf(theData.x) >= ordinalThreshold) {
-			  theData.x = (theData.x > 0.0f) ? 1.0f : -1.0f;
-		  }
-		  else {
-			  theData.x = 0.0f;
-		  }
-
-		  if(fabsf(theData.y) >= ordinalThreshold) {
-			  theData.y = (theData.y > 0.0f) ? 1.0f : -1.0f;
-		  }
-		  else {
-			  theData.y = 0.0f;
-		  }
-	  }
+    const float centerDeadZoneThreshold = analogStickDeadZone_;
+    const float cdzt2 = centerDeadZoneThreshold*centerDeadZoneThreshold;
+    static const float zeroThreshold = 0.00000001f; // near machine precision for float
+    static const float outerDeadZoneThreshold = 0.81f;		//0.9^2
+    static const float ordinalThreshold = 0.344f;		//sin(22.5 degrees) * 0.9
+    static const float ot2 = 0.118336f;                         //ordinalThreshold^2
+    
+    //When dead zone is set to 0.0f, disable dead zone filter and pass through raw data from analog stick
+    if (cdzt2 < zeroThreshold) {
+      return;
+    }
+    //Compensate for a systematic non-linear error in joystick
+    // data on production (100K Ohm) joysticks which would cause
+    // the joystick rest position to be outside of the EE
+    // specified center dead zone.  Right now, the average
+    // production joystick X and Y at rest are (142-128)/128 =
+    // +0.109.  We want a function f(raw)=cooked, where
+    // f(-1)=-1, f(0.109)=0, f(1)=1.  We can fit a quadratic
+    // through these three points, ax^2+bx+c. We get a=0.110699,
+    // b=1, c=-a, which simplifies things a bit.  We can use
+    // f(x)=a(x^2-1)+x
+    
+    const float x2 = theData.x*theData.x;
+    const float y2 = theData.y*theData.y;
+    static const float a = 0.110699f;
+    
+    if (has100KOhmJoystick_) {
+      theData.x = a*(x2-1.f)+theData.x; 
+      theData.y = a*(y2-1.f)+theData.y; 
+    }
+    
+    //Handle the dead zone in the center of the stick
+    if (x2 <= cdzt2) {
+      theData.x = 0.0f;
+    }
+    if (y2 <= cdzt2) { 
+      theData.y = 0.0f;
+    }
+    
+    //Handle the dead zone at the outer edge of the stick
+    if ((x2+y2) >= outerDeadZoneThreshold) {
+      if (x2 >= ot2) {
+	theData.x = (theData.x > 0.0f) ? 1.0f : -1.0f;
+      } else {
+	theData.x = 0.0f;
+      }
+      
+      if (y2 >= ot2) {
+	theData.y = (theData.y > 0.0f) ? 1.0f : -1.0f;
+      } else {
+	theData.y = 0.0f;
+      }
+    }
   }
+
 
   tHWAnalogStickMode
   HWControllerPIMPL::GetAnalogStickMode(void) const {
@@ -455,22 +470,43 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 
   void
   HWControllerPIMPL::LocalCallback(void* context, void* data, int length) {
-	  HWControllerPIMPL* pModule = this; //(HWControllerBluetoothPIMPL*)context;
-	  U8* packet = (U8*)data;
-	  HWControllerMode mode = pModule->mode_;
-	  tHWAnalogStickData stick = pModule->analogStickData_;
-	  tAccelerometerData accel = pModule->accelerometerData_;
+          PROF_BLOCK_START("LocalCallback");
+
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_START("setup");
+#endif
+
+	  U8* packet = static_cast<U8*>(data);
+	  HWControllerMode mode = mode_;
+	  tHWAnalogStickData stick = analogStickData_;
+	  tAccelerometerData accel = accelerometerData_;
 	  struct timeval time;
 	  static U8 power_counter = 0; //FWGLAS-547: Counter for tracking when it's time to post KeepAlive
 	  static U8 lowBatteryCounter = 0; //FWGLAS-547: Counter for tracking when it's time to post low battery warning
 	  bool lowBatteryStatus = false; 
 
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_END();
+
+	  PROF_BLOCK_START("updateCounter");
+#endif
+
 	  // Moderate device update rate fixed at 50Hz
 	  updateCounter_++;
-	  if (updateCounter_ % updateDivider_)
-		  return;
+	  if (updateCounter_ % updateDivider_) {	    
+	    return;
+	  }
+
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_END();
+
+	  PROF_BLOCK_START("getTime");
+#endif
 
 	  gettimeofday(&time, NULL);
+
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_END();
 
 #ifdef DEBUG
 	  char str[8], buf[256] = {'\0'};
@@ -481,106 +517,149 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  debugMPI_.DebugOut(kDbgLvlVerbose, "%s\n", buf);
 #endif
 
+	  PROF_BLOCK_START("parse");
+#endif
+
 	  //Parse the packet	
-	  pModule->buttonData_.buttonTransition = 0;
+	  buttonData_.buttonTransition = 0;
 
-	  pModule->buttonData_.buttonTransition |= (packet[0]) ? kButtonA : 0;
-	  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonA);
-	  pModule->buttonData_.buttonState      &= (packet[0]) ? ~0 : ~kButtonA;
-	  pModule->buttonData_.buttonState      |= (packet[0]) ? kButtonA : 0;
+	  buttonData_.buttonTransition |= (packet[0]) ? kButtonA : 0;
+	  buttonData_.buttonTransition ^= (buttonData_.buttonState & kButtonA);
+	  buttonData_.buttonState      &= (packet[0]) ? ~0 : ~kButtonA;
+	  buttonData_.buttonState      |= (packet[0]) ? kButtonA : 0;
 	  
-	  pModule->buttonData_.buttonTransition |= (packet[1]) ? kButtonB : 0;
-	  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonB);
-	  pModule->buttonData_.buttonState      &= (packet[1]) ? ~0 : ~kButtonB;
-	  pModule->buttonData_.buttonState      |= (packet[1]) ? kButtonB : 0;
+	  buttonData_.buttonTransition |= (packet[1]) ? kButtonB : 0;
+	  buttonData_.buttonTransition ^= (buttonData_.buttonState & kButtonB);
+	  buttonData_.buttonState      &= (packet[1]) ? ~0 : ~kButtonB;
+	  buttonData_.buttonState      |= (packet[1]) ? kButtonB : 0;
 
-	  pModule->buttonData_.buttonTransition |= (packet[2]) ? kButtonMenu : 0;
-	  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonMenu);
-	  pModule->buttonData_.buttonState      &= (packet[2]) ? ~0 : ~kButtonMenu;
-	  pModule->buttonData_.buttonState      |= (packet[2]) ? kButtonMenu : 0;
+	  buttonData_.buttonTransition |= (packet[2]) ? kButtonMenu : 0;
+	  buttonData_.buttonTransition ^= (buttonData_.buttonState & kButtonMenu);
+	  buttonData_.buttonState      &= (packet[2]) ? ~0 : ~kButtonMenu;
+	  buttonData_.buttonState      |= (packet[2]) ? kButtonMenu : 0;
 
-	  pModule->buttonData_.buttonTransition |= (packet[3]) ? kButtonHint : 0;
-	  pModule->buttonData_.buttonTransition ^= (pModule->buttonData_.buttonState & kButtonHint);
-	  pModule->buttonData_.buttonState      &= (packet[3]) ? ~0 : ~kButtonHint;
-	  pModule->buttonData_.buttonState      |= (packet[3]) ? kButtonHint : 0;
+	  buttonData_.buttonTransition |= (packet[3]) ? kButtonHint : 0;
+	  buttonData_.buttonTransition ^= (buttonData_.buttonState & kButtonHint);
+	  buttonData_.buttonState      &= (packet[3]) ? ~0 : ~kButtonHint;
+	  buttonData_.buttonState      |= (packet[3]) ? kButtonHint : 0;
 
 	  if (packet[5] && !packet[4])
-		  pModule->mode_ = kHWControllerMode;
+		  mode_ = kHWControllerMode;
 	  else if (!packet[5] && packet[4])
-		  pModule->mode_ = kHWControllerWandMode;
+		  mode_ = kHWControllerWandMode;
 	  else
-		  pModule->mode_ = kHWControllerNoMode;
+		  mode_ = kHWControllerNoMode;
 
-	  pModule->analogStickData_.x = BYTE_TO_FLOAT(packet[6]);
+	  analogStickData_.x = BYTE_TO_FLOAT(packet[6]);
 
-	  pModule->analogStickData_.y = BYTE_TO_FLOAT(packet[7]);
+	  analogStickData_.y = BYTE_TO_FLOAT(packet[7]);
 
-	  pModule->accelerometerData_.accelX = packet[8];
-	  pModule->accelerometerData_.accelX = - WORD_TO_SIGNED(pModule->accelerometerData_.accelX);
+	  accelerometerData_.accelX = packet[8];
+	  accelerometerData_.accelX = - WORD_TO_SIGNED(accelerometerData_.accelX);
 
-	  pModule->accelerometerData_.accelZ = packet[10];
-	  pModule->accelerometerData_.accelZ = WORD_TO_SIGNED(pModule->accelerometerData_.accelZ);
+	  accelerometerData_.accelZ = packet[10];
+	  accelerometerData_.accelZ = WORD_TO_SIGNED(accelerometerData_.accelZ);
 
-	  pModule->accelerometerData_.accelY = packet[12];
-	  pModule->accelerometerData_.accelY = - WORD_TO_SIGNED(pModule->accelerometerData_.accelY);
+	  accelerometerData_.accelY = packet[12];
+	  accelerometerData_.accelY = - WORD_TO_SIGNED(accelerometerData_.accelY);
 
 	  //ProcessLowBatteryStatus(packet[15]);
 	  lowBatteryStatus = packet[15];
 
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_END();
+
+	  PROF_BLOCK_START("connectionEvent");
+#endif
+
 	  // Initial connection event
 	  if (updateCounter_ <= updateDivider_) {
-	      HWControllerEventMessage cmsg(kHWControllerConnected, pModule->controller_);
-		  pModule->eventMPI_.PostEvent(cmsg, 0);
+	      HWControllerEventMessage cmsg(kHWControllerConnected, controller_);
+		  eventMPI_.PostEvent(cmsg, kHWDefaultEventPriority);
 	  }
 
-	  if (mode != pModule->mode_) {
-	      HWControllerEventMessage cmsg(kHWControllerModeChanged, pModule->controller_);
-		  pModule->eventMPI_.PostEvent(cmsg, 0);
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_END();
+
+	  PROF_BLOCK_START("modeEvent");
+#endif
+
+	  if (mode != mode_) {
+	      HWControllerEventMessage cmsg(kHWControllerModeChanged, controller_);
+		  eventMPI_.PostEvent(cmsg, kHWDefaultEventPriority);
 	  }
+
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_END();
 
 #if 0 // FIXME -- distinguish composite event message from ala-carte event messages?
 	  // Compatibility events posted only for default controller
-	  if (pModule->id_ > 0) {
-	      HWControllerEventMessage cmsg(kHWControllerDataChanged, pModule->controller_);
-		  pModule->eventMPI_.PostEvent(cmsg, 0);
+	  if (id_ > 0) {
+	      HWControllerEventMessage cmsg(kHWControllerDataChanged, controller_);
+		  eventMPI_.PostEvent(cmsg, kHWDefaultEventPriority);
 		  return;
 	  }
 #endif
 
-	  DeadZoneAnalogStickData(pModule->analogStickData_);
-	  if(ApplyAnalogStickMode(pModule->analogStickData_)) {
+	  PROF_BLOCK_START("DeadZone");
+#endif
+
+	  DeadZoneAnalogStickData(analogStickData_);
+
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_END();
+
+	  PROF_BLOCK_START("ApplyAnalogStickMode");
+#endif
+
+	  if(ApplyAnalogStickMode(analogStickData_)) {
 		//if(GetAnalogStickMode() == kHWAnalogStickModeAnalog) {
 		  //if (memcmp(&stick, &analogStickData_, sizeof(tHWAnalogStickData)) != 0) {
 		  if (stick.x != analogStickData_.x || stick.y != analogStickData_.y)
 		  {
-			  pModule->analogStickData_.time.seconds = time.tv_sec;
-			  pModule->analogStickData_.time.microSeconds = time.tv_usec;
-			  HWControllerEventMessage cmsg(kHWControllerAnalogStickDataChanged, pModule->controller_);
-			  pModule->eventMPI_.PostEvent(cmsg, 0);
+			  analogStickData_.time.seconds = time.tv_sec;
+			  analogStickData_.time.microSeconds = time.tv_usec;
+			  eventMPI_.PostEvent(analogStickMsg_, kHWDefaultEventPriority);
 		  }
 		  //}
 	  }
 
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_END();
+
+	  PROF_BLOCK_START("accelerationEvent");
+#endif
+
 	  //if (memcmp(&accel, &accelerometerData_, sizeof(tAccelerometerData)) != 0) {
 	  if(accel.accelX != accelerometerData_.accelX || accel.accelY != accelerometerData_.accelY || accel.accelZ != accelerometerData_.accelZ)
 	  {
-		  pModule->accelerometerData_.time.seconds = time.tv_sec;
-		  pModule->accelerometerData_.time.microSeconds = time.tv_usec;
-		  if (pModule->buttonData_.buttonState & kButtonB) //FWGLAS-1456: If button B is pressed, x-axis value of accelerometer changes to 1. 								   	
-			  pModule->accelerometerData_.accelX = accel.accelX; //So for now, report the previous value if button B is pressed. 
-		  HWControllerEventMessage cmsg(kHWControllerAccelerometerDataChanged, pModule->controller_);
-		  pModule->eventMPI_.PostEvent(cmsg, 0);
+		  accelerometerData_.time.seconds = time.tv_sec;
+		  accelerometerData_.time.microSeconds = time.tv_usec;
+		  if (buttonData_.buttonState & kButtonB) //FWGLAS-1456: If button B is pressed, x-axis value of accelerometer changes to 1. 								   	
+		    accelerometerData_.accelX = accel.accelX; //So for now, report the previous value if button B is pressed. 
+		  eventMPI_.PostEvent(accelerometerMsg_, kHWDefaultEventPriority);
 	  }
 	  //}
 
-	  if (pModule->buttonData_.buttonTransition) {
-		  pModule->buttonData_.time.seconds = time.tv_sec;
-		  pModule->buttonData_.time.microSeconds = time.tv_usec;
-	      HWControllerEventMessage cmsg(kHWControllerButtonStateChanged, pModule->controller_);
-	      pModule->eventMPI_.PostEvent(cmsg, 0);
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_END();
+
+	  PROF_BLOCK_START("buttonEvent");
+#endif
+
+	  if (buttonData_.buttonTransition) {
+		  buttonData_.time.seconds = time.tv_sec;
+		  buttonData_.time.microSeconds = time.tv_usec;
+	      eventMPI_.PostEvent(buttonMsg_, kHWDefaultEventPriority);
 	      power_counter++;
 	  }
-	  
+
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_END();
+
+	  PROF_BLOCK_START("batteryEvent");
+#endif
+
 	  //FWGLAS-547: Do KeepAlive and low battery checks less often.
 	  //These should probably be separate methods but trying to avoid the overhead of a function call...
 	  if (power_counter == BATTERY_STATE_COUNT_THRESHOLD)
@@ -604,6 +683,12 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 		  eventMPI_.PostEvent(cmsg, 128);
 		  debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::Posting  kHWControllerLowBattery\n");
 	  }
+
+#if TIME_INTERNAL_METHODS
+	  PROF_BLOCK_END();
+#endif
+	  PROF_BLOCK_END();
+	  PROF_PRINT_REPORT_AFTER_COUNT(500);
   }
 
     void
