@@ -306,7 +306,7 @@ Boolean	CCameraModule::IsValid() const
 
 Boolean	CCameraModule::IsCameraPresent()
 {
-	dbg_.DebugOut(kDbgLvlImportant, "CameraModule::IsCameraPresent: %d\n", valid);
+	dbg_.DebugOut(kDbgLvlNoteable, "CameraModule::IsCameraPresent: %d\n", valid);
 	return valid;
 }
 
