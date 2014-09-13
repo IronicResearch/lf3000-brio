@@ -503,8 +503,6 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  PROF_BLOCK_START("getTime");
 #endif
 
-	  gettimeofday(&time, NULL);
-
 #if TIME_INTERNAL_METHODS
 	  PROF_BLOCK_END();
 
@@ -617,8 +615,6 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 		  //if (memcmp(&stick, &analogStickData_, sizeof(tHWAnalogStickData)) != 0) {
 		  if (stick.x != analogStickData_.x || stick.y != analogStickData_.y)
 		  {
-			  analogStickData_.time.seconds = time.tv_sec;
-			  analogStickData_.time.microSeconds = time.tv_usec;
 			  eventMPI_.PostEvent(analogStickMsg_, kHWDefaultEventPriority);
 		  }
 		  //}
@@ -633,8 +629,6 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  //if (memcmp(&accel, &accelerometerData_, sizeof(tAccelerometerData)) != 0) {
 	  if(accel.accelX != accelerometerData_.accelX || accel.accelY != accelerometerData_.accelY || accel.accelZ != accelerometerData_.accelZ)
 	  {
-		  accelerometerData_.time.seconds = time.tv_sec;
-		  accelerometerData_.time.microSeconds = time.tv_usec;
 		  if (buttonData_.buttonState & kButtonB) //FWGLAS-1456: If button B is pressed, x-axis value of accelerometer changes to 1. 								   	
 		    accelerometerData_.accelX = accel.accelX; //So for now, report the previous value if button B is pressed. 
 		  eventMPI_.PostEvent(accelerometerMsg_, kHWDefaultEventPriority);
@@ -648,8 +642,6 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 #endif
 
 	  if (buttonData_.buttonTransition) {
-		  buttonData_.time.seconds = time.tv_sec;
-		  buttonData_.time.microSeconds = time.tv_usec;
 	      eventMPI_.PostEvent(buttonMsg_, kHWDefaultEventPriority);
 	      power_counter++;
 	  }
