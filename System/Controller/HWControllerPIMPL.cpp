@@ -654,7 +654,7 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 
 	  //FWGLAS-547: Do KeepAlive and low battery checks less often.
 	  //These should probably be separate methods but trying to avoid the overhead of a function call...
-	  if (power_counter == BATTERY_STATE_COUNT_THRESHOLD)
+	  if (power_counter == POWER_STATE_COUNT_THRESHOLD)
 	  {
 		  CPowerMPI::KeepAlive();
 		  power_counter = 0;
