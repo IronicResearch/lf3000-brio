@@ -43390,3 +43390,12 @@ By spalav (spalav@leapfrog.com) on 9/13/14 4:31 PM
 25,506 ms. (Cumulative: 29,822,404 ms)
 
 ----------------
+Revision 11,085 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-547: Taking out gettimeofday and turning off timestamps in events being posted for controller events to help with latency issues.
+
+By spalav (spalav@leapfrog.com) on 9/13/14 4:34 PM
+1 changed, 0 added, 0 deleted.
+24,973 ms. (Cumulative: 29,847,486 ms)
+
+----------------
