@@ -69,7 +69,7 @@ const tVersion			kEmulCameraModuleVersion	= 2;
 const CString			kNXPCameraModuleName	= "CameraNXP";
 const tVersion			kNXPCameraModuleVersion	= 2;
 const tEventPriority	kCameraEventPriority	= 0;
-const tDebugLevel		kCameraDebugLevel		= kDbgLvlVerbose;
+const tDebugLevel		kCameraDebugLevel		= kDbgLvlImportant;
 
 const tVidCapHndl		kStreamingActive		= 0x80000000;
 const tVidCapHndl		kStreamingThread		= 0x40000000;

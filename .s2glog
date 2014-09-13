@@ -43363,3 +43363,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 9/13/14 10:51 AM
 25,171 ms. (Cumulative: 29,746,046 ms)
 
 ----------------
+Revision 11,082 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1430: Raise CameraMPI logging level to Important, and change IsCameraPresent() to Noteable.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/13/14 12:18 PM
+2 changed, 0 added, 0 deleted.
+25,373 ms. (Cumulative: 29,771,512 ms)
+
+----------------
