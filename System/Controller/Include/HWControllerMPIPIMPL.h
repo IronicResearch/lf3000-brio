@@ -83,7 +83,7 @@ namespace Hardware {
     HWControllerMPIPIMPL& operator=(const HWControllerMPIPIMPL&);
 
     void ScanForDevices(void);
-    void AddController(char* link);
+    void AddController(char* link, int ControllerIsConnected);
     void SendPairingSuccess(void);
     HWController* FindController(char* link);
     char* FindControllerLink(HWController* controller);

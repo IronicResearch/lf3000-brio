@@ -166,11 +166,11 @@ namespace Hardware {
 
 // DeviceCallback - gets triggered only for connects/disconnects
   void
-  HWControllerMPIPIMPL::DeviceCallback(void* context, void* data, int length) {
+  HWControllerMPIPIMPL::DeviceCallback(void* context, void* data, int ControllerIsConnected) {
       HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       pModule->isDeviceCallback_ = true;
       pModule->isScanCallback_ = false;
-      pModule->AddController((char*)data);
+      pModule->AddController((char*)data, ControllerIsConnected);
       pModule->debugMPI_.DebugOut(kDbgLvlImportant, " \n ******************************* >>> DeviceCallback: numControllers=%d   numConnectedControllers=%d\n", pModule->numControllers_, pModule->numConnectedControllers_);
   }
 
@@ -222,10 +222,10 @@ namespace Hardware {
 }
 
   void
-  HWControllerMPIPIMPL::AddController(char* link) {
+  HWControllerMPIPIMPL::AddController(char* link, int ControllerIsConnected) {
 	  BtAdrWrap key(link);
-
-	  //If the controller to add was just disconnected then skip this addition, also remove it from the disconnected set
+	  printf(" \ncontrollerIsConnected=%d\n",ControllerIsConnected);
+/*	  //If the controller to add was just disconnected then skip this addition, also remove it from the disconnected set
 	  if(disconnectedControllers_.erase(key) == 1) {
 		  debugMPI_.DebugOut(kDbgLvlImportant, "AddController - skipping controller add as it was just deleted\n");
 		  return;
@@ -267,18 +267,61 @@ namespace Hardware {
 				numConnectedControllers_ = 0;
                         HWControllerEventMessage qmsg(kHWControllerDisconnected, controller);
 			eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
-	      	}
-	      return;
-	  }
-#if 0
-	if (isPairing_) {
-                printf("\n HWControllerMPIPIMPL:: AddController - PairingSuccess!");
-                HWControllerEventMessage newMsg(kHWControllerSyncSuccess, 0);
-                eventMPI_.PostEvent(newMsg, kHWControllerDefaultEventPriority);
-                isPairing_ = false;
-		return;
-        }
-#endif
+	      	}   
+						
+	      	return;
+	  }   */
+
+ 		
+		if (ControllerIsConnected){  //if event is for controller connected
+			printf("\n ++++++++++++++++++++++++++++++++++++++++++++++++controller connected\n");
+			if (mapControllers_.count(key) > 0) {// If controller object already exists, 			      
+			      HWController* controller = FindController(link);
+			      HWControllerLEDColor color = controller->GetLEDColor();
+			      int r = SendCommand(controller, kBTIOCmdSetLEDState, &color, sizeof(color));
+			      numConnectedControllers_++;
+		      	      controller->pimpl_->SetConnected(true);
+      		      	      HWControllerEventMessage qmsg(kHWControllerConnected, controller);
+			      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);						     
+			}				
+			else{  //create new controller object
+			      HWController* controller = new HWController();
+      				//BADBAD: should not be accessing pimpl_ directly!
+      				controller->pimpl_->SetID(numControllers_);
+      				listControllers_.push_back(controller);
+      				mapControllers_.insert(std::pair<BtAdrWrap, HWController*>(key, controller));
+      				numControllers_++;
+      				controller->pimpl_->SetBluetoothAddress( FindControllerLink(controller) );
+
+      				unsigned char hwVersion;
+      				unsigned short fwVersion;
+			        unsigned char* pHwVersion = &hwVersion;
+			        unsigned short* pFwVersion = &fwVersion;
+			        int resultVal = pBTIO_GetControllerVersion_(link, pHwVersion, pFwVersion);
+			        if(!resultVal) controller->pimpl_ ->SetVersionNumbers(hwVersion, fwVersion);
+				numConnectedControllers_++;
+			      	controller->pimpl_->SetConnected(true);
+	      		      	HWControllerEventMessage qmsg(kHWControllerConnected, controller);
+				eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);		
+			}
+		 		
+					
+		}
+		else{   //if the event is for controller disconnected
+			printf("\n -------------------------------------------------controller disconnected\n");
+			if (mapControllers_.count(key) > 0) {// If controller already exists, 			      
+			      HWController* controller = FindController(link);
+			      numConnectedControllers_--;	
+			      controller->pimpl_->SetConnected(false);
+			      if (numConnectedControllers_ < 0)
+				numConnectedControllers_ = 0;
+                              	HWControllerEventMessage qmsg(kHWControllerDisconnected, controller);
+				eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);		
+			}
+			else     //should never come here since we should not get disconnect event for the controller that does not have an object!
+			      return;					
+		}
+		
 
       // Controller object/s gets created on first connect (DeviceCallback) after pairing successfully or 
       // after each reboot when scanning for the list of paired controllers (ScanCallback) or 
@@ -288,27 +331,14 @@ namespace Hardware {
 //new startegy...or rather going back to the old one create controller object only when the controller connects the first time during that power cycle. 
      
 
-      HWController* controller = new HWController();
-      //BADBAD: should not be accessing pimpl_ directly!
-      controller->pimpl_->SetID(numControllers_);
-      listControllers_.push_back(controller);
-      mapControllers_.insert(std::pair<BtAdrWrap, HWController*>(key, controller));
-      numControllers_++;
-      controller->pimpl_->SetBluetoothAddress( FindControllerLink(controller) );
 
-      unsigned char hwVersion;
-      unsigned short fwVersion;
-      unsigned char* pHwVersion = &hwVersion;
-      unsigned short* pFwVersion = &fwVersion;
-      int resultVal = pBTIO_GetControllerVersion_(link, pHwVersion, pFwVersion);
-      if(!resultVal) controller->pimpl_ ->SetVersionNumbers(hwVersion, fwVersion);
 
       // check if isDeviceCallback_ to confirm the DeviceCallback was trigerred and that indicates a 
       // connect/disconnect event. If so, adjust the numConnectedControllers_ counter and post events. 
       // If the controllers are not active during the initial scan for paired controllers, we still want the 
       // HWController object to be created but no actions to be taken for connections unless there is a 
       // DeviceCallback
- //     if (isDeviceCallback_) {
+ /*     if (isDeviceCallback_) {
 	      if ((!controller->pimpl_->IsConnected()) && ((numConnectedControllers_) >= GetMaximumNumberOfControllers())) {
                     debugMPI_.DebugOut(kDbgLvlImportant, "AddController - Connected controllers maxed out at %d\n", numConnectedControllers_);
   		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
@@ -324,7 +354,7 @@ namespace Hardware {
 	      controller->pimpl_->SetConnected(true);
               HWControllerEventMessage qmsg(kHWControllerConnected, controller);
               eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
-  //    }
+      }*/
 
 
 #ifdef ENABLE_PROFILING
