@@ -43417,3 +43417,12 @@ By Falguni Mirani (fmirani@leapfrog.com) on 9/14/14 3:20 PM
 25,143 ms. (Cumulative: 29,897,882 ms)
 
 ----------------
+Revision 11,088 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+added checks of exeisting connect state before incrementing or decrementing numberofConnectedcontrollers count
+
+By Falguni Mirani (fmirani@leapfrog.com) on 9/15/14 10:42 AM
+1 changed, 0 added, 0 deleted.
+25,041 ms. (Cumulative: 29,923,032 ms)
+
+----------------
