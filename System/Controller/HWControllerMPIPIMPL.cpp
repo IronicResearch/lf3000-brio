@@ -225,11 +225,13 @@ namespace Hardware {
   HWControllerMPIPIMPL::AddController(char* link, int ControllerIsConnected) {
 	  BtAdrWrap key(link);
 	  printf(" \ncontrollerIsConnected=%d\n",ControllerIsConnected);
-/*	  //If the controller to add was just disconnected then skip this addition, also remove it from the disconnected set
+	  //If the controller to add was just disconnected then skip this addition, also remove it from the disconnected set
 	  if(disconnectedControllers_.erase(key) == 1) {
 		  debugMPI_.DebugOut(kDbgLvlImportant, "AddController - skipping controller add as it was just deleted\n");
 		  return;
 	  }
+
+#if 0
 
 	  if (mapControllers_.count(key) > 0) {
 	      // If controller already exists, test its connectivity
@@ -270,17 +272,21 @@ namespace Hardware {
 	      	}   
 						
 	      	return;
-	  }   */
+	  }   
+#else
 
  		
 		if (ControllerIsConnected){  //if event is for controller connected
-			printf("\n ++++++++++++++++++++++++++++++++++++++++++++++++controller connected\n");
+			//printf("\n ++++++++++++++++++++++++++++++++++++++++++++++++controller connected\n");
 			if (mapControllers_.count(key) > 0) {// If controller object already exists, 			      
 			      HWController* controller = FindController(link);
 			      HWControllerLEDColor color = controller->GetLEDColor();
 			      int r = SendCommand(controller, kBTIOCmdSetLEDState, &color, sizeof(color));
-			      numConnectedControllers_++;
-		      	      controller->pimpl_->SetConnected(true);
+			      if (!controller->pimpl_->IsConnected()){
+					numConnectedControllers_++;
+		      	      		controller->pimpl_->SetConnected(true);
+			      }
+			      debugMPI_.DebugOut(kDbgLvlImportant, "Controller connected \n");
       		      	      HWControllerEventMessage qmsg(kHWControllerConnected, controller);
 			      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);						     
 			}				
@@ -301,6 +307,7 @@ namespace Hardware {
 			        if(!resultVal) controller->pimpl_ ->SetVersionNumbers(hwVersion, fwVersion);
 				numConnectedControllers_++;
 			      	controller->pimpl_->SetConnected(true);
+				debugMPI_.DebugOut(kDbgLvlImportant, "Controller connected\n");
 	      		      	HWControllerEventMessage qmsg(kHWControllerConnected, controller);
 				eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);		
 			}
@@ -308,21 +315,26 @@ namespace Hardware {
 					
 		}
 		else{   //if the event is for controller disconnected
-			printf("\n -------------------------------------------------controller disconnected\n");
-			if (mapControllers_.count(key) > 0) {// If controller already exists, 			      
+			//printf("\n -------------------------------------------------controller disconnected\n");
+			if (mapControllers_.count(key) > 0) {// If controller object already exists, 			      
 			      HWController* controller = FindController(link);
-			      numConnectedControllers_--;	
-			      controller->pimpl_->SetConnected(false);
-			      if (numConnectedControllers_ < 0)
-				numConnectedControllers_ = 0;
-                              	HWControllerEventMessage qmsg(kHWControllerDisconnected, controller);
-				eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);		
+			      if (controller->pimpl_->IsConnected()){			              
+				      controller->pimpl_->SetConnected(false);
+				      numConnectedControllers_--;	
+				      if (numConnectedControllers_ < 0)
+						numConnectedControllers_ = 0;
+			      }
+			      debugMPI_.DebugOut(kDbgLvlImportant, "Controller disconnected\n");
+                              HWControllerEventMessage qmsg(kHWControllerDisconnected, controller);
+			      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);		
 			}
-			else     //should never come here since we should not get disconnect event for the controller that does not have an object!
+			else {     //should never come here since we should not get disconnect event for the controller that does not have an object!
+			      debugMPI_.DebugOut(kDbgLvlImportant, "Controller had no controller object and yet received disconnect!\n");   
 			      return;					
+			}
 		}
 		
-
+#endif
       // Controller object/s gets created on first connect (DeviceCallback) after pairing successfully or 
       // after each reboot when scanning for the list of paired controllers (ScanCallback) or 
       // paired+connected controllers (DeviceCallback) (Note that during initial scan if the  
@@ -340,8 +352,7 @@ namespace Hardware {
       // DeviceCallback
  /*     if (isDeviceCallback_) {
 	      if ((!controller->pimpl_->IsConnected()) && ((numConnectedControllers_) >= GetMaximumNumberOfControllers())) {
-                    debugMPI_.DebugOut(kDbgLvlImportant, "AddController - Connected controllers maxed out at %d\n", numConnectedControllers_);
-  		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
+debug  		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
 		    isMaxControllerDisconnect_ = true;
                     // Should we send a disconnect to this controller ? 
                     pBTIO_DisconnectDevice_(link, ForceDisconnect);
