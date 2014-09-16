@@ -43444,3 +43444,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/16/14 1:04 PM
 25,162 ms. (Cumulative: 29,973,435 ms)
 
 ----------------
+Revision 11,091 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add implementation for disabling. HWController::SetAccelerometerMode(kAccelerometerModeDisabled) dFWGLAS-1465
+
+By mharris (mharris@leapfrog.com) on 9/16/14 1:38 PM
+2 changed, 0 added, 0 deleted.
+25,191 ms. (Cumulative: 29,998,735 ms)
+
+----------------

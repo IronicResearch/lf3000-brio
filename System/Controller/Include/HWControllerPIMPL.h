@@ -5,6 +5,7 @@
 #include <Vision/VNVisionMPI.h>
 #include <ButtonMPI.h>
 #include <AccelerometerMPI.h>
+#include <AccelerometerTypes.h>
 #include <Hardware/HWAnalogStickMPI.h>
 #include <DebugMPI.h>
 #include <Hardware/HWControllerEventMessage.h>
@@ -102,6 +103,7 @@ namespace Hardware {
     LeapFrog::Brio::U8 has100KOhmJoystick_;
 
     LeapFrog::Brio::tAccelerometerData accelerometerData_;
+    LeapFrog::Brio::tAccelerometerMode accelerometerMode_;
     LeapFrog::Brio::tButtonData2 buttonData_;
     LF::Hardware::tHWAnalogStickData analogStickData_;
     LF::Hardware::tHWAnalogStickMode analogStickMode_;
