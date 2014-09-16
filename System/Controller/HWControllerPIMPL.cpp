@@ -42,7 +42,8 @@ namespace Hardware {
     has100KOhmJoystick_(1), // Production defaults to 100K; FEP had 10K
     connected_(false),
     analogStickDeadZone_(0.14f), //Specified by EE team at +/-7%, which is -0.14..+0.14 in -1.0..+1.0 scale.  FWGLAS-779)
-    analogStickMode_ (kHWAnalogStickModeAnalog),
+    analogStickMode_(kHWAnalogStickModeAnalog),
+    accelerometerMode_(kAccelerometerModeContinuous),
     debugMPI_(kGroupController),
     analogStickMsg_(kHWControllerAnalogStickDataChanged, controller),
     accelerometerMsg_(kHWControllerAccelerometerDataChanged, controller),
@@ -436,15 +437,23 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 
   LeapFrog::Brio::tAccelerometerMode
   HWControllerPIMPL::GetAccelerometerMode(void) const {
-	return kAccelerometerModeContinuous;
+	return accelerometerMode_;
   }
 
   LeapFrog::Brio::tErrType
   HWControllerPIMPL::SetAccelerometerMode(const LeapFrog::Brio::tAccelerometerMode mode) {
-    if(mode == kAccelerometerModeContinuous)
-    	return kNoErr;
-    else
-    	return kInvalidParamErr;
+	// This is a partial implementation, suited for Glasgow. Not all modes are supported.
+	debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::SetAccelerometerMode - mode requested: %d; Controller Id_: %d\n", mode, id_);
+
+	switch(mode) {
+		case kAccelerometerModeContinuous:
+		case kAccelerometerModeDisabled:
+			accelerometerMode_ = mode;
+			return kNoErr;
+		default:
+			debugMPI_.DebugOut(kDbgLvlCritical, "HWControllerPIMPL::SetAccelerometerMode - mode not supported: %d; Controller Id_: %d\n", mode, id_);
+			return kInvalidParamErr;
+	}
   }
 
   void
@@ -626,14 +635,16 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  PROF_BLOCK_START("accelerationEvent");
 #endif
 
-	  //if (memcmp(&accel, &accelerometerData_, sizeof(tAccelerometerData)) != 0) {
-	  if(accel.accelX != accelerometerData_.accelX || accel.accelY != accelerometerData_.accelY || accel.accelZ != accelerometerData_.accelZ)
-	  {
-		  if (buttonData_.buttonState & kButtonB) //FWGLAS-1456: If button B is pressed, x-axis value of accelerometer changes to 1. 								   	
-		    accelerometerData_.accelX = accel.accelX; //So for now, report the previous value if button B is pressed. 
-		  eventMPI_.PostEvent(accelerometerMsg_, kHWDefaultEventPriority);
+	  if (kAccelerometerModeDisabled != accelerometerMode_){
+		  //if (memcmp(&accel, &accelerometerData_, sizeof(tAccelerometerData)) != 0) {
+		  if(accel.accelX != accelerometerData_.accelX || accel.accelY != accelerometerData_.accelY || accel.accelZ != accelerometerData_.accelZ)
+		  {
+			  if (buttonData_.buttonState & kButtonB) //FWGLAS-1456: If button B is pressed, x-axis value of accelerometer changes to 1.
+				accelerometerData_.accelX = accel.accelX; //So for now, report the previous value if button B is pressed.
+			  eventMPI_.PostEvent(accelerometerMsg_, kHWDefaultEventPriority);
+		  }
+		  //}
 	  }
-	  //}
 
 #if TIME_INTERNAL_METHODS
 	  PROF_BLOCK_END();
