@@ -201,6 +201,14 @@ CAVIPlayer::CAVIPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	totalFramesRead		= 0;
 	cur_dts             = 0;
 	id_					= id;
+
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+						 "%s: %d Hz, %d ch, %d bps, '%s'\n",
+						 __FUNCTION__,
+						 pCodecCtx->sample_rate,
+						 pCodecCtx->channels,
+						 pCodecCtx->bit_rate,
+						 pInfo->path->c_str());
 }
 
 // =============================================================================

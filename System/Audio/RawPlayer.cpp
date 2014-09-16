@@ -129,6 +129,9 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 		timeDelta_	*= kAudioFramesPerMS;
 	}
 
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "%s: %d Hz, %d ch, '%s'\n",
+		__FUNCTION__,  (int)samplingFrequency_, (int)channels_, pInfo->path->c_str());
+
 	numRawPlayers++;
 
 	TimeStampOff(3);
