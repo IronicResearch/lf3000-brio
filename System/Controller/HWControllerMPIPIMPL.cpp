@@ -230,7 +230,6 @@ namespace Hardware {
 		  debugMPI_.DebugOut(kDbgLvlImportant, "AddController - skipping controller add as it was just deleted\n");
 		  return;
 	  }
-
 #if 0
 
 	  if (mapControllers_.count(key) > 0) {
@@ -273,11 +272,8 @@ namespace Hardware {
 						
 	      	return;
 	  }   
-#else
-
- 		
-		if (ControllerIsConnected){  //if event is for controller connected
-			//printf("\n ++++++++++++++++++++++++++++++++++++++++++++++++controller connected\n");
+#else 		
+		if (ControllerIsConnected){  //if event is for controller connected			
 			if (mapControllers_.count(key) > 0) {// If controller object already exists, 			      
 			      HWController* controller = FindController(link);
 			      HWControllerLEDColor color = controller->GetLEDColor();
@@ -290,32 +286,57 @@ namespace Hardware {
       		      	      HWControllerEventMessage qmsg(kHWControllerConnected, controller);
 			      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);						     
 			}				
-			else{  //create new controller object
-			      HWController* controller = new HWController();
-      				//BADBAD: should not be accessing pimpl_ directly!
-      				controller->pimpl_->SetID(numControllers_);
-      				listControllers_.push_back(controller);
-      				mapControllers_.insert(std::pair<BtAdrWrap, HWController*>(key, controller));
-      				numControllers_++;
-      				controller->pimpl_->SetBluetoothAddress( FindControllerLink(controller) );
+			else{  //if controller object does not exist or the BLE address was changed to assign controller ID to a different controller 
+				   bool DisconnectedObjectFound=false;
+    				   std::vector<HWController*>::iterator it;
+				   if (!listControllers_.empty()){	
+					printf("\n list is populated\n");				
+    					for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
+    						HWController* testController = *(it);
+    						if (!testController->pimpl_->IsConnected() ) {
+							DisconnectedObjectFound=true;
+    							printf("\n-------------------------------------found disconnected controller\n"); 
+							char* link1 = FindControllerLink(testController) ;   //find current BTADDR
+							mapControllers_.erase(link1);							
+							testController->pimpl_->SetBluetoothAddress( link );   //assign new 								BLE address to this controller ID
+							//BtAdrWrap key(link);
+							mapControllers_.insert(std::pair<BtAdrWrap, HWController*>(key, testController));
+							testController->pimpl_->SetConnected(true);
+							numConnectedControllers_++;
+							debugMPI_.DebugOut(kDbgLvlImportant, "Controller connected\n");
+				      		      	HWControllerEventMessage qmsg(kHWControllerConnected, testController);
+							eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);		
+    							break;
+						}
+						else
+							printf("\ncontroller in list is connected\n"); 
+    				   	}					
+				   }
+				   if (DisconnectedObjectFound==false){	//did not find empty slot or there was only one controller object in the list	
+					printf("\n creating new controller object\n");
+					HWController* controller = new HWController();
+	      				//BADBAD: should not be accessing pimpl_ directly!
+	      				controller->pimpl_->SetID(numControllers_);
+	      				listControllers_.push_back(controller);
+	      				mapControllers_.insert(std::pair<BtAdrWrap, HWController*>(key, controller));
+	      				numControllers_++;
+	      				controller->pimpl_->SetBluetoothAddress( link );
 
-      				unsigned char hwVersion;
-      				unsigned short fwVersion;
-			        unsigned char* pHwVersion = &hwVersion;
-			        unsigned short* pFwVersion = &fwVersion;
-			        int resultVal = pBTIO_GetControllerVersion_(link, pHwVersion, pFwVersion);
-			        if(!resultVal) controller->pimpl_ ->SetVersionNumbers(hwVersion, fwVersion);
-				numConnectedControllers_++;
-			      	controller->pimpl_->SetConnected(true);
-				debugMPI_.DebugOut(kDbgLvlImportant, "Controller connected\n");
-	      		      	HWControllerEventMessage qmsg(kHWControllerConnected, controller);
-				eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);		
-			}
-		 		
-					
+	      				unsigned char hwVersion;
+	      				unsigned short fwVersion;
+					unsigned char* pHwVersion = &hwVersion;
+					unsigned short* pFwVersion = &fwVersion;
+					int resultVal = pBTIO_GetControllerVersion_(link, pHwVersion, pFwVersion);
+					if(!resultVal) controller->pimpl_ ->SetVersionNumbers(hwVersion, fwVersion);
+					numConnectedControllers_++;
+				      	controller->pimpl_->SetConnected(true);
+					debugMPI_.DebugOut(kDbgLvlImportant, "Controller connected\n");
+		      		      	HWControllerEventMessage qmsg(kHWControllerConnected, controller);
+					eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);		
+				  }
+			}					
 		}
-		else{   //if the event is for controller disconnected
-			//printf("\n -------------------------------------------------controller disconnected\n");
+		else{   //if the event is for controller disconnected			
 			if (mapControllers_.count(key) > 0) {// If controller object already exists, 			      
 			      HWController* controller = FindController(link);
 			      if (controller->pimpl_->IsConnected()){			              
@@ -613,6 +634,7 @@ debug  		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
     return controller;
 #endif
   }
+
 
   void
   HWControllerMPIPIMPL::GetAllControllers(std::vector<HWController*> &controller) {

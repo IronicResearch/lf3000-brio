@@ -43426,3 +43426,12 @@ By Falguni Mirani (fmirani@leapfrog.com) on 9/15/14 10:42 AM
 25,041 ms. (Cumulative: 29,923,032 ms)
 
 ----------------
+Revision 11,089 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+fcontroller 3 becomes ID0 if ID0 is disconnected
+
+By Falguni Mirani (fmirani@leapfrog.com) on 9/15/14 5:05 PM
+1 changed, 0 added, 0 deleted.
+25,054 ms. (Cumulative: 29,948,179 ms)
+
+----------------
