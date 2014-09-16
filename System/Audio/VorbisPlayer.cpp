@@ -187,7 +187,14 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 	pVorbisInfo		   = ov_info( &vorbisFile_, -1 );
 	channels_		   = pVorbisInfo->channels;
 	samplingFrequency_ = pVorbisInfo->rate;
-	
+
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+						 "VorbisPlayer::ctor: %ld Hz, %d ch, %ld bps, '%s'\n",
+						 pVorbisInfo->rate,
+						 pVorbisInfo->channels,
+						 pVorbisInfo->bitrate_nominal,
+						 pInfo->path->c_str());
+
 	// Time lapse delta needs to be multiple of playback quantum (16 msec)
 	if (optionsFlags_ & kAudioOptionsTimeEvent) {
 		bIsTimeEvent_ = true;
