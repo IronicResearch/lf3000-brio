@@ -13,6 +13,12 @@ namespace Vision {
 			output.create(input.size(), CV_8U);
 		}
 
+		// explicitly exit if nothing to process
+		if (((input.cols*input.rows) == 0) || (input.data == NULL) || (output.data == NULL)) {
+		  return;
+		}
+
+
 #if defined(EMULATION) || !defined(LF3000)
 		cv::cvtColor(input, output, CV_RGB2GRAY);
 #else

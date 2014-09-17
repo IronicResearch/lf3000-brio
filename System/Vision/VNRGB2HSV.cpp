@@ -282,6 +282,12 @@ void RGBToHSV( const cv::Mat& input, cv::Mat& output ) {
 	uint8_t * __restrict dest = output.data;
 	uint8_t * __restrict source = input.data;
 	int cnt = input.total();
+
+	// explicitly return if zero image size or NULL data
+	if ((cnt == 0) || (dest == NULL) || (source == NULL)) {
+	  return;
+	}
+
 #if defined(EMULATION) || !defined(LF3000)
 	c_int_rgb2hsv( dest, source, cnt );
 #else // EMULATION

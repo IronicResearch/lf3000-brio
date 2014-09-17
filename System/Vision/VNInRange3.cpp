@@ -11,6 +11,11 @@ namespace LF {
 			if ( dst.empty() ) {
 				dst.create( src.size(), CV_8U );
 			}
+
+			if (((src.cols*src.rows) == 0) || (src.data == NULL) || (dst.data == NULL)) {
+			  return;
+			}
+
 #if defined(EMULATION) || !defined(LF3000)
 			cv::inRange(src, min, max, dst);
 	
