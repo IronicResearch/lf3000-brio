@@ -504,6 +504,12 @@ namespace Vision {
 	      surface_.height = surf->height;
 	      surface_.pitch  = surf->pitch;
 	      surface_.format = surf->format;
+	      
+	      if ((surface_.width*surface_.height) == 0) {
+		// if image size is 0 return
+		return  LeapFrog::Brio::kEventStatusOK;
+	      }
+
 	      memcpy(surface_.buffer,
 		     buffer,
 		     surface_.height * surface_.pitch);
@@ -524,6 +530,11 @@ namespace Vision {
 		break;
 	      default:
 		assert( !"unsupported surface format" );
+	      }
+
+	      // if we have NULL data return
+	      if (cameraSurfaceMat_.data == NULL) {
+		return  LeapFrog::Brio::kEventStatusOK;
 	      }
 
 #if VN_USE_IMAGE_PROCESS_THREAD

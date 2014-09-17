@@ -43453,3 +43453,12 @@ By mharris (mharris@leapfrog.com) on 9/16/14 1:38 PM
 25,191 ms. (Cumulative: 29,998,735 ms)
 
 ----------------
+Revision 11,092 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+check for zero size and null data in vision, FWGLAS-1507
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/17/14 12:45 PM
+9 changed, 0 added, 0 deleted.
+25,384 ms. (Cumulative: 30,024,228 ms)
+
+----------------

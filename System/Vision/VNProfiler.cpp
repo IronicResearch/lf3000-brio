@@ -12,7 +12,7 @@
 #include <sys/time.h>
 #include <stdint.h>
 
-#define VN_USE_KERNEL_TIMER 0
+#define VN_USE_KERNEL_TIMER 1
 #if VN_USE_KERNEL_TIMER
 #include <KernelMPI.h>
 #endif
@@ -22,7 +22,11 @@ static const int spacing = 20;
 
 
 struct ProfileEntry {
+#if VN_USE_KERNEL_TIMER
+  LeapFrog::Brio::U32 startTime;
+#else
   uint32_t startTime;
+#endif
   float totalTime;
   int iterations;
   float mn, mx;
@@ -47,7 +51,12 @@ struct ProfileEntry {
   }
 
   void end() {
-    uint32_t now;
+#if VN_USE_KERNEL_TIMER
+  LeapFrog::Brio::U32 now;
+#else
+  uint32_t now;
+#endif
+
 #if VN_USE_KERNEL_TIMER
     LeapFrog::Brio::CKernelMPI kernel;
     kernel.GetHRTAsUsec(now);
@@ -84,7 +93,12 @@ static std::map<std::string, ProfileEntry> entries;
 static std::stack<ProfileEntry*> stack;
 
 struct FPSEntry {
+#if VN_USE_KERNEL_TIMER
+  LeapFrog::Brio::U32 lastTime;
+#else
   uint32_t lastTime;
+#endif
+
   float accumulatedTime;
   int frameCnt;
   float fps;
@@ -101,7 +115,12 @@ struct FPSEntry {
   {}
 
   void tick() {
-    uint32_t now = 0;
+#if VN_USE_KERNEL_TIMER
+  LeapFrog::Brio::U32 now;
+#else
+  uint32_t now;
+#endif
+
 #if VN_USE_KERNEL_TIMER
     LeapFrog::Brio::CKernelMPI kernel;
     kernel.GetHRTAsUsec(now);

@@ -84,6 +84,11 @@ namespace Vision {
     PROF_FRAMES_PER_SECOND( "Execute");
 
 	  PROF_BLOCK_START("Execute");
+	  // explicitly exit if we have no data
+	  if ((input.cols*input.rows) == 0 || (input.data == NULL)) {
+	    return;
+	  }
+
 	  // initialize background to first frame
 	  if (learnedBackground_.total() != input.total() ) {
 		  ConvertToGray( input, gray_);

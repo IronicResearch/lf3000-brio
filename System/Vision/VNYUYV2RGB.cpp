@@ -27,6 +27,13 @@ namespace Vision {
 		if( dst.empty() ) { 	// initialize rgb image if not already initialized
 			dst.create(cv::Size(width, height), CV_8UC3);
 		}
+
+		// explicitly exit if nothing to process
+		if (((width*height) == 0) || (dst.data == NULL) || (src == NULL)) {
+		  return;
+		}
+
+		
 #if VN_NEON_YUYV2RGB
 
         uint8_t __restrict * dest   = dst.data;
@@ -306,6 +313,12 @@ namespace Vision {
 			dst.create(cv::Size(width, height), CV_8UC1);
 		}
 
+		// explicitly exit if nothing to process
+		if (((width*height) == 0) || (dst.data == NULL) || (src == NULL)) {
+		  return;
+		}
+
+
 #if VN_NEON_YUYV2GRAY
 		uint8_t __restrict * dest = dst.data;
 		uint8_t __restrict * source  = (uint8_t*)src;
@@ -368,6 +381,10 @@ namespace Vision {
 		int8_t __restrict * source = (int8_t*)src;
 		int numPixels               = width * height;
 
+		// explicitly exit if nothing to process
+		if (numPixels == 0 || dest == NULL || source == NULL) {
+		  return;
+		}
 
 		int16_t y0, u, y1, v;
 		for ( int i = 0; i < numPixels/2; i++, source+=4, dest+=6 ) {

@@ -276,6 +276,11 @@ namespace Vision {
     if (wand_) {
       PROF_BLOCK_START("VNWandTrackerPIMPL::Execute");
 
+      // explicitly exit if we have no data
+      if ((input.cols*input.rows) == 0 || (input.data == NULL)) {
+	return;
+      }
+
 #if VN_USE_YUV_COLORSPACE
     PROF_BLOCK_START("YUYV to YUV");
     ConvertToYUV(input, yuv_);
