@@ -1,4 +1,5 @@
 #include "VNRGB2HSV.h"
+#include "VNAlgorithmHelpers.h"
 #include <stdio.h>
 #if !defined(EMULATION) && defined(LF3000)
 #include <arm_neon.h>
@@ -276,22 +277,19 @@ void neon_int_rgb2hsv( uint8_t * __restrict dest, uint8_t * __restrict source, i
 
 
 void RGBToHSV( const cv::Mat& input, cv::Mat& output ) {
-	if( output.empty() ) {
-		output.create(input.size(), CV_8UC3);
-	}
-	uint8_t * __restrict dest = output.data;
-	uint8_t * __restrict source = input.data;
-	int cnt = input.total();
+  if (!CheckInputs(input, output, CV_8UC3)) {
+    return;
+  }
 
-	// explicitly return if zero image size or NULL data
-	if ((cnt == 0) || (dest == NULL) || (source == NULL)) {
-	  return;
-	}
+  uint8_t * __restrict dest = output.data;
+  uint8_t * __restrict source = input.data;
+  int cnt = input.total();
+
 
 #if defined(EMULATION) || !defined(LF3000)
-	c_int_rgb2hsv( dest, source, cnt );
+  c_int_rgb2hsv( dest, source, cnt );
 #else // EMULATION
-	neon_int_rgb2hsv( dest, source, cnt );
+  neon_int_rgb2hsv( dest, source, cnt );
 #endif // EMULATION
 }
 

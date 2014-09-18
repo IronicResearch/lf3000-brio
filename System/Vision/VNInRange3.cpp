@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "VNInRange3.h"
+#include "VNAlgorithmHelpers.h"
 #if !defined(EMULATION) && defined(LF3000)
 #include <arm_neon.h>
 #endif
@@ -7,14 +8,9 @@
 namespace LF {
 	namespace Vision {
 		void inRange3( const cv::Mat& src, const cv::Scalar& min, const cv::Scalar& max, cv::Mat& dst ) {
-			
-			if ( dst.empty() ) {
-				dst.create( src.size(), CV_8U );
-			}
-
-			if (((src.cols*src.rows) == 0) || (src.data == NULL) || (dst.data == NULL)) {
-			  return;
-			}
+		  if (!CheckInputs(src, dst, CV_8U)) {
+		    return;
+		  }
 
 #if defined(EMULATION) || !defined(LF3000)
 			cv::inRange(src, min, max, dst);

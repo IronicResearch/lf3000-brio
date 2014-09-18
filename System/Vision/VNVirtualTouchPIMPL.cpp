@@ -165,10 +165,9 @@ namespace Vision {
   #endif
   VNVirtualTouchPIMPL::AbsDifferenceThreshold( cv::Mat& background, cv::Mat &yuyv, cv::Mat& output, int threshold, float alpha) {
 
-	  if( output.empty() ) {
-		  output.create(background.size(), CV_8U);
-	  }
-
+    if (!CheckInputs(background, output, CV_8U)) {
+      return;
+    }
 
 #if VN_NEON_OPTIMIZE_FRAME_PASSES
 

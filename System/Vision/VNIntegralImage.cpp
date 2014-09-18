@@ -1,19 +1,13 @@
 #include "VNIntegralImage.h"
-
+#include "VNAlgorithmHelpers.h"
 
 namespace LF {
 namespace Vision {
 
 	void IntegralImage( const cv::Mat& srcMat, cv::Mat& dstMat ) {
-		if ( dstMat.empty() ) {
-			dstMat.create( srcMat.size(), CV_32S );
-		}
-		if(dstMat.size() != srcMat.size())
-		{
-			dstMat.release();
-			dstMat.create( srcMat.size(), CV_32S );
-		}
-
+	  if (!CheckInputs(srcMat, dstMat, CV_32S)) {
+	    return;
+	  }
 
 		//	todo: see http://www.aishack.in/2010/07/integral-images/
 
