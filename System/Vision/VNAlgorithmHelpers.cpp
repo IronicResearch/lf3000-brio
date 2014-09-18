@@ -53,5 +53,28 @@ namespace Vision {
     }
 
   }
+
+  bool CheckInputs(const cv::Mat& src,
+		   cv::Mat& dst,
+		   int type) {
+
+    // explicitly exit if nothing to process
+    if (((src.cols == 0) || (src.rows == 0)) || (dst.data == NULL) || (src.data == NULL)) {
+      return false;
+    }
+
+    // initialize rgb image if not already initialized
+    if (dst.empty()) {
+      dst.create(cv::Size(src.cols, src.rows), type);
+    }
+
+    // check to see if different sizes, resize dst
+    if (dst.cols != src.cols || dst.rows != src.rows) {
+      dst.release();
+      dst.create(cv::Size(src.cols, src.rows), type);
+    }
+    
+    return true;
+  }
 }
 }

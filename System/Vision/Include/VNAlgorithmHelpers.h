@@ -1,5 +1,6 @@
 #include <CameraTypes.h>
 #include <CameraMPI.h>
+#include <opencv2/opencv.hpp>
 
 namespace LF {
 namespace Vision {
@@ -14,5 +15,8 @@ namespace Vision {
   void
   ResetCamera(void);
 
+  bool CheckInputs(const cv::Mat& src,
+		   cv::Mat& dst,
+		   int type);
 } // namespace Vision
 } // namespace LF

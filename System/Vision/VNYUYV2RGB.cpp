@@ -1,5 +1,6 @@
 #include "VNYUYV2RGB.h"
 #include <stdio.h>
+#include "VNAlgorithmHelpers.h"
 #if !defined(EMULATION)
 #define VN_NEON_YUYV2GRAY 1
 #define VN_NEON_YUYV2RGB 0
@@ -15,25 +16,20 @@ namespace LF {
 namespace Vision {
 #define SAT(c) if (c & (~255)) { if (c < 0) c = 0; else c = 255; }
 
+  void YUYV2RGB( const uint8_t* src, const int width, const int height, cv::Mat& dst );
+  void YUYV2Gray( const uint8_t* src, const int width, const int height, cv::Mat& dst );
+  void YUYV2YUV( const uint8_t* src, const int width, const int height, cv::Mat& dst );
 
 	void YUYV2RGB( const cv::Mat& src, cv::Mat& dst ) {
-		YUYV2RGB( src.data, src.size().width, src.size().height, dst );
+	  if (CheckInputs(src, dst, CV_8UC3)) {
+	    YUYV2RGB( src.data, src.size().width, src.size().height, dst );
+	  }
 	}
 
 	// see: http://msdn.microsoft.com/en-us/library/windows/desktop/dd206750(v=vs.85).aspx#YUV422formats16bitsperpixel
 	// see: http://en.wikipedia.org/wiki/YUY2#Y.27UV422_to_RGB888_conversion
 	void YUYV2RGB( const uint8_t* src, const int width, const int height, cv::Mat& dst ) {
 
-		if( dst.empty() ) { 	// initialize rgb image if not already initialized
-			dst.create(cv::Size(width, height), CV_8UC3);
-		}
-
-		// explicitly exit if nothing to process
-		if (((width*height) == 0) || (dst.data == NULL) || (src == NULL)) {
-		  return;
-		}
-
-		
 #if VN_NEON_YUYV2RGB
 
         uint8_t __restrict * dest   = dst.data;
@@ -305,19 +301,12 @@ namespace Vision {
 	}
 
 	void YUYV2Gray( const cv::Mat& src, cv::Mat& dst ) {
-		YUYV2Gray( src.data, src.size().width, src.size().height, dst );
+	  if (CheckInputs(src, dst, CV_8UC1)) {
+	    YUYV2Gray( src.data, src.size().width, src.size().height, dst );
+	  }
 	}
 
 	void YUYV2Gray( const uint8_t* src, const int width, const int height, cv::Mat& dst ) {
-		if( dst.empty() ) { 	// initialize rgb image if not already initialized
-			dst.create(cv::Size(width, height), CV_8UC1);
-		}
-
-		// explicitly exit if nothing to process
-		if (((width*height) == 0) || (dst.data == NULL) || (src == NULL)) {
-		  return;
-		}
-
 
 #if VN_NEON_YUYV2GRAY
 		uint8_t __restrict * dest = dst.data;
@@ -369,22 +358,16 @@ namespace Vision {
 
 	// converts to YUV ( actually UVY where intensity is last entry )
 	void YUYV2YUV( const cv::Mat& src, cv::Mat& dst ) {
-		YUYV2YUV( src.data, src.size().width, src.size().height, dst );
+	  if (CheckInputs(src, dst, CV_8UC3)) {
+	    YUYV2YUV( src.data, src.size().width, src.size().height, dst );
+	  }
 	}
 
 	void YUYV2YUV( const uint8_t* src, const int width, const int height, cv::Mat& dst ) {
-		if( dst.empty() ) { 	// initialize rgb image if not already initialized
-			dst.create(cv::Size(width, height), CV_8UC3);
-		}
 
 		uint8_t __restrict * dest   = (uint8_t*)dst.data;
 		int8_t __restrict * source = (int8_t*)src;
 		int numPixels               = width * height;
-
-		// explicitly exit if nothing to process
-		if (numPixels == 0 || dest == NULL || source == NULL) {
-		  return;
-		}
 
 		int16_t y0, u, y1, v;
 		for ( int i = 0; i < numPixels/2; i++, source+=4, dest+=6 ) {

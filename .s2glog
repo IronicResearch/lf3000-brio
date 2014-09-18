@@ -43462,3 +43462,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 9/17/14 12:45 PM
 25,384 ms. (Cumulative: 30,024,228 ms)
 
 ----------------
+Revision 11,093 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+centralize checks on cv::Mat for same size and data, check everywhere, FWGLAS-1507
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/18/14 2:54 PM
+10 changed, 0 added, 0 deleted.
+25,737 ms. (Cumulative: 30,050,059 ms)
+
+----------------

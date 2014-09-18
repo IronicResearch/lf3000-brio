@@ -26,6 +26,7 @@
 #include <VNIntegralImage.h>
 #include <Vision/VNVisionTypes.h>
 #include <Vision/VNHotSpotEventMessage.h>
+#include <VNAlgorithmHelpers.h>
 
 #define VN_USE_FAST_INTEGRAL_IMAGE 1
 #define VN_USE_IMAGE_PROCESS_THREAD 1
@@ -500,16 +501,16 @@ namespace Vision {
 
 	      PROF_BLOCK_START("Vision::Update");
 
+	      if ((surf->width*surf->height) == 0) {
+		// if image size is 0 return
+		return  LeapFrog::Brio::kEventStatusOK;
+	      }
+
 	      surface_.width  = surf->width;
 	      surface_.height = surf->height;
 	      surface_.pitch  = surf->pitch;
 	      surface_.format = surf->format;
 	      
-	      if ((surface_.width*surface_.height) == 0) {
-		// if image size is 0 return
-		return  LeapFrog::Brio::kEventStatusOK;
-	      }
-
 	      memcpy(surface_.buffer,
 		     buffer,
 		     surface_.height * surface_.pitch);
@@ -532,9 +533,10 @@ namespace Vision {
 		assert( !"unsupported surface format" );
 	      }
 
-	      // if we have NULL data return
-	      if (cameraSurfaceMat_.data == NULL) {
-		return  LeapFrog::Brio::kEventStatusOK;
+	      // check to make sure there is data and the input/output images are the same size
+	      // and the output image is of the correct format
+	      if (!CheckInputs(cameraSurfaceMat_, outputImg_, CV_8U)) {
+		return LeapFrog::Brio::kEventStatusOK;
 	      }
 
 #if VN_USE_IMAGE_PROCESS_THREAD
