@@ -299,7 +299,7 @@ void* CameraTaskMain(void* arg)
 	}
 	pCtx->frame = &frame;
 
-	if (pCtx->mode.pixelformat == kCaptureFormatRAWYUYV && pSurf == NULL) {
+	if (pCtx->mode.pixelformat == kCaptureFormatRAWYUYV && pSurf == NULL && bFile) {
 		pSurf = &aSurf[0];
 		pSurf->width 	= pCtx->fmt.fmt.pix.width;
 		pSurf->height	= pCtx->fmt.fmt.pix.height;

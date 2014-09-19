@@ -43498,3 +43498,12 @@ By spalav (spalav@leapfrog.com) on 9/19/14 10:36 AM
 25,084 ms. (Cumulative: 30,127,595 ms)
 
 ----------------
+Revision 11,097 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditional for temp buffer extended explicitly for AVI file case.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/19/14 1:32 PM
+1 changed, 0 added, 0 deleted.
+25,147 ms. (Cumulative: 30,152,851 ms)
+
+----------------
