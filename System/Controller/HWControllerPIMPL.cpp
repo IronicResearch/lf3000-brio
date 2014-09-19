@@ -26,6 +26,7 @@ static const U32 kHWControllerDefaultRate = 50;
 
 #define BATTERY_STATE_COUNT_THRESHOLD 25
 #define POWER_STATE_COUNT_THRESHOLD 50
+#define GLASGOW_CONTROLLER_VERSION_MAX 31
 
 namespace LF {
 namespace Hardware {
@@ -646,7 +647,7 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 			  //without having to actually fix this particular issue. 
 			  //This also makes sure that when we fix the bug in controller code, console firmware won't need any changes. 
 			  
-			  if((GetFwVersion() <= 31) && (buttonData_.buttonState & kButtonB))
+			  if((GetFwVersion() <= GLASGOW_CONTROLLER_VERSION_MAX) && (buttonData_.buttonState & kButtonB))
 				  accelerometerData_.accelX = accel.accelX;
 			  eventMPI_.PostEvent(accelerometerMsg_, kHWDefaultEventPriority); 
 		  }
