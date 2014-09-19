@@ -298,9 +298,15 @@ namespace Hardware {
     							printf("\n-------------------------------------found disconnected controller\n"); 
 							char* link1 = FindControllerLink(testController) ;   //find current BTADDR
 							mapControllers_.erase(link1);							
-							testController->pimpl_->SetBluetoothAddress( link );   //assign new 								BLE address to this controller ID
-							//BtAdrWrap key(link);
+							testController->pimpl_->SetBluetoothAddress( link );   //assign new BLE address to this controller ID		
 							mapControllers_.insert(std::pair<BtAdrWrap, HWController*>(key, testController));
+
+							unsigned char hwVersion;
+			      				unsigned short fwVersion;
+							unsigned char* pHwVersion = &hwVersion;
+							unsigned short* pFwVersion = &fwVersion;
+							int resultVal = pBTIO_GetControllerVersion_(link, pHwVersion, pFwVersion);
+							if(!resultVal) testController->pimpl_ ->SetVersionNumbers(hwVersion, fwVersion);
 							testController->pimpl_->SetConnected(true);
 							numConnectedControllers_++;
 							debugMPI_.DebugOut(kDbgLvlImportant, "Controller connected\n");

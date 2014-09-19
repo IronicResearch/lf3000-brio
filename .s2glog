@@ -43507,3 +43507,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/19/14 1:32 PM
 25,147 ms. (Cumulative: 30,152,851 ms)
 
 ----------------
+Revision 11,098 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+updated controller HW and SW version alongwith bluetooth address when a new controller is substituted for th eexisting controller ID.
+
+By Falguni Mirani (fmirani@leapfrog.com) on 9/19/14 2:49 PM
+1 changed, 0 added, 0 deleted.
+25,054 ms. (Cumulative: 30,177,999 ms)
+
+----------------
