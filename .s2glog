@@ -43480,3 +43480,12 @@ By spalav (spalav@leapfrog.com) on 9/18/14 6:00 PM
 26,676 ms. (Cumulative: 30,076,845 ms)
 
 ----------------
+Revision 11,095 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+fix vision bug introduced that prevents frames from being processed
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/18/14 11:23 PM
+4 changed, 0 added, 0 deleted.
+25,464 ms. (Cumulative: 30,102,418 ms)
+
+----------------
