@@ -493,6 +493,7 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  static U8 power_counter = 0; //FWGLAS-547: Counter for tracking when it's time to post KeepAlive
 	  static U8 lowBatteryCounter = 0; //FWGLAS-547: Counter for tracking when it's time to post low battery warning
 	  bool lowBatteryStatus = false; 
+	  bool accelValueChanged = false;
 
 #if TIME_INTERNAL_METHODS
 	  PROF_BLOCK_END();
@@ -621,12 +622,10 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 
 	  if(ApplyAnalogStickMode(analogStickData_)) {
 		//if(GetAnalogStickMode() == kHWAnalogStickModeAnalog) {
-		  //if (memcmp(&stick, &analogStickData_, sizeof(tHWAnalogStickData)) != 0) {
 		  if (stick.x != analogStickData_.x || stick.y != analogStickData_.y)
 		  {
 			  eventMPI_.PostEvent(analogStickMsg_, kHWDefaultEventPriority);
 		  }
-		  //}
 	  }
 
 #if TIME_INTERNAL_METHODS
@@ -634,16 +633,23 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 
 	  PROF_BLOCK_START("accelerationEvent");
 #endif
-
+	  
 	  if (kAccelerometerModeDisabled != accelerometerMode_){
-		  //if (memcmp(&accel, &accelerometerData_, sizeof(tAccelerometerData)) != 0) {
 		  if(accel.accelX != accelerometerData_.accelX || accel.accelY != accelerometerData_.accelY || accel.accelZ != accelerometerData_.accelZ)
+			  accelValueChanged = true;
+			
+		  if(accelValueChanged)
 		  {
-			  if (buttonData_.buttonState & kButtonB) //FWGLAS-1456: If button B is pressed, x-axis value of accelerometer changes to 1.
-				accelerometerData_.accelX = accel.accelX; //So for now, report the previous value if button B is pressed.
-			  eventMPI_.PostEvent(accelerometerMsg_, kHWDefaultEventPriority);
+			  //FWGLAS-1456 & FWGLAS-1539: If button B is pressed, x-axis value of accelerometer changes to 1. This is an issue on the controller side.
+			  //But till that is fixed, report the previous value if button B is pressed. Also adding a version check to use the accelerometer hack
+			  //only for controller versions less than or equal to 31. This gives it a bit of a room to have more controller firmwares for Glasgow,
+			  //without having to actually fix this particular issue. 
+			  //This also makes sure that when we fix the bug in controller code, console firmware won't need any changes. 
+			  
+			  if((GetFwVersion() <= 31) && (buttonData_.buttonState & kButtonB))
+				  accelerometerData_.accelX = accel.accelX;
+			  eventMPI_.PostEvent(accelerometerMsg_, kHWDefaultEventPriority); 
 		  }
-		  //}
 	  }
 
 #if TIME_INTERNAL_METHODS

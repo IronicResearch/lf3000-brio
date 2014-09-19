@@ -43471,3 +43471,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 9/18/14 2:54 PM
 25,737 ms. (Cumulative: 30,050,059 ms)
 
 ----------------
+Revision 11,094 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1539: Adding a version check to use the accelerometer workaround made for FWGLAS-1456 only for controller versions less than or equal to 31. This gives it a bit of a room to have more controller firmwares for Glasgow, without having to actually fix this particular issue. This also makes sure that when we fix the bug in controller code, console firmware won't need any changes.
+
+By spalav (spalav@leapfrog.com) on 9/18/14 6:00 PM
+1 changed, 0 added, 0 deleted.
+26,676 ms. (Cumulative: 30,076,845 ms)
+
+----------------
