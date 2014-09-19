@@ -85,7 +85,7 @@ namespace Vision {
 
 	  PROF_BLOCK_START("Execute");
 	  // explicitly exit if we have no data
-	  if ((input.cols*input.rows) == 0 || (input.data == NULL)) {
+	  if ((input.cols == 0) || (input.rows == 0) || (input.data == NULL)) {
 	    return;
 	  }
 

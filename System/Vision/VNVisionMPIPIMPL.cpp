@@ -501,7 +501,7 @@ namespace Vision {
 
 	      PROF_BLOCK_START("Vision::Update");
 
-	      if ((surf->width*surf->height) == 0) {
+	      if ((surf->width == 0) || (surf->height == 0)) {
 		// if image size is 0 return
 		return  LeapFrog::Brio::kEventStatusOK;
 	      }
