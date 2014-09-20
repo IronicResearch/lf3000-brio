@@ -43516,3 +43516,12 @@ By Falguni Mirani (fmirani@leapfrog.com) on 9/19/14 2:49 PM
 25,054 ms. (Cumulative: 30,177,999 ms)
 
 ----------------
+Revision 11,099 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+correctly delete surface buffer in vision
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/19/14 6:40 PM
+1 changed, 0 added, 0 deleted.
+25,113 ms. (Cumulative: 30,203,221 ms)
+
+----------------

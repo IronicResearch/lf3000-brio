@@ -172,7 +172,7 @@ namespace Vision {
 
     // delete the memory for the surface buffer
     if (surface_.buffer) {
-      delete surface_.buffer;
+      delete[] surface_.buffer;
     }
     surface_.buffer = NULL;
 
