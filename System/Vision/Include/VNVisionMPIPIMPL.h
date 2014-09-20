@@ -89,6 +89,7 @@ namespace Vision {
 
     //mutexes
     LeapFrog::Brio::tMutex hsUpdateLock_;
+    LeapFrog::Brio::tMutex startStopLock_;
 
     LeapFrog::Brio::U16 frameProcessingWidth_;
     LeapFrog::Brio::U16 frameProcessingHeight_;
