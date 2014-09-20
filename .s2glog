@@ -43525,3 +43525,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 9/19/14 6:40 PM
 25,113 ms. (Cumulative: 30,203,221 ms)
 
 ----------------
+Revision 11,100 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+add lock/unlock mutex to start/stop/pause/resume in vision, FWGLAS-1507
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/19/14 11:49 PM
+2 changed, 0 added, 0 deleted.
+25,231 ms. (Cumulative: 30,228,562 ms)
+
+----------------

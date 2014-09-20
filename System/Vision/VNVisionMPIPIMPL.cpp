@@ -44,6 +44,10 @@ namespace Vision {
 				    "Couldn't lock hot spot update mutex.\n");
 #define HS_UPDATE_UNLOCK dbg_.Assert((kNoErr == kernelMPI_.UnlockMutex(hsUpdateLock_)),\
 				     "Couldn't unlock hot spot update mutex.\n");
+#define START_STOP_LOCK dbg_.Assert((kNoErr == kernelMPI_.LockMutex(startStopLock_)), \
+				    "Couldn't lock start/stop mutex.\n");
+#define START_STOP_UNLOCK dbg_.Assert((kNoErr == kernelMPI_.UnlockMutex(startStopLock_)),\
+				     "Couldn't unlock start/stop mutex.\n");
 
   static const double kVNMillisecondsInASecond = 1000.0;
   static const float kVNDefaultFrameProcessingRate = 0.03125; // 32 fps
@@ -130,17 +134,21 @@ namespace Vision {
     const LeapFrog::Brio::tMutexAttr attr = {0};
     LeapFrog::Brio::tErrType err = kNoErr;
     err = kernelMPI_.InitMutex(hsUpdateLock_, attr);
-    dbg_.Assert((err == kNoErr), "VNVisionMPIPIMPL::ctor: Could not init hot spot removal mutex.\n");
+    dbg_.Assert((err == kNoErr), "VNVisionMPIPIMPL::ctor: Could not init hot spot update mutex.\n");
+
+    err = kernelMPI_.InitMutex(startStopLock_, attr);
+    dbg_.Assert((err == kNoErr), "VNVisionMPIPIMPL::ctor: Could not init vision start stop  mutex.\n");
 
     dbg_.SetDebugLevel(kDbgLvlVerbose);
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [ctor]\n");
   }
 
   VNVisionMPIPIMPL::~VNVisionMPIPIMPL(void) {
-    DeleteTask();
+    Stop();
 
     // delete mutexes
     kernelMPI_.DeInitMutex(hsUpdateLock_);
+    kernelMPI_.DeInitMutex(startStopLock_);
 
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [dtor]\n");
   }
@@ -276,6 +284,7 @@ namespace Vision {
   VNVisionMPIPIMPL::Start(LeapFrog::Brio::tVideoSurf *surf,
 			  bool dispatchSynchronously, // DEPRECATED...WILL REMOVE
 			  const LeapFrog::Brio::tRect *displayRect) {
+    START_STOP_LOCK
     LeapFrog::Brio::tErrType error = kNoErr;
 
     // allocate buffers
@@ -332,16 +341,22 @@ namespace Vision {
     } else {
       dbg_.DebugOut(kDbgLvlCritical, "Failed to set current camera\n");
     }
+    START_STOP_UNLOCK
     return error;
   }
 
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::Stop(void) {
-    return DeleteTask();
+    START_STOP_LOCK;
+    LeapFrog::Brio::Boolean result = DeleteTask();
+    START_STOP_UNLOCK;
+
+    return result;
   }
 
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::Pause(void) {
+    START_STOP_LOCK;
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
     if (videoCapture_ != kInvalidVidCapHndl) {
       result = cameraMPI_.PauseVideoCapture(videoCapture_);
@@ -349,11 +364,14 @@ namespace Vision {
         visionAlgorithmRunning_ = false;
       }
     }
+    START_STOP_UNLOCK;
+
     return result;
   }
 
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::Resume(void) {
+    START_STOP_LOCK;
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
     if (videoCapture_ != kInvalidVidCapHndl) {
       result = cameraMPI_.ResumeVideoCapture(videoCapture_);
@@ -361,6 +379,8 @@ namespace Vision {
         visionAlgorithmRunning_ = true;
       }
     }
+    START_STOP_UNLOCK;
+
     return result;
   }
 
