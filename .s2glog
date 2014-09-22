@@ -43534,3 +43534,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 9/19/14 11:49 PM
 25,231 ms. (Cumulative: 30,228,562 ms)
 
 ----------------
+Revision 11,101 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+address infinite lock scenario in vision start, allocate vision buffer memory once
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/21/14 11:34 PM
+1 changed, 0 added, 0 deleted.
+25,037 ms. (Cumulative: 30,253,693 ms)
+
+----------------

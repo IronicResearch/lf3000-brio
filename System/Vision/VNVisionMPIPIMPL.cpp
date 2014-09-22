@@ -127,6 +127,7 @@ namespace Vision {
     surface_.pitch = 0;
     surface_.buffer = NULL;
     surface_.format = LeapFrog::Brio::kPixelFormatYUYV422; // initialize to something
+    surface_.buffer = new LeapFrog::Brio::U8[kVNDefaultBufferSize];
 
     SetFrameProcessingSize();
 
@@ -149,6 +150,12 @@ namespace Vision {
     // delete mutexes
     kernelMPI_.DeInitMutex(hsUpdateLock_);
     kernelMPI_.DeInitMutex(startStopLock_);
+
+    // delete the memory for the surface buffer
+    if (surface_.buffer) {
+      delete[] surface_.buffer;
+    }
+    surface_.buffer = NULL;
 
     dbg_.DebugOut(kDbgLvlImportant, "VNVisionMPI [dtor]\n");
   }
@@ -177,12 +184,6 @@ namespace Vision {
     if (algorithm_) {
       algorithm_->Shutdown();
     }
-
-    // delete the memory for the surface buffer
-    if (surface_.buffer) {
-      delete[] surface_.buffer;
-    }
-    surface_.buffer = NULL;
 
     return result;
   }
@@ -287,9 +288,6 @@ namespace Vision {
     START_STOP_LOCK
     LeapFrog::Brio::tErrType error = kNoErr;
 
-    // allocate buffers
-    surface_.buffer = new LeapFrog::Brio::U8[kVNDefaultBufferSize];
-
     if (!visionAlgorithmRunning_) {
 
       // make sure the surface size is at least as big as the processing size
@@ -298,7 +296,7 @@ namespace Vision {
       if (surf &&
 	  (surf->width < frameProcessingWidth_ ||
 	   surf->height < frameProcessingHeight_)) {
-	return kVNVideoSurfaceNotOfCorrectSizeForVisionCapture;
+	error = kVNVideoSurfaceNotOfCorrectSizeForVisionCapture;
       }
 
        if (error == kNoErr) {
@@ -315,16 +313,16 @@ namespace Vision {
 	    dbg_.DebugOut(kDbgLvlCritical, "Failed to start vision video capture\n");
 	  } else {
 	    dbg_.DebugOut(kDbgLvlImportant, "VNVision [started video capture.\n");
-
+	    
 	    // this initialization needs to happen after starting the video capture
 	    // as some algorithms, like the wand tracking, adjust camera controls that
 	    // can only be set once the camera is up and running
 	    if (algorithm_)
 	      algorithm_->Initialize(frameProcessingWidth_,
 				     frameProcessingHeight_);
-
+	    
 	    visionAlgorithmRunning_ = true;
-
+	    
 #if VN_USE_IMAGE_PROCESS_THREAD
 	    // Create separate vision processing thread to decouple from camera & event threads
 	    tTaskProperties	prop;
@@ -337,7 +335,7 @@ namespace Vision {
 #endif
 	  }
 	}
-      }
+       }
     } else {
       dbg_.DebugOut(kDbgLvlCritical, "Failed to set current camera\n");
     }
