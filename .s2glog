@@ -43543,3 +43543,18 @@ By Alex Lindblad (alindblad@leapfrog.com) on 9/21/14 11:34 PM
 25,037 ms. (Cumulative: 30,253,693 ms)
 
 ----------------
+Revision 11,102 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,893 ms. (Cumulative: 30,278,695 ms)
+
+----------------
+Revision 11,103 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+load early and cache yuv filter values
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/24/14 4:41 PM
+3 changed, 0 added, 0 deleted.
+25,185 ms. (Cumulative: 30,303,895 ms)
+
+----------------
