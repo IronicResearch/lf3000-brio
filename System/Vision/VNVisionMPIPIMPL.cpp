@@ -163,7 +163,6 @@ namespace Vision {
   LeapFrog::Brio::Boolean
   VNVisionMPIPIMPL::DeleteTask(void) {
     LeapFrog::Brio::Boolean result = static_cast<LeapFrog::Brio::Boolean>(true);
-    visionAlgorithmRunning_ = false;
 
 #if VN_USE_IMAGE_PROCESS_THREAD
     // Signal vision thread to exit
@@ -184,6 +183,8 @@ namespace Vision {
     if (algorithm_) {
       algorithm_->Shutdown();
     }
+
+    visionAlgorithmRunning_ = false;
 
     return result;
   }
@@ -320,9 +321,7 @@ namespace Vision {
 	    if (algorithm_)
 	      algorithm_->Initialize(frameProcessingWidth_,
 				     frameProcessingHeight_);
-	    
-	    visionAlgorithmRunning_ = true;
-	    
+	    	    
 #if VN_USE_IMAGE_PROCESS_THREAD
 	    // Create separate vision processing thread to decouple from camera & event threads
 	    tTaskProperties	prop;
@@ -333,6 +332,8 @@ namespace Vision {
 	    isThreadRunning_        = true;
 	    kernelMPI_.CreateTask( hndlVisionThread_, prop, NULL );
 #endif
+
+	    visionAlgorithmRunning_ = true;
 	  }
 	}
        }
