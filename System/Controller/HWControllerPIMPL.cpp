@@ -661,7 +661,6 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 
 	  if (buttonData_.buttonTransition) {
 	      eventMPI_.PostEvent(buttonMsg_, kHWDefaultEventPriority);
-	      power_counter++;
 	  }
 
 #if TIME_INTERNAL_METHODS
@@ -672,6 +671,7 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 
 	  //FWGLAS-547: Do KeepAlive and low battery checks less often.
 	  //These should probably be separate methods but trying to avoid the overhead of a function call...
+	  power_counter++; //FWGLAS-1611: Increment power counter regardless of button transitions. 50 counts, 20ms each so KeepAlive once per minute. 
 	  if (power_counter == POWER_STATE_COUNT_THRESHOLD)
 	  {
 		  CPowerMPI::KeepAlive();

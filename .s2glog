@@ -43576,3 +43576,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 9/25/14 12:49 AM
 24,919 ms. (Cumulative: 30,354,082 ms)
 
 ----------------
+Revision 11,106 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1611: KeepAlive is now being posted once per minute regardless of button transitions. This fixes the game idling out issue when controller is connected.
+
+By spalav (spalav@leapfrog.com) on 9/25/14 4:52 PM
+1 changed, 0 added, 0 deleted.
+25,004 ms. (Cumulative: 30,379,196 ms)
+
+----------------
