@@ -28,7 +28,12 @@ namespace Vision {
 
 	// see: http://msdn.microsoft.com/en-us/library/windows/desktop/dd206750(v=vs.85).aspx#YUV422formats16bitsperpixel
 	// see: http://en.wikipedia.org/wiki/YUY2#Y.27UV422_to_RGB888_conversion
-	void YUYV2RGB( const uint8_t* src, const int width, const int height, cv::Mat& dst ) {
+
+	void 
+#if VN_NEON_YUYV2RGB
+	__attribute__((optimize("O0")))
+#endif
+	YUYV2RGB( const uint8_t* src, const int width, const int height, cv::Mat& dst ) {
 
 #if VN_NEON_YUYV2RGB
 
@@ -306,7 +311,11 @@ namespace Vision {
 	  }
 	}
 
-	void YUYV2Gray( const uint8_t* src, const int width, const int height, cv::Mat& dst ) {
+	void 
+#if VN_NEON_YUYV2GRAY
+	__attribute__((optimize("O0")))
+#endif
+	YUYV2Gray( const uint8_t* src, const int width, const int height, cv::Mat& dst ) {
 
 #if VN_NEON_YUYV2GRAY
 		uint8_t __restrict * dest = dst.data;

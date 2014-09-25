@@ -43567,3 +43567,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 9/24/14 5:00 PM
 25,080 ms. (Cumulative: 30,329,069 ms)
 
 ----------------
+Revision 11,105 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+turn optimization off when assembly is present
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/25/14 12:49 AM
+2 changed, 0 added, 0 deleted.
+24,919 ms. (Cumulative: 30,354,082 ms)
+
+----------------
