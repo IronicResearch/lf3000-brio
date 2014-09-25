@@ -43558,3 +43558,12 @@ By Alex Lindblad (alindblad@leapfrog.com) on 9/24/14 4:41 PM
 25,185 ms. (Cumulative: 30,303,895 ms)
 
 ----------------
+Revision 11,104 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+move visionThreadRunning to end of Start and end of Stop to be more representative
+
+By Alex Lindblad (alindblad@leapfrog.com) on 9/24/14 5:00 PM
+1 changed, 0 added, 0 deleted.
+25,080 ms. (Cumulative: 30,329,069 ms)
+
+----------------
