@@ -68,7 +68,9 @@ void c_int_rgb2hsv( uint8_t* dest, const uint8_t* source, int cnt ) {
 }
 
 #if !defined(EMULATION) && defined(LF3000)
-void neon_int_rgb2hsv( uint8_t * __restrict dest, uint8_t * __restrict source, int cnt ) {
+void 
+__attribute__((optimize("O0")))
+neon_int_rgb2hsv( uint8_t * __restrict dest, uint8_t * __restrict source, int cnt ) {
 	
 	float float_constants[] = { 255.0f, 43.0f };	// d8 {0,1}
 	
