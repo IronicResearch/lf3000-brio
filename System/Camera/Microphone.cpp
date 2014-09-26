@@ -174,6 +174,8 @@ Boolean CCameraModule::IsAudioCapturePaused(const tAudCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean CCameraModule::StopAudioCapture(const tAudCapHndl hndl)
 {
+	if(!microphone_)
+		return true;
 	VALID_MICMPI(microphone_);
 	return microphone_->StopAudioCapture(hndl);
 }

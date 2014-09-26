@@ -43585,3 +43585,22 @@ By spalav (spalav@leapfrog.com) on 9/25/14 4:52 PM
 25,004 ms. (Cumulative: 30,379,196 ms)
 
 ----------------
+Revision 11,107 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,108 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,109 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix a problem where removing Camera could cause a crash.  StopAudioCapture now checks if MicrophoneMPI was already created before stopping AudioCapture.
+
+Technical Details - CameraUSB has a CameraListener that would listen for UsbDisconnect events.  On such an event it would call StopVideoCapture and StopAudioCapture.  StopAudioCapture used to create a MicrophoneMPI if it wasn't already created.
+
+On games that didn't use Microphone this would be the first time the MicrophoneMPI was created.  During initialization MicrophoneModule creates and registers a MicrophoneListener to check for UsbDisconnect events.
+
+If EvenModule can't hold any more listeners in it's current array, it will allocate a brand new array, copy the old pointers over, and free the old array.
+
+Because this particular RegisterListener is being done during a PostEvent, EventModule's PostEvent is now iterating over a stale array of pointers.  If any of the pointers turn bad, it can SegFault.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/25/14 6:14 PM
+1 changed, 0 added, 0 deleted.
+25,013 ms. (Cumulative: 30,404,318 ms)
+
+----------------
