@@ -6,17 +6,11 @@
 #include <opencv2/opencv.hpp>
 #include <Hardware/HWControllerTypes.h>
 #include <DebugMPI.h>
-#include <CameraMPI.h>
-#include <map>
 
 namespace LF {
 namespace Vision {
   extern const LeapFrog::Brio::S16 kVNNoWandLocationX;
   extern const LeapFrog::Brio::S16 kVNNoWandLocationY;
-  
-  static const LeapFrog::Brio::U8 kVNNumWandColors = 6;
-  static const LeapFrog::Brio::U8 kVNYUVMinIndex = 0;
-  static const LeapFrog::Brio::U8 kVNYUVMaxIndex = 1;
 
   class VNWandPIMPL {
   public:
@@ -41,25 +35,14 @@ namespace Vision {
     cv::Scalar yuvMax_;
 
   protected:
-    void LoadColorFilterValuesFromFile(std::ifstream &configfile);
-    void LoadColorFilterValuesFromDefaults(void);
-    void CreateConfigFileIfNonExistent(void);
-    void LoadColorFilterValues(void);
-    void SetCameraTemperature(LF::Hardware::HWControllerLEDColor color);
-
     LeapFrog::Brio::U8 id_;
     bool visible_;
     VNPoint location_;
     LeapFrog::Brio::CDebugMPI debugMPI_;
-    LeapFrog::Brio::CCameraMPI cameraMPI_;
 
     VNCoordinateTranslator *translator_;
 
     std::string    btaddress_;
-
-    bool loadColors_;
-    cv::Scalar yuvColors_[kVNNumWandColors][2];
-    
   };
 }
 }

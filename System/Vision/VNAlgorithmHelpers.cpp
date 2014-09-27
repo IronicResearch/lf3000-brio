@@ -34,15 +34,6 @@ namespace Vision {
     LeapFrog::Brio::Boolean err = cameraMPI.GetCameraControls(controls);
     dbg.Assert(err, "VNAlgorithmHelpers could get camera controls\n");
 
-    // get the temperature control
-    LeapFrog::Brio::tControlInfo *temp = FindCameraControl(controls,
-							   LeapFrog::Brio::kControlTypeTemperature);
-    if (temp) {
-      cameraMPI.SetCameraControl(temp, temp->preset); 
-    } else {
-      dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for temperature\n");
-    }
-
     // turn on autowhitebalance
     LeapFrog::Brio::tControlInfo *awb = FindCameraControl(controls,
 							  LeapFrog::Brio::kControlTypeAutoWhiteBalance);
@@ -52,16 +43,7 @@ namespace Vision {
       dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for auto white balance\n");
     }
 
-    // set exposure to preset values
-    LeapFrog::Brio::tControlInfo *e = FindCameraControl(controls,
-							LeapFrog::Brio::kControlTypeExposure);
-    if (e) {
-      cameraMPI.SetCameraControl(e, e->preset);
-    } else {
-      dbg.DebugOut(LeapFrog::Brio::kDbgLvlCritical, "null camera control for exposure\n");
-    }
-
-   // turn on auto exposure
+    // turn on auto exposure
     LeapFrog::Brio::tControlInfo *ae = FindCameraControl(controls,
 							 LeapFrog::Brio::kControlTypeAutoExposure);
     if (ae) {

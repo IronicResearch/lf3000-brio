@@ -43604,3 +43604,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 9/25/14 6:14 PM
 25,013 ms. (Cumulative: 30,404,318 ms)
 
 ----------------
+Revision 11,110 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1608.  Reverting Brio LF2000 11103.  This code change is somehow causing the Camera Freeze problem.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/26/14 6:24 PM
+3 changed, 0 added, 0 deleted.
+25,149 ms. (Cumulative: 30,429,576 ms)
+
+----------------
