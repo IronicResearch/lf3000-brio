@@ -10,28 +10,14 @@
 #include <CameraMPI.h>
 #include <VNAlgorithmHelpers.h>
 
-using namespace LF::Hardware;
-
 namespace LF {
 namespace Vision {
-  std::map<LF::Hardware::HWControllerLEDColor, LeapFrog::Brio::U8> createMap(void) {
-    std::map<LF::Hardware::HWControllerLEDColor, LeapFrog::Brio::U8> colorMap;
-    colorMap[LF::Hardware::kHWControllerLEDGreen]   = 0;
-    colorMap[LF::Hardware::kHWControllerLEDRed]     = 1;
-    colorMap[LF::Hardware::kHWControllerLEDBlue]    = 2;
-    colorMap[LF::Hardware::kHWControllerLEDYellow]  = 3;
-    colorMap[LF::Hardware::kHWControllerLEDCyan]    = 4;
-    colorMap[LF::Hardware::kHWControllerLEDMagenta] = 5;
-    return colorMap;
-  }
 
   static const cv::Scalar kVNWandDefaultYUVMin = kVNWandGreenMin;
   static const cv::Scalar kVNWandDefaultYUVMax = kVNWandGreenMax;
 
   const LeapFrog::Brio::S16 kVNNoWandLocationX = -10000;
   const LeapFrog::Brio::S16 kVNNoWandLocationY = -10000;
-
-  static std::map<LF::Hardware::HWControllerLEDColor, LeapFrog::Brio::U8> colorToIndex = createMap();
 
   static const std::string kVNDefaultBTAddress = "default";
   static const char kWandColorConfigurationFile[] = "/LF/Bulk/Data/Local/All/VNWandColorCalibration.json";
@@ -101,7 +87,25 @@ namespace Vision {
                                                         "\n"
                                                         "}\n";
 
-  
+  void
+  SetCameraTemperature(bool warm) {
+    LeapFrog::Brio::tCameraControls controls;
+    LeapFrog::Brio::CCameraMPI cameraMPI;
+    LeapFrog::Brio::CDebugMPI dbg(kGroupVision);
+
+    LeapFrog::Brio::Boolean err = cameraMPI.GetCameraControls(controls);
+    dbg.Assert(err, "VNWandPIMPL could get camera controls\n");
+
+    // turn off autowhitebalance
+    LeapFrog::Brio::tControlInfo *temp = FindCameraControl(controls,
+							   LeapFrog::Brio::kControlTypeTemperature);
+    if (temp) {
+      cameraMPI.SetCameraControl(temp, ((warm) ? temp->max : temp->min)); // is a boolean, set to 0 for false
+    } else {
+      dbg.DebugOut(kDbgLvlCritical, "null camera control for auto white balance\n");
+    }
+  }
+
   VNWandPIMPL::VNWandPIMPL(void) :
     visible_(false),
     location_(VNPoint(kVNNoWandLocationX, kVNNoWandLocationY)),
@@ -109,10 +113,8 @@ namespace Vision {
     yuvMax_(kVNWandDefaultYUVMax),
     debugMPI_(kGroupVision),
     translator_(VNCoordinateTranslator::Instance()),
-    btaddress_(kVNDefaultBTAddress),
-    loadColors_(true) {
+    btaddress_(kVNDefaultBTAddress) {
 
-    LoadColorFilterValues();
   }
 
   VNWandPIMPL::~VNWandPIMPL(void) {
@@ -132,202 +134,119 @@ namespace Vision {
     visible_ = true;
   }
 
-  void
-  VNWandPIMPL::SetCameraTemperature(LF::Hardware::HWControllerLEDColor color) {
-    LeapFrog::Brio::tCameraControls controls;
-    LeapFrog::Brio::Boolean err = cameraMPI_.GetCameraControls(controls);
-    debugMPI_.Assert(err, "VNWandPIMPL could not get camera controls\n");
+    void
+    VNWandPIMPL::SetColor(const LF::Hardware::HWControllerLEDColor color) {
 
-    // get the temperature control
-    LeapFrog::Brio::tControlInfo *temp = FindCameraControl(controls,
-							   LeapFrog::Brio::kControlTypeTemperature);
+        // check if configuration file exists and if not create a default one
+        struct stat buffer;
+        if (stat (kWandColorConfigurationFile, &buffer) != 0) {
+            std::ofstream defaultConfigurationFile( kWandColorConfigurationFile );
+            defaultConfigurationFile << std::string( kWandDefaultColorConfiguration );
+            defaultConfigurationFile.close();
+        }
 
-    if (temp) {
-      if (color == kHWControllerLEDGreen ||
-	  color == kHWControllerLEDBlue ||
-	  color == kHWControllerLEDCyan) {
-	// set it warm for cool colors
-	cameraMPI_.SetCameraControl(temp, temp->max); 
+        zo::Value rootConfig;
+        // load configuration
+        std::ifstream configfile;
+        configfile.open( kWandColorConfigurationFile );
+        if( configfile.is_open() ) {
+            debugMPI_.DebugOut(kDbgLvlValuable, "Opened color calibration file: %d\n", id_);
+            debugMPI_.DebugOut(kDbgLvlValuable, "VNWandPIMPL::SetColor %08x\n", (unsigned int)color);
+            zo::Value::parse( configfile, rootConfig );
 
-      } else if(color == kHWControllerLEDRed ||
-		color == kHWControllerLEDYellow || 
-		color == kHWControllerLEDMagenta) {
-	// set it cool for warm colors
-	cameraMPI_.SetCameraControl(temp, temp->min); 
-      } else {
-	// led off, do nothing
-      }
-    } else {
-      debugMPI_.DebugOut(kDbgLvlCritical, "null camera control for temperature\n");
+            zo::Object controllersConfig = rootConfig["controllers"].get<zo::Object>();
+            zo::Object defaultConfig;
+
+            // get the controller bluetooth address
+            debugMPI_.DebugOut(kDbgLvlValuable, "Controller BT Address: %s\n", btaddress_.c_str());
+
+            if( controllersConfig.has( btaddress_.c_str() ) ) {
+	        debugMPI_.DebugOut(kDbgLvlValuable, "Controller has been calibrated\n");
+                defaultConfig = controllersConfig[btaddress_.c_str()].get<zo::Object>();
+            } else {    // has not been calibrated so get default configuration
+  	        debugMPI_.DebugOut(kDbgLvlValuable, "Controller has NOT been calibrated\n");
+                defaultConfig = controllersConfig["default"].get<zo::Object>();
+            }
+            zo::Object jsonColor;
+
+            if (color == LF::Hardware::kHWControllerLEDGreen) {
+	        SetCameraTemperature(true);
+                jsonColor = defaultConfig["green"].get<zo::Object>();
+            } else if(color == LF::Hardware::kHWControllerLEDRed) {
+	        SetCameraTemperature(false);
+                jsonColor = defaultConfig["red"].get<zo::Object>();
+            } else if (color == LF::Hardware::kHWControllerLEDBlue) {
+	        SetCameraTemperature(true);
+                jsonColor = defaultConfig["blue"].get<zo::Object>();
+            } else if (color == LF::Hardware::kHWControllerLEDYellow) {
+	        SetCameraTemperature(false);
+                jsonColor = defaultConfig["yellow"].get<zo::Object>();
+            } else if (color == LF::Hardware::kHWControllerLEDCyan) {
+	        SetCameraTemperature(true);
+                jsonColor = defaultConfig["cyan"].get<zo::Object>();
+            } else if (color == LF::Hardware::kHWControllerLEDMagenta) {
+	        SetCameraTemperature(false);
+                jsonColor = defaultConfig["magenta"].get<zo::Object>();
+            } else {
+	        SetCameraTemperature(true);
+                // this handles kHWControllerLEDOff case
+                jsonColor = defaultConfig["green"].get<zo::Object>();
+            }
+
+            yuvMin_[0] = jsonColor["ymin"].get<int>();
+            yuvMin_[1] = jsonColor["umin"].get<int>();
+            yuvMin_[2] = jsonColor["vmin"].get<int>();
+
+            yuvMax_[0] = jsonColor["ymax"].get<int>();
+            yuvMax_[1] = jsonColor["umax"].get<int>();
+            yuvMax_[2] = jsonColor["vmax"].get<int>();
+
+            configfile.close();
+
+        } else {
+            debugMPI_.DebugOut(kDbgLvlValuable, "FAILED: Opening color calibration file\n");
+            debugMPI_.DebugOut(kDbgLvlValuable, "VNWandPIMPL::SetColor %08x\n", (unsigned int)color);
+
+            if (color == LF::Hardware::kHWControllerLEDGreen) {
+	        SetCameraTemperature(true);
+                yuvMin_ = kVNWandGreenMin;
+                yuvMax_ = kVNWandGreenMax;
+
+            } else if(color == LF::Hardware::kHWControllerLEDRed) {
+	        SetCameraTemperature(false);
+                yuvMin_ = kVNWandRedMin;
+                yuvMax_ = kVNWandRedMax;
+
+            } else if (color == LF::Hardware::kHWControllerLEDBlue) {
+	        SetCameraTemperature(true);
+                yuvMin_ = kVNWandBlueMin;
+                yuvMax_ = kVNWandBlueMax;
+
+            } else if (color == LF::Hardware::kHWControllerLEDYellow) {
+	        SetCameraTemperature(false);
+                yuvMin_ = kVNWandYellowMin;
+                yuvMax_ = kVNWandYellowMax;
+
+            } else if (color == LF::Hardware::kHWControllerLEDCyan) {
+	        SetCameraTemperature(true);
+                yuvMin_ = kVNWandCyanMin;
+                yuvMax_ = kVNWandCyanMax;
+
+            } else if (color == LF::Hardware::kHWControllerLEDMagenta) {
+	        SetCameraTemperature(false);
+                yuvMin_ = kVNWandMagentaMin;
+                yuvMax_ = kVNWandMagentaMax;
+
+            } else {
+	        SetCameraTemperature(true);
+                // this handles kHWControllerLEDOff case
+                yuvMin_ = kVNWandDefaultYUVMin;
+                yuvMax_ = kVNWandDefaultYUVMax;
+
+            }
+
+        }
     }
-  }
-
-  void
-  VNWandPIMPL::LoadColorFilterValuesFromFile(std::ifstream &configfile) {
-      zo::Value rootConfig;
-
-      debugMPI_.DebugOut(kDbgLvlValuable, "Opened color calibration file: %d\n", id_);
-      zo::Value::parse(configfile, rootConfig);
-      
-      zo::Object controllersConfig = rootConfig["controllers"].get<zo::Object>();
-      zo::Object defaultConfig;
-      
-      // get the controller bluetooth address
-      debugMPI_.DebugOut(kDbgLvlValuable, "Controller BT Address: %s\n", btaddress_.c_str()); 
-
-      if( controllersConfig.has( btaddress_.c_str() ) ) {
-	debugMPI_.DebugOut(kDbgLvlValuable, "Controller has been calibrated\n");
-	defaultConfig = controllersConfig[btaddress_.c_str()].get<zo::Object>();
-      } else {    // has not been calibrated so get default configuration
-	debugMPI_.DebugOut(kDbgLvlValuable, "Controller has NOT been calibrated\n");
-	defaultConfig = controllersConfig["default"].get<zo::Object>();
-      }
-      zo::Object jsonColor;
-      cv::Scalar color;
-      // green
-      jsonColor = defaultConfig["green"].get<zo::Object>();
-      color[0] = jsonColor["ymin"].get<int>();
-      color[1] = jsonColor["umin"].get<int>();
-      color[2] = jsonColor["vmin"].get<int>();
-      yuvColors_[colorToIndex[LF::Hardware::kHWControllerLEDGreen]][kVNYUVMinIndex] = color;
-
-      color[0] = jsonColor["ymax"].get<int>();
-      color[1] = jsonColor["umax"].get<int>();
-      color[2] = jsonColor["vmax"].get<int>();
-      yuvColors_[colorToIndex[LF::Hardware::kHWControllerLEDGreen]][kVNYUVMaxIndex] = color;
-
-      // red
-      jsonColor = defaultConfig["red"].get<zo::Object>();
-      color[0] = jsonColor["ymin"].get<int>();
-      color[1] = jsonColor["umin"].get<int>();
-      color[2] = jsonColor["vmin"].get<int>();
-      yuvColors_[colorToIndex[kHWControllerLEDRed]][kVNYUVMinIndex] = color;
-
-      color[0] = jsonColor["ymax"].get<int>();
-      color[1] = jsonColor["umax"].get<int>();
-      color[2] = jsonColor["vmax"].get<int>();
-      yuvColors_[colorToIndex[kHWControllerLEDRed]][kVNYUVMaxIndex] = color;
-
-      // blue
-      jsonColor = defaultConfig["blue"].get<zo::Object>();
-      color[0] = jsonColor["ymin"].get<int>();
-      color[1] = jsonColor["umin"].get<int>();
-      color[2] = jsonColor["vmin"].get<int>();
-      yuvColors_[colorToIndex[kHWControllerLEDBlue]][kVNYUVMinIndex] = color;
-
-      color[0] = jsonColor["ymax"].get<int>();
-      color[1] = jsonColor["umax"].get<int>();
-      color[2] = jsonColor["vmax"].get<int>();
-      yuvColors_[colorToIndex[kHWControllerLEDBlue]][kVNYUVMaxIndex] = color;
-
-      // yellow
-      jsonColor = defaultConfig["yellow"].get<zo::Object>();
-      color[0] = jsonColor["ymin"].get<int>();
-      color[1] = jsonColor["umin"].get<int>();
-      color[2] = jsonColor["vmin"].get<int>();
-      yuvColors_[colorToIndex[kHWControllerLEDYellow]][kVNYUVMinIndex] = color;
-
-      color[0] = jsonColor["ymax"].get<int>();
-      color[1] = jsonColor["umax"].get<int>();
-      color[2] = jsonColor["vmax"].get<int>();
-      yuvColors_[colorToIndex[kHWControllerLEDYellow]][kVNYUVMaxIndex] = color;
-
-      // cyan
-      jsonColor = defaultConfig["cyan"].get<zo::Object>();
-      color[0] = jsonColor["ymin"].get<int>();
-      color[1] = jsonColor["umin"].get<int>();
-      color[2] = jsonColor["vmin"].get<int>();
-      yuvColors_[colorToIndex[kHWControllerLEDCyan]][kVNYUVMinIndex] = color;
-
-      color[0] = jsonColor["ymax"].get<int>();
-      color[1] = jsonColor["umax"].get<int>();
-      color[2] = jsonColor["vmax"].get<int>();
-      yuvColors_[colorToIndex[kHWControllerLEDCyan]][kVNYUVMaxIndex] = color;
-
-      // magenta
-      jsonColor = defaultConfig["magenta"].get<zo::Object>();
-      color[0] = jsonColor["ymin"].get<int>();
-      color[1] = jsonColor["umin"].get<int>();
-      color[2] = jsonColor["vmin"].get<int>();
-      yuvColors_[colorToIndex[kHWControllerLEDMagenta]][kVNYUVMinIndex] = color;
-
-      color[0] = jsonColor["ymax"].get<int>();
-      color[1] = jsonColor["umax"].get<int>();
-      color[2] = jsonColor["vmax"].get<int>();
-      yuvColors_[colorToIndex[kHWControllerLEDMagenta]][kVNYUVMaxIndex] = color;
-
-      configfile.close();
-
-      loadColors_ = false;
-  }
-
-  void
-  VNWandPIMPL::LoadColorFilterValuesFromDefaults(void) {
-      debugMPI_.DebugOut(kDbgLvlValuable, "FAILED: Opening color calibration file\n");
-
-      // green
-      yuvColors_[colorToIndex[kHWControllerLEDGreen]][kVNYUVMinIndex] = kVNWandGreenMin;
-      yuvColors_[colorToIndex[kHWControllerLEDGreen]][kVNYUVMaxIndex] = kVNWandGreenMax;
-      // red
-      yuvColors_[colorToIndex[kHWControllerLEDRed]][kVNYUVMinIndex] = kVNWandRedMin;
-      yuvColors_[colorToIndex[kHWControllerLEDRed]][kVNYUVMaxIndex] = kVNWandRedMax;
-      // blue
-      yuvColors_[colorToIndex[kHWControllerLEDBlue]][kVNYUVMinIndex] = kVNWandBlueMin;
-      yuvColors_[colorToIndex[kHWControllerLEDBlue]][kVNYUVMaxIndex] = kVNWandBlueMax;
-      // yellow
-      yuvColors_[colorToIndex[kHWControllerLEDYellow]][kVNYUVMinIndex] = kVNWandYellowMin;
-      yuvColors_[colorToIndex[kHWControllerLEDYellow]][kVNYUVMaxIndex] = kVNWandYellowMax;
-      // cyan
-      yuvColors_[colorToIndex[kHWControllerLEDCyan]][kVNYUVMinIndex] = kVNWandCyanMin;
-      yuvColors_[colorToIndex[kHWControllerLEDCyan]][kVNYUVMaxIndex] = kVNWandCyanMax;
-      // magenta
-      yuvColors_[colorToIndex[kHWControllerLEDMagenta]][kVNYUVMinIndex] = kVNWandMagentaMin;
-      yuvColors_[colorToIndex[kHWControllerLEDMagenta]][kVNYUVMaxIndex] = kVNWandMagentaMax;
-
-      loadColors_ = false;
-  }
-
-  void
-  VNWandPIMPL::CreateConfigFileIfNonExistent(void) {
-    struct stat buffer;
-    if (stat (kWandColorConfigurationFile, &buffer) != 0) {
-      std::ofstream defaultConfigurationFile( kWandColorConfigurationFile );
-      defaultConfigurationFile << std::string( kWandDefaultColorConfiguration );
-      defaultConfigurationFile.close();
-    }
-  }
-
-  void
-  VNWandPIMPL::LoadColorFilterValues(void) {
-    // check if configuration file exists and if not create a default one
-    CreateConfigFileIfNonExistent();
-
-    // load configuration
-    std::ifstream configfile;
-    configfile.open( kWandColorConfigurationFile );
-    if( configfile.is_open() ) {
-      LoadColorFilterValuesFromFile(configfile);
-
-    } else {
-      LoadColorFilterValuesFromDefaults();
-    }
-
-  }
-
-  void
-  VNWandPIMPL::SetColor(const LF::Hardware::HWControllerLEDColor color) {
-    
-    debugMPI_.DebugOut(kDbgLvlValuable, "VNWandPIMPL::SetColor %08x\n", (unsigned int)color);
-    if (loadColors_) {
-      LoadColorFilterValues();
-    }
-    
-    LeapFrog::Brio::U8 index = color >> 1;
-    yuvMin_ = yuvColors_[colorToIndex[color]][kVNYUVMinIndex];
-    yuvMax_ = yuvColors_[colorToIndex[color]][kVNYUVMaxIndex];
-    
-    SetCameraTemperature(color);
-  }
 
   bool
   VNWandPIMPL::IsVisible(void) const {
