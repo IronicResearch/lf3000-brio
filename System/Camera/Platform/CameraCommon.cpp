@@ -1208,6 +1208,19 @@ Boolean	CCameraModule::GetCameraControls(tCameraControls &controls)
 }
 
 //----------------------------------------------------------------------------
+inline S32 GetControlVal(tCameraContext& ctx, tControlType control)
+{
+	tCameraControls::iterator it;
+	for ( it = ctx.controls->begin() ; it != ctx.controls->end(); it++ )
+	{
+		tControlInfo* ctrl = *it;
+		if (ctrl->type == control)
+			return ctrl->current;
+	}
+	return 0;
+}
+
+//----------------------------------------------------------------------------
 Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 value)
 {
 	v4l2_control	ctrl;
@@ -1263,6 +1276,8 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 		ctrl.id = V4L2_CID_AUTO_WHITE_BALANCE;
 		break;
 	case kControlTypeExposure:
+		if (GetControlVal(camCtx_, kControlTypeAutoExposure) != V4L2_EXPOSURE_MANUAL)
+			return false;
 		ctrl.id = V4L2_CID_EXPOSURE_ABSOLUTE;
 		break;
 	case kControlTypeAutoExposure:
@@ -1272,10 +1287,12 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 	        ctrl.id = V4L2_CID_GAIN;
 	        break;
 	case kControlTypeTemperature:
+		if (GetControlVal(camCtx_, kControlTypeAutoWhiteBalance) != 0)
+			return false;
 	        ctrl.id = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
 	        break;
 	default:
-		bRet = false;
+		return false;
 	}
 
 	ctrl.value = value;
