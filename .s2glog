@@ -43613,3 +43613,16 @@ By Minh Saelock (msaelock@leapfrog.com) on 9/26/14 6:24 PM
 25,149 ms. (Cumulative: 30,429,576 ms)
 
 ----------------
+Revision 11,111 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,112 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1420, FWGLAS-1608: Pre-emptively check camera controls for exposure and color balance.
+These controls are effective only when auto-exposure and auto-white-balance are respectively off.
+If dispatched to V4L UVC driver, errors handled as timeouts disrupt camera video streaming. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/29/14 12:27 PM
+1 changed, 0 added, 0 deleted.
+24,896 ms. (Cumulative: 30,454,565 ms)
+
+----------------
