@@ -74,7 +74,7 @@ enum  {
 };
 
 
-tDebugLevel	CDebugMPI::masterDebugLevel_ = kDbgLvlValuable;
+tDebugLevel	CDebugMPI::masterDebugLevel_ = kDbgLvlCritical;
 Boolean		CDebugMPI::timestampDebugOut_ = false;
 Boolean		CDebugMPI::throwOnAssert_ = false;
 

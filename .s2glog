@@ -43636,3 +43636,13 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 9/29/14 2:06 PM
 25,054 ms. (Cumulative: 30,479,713 ms)
 
 ----------------
+Revision 11,114 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,115 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1636: Reduce default syslogd logging to critical.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/1/14 4:51 PM
+1 changed, 0 added, 0 deleted.
+25,066 ms. (Cumulative: 30,504,888 ms)
+
+----------------
