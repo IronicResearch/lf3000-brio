@@ -24,9 +24,10 @@ using namespace LeapFrog::Brio;
 static const U32 kHWDefaultEventPriority = 0;
 static const U32 kHWControllerDefaultRate = 50;
 
-#define BATTERY_STATE_COUNT_THRESHOLD 25
-#define POWER_STATE_COUNT_THRESHOLD 50
-#define GLASGOW_CONTROLLER_VERSION_MAX 31
+#define BATTERY_STATE_COUNT_THRESHOLD 25 // Send low battery event only if the battery is reported low for 20*25=500ms straight.
+#define POWER_STATE_COUNT_THRESHOLD 50 // Send KeepAlive only once per minute, 20*50=1000ms
+#define GLASGOW_CONTROLLER_VERSION_MAX 31 // Max limit of firmwware version numbers for Glasgow, Start CIP/LeapTV2 from 32=0x20
+#define BATTERY_STATE_MESSAGE_THRESHOLD 6000 // Once you send a low battery event, wait for 20ms * 50 * 60 * 2 = 2 minutes to send the next one.
 
 namespace LF {
 namespace Hardware {
@@ -495,6 +496,9 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  static U8 lowBatteryCounter = 0; //FWGLAS-547: Counter for tracking when it's time to post low battery warning
 	  bool lowBatteryStatus = false; 
 	  bool accelValueChanged = false;
+	  //FWGLAS-1662: Variables to keep track of low battery warnings
+	  static U16 lowBatteryMsgCounter = 0;
+	  static bool lowBatteryMsgSent = false;
 
 #if TIME_INTERNAL_METHODS
 	  PROF_BLOCK_END();
@@ -678,6 +682,11 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 		  power_counter = 0;
 	  }
 	  
+	  if(lowBatteryMsgSent) //FWGLAS-1662: Start counting for 2 minutes timer only after 1st warning has been sent.
+	  {
+		  lowBatteryMsgCounter++;
+	  }
+	
 	  if(lowBatteryStatus)
 	  {
 		  lowBatteryCounter++;
@@ -687,11 +696,27 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 		  lowBatteryCounter = 0;
 	  }
 	  
-	  if(lowBatteryCounter == BATTERY_STATE_COUNT_THRESHOLD)
+	  if(lowBatteryCounter >= BATTERY_STATE_COUNT_THRESHOLD)
 	  {
-		  HWControllerEventMessage cmsg(kHWControllerLowBattery, controller_);
-		  eventMPI_.PostEvent(cmsg, 128);
-		  debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::Posting  kHWControllerLowBattery\n");
+		  //debugMPI_.DebugOut(kDbgLvlValuable, "lowBatteryMsgSent = %u lowBatteryMsgCounter = %u \n", (unsigned int)lowBatteryMsgSent, (unsigned int)lowBatteryMsgCounter);
+		  if(!lowBatteryMsgSent) //FWGLAS-1662: This is the 1st time low battery occurred, send the event right away.
+		  { 
+			  lowBatteryMsgSent = true;
+			  HWControllerEventMessage cmsg(kHWControllerLowBattery, controller_);
+			  eventMPI_.PostEvent(cmsg, 128);
+			  debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::Posting  kHWControllerLowBattery (first alert)\n");
+		  }
+		  //debugMPI_.DebugOut(kDbgLvlValuable, "lowBatteryMsgSent = %u \n", (unsigned int)lowBatteryMsgSent);
+		  else //FWGLAS-1662: Consecutive warnings, check if it's been 2 minutes since the previous warning. If yes, reset the counter & send the event.
+		  {
+			  if(lowBatteryMsgCounter >= BATTERY_STATE_MESSAGE_THRESHOLD)
+			  {
+				lowBatteryMsgCounter = 0;
+				HWControllerEventMessage cmsg(kHWControllerLowBattery, controller_);
+			    eventMPI_.PostEvent(cmsg, 128);
+				debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::Posting  kHWControllerLowBattery (repeat alert)\n");
+			  }  
+		  }
 	  }
 
 #if TIME_INTERNAL_METHODS

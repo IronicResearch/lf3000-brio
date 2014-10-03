@@ -43665,3 +43665,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/3/14 1:30 PM
 25,407 ms. (Cumulative: 30,530,467 ms)
 
 ----------------
+Revision 11,127 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Only send out low battery events at a 2 minute interval, first event will go out immediately. (FWGLAS-1662)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 10/3/14 2:01 PM
+1 changed, 0 added, 0 deleted.
+26,345 ms. (Cumulative: 30,556,918 ms)
+
+----------------
