@@ -343,7 +343,12 @@ void* VideoTaskMain( void* arg )
 			}
 		}
 		if (pctx->hAudio != kNoAudioID)
+		{
+			marktime = (vtm.frame + 10) * pctx->uFrameTimeNum / pctx->uFrameTimeDen + basetime;
+			while(audmgr->IsAudioPlaying(pctx->hAudio) && kernel.GetElapsedTimeAsMSecs() - zerotime < marktime)
+				kernel.TaskSleep(1);
 			audmgr->StopAudio(pctx->hAudio, false);
+		}
 		// Reloop from 1st video frame if selected, or exit thread
 		if (bRunning && pctx->bLooped)
 			pctx->bPlaying = vidmgr->SeekVideoFrame(pctx->hVideo, &vtm0, true, false);
