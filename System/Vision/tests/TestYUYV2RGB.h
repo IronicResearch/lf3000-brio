@@ -94,7 +94,7 @@ class TestYUYV2RGB : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 			for(int i = 0; i < TestYUYV2RGB::numIterations_; i++ ) {
 			
 				PROF_BLOCK_START("Fast YUYV 2 RGB");
-				LF::Vision::YUYV2RGB( baseYUYVImage_.data, TestYUYV2RGB::imageWidth_, TestYUYV2RGB::imageHeight_, rgb );
+				LF::Vision::YUYV2RGB( baseYUYVImage_,  rgb );
 				PROF_BLOCK_END();
 			}
 
@@ -109,7 +109,7 @@ class TestYUYV2RGB : public CxxTest::TestSuite, LeapFrog::Brio::TestSuiteBase {
 			cv::cvtColor(baseYUYVImage_, rgbOpenCV, CV_YUV2RGB_YUYV);
 
 			cv::Mat rgbFast(TestYUYV2RGB::imageWidth_, TestYUYV2RGB::imageHeight_, CV_8UC3);
-			LF::Vision::YUYV2RGB( baseYUYVImage_.data, TestYUYV2RGB::imageWidth_, TestYUYV2RGB::imageHeight_, rgbFast );
+			LF::Vision::YUYV2RGB( baseYUYVImage_, rgbFast );
 
 		
 			cv::Mat diff(TestYUYV2RGB::imageWidth_, TestYUYV2RGB::imageHeight_, CV_8UC3);
