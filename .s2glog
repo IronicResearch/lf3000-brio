@@ -43674,3 +43674,13 @@ By Lloyd Moore (lmoore@leapfrog.com) on 10/3/14 2:01 PM
 26,345 ms. (Cumulative: 30,556,918 ms)
 
 ----------------
+Revision 11,128 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,129 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Update the vision unit test for the API method change of r11093 (FWGLAS-1057)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 10/6/14 9:10 AM
+1 changed, 0 added, 0 deleted.
+25,257 ms. (Cumulative: 30,582,300 ms)
+
+----------------
