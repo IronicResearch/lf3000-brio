@@ -278,6 +278,7 @@ void* VideoTaskMain( void* arg )
 					basetime = nexttime - vtm.time;
 					marktime = nexttime + lapsetime;
 				}
+				continue;
 			}
 			else
 			{
