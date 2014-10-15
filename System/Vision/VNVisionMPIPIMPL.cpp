@@ -69,14 +69,22 @@ namespace Vision {
   VNVisionMPIPIMPL*
   VNVisionMPIPIMPL::Instance(void) {
     static VNVisionMPIPIMPL* sharedInstance = NULL;
-    if (sharedInstance == NULL) {
-      LeapFrog::Brio::CKernelMPI kernelMPI;
-      kernelMPI.LockMutex(VNVisionMPIPIMPL::instanceMutex_);
-      if (sharedInstance == NULL) {
-	  sharedInstance = new VNVisionMPIPIMPL();
-      }
-      kernelMPI.UnlockMutex(VNVisionMPIPIMPL::instanceMutex_);
+
+    if(HasPlatformCapability(kCapsVision)) {
+        if (sharedInstance == NULL) {
+          LeapFrog::Brio::CKernelMPI kernelMPI;
+          kernelMPI.LockMutex(VNVisionMPIPIMPL::instanceMutex_);
+          if (sharedInstance == NULL) {
+        	  sharedInstance = new VNVisionMPIPIMPL();
+          }
+          kernelMPI.UnlockMutex(VNVisionMPIPIMPL::instanceMutex_);
+        }
+    } else {
+    	LeapFrog::Brio::CDebugMPI localDbgMPI(kGroupVision);
+    	localDbgMPI.DebugOut(kDbgLvlImportant, "VNVisionMPIPIMPL::Instance() called on a platform which does not support vision\n");
+    	sharedInstance = static_cast<VNVisionMPIPIMPL*>(NULL);
     }
+
     return sharedInstance;
   }
 
@@ -643,7 +651,7 @@ namespace Vision {
 	hotSpots_.erase(it);
 	//decrement since it now points to the position past the one erased and 
 	// the update branch of the for loop will increment the iterator
-	--it; 
+	--it;
       }
     }
     HS_UPDATE_UNLOCK

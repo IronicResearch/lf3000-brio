@@ -43702,3 +43702,24 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/10/14 3:23 PM
 25,146 ms. (Cumulative: 30,632,735 ms)
 
 ----------------
+Revision 11,132 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,095 ms. (Cumulative: 30,657,924 ms)
+
+----------------
+Revision 11,133 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,179 ms. (Cumulative: 30,683,103 ms)
+
+----------------
+Revision 11,134 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Have vision check platform capabilities before instanciating implementation classes, don't instanciate implementation classes if vision is not present on the platform. Return default/null values instead so that applications can detect no vision and not crash (ARIA-311)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 10/15/14 3:12 PM
+5 changed, 0 added, 0 deleted.
+25,440 ms. (Cumulative: 30,708,543 ms)
+
+----------------
