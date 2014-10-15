@@ -5,14 +5,21 @@
 #include <Vision/VNWand.h>
 #include <VNWandPIMPL.h>
 #include <opencv2/opencv.hpp>
+#include <Utility.h>
 
 namespace LF {
 namespace Vision {
 
 
   VNWandTracker::VNWandTracker(VNInputParameters *params) :
-    pimpl_(new VNWandTrackerPIMPL(VNVisionMPI().pimpl_->GetCurrentWand(),
-				  params)) {
+    pimpl_(static_cast<VNWandTrackerPIMPL*>(NULL)) {
+
+	if(HasPlatformCapability(kCapsVision) && HasPlatformCapability(kCapsGamePadController)) {
+	  pimpl_.reset(new VNWandTrackerPIMPL(VNVisionMPI().pimpl_->GetCurrentWand(), params));
+	} else {
+		LeapFrog::Brio::CDebugMPI localDbgMPI(kGroupVision);
+		localDbgMPI.DebugOut(kDbgLvlImportant, "VNWandTracker::VNWandTracker() called on a platform which does not support vision and hand-held controllers\n");
+	}
   }
   
   VNWandTracker::~VNWandTracker(void) {

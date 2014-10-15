@@ -1,6 +1,8 @@
 #include <Vision/VNVirtualTouch.h>
 #include <VNVirtualTouchPIMPL.h>
 #include <opencv2/opencv.hpp>
+#include <DebugMPI.h>
+#include <Utility.h>
 
 namespace LF {
 namespace Vision {
@@ -10,13 +12,25 @@ namespace Vision {
 
 
   VNVirtualTouch::VNVirtualTouch(float learningRate) :
-    pimpl_(new VNVirtualTouchPIMPL(learningRate)) {
+    pimpl_(static_cast<VNVirtualTouchPIMPL*>(NULL)) {
 
+	  if(HasPlatformCapability(kCapsVision)) {
+		  pimpl_.reset(new VNVirtualTouchPIMPL(learningRate));
+	  } else {
+		LeapFrog::Brio::CDebugMPI localDbgMPI(kGroupVision);
+		localDbgMPI.DebugOut(kDbgLvlImportant, "VNVirtualTouch::VNVirtualTouch(float) called on a platform which does not support vision\n");
+	  }
   }
 
   VNVirtualTouch::VNVirtualTouch(VNInputParameters *params) :
-    pimpl_(new VNVirtualTouchPIMPL(params)) {
+    pimpl_(static_cast<VNVirtualTouchPIMPL*>(NULL)) {
 
+	  if(HasPlatformCapability(kCapsVision)) {
+		  pimpl_.reset(new VNVirtualTouchPIMPL(params));
+	  } else {
+		LeapFrog::Brio::CDebugMPI localDbgMPI(kGroupVision);
+		localDbgMPI.DebugOut(kDbgLvlImportant, "VNVirtualTouch::VNVirtualTouch(VNInputParameters) called on a platform which does not support vision\n");
+	  }
   }
 
   VNVirtualTouch::~VNVirtualTouch(void) {

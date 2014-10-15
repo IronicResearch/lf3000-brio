@@ -1,11 +1,19 @@
 #include <Vision/VNWand.h>
 #include <VNWandPIMPL.h>
+#include <Utility.h>
 
 namespace LF {
 namespace Vision {
 
   VNWand::VNWand(void) :
-    pimpl_(new VNWandPIMPL()) {
+    pimpl_(static_cast<VNWandPIMPL*>(NULL)) {
+
+	  if(HasPlatformCapability(kCapsVision) && HasPlatformCapability(kCapsGamePadController)) {
+		  pimpl_.reset(new VNWandPIMPL());
+	  } else {
+		LeapFrog::Brio::CDebugMPI localDbgMPI(kGroupVision);
+		localDbgMPI.DebugOut(kDbgLvlImportant, "VNWand::VNWand() called on a platform which does not support vision and hand-held controllers\n");
+	  }
   }
 
   VNWand::~VNWand(void) {

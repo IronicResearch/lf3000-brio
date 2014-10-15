@@ -30,8 +30,10 @@ namespace Vision {
    */
   LeapFrog::Brio::Boolean
   VNVisionMPI::IsValid(void) const {
-    //TODO: verify it's valid
-    return 1;
+    if(pimpl_)
+    	return 1;
+    else
+    	return 0;
   }
   
   const LeapFrog::Brio::CString*
@@ -118,7 +120,7 @@ namespace Vision {
     if (pimpl_) {
       return pimpl_->Start(surf, dispatchSynchronously, displayRect);
     }
-    return kNoErr;
+    return kNoImplErr;
   }
   
   void
