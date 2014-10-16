@@ -43769,3 +43769,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/16/14 12:03 PM
 25,129 ms. (Cumulative: 30,834,538 ms)
 
 ----------------
+Revision 11,141 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixes test_VisionMPI unit test to catch up to latest vision changes. Also correct minor locking issue VNVisionMPIPIMPL::RemoveHotSpotByID so that it is now more formally correct
+
+By Lloyd Moore (lmoore@leapfrog.com) on 10/16/14 12:38 PM
+2 changed, 0 added, 0 deleted.
+25,034 ms. (Cumulative: 30,859,697 ms)
+
+----------------

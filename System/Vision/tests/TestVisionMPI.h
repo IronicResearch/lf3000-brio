@@ -130,8 +130,10 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			VNVisionMPI VisionMPI;
 			std::auto_ptr<VNRectHotSpot> RectHotSpot (new VNRectHotSpot);
 			TS_ASSERT(RectHotSpot.get());
+			VisionMPI.AddHotSpot(dynamic_cast<VNHotSpot*>(RectHotSpot.get()));
 			U32 latestID = -1;
 			VisionMPI.RemoveHotSpotByID(latestID);
+			VisionMPI.RemoveAllHotSpots();				//Clear out the hotspot list as VisionMPI ties into a singleton
 		}
 
 		void testRemoveHotSpotByIDWithOneHotSpotMatchingIDShouldSucceed() {
@@ -142,7 +144,9 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			std::auto_ptr<VNRectHotSpot> RectHotSpot (new VNRectHotSpot);
 			TS_ASSERT(RectHotSpot.get());
 			RectHotSpot->SetTag(ULONG_MAX);
+			VisionMPI.AddHotSpot(dynamic_cast<VNHotSpot*>(RectHotSpot.get()));
 			VisionMPI.RemoveHotSpotByID(ULONG_MAX);
+			VisionMPI.RemoveAllHotSpots();				//Clear out the hotspot list as VisionMPI ties into a singleton
 		}
 
 		void testRemoveHotSpotByIDWithNineHotSpotMatchingIDShouldSucceed() {
@@ -150,13 +154,18 @@ class TestVisionMPI : public CxxTest::TestSuite, TestSuiteBase, UnitTestVisionUt
 			TS_WARN("There is currently no way to confirm whether this is successful.\n"
 				"Need to expose std::vector<const VNHotSpot*> hotSpots_ in VNVisionMPIPIMPL.");
 			VNVisionMPI VisionMPI;
+			const int numHotSpotsToTest = 9;
+			std::auto_ptr<VNRectHotSpot> RectHotSpot[numHotSpotsToTest];
+
 			for (int i = 0; i < 9; i++) {
-				std::auto_ptr<VNRectHotSpot> RectHotSpot (new VNRectHotSpot);
-				TS_ASSERT(RectHotSpot.get());
-				RectHotSpot->SetTag(ULONG_MAX);
-				VisionMPI.AddHotSpot(dynamic_cast<VNHotSpot*>(RectHotSpot.get()));
+				RectHotSpot[i].reset(new VNRectHotSpot);
+				TS_ASSERT(RectHotSpot[i].get());
+				RectHotSpot[i]->SetTag(ULONG_MAX);
+				VisionMPI.AddHotSpot(dynamic_cast<VNHotSpot*>(RectHotSpot[i].get()));
 			}
+
 			VisionMPI.RemoveHotSpotByID(ULONG_MAX);
+			VisionMPI.RemoveAllHotSpots();				//Clear out the hotspot list as VisionMPI ties into a singleton
 		}
 
 		void testRemoveAllHotSpotsWithNoHotSpotInListShouldSucceed() {
