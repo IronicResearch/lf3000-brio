@@ -43723,3 +43723,12 @@ By Lloyd Moore (lmoore@leapfrog.com) on 10/15/14 3:12 PM
 25,440 ms. (Cumulative: 30,708,543 ms)
 
 ----------------
+Revision 11,135 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1676: Improved recovery for restarting V4L stream if poll frames stalled.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/15/14 6:20 PM
+1 changed, 0 added, 0 deleted.
+25,069 ms. (Cumulative: 30,733,706 ms)
+
+----------------

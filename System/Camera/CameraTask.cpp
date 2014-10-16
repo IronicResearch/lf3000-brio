@@ -181,6 +181,8 @@ void* CameraTaskMain(void* arg)
 	struct timeval		tv0, tvn, tvt = {0, 0};
 	int					framecount = 0;
 	int 				preroll = 0;
+	int 				pollcount = 0;
+	int 				numbufs = pCtx->numBufs;
 
 	bool				bQueued = false;
 	int					viewframe = 0;
@@ -338,9 +340,11 @@ void* CameraTaskMain(void* arg)
 		{
 			// Restarting V4L stream via GrabFrame() outside of thread lock
 			dbg.DebugOut( kDbgLvlCritical, "Restarting V4L stream at frame=%d\n", framecount);
-			frame.width = pCtx->mode.width;
-			frame.height = pCtx->mode.height;
-			bRet = pCtx->module->GrabFrame(pCtx->hndl, &frame);
+			bRet = cam->StopVideoCaptureInt(pCtx->fd);
+			bRet = cam->DeinitCameraBufferInt(pCtx);
+			pCtx->numBufs = numbufs;
+			bRet = cam->InitCameraBufferInt(pCtx);
+			bRet = cam->InitCameraStartInt(pCtx);
 			bRestart = false;
 			if (!bRet)
 				break;
@@ -386,12 +390,11 @@ void* CameraTaskMain(void* arg)
 
 		if(!pCtx->module->PollFrame(pCtx->hndl))
 		{
-			struct timeval tvx;
-			gettimeofday(&tvx, NULL);
-			CalcTimeDiff(tvx, tvx, tvn);
-			if (tvx.tv_sec > tvn.tv_sec + 10 && !pCtx->bPaused) {
+			pollcount++;
+			if (pollcount > 1000) {
 				dbg.DebugOut( kDbgLvlCritical, "PollFrame failed to query next V4L frame=%d\n", framecount);
 				bRestart = true;
+				pollcount = 0;
 			}
 
 			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
@@ -401,6 +404,7 @@ void* CameraTaskMain(void* arg)
 				kernel.TaskSleep(1);
 			continue;
 		}
+		pollcount = 0;
 
 		if(!(bRet = pCtx->module->GetFrame(pCtx->hndl, &frame)))
 		{
