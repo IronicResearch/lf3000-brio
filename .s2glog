@@ -43732,3 +43732,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/15/14 6:20 PM
 25,069 ms. (Cumulative: 30,733,706 ms)
 
 ----------------
+Revision 11,136 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added verbose logging when setting V4L camera control.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/15/14 6:23 PM
+1 changed, 0 added, 0 deleted.
+25,046 ms. (Cumulative: 30,758,861 ms)
+
+----------------
