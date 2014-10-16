@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <dlfcn.h>
 #include <string.h>
+#include <Utility.h>
 
 #undef ENABLE_PROFILING	// #define to enable profiling BT callbacks
 #include <FlatProfiler.h>
@@ -41,16 +42,25 @@ namespace Hardware {
 
   boost::shared_ptr<HWControllerMPIPIMPL>
   HWControllerMPIPIMPL::Instance(void) {
-    static boost::shared_ptr<HWControllerMPIPIMPL> sharedInstance;
-    if (sharedInstance == NULL) {
-      LeapFrog::Brio::CKernelMPI kernelMPI;
-      kernelMPI.LockMutex(HWControllerMPIPIMPL::instanceMutex_);
-      if (sharedInstance == NULL) {
-	sharedInstance.reset(new HWControllerMPIPIMPL());
-      }
-      kernelMPI.UnlockMutex(HWControllerMPIPIMPL::instanceMutex_);
-    }
-    return sharedInstance;
+	  static boost::shared_ptr<HWControllerMPIPIMPL> sharedInstance;
+
+	  if(HasPlatformCapability(kCapsGamePadController)) {
+		    if (sharedInstance == NULL) {
+		      LeapFrog::Brio::CKernelMPI kernelMPI;
+		      kernelMPI.LockMutex(HWControllerMPIPIMPL::instanceMutex_);
+		      if (sharedInstance == NULL) {
+			sharedInstance.reset(new HWControllerMPIPIMPL());
+		      }
+		      kernelMPI.UnlockMutex(HWControllerMPIPIMPL::instanceMutex_);
+		    }
+	  }
+	  else {
+		  LeapFrog::Brio::CDebugMPI localDebugMPI(kGroupController);
+		  localDebugMPI.DebugOut(kDbgLvlImportant, "HWControllerMPIPMPL::Instance() called on a platform which does not support hand-held controllers\n");
+		  sharedInstance.reset((HWControllerMPIPIMPL*)(NULL));
+	  }
+
+	  return sharedInstance;
   }
 
   HWControllerMPIPIMPL::HWControllerMPIPIMPL(void) :

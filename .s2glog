@@ -43741,3 +43741,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/15/14 6:23 PM
 25,046 ms. (Cumulative: 30,758,861 ms)
 
 ----------------
+Revision 11,137 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Have HWController and HWControllerMPI check platform capabilities before instantiating implementation classes, don't instantiate implementation classes if hand held game controller is not present on the platform. Return default/null values instead so that applications can detect no game controller and not crash (ARIA-611)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 10/16/14 7:45 AM
+3 changed, 0 added, 0 deleted.
+25,119 ms. (Cumulative: 30,784,090 ms)
+
+----------------
