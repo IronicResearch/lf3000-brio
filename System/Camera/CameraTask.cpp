@@ -336,9 +336,14 @@ void* CameraTaskMain(void* arg)
 
 	while(bRunning && !timeout)
 	{
+		if(0 != kernel.TryLockMutex(pCtx->mThread))
+		{
+			continue;
+		}
+
 		if (bRestart)
 		{
-			// Restarting V4L stream via GrabFrame() outside of thread lock
+			// Restarting V4L stream via internal ops inside of thread lock
 			dbg.DebugOut( kDbgLvlCritical, "Restarting V4L stream at frame=%d\n", framecount);
 			bRet = cam->StopVideoCaptureInt(pCtx->fd);
 			bRet = cam->DeinitCameraBufferInt(pCtx);
@@ -348,11 +353,6 @@ void* CameraTaskMain(void* arg)
 			bRestart = false;
 			if (!bRet)
 				break;
-		}
-
-		if(0 != kernel.TryLockMutex(pCtx->mThread))
-		{
-			continue;
 		}
 
 		if(pCtx->bPaused && !bWasPaused)

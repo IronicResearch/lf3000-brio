@@ -43760,3 +43760,12 @@ By Paul Pan (ppan@leapfrog.com) on 10/16/14 11:32 AM
 25,115 ms. (Cumulative: 30,809,315 ms)
 
 ----------------
+Revision 11,140 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Relocate stream restart inside thread lock when using internal ops.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/16/14 12:03 PM
+1 changed, 0 added, 0 deleted.
+25,129 ms. (Cumulative: 30,834,538 ms)
+
+----------------
