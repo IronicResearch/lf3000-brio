@@ -43750,3 +43750,13 @@ By Lloyd Moore (lmoore@leapfrog.com) on 10/16/14 7:45 AM
 25,119 ms. (Cumulative: 30,784,090 ms)
 
 ----------------
+Revision 11,138 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,139 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+removing Tools from SDK build. Hope I don't break anything
+
+By Paul Pan (ppan@leapfrog.com) on 10/16/14 11:32 AM
+1 changed, 0 added, 0 deleted.
+25,115 ms. (Cumulative: 30,809,315 ms)
+
+----------------
