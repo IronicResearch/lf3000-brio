@@ -1,6 +1,7 @@
 #include <Hardware/HWControllerMPI.h>
 #include <EventMPI.h>
 #include "HWControllerMPIPIMPL.h"
+#include <SystemErrors.h>
 
 namespace LF {
 namespace Hardware {
@@ -28,8 +29,10 @@ namespace Hardware {
 
   LeapFrog::Brio::Boolean
   HWControllerMPI::IsValid(void) const {
-    // TODO: determine if valid
-    return true;
+    if(pimpl_)
+    	return true;
+    else
+    	return false;
   }
   const LeapFrog::Brio::CString*
   HWControllerMPI::GetMPIName(void) const {
@@ -65,33 +68,45 @@ namespace Hardware {
 
   HWController*
   HWControllerMPI::GetControllerByID(LeapFrog::Brio::U32 id) {
-    pimpl_->GetControllerByID(id);
+	  if(pimpl_.get())
+		  return pimpl_->GetControllerByID(id);
+	  else
+		  return NULL;
   }
 
   void
   HWControllerMPI::GetAllControllers(std::vector<HWController*> &controllers) {
     controllers.clear();
-    pimpl_->GetAllControllers(controllers);
+    if(pimpl_.get()) pimpl_->GetAllControllers(controllers);
   }
 
   LeapFrog::Brio::U8
   HWControllerMPI::GetNumberOfConnectedControllers(void) const {
-    return pimpl_->GetNumberOfConnectedControllers();
+	  if(pimpl_.get())
+		  return pimpl_->GetNumberOfConnectedControllers();
+	  else
+		  return 0;
   }
 
   LeapFrog::Brio::tErrType
   HWControllerMPI::EnableControllerSync(bool enable) {
-	  return pimpl_->EnableControllerSync(enable);
+	  if(pimpl_.get())
+		  return pimpl_->EnableControllerSync(enable);
+	  else
+		  return LeapFrog::Brio::kNoImplErr;
   }
 
   LeapFrog::Brio::U8
   HWControllerMPI::GetMaximumNumberOfControllers() {
-	  return pimpl_->GetMaximumNumberOfControllers();
+	  if(pimpl_.get())
+		  return pimpl_->GetMaximumNumberOfControllers();
+	  else
+		  return 0;
   }
 
   void
   HWControllerMPI::DisconnectAllControllers() {
-	  pimpl_->DisconnectAllControllers();
+	  if(pimpl_.get()) pimpl_->DisconnectAllControllers();
   }
 
 } // namespace Hardware
