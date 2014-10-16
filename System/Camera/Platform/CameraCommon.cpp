@@ -1301,6 +1301,7 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 	CAMERA_LOCK;
 
 	bRet = SetControlInt(camCtx_.fd, &ctrl);
+	dbg_.DebugOut(kDbgLvlVerbose, "CCameraModule::SetCameraControl: ctrl=%d (v4l=%08x), val=%d, ret=%d\n", control->type, ctrl.id, ctrl.value, bRet);
 
 	/* save updated value */
 	for(it = camCtx_.controls->begin(); it < camCtx_.controls->end(); it++)
