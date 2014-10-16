@@ -644,8 +644,9 @@ namespace Vision {
 
   void
   VNVisionMPIPIMPL::RemoveHotSpotByID(const LeapFrog::Brio::U32 tag) {
-    std::vector<const VNHotSpot*>::iterator it = hotSpots_.begin();
-    HS_UPDATE_LOCK
+	if(hotSpots_.size() == 0) return;
+	HS_UPDATE_LOCK
+	std::vector<const VNHotSpot*>::iterator it = hotSpots_.begin();
     for ( ; it != hotSpots_.end(); ++it) {
       if ((*it) && (*it)->GetTag() == tag) {
 	hotSpots_.erase(it);
