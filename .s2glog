@@ -43778,3 +43778,19 @@ By Lloyd Moore (lmoore@leapfrog.com) on 10/16/14 12:38 PM
 25,034 ms. (Cumulative: 30,859,697 ms)
 
 ----------------
+Revision 11,142 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+24,942 ms. (Cumulative: 30,884,733 ms)
+
+----------------
+Revision 11,143 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Reverting -r11139 to get LightningCore to build.
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 10/17/14 10:48 AM
+1 changed, 0 added, 0 deleted.
+25,159 ms. (Cumulative: 30,909,892 ms)
+
+----------------
