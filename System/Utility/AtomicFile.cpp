@@ -302,7 +302,7 @@ FILE *fopenAtomic(const char *path, const char *mode)
 	{
 		if (tolower(*s) == 'r')
 		{
-			ATOMIC_ERR1 ("fopenAtomic(%s): Can't use with read modes!\n", path);
+			ATOMIC_ERR1 ("fopenAtomic(%s): AtomicIO is necessary only for write access. Use standard fopen for read-only file access.\n", path);
 			return NULL;
 		}
 		if (tolower(*s) == 'a')
