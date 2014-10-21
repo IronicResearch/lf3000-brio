@@ -43794,3 +43794,18 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 10/17/14 10:48 AM
 25,159 ms. (Cumulative: 30,909,892 ms)
 
 ----------------
+Revision 11,144 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+25,034 ms. (Cumulative: 30,935,020 ms)
+
+----------------
+Revision 11,145 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1436 Changes error the message to be a more descriptive one
+
+By Diego Link (dlink@leapfrog.com) on 10/21/14 12:02 PM
+1 changed, 0 added, 0 deleted.
+25,008 ms. (Cumulative: 30,960,028 ms)
+
+----------------
