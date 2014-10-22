@@ -43818,3 +43818,12 @@ By Paul Pan (ppan@leapfrog.com) on 10/22/14 10:38 AM
 25,470 ms. (Cumulative: 30,985,592 ms)
 
 ----------------
+Revision 11,147 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+putting back etc sconscript call. I'm leaving the Samples commented out though
+
+By Paul Pan (ppan@leapfrog.com) on 10/22/14 10:50 AM
+1 changed, 0 added, 0 deleted.
+25,013 ms. (Cumulative: 31,010,699 ms)
+
+----------------
