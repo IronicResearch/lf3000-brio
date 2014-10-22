@@ -43827,3 +43827,13 @@ By Paul Pan (ppan@leapfrog.com) on 10/22/14 10:50 AM
 25,013 ms. (Cumulative: 31,010,699 ms)
 
 ----------------
+Revision 11,148 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,149 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Protect against inputs arriving from a controller while in the the middle of deleting controllers. Controllers which were partially deleted could cause a crash when called to process input. (FWGLAS-1698)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 10/22/14 12:33 PM
+2 changed, 0 added, 0 deleted.
+25,085 ms. (Cumulative: 31,035,893 ms)
+
+----------------
