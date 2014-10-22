@@ -101,6 +101,7 @@ namespace Hardware {
     std::vector<HWController*> listControllers_;
     std::map<BtAdrWrap, HWController*> mapControllers_;
     std::map<BtAdrWrap, int> disconnectedControllers_;
+    bool isControllerDeleteInProgress;
     bool isScanning_;
     bool isPairing_;
     bool isDeviceCallback_;
@@ -129,6 +130,7 @@ namespace Hardware {
     pFnDisconnectDevice 	pBTIO_DisconnectDevice_;
 
     static LeapFrog::Brio::tMutex instanceMutex_;
+    static LeapFrog::Brio::tMutex disconnectedControllerMutex_;
 
     static void DeviceCallback(void*, void*, int);
     static void InputCallback(void*, void*, int, char*);

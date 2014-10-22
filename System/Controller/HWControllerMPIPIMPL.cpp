@@ -37,12 +37,15 @@ namespace LF {
 namespace Hardware {
 
   LeapFrog::Brio::tMutex HWControllerMPIPIMPL::instanceMutex_ = PTHREAD_MUTEX_INITIALIZER;
+  LeapFrog::Brio::tMutex HWControllerMPIPIMPL::disconnectedControllerMutex_ = PTHREAD_MUTEX_INITIALIZER;
   
   const int ForceDisconnect = 0x00000001;		//Note this flag comes from SS1 SDK, duplicating here to avoid large header file changes at this time
 
   boost::shared_ptr<HWControllerMPIPIMPL>
   HWControllerMPIPIMPL::Instance(void) {
 	  static boost::shared_ptr<HWControllerMPIPIMPL> sharedInstance;
+
+	  if(sharedInstance) return sharedInstance;
 
 	  if(HasPlatformCapability(kCapsGamePadController)) {
 		    if (sharedInstance == NULL) {
@@ -71,6 +74,7 @@ namespace Hardware {
 	    listControllers_.clear();
 	    mapControllers_.clear();
 	    disconnectedControllers_.clear();
+	    isControllerDeleteInProgress = false;
 	    isScanning_ = false;
 	    isPairing_ = false;
 	    isDeviceCallback_ = false;
@@ -189,6 +193,12 @@ namespace Hardware {
 	  HWControllerMPIPIMPL* pModule = (HWControllerMPIPIMPL*)context;
       HWController* controller = NULL;
       BtAdrWrap key(addr);
+
+      if(Instance()->isControllerDeleteInProgress) {
+		  Instance()->debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL::InputCallback - skipping controller update as deletes in progress\n");
+		  return;
+	  }
+
       if (pModule->mapControllers_.count(key) > 0)
     	  controller = pModule->mapControllers_.at(key);
       if (!controller)
@@ -236,10 +246,14 @@ namespace Hardware {
 	  BtAdrWrap key(link);
 	  printf(" \ncontrollerIsConnected=%d\n",ControllerIsConnected);
 	  //If the controller to add was just disconnected then skip this addition, also remove it from the disconnected set
-	  if(disconnectedControllers_.erase(key) == 1) {
+	  kernelMPI_.LockMutex(disconnectedControllerMutex_);
+	  	  int eraseCount = disconnectedControllers_.erase(key);
+	  Instance()->kernelMPI_.UnlockMutex(disconnectedControllerMutex_);
+	  if( eraseCount == 1) {
 		  debugMPI_.DebugOut(kDbgLvlImportant, "AddController - skipping controller add as it was just deleted\n");
 		  return;
 	  }
+
 #if 0
 
 	  if (mapControllers_.count(key) > 0) {
@@ -669,22 +683,39 @@ debug  		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
 
   void
   HWControllerMPIPIMPL::DisconnectAllControllers() {
-	  debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting all controllers n = %i\n", GetNumberOfConnectedControllers());
-	  std::vector<HWController*>::iterator it;
-	  for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
-		  HWController* controller = *(it);
-		  if(controller) {
-			  char *targetController = FindControllerLink(controller);
-			  disconnectedControllers_.insert(std::pair<BtAdrWrap, int>(BtAdrWrap(targetController), 1));
-			  pBTIO_DisconnectDevice_(targetController, ForceDisconnect);
-			  delete controller;
-		  }
-	  }
 
-	  listControllers_.clear();
-	  mapControllers_.clear();
-	  numControllers_ = 0;
-	  numConnectedControllers_ = 0;
+	  debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting all controllers n = %i\n", GetNumberOfConnectedControllers());
+
+	  isControllerDeleteInProgress = true;
+	  kernelMPI_.LockMutex(disconnectedControllerMutex_);
+	  {
+		  std::vector<HWController*>::iterator it;
+		  for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
+			  HWController* controller = *(it);
+			  if(controller) {
+				  char *targetController = FindControllerLink(controller);
+				  if(targetController) {
+					  disconnectedControllers_.insert(std::pair<BtAdrWrap, int>(BtAdrWrap(targetController), 1));
+					  pBTIO_DisconnectDevice_(targetController, ForceDisconnect);
+				  }
+			  }
+		  }
+
+		  for (it = listControllers_.begin(); it != listControllers_.end(); it++) {
+			  HWController* controller = *(it);
+			  if(controller) {
+				  delete controller;
+				  *it = NULL;
+			  }
+		  }
+
+		  listControllers_.clear();
+		  mapControllers_.clear();
+		  numControllers_ = 0;
+		  numConnectedControllers_ = 0;
+	  }
+	  kernelMPI_.UnlockMutex(disconnectedControllerMutex_);
+	  isControllerDeleteInProgress = false;
   }
 
   LeapFrog::Brio::U8
