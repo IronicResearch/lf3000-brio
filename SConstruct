@@ -179,7 +179,7 @@ env = environments['sdk_headers']
 #Run through each environment and run it through SConscripts
 for target, env in environments.iteritems():
 	Export('env')
-#	Alias(target, SConscript( os.path.join('Etc', 'SConscript') ) )
+	Alias(target, SConscript( os.path.join('Etc', 'SConscript') ) )
 	Alias(target, SConscript( os.path.join('ThirdParty', 'SConscript') ) )
 	Alias(target, SConscript( os.path.join('System', 'SConscript') ) )
 
