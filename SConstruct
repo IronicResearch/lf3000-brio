@@ -166,11 +166,11 @@ environments['sdk_tools']['is_sdk'] = True
 #--------------------------------------------------------
 
 env = environments['sdk_headers']
-Export('env')
-publish_samples = []
-publish_samples.append(SConscript( os.path.join(master_env['platform'], 'SConscript'), duplicate=False))
-publish_samples.append(SConscript( os.path.join('Samples', 'SConscript'), duplicate=False))
-Alias('sdk_headers', publish_samples)
+#Export('env')
+#publish_samples = []
+#publish_samples.append(SConscript( os.path.join(master_env['platform'], 'SConscript'), duplicate=False))
+#publish_samples.append(SConscript( os.path.join('Samples', 'SConscript'), duplicate=False))
+#Alias('sdk_headers', publish_samples)
 
 #--------------------------------------------------------
 # Export Tools to export and publish targets
@@ -179,7 +179,7 @@ Alias('sdk_headers', publish_samples)
 #Run through each environment and run it through SConscripts
 for target, env in environments.iteritems():
 	Export('env')
-	Alias(target, SConscript( os.path.join('Etc', 'SConscript') ) )
+#	Alias(target, SConscript( os.path.join('Etc', 'SConscript') ) )
 	Alias(target, SConscript( os.path.join('ThirdParty', 'SConscript') ) )
 	Alias(target, SConscript( os.path.join('System', 'SConscript') ) )
 
