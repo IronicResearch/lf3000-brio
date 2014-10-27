@@ -205,7 +205,7 @@ public:
 	///
 	/// \param bUpdateVideoDisplay	If true, the display will be updated with the new video position.
 	///
-	/// \return	Returns true on success.
+	/// \return	Returns true if the requested frame is reached.  Returns false if the requested frame was not a keyframe, will instead seek to the keyframe that is before the requested frame.
 	Boolean 	SeekVideoKeyFrame(tVideoHndl hVideo, tVideoTime* pTime, Boolean bUpdateVideoDisplay = false);
  
 	/// Pause video
