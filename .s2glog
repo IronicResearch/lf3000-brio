@@ -43837,3 +43837,16 @@ By Lloyd Moore (lmoore@leapfrog.com) on 10/22/14 12:33 PM
 25,085 ms. (Cumulative: 31,035,893 ms)
 
 ----------------
+Revision 11,150 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,151 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,152 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,153 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,154 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+ARIA-636.  Added some comments to header for return value for SeekVideoKeyFrame.
+
+By Minh Saelock (msaelock@leapfrog.com) on 10/27/14 11:56 AM
+1 changed, 0 added, 0 deleted.
+25,007 ms. (Cumulative: 31,061,025 ms)
+
+----------------
