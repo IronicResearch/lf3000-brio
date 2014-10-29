@@ -281,6 +281,11 @@ namespace Hardware {
     memcpy(&analogStickData_, &data, sizeof(data));
   }
 
+//FWGLAS-1742- restoring original code.
+//This optimization did not fix 2 controller latency. It introduced pointer drift.
+//So backing out optimization.
+
+  /*
   void
   HWControllerPIMPL::DeadZoneAnalogStickData(tHWAnalogStickData& theData) {
     const float centerDeadZoneThreshold = analogStickDeadZone_;
@@ -337,7 +342,59 @@ namespace Hardware {
       }
     }
   }
+*/
+//original code from build 2321 which fixed the pointer drift.
 
+  void
+   HWControllerPIMPL::DeadZoneAnalogStickData(tHWAnalogStickData& theData) {
+     const float centerDeadZoneThreshold = GetAnalogStickDeadZone();
+     //const float cdzt2 = centerDeadZoneThreshold*centerDeadZoneThreshold;
+     //static const float zeroThreshold = 0.00000001f; // near machine precision for float
+     static const float outerDeadZoneThreshold = 0.81f;		//0.9^2
+     static const float ordinalThreshold = 0.344f;		//sin(22.5 degrees) * 0.9
+     //static const float ot2 = 0.118336f;                         //ordinalThreshold^2
+
+     //When dead zone is set to 0.0f, disable dead zone filter and pass through raw data from analog stick
+     if(centerDeadZoneThreshold == 0.0f) {
+       return;
+     }
+     //Compensate for a systematic non-linear error in joystick
+     // data on production (100K Ohm) joysticks which would cause
+     // the joystick rest position to be outside of the EE
+     // specified center dead zone.  Right now, the average
+     // production joystick X and Y at rest are (142-128)/128 =
+     // +0.109.  We want a function f(raw)=cooked, where
+     // f(-1)=-1, f(0.109)=0, f(1)=1.  We can fit a quadratic
+     // through these three points, ax^2+bx+c. We get a=0.110699,
+     // b=1, c=-a, which simplifies things a bit.  We can use
+     // f(x)=a(x^2-1)+x
+
+ #define LINEARIZE_100K(x) 0.110699*(x*x-1)+x
+
+     if (has100KOhmJoystick_) {
+     	theData.x = LINEARIZE_100K(theData.x);
+     	theData.y = LINEARIZE_100K(theData.y);
+     }
+
+     //Handle the dead zone in the center of the stick
+     if(fabsf(theData.x) <= centerDeadZoneThreshold) theData.x = 0.0f;
+     if(fabsf(theData.y) <= centerDeadZoneThreshold) theData.y = 0.0f;
+     //Handle the dead zone at the outer edge of the stick
+     float stickR2 = (theData.x * theData.x) + (theData.y * theData.y);
+     if(stickR2 >= outerDeadZoneThreshold) {
+     	  if(fabsf(theData.x) >= ordinalThreshold) {
+     		  theData.x = (theData.x > 0.0f) ? 1.0f : -1.0f;
+       } else {
+     	  theData.x = 0.0f;
+       }
+
+   if(fabsf(theData.y) >= ordinalThreshold) {
+ 	theData.y = (theData.y > 0.0f) ? 1.0f : -1.0f;
+       } else {
+ 	theData.y = 0.0f;
+       }
+     }
+   }
 
   tHWAnalogStickMode
   HWControllerPIMPL::GetAnalogStickMode(void) const {
