@@ -43850,3 +43850,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/27/14 11:56 AM
 25,007 ms. (Cumulative: 31,061,025 ms)
 
 ----------------
+Revision 11,155 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 11,156 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+FWGLAS-1742- restoring original code for deadzone calculations. Optimizations did not fix 2 controller latency. It introduced pointer drift. So backing it out
+
+By Tejaswini Badawe (tbadawe@leapfrog.com) on 10/29/14 10:29 AM
+1 changed, 0 added, 0 deleted.
+25,051 ms. (Cumulative: 31,086,186 ms)
+
+----------------
