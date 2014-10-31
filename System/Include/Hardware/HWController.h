@@ -21,6 +21,7 @@ namespace Hardware {
   /*!
    * \class HWController
    *
+   * NOTE: For use with LeapTV applications ONLY.
    * HWController class is the software interface to the physical controller
    * on Glasgow devices.  Controllers have the following functionality:
    * Button input

@@ -13,22 +13,23 @@ using LeapFrog::Brio::tErrType;
 namespace LF {
 namespace Hardware {
 
-	
+
   /*!
    * HW_ANALOGSTICK_EVENTS
    * \brief the events that can cause a HWAnalaogStickMessage to fire
+   * NOTE: For use with LeapTV applications ONLY.
    */
 #define HW_ANALOGSTICK_EVENTS						\
-  (kHWAnalogStickDataChanged)					
+  (kHWAnalogStickDataChanged)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, LeapFrog::Brio::FirstEvent(LeapFrog::Brio::kGroupAnalogStick), HW_ANALOGSTICK_EVENTS)
 
   /*!
    * \brief all analog stick events
    */
-  
+
   const LeapFrog::Brio::tEventType kHWAllAnalogStickEvents = LeapFrog::Brio::AllEvents(LeapFrog::Brio::kGroupAnalogStick);
- 
+
 
   /*!
    * HW_ANALOGSTICK_ERRORS
@@ -59,13 +60,13 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::
     kHWAnalogStickModeAnalog,  ///< data is continuous between -127...127
     kHWAnalogStickModeDPad     ///< data is binary dpad, kButtonLeft, kButtonRight, kButtonUp, kButtonDown
   };
- 
+
   /*!
    * \brief the analog stick data, representing current position and current time
    */
   struct tHWAnalogStickData {
-    float x; ///< -1 .. 1 in kHWAnalogStickModeAnalog. 
-    float y; ///< -1 .. 1 in kHWAnalogStickModeAnalog. 
+    float x; ///< -1 .. 1 in kHWAnalogStickModeAnalog.
+    float y; ///< -1 .. 1 in kHWAnalogStickModeAnalog.
 
     LeapFrog::Brio::U8 id; ///< a unique identifier for the analog stick
 
@@ -74,10 +75,10 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::
       LeapFrog::Brio::S32 microSeconds;
     } time;
   };
- 
-  
+
+
   /*!
-   * \class HWAnalogStickMessage 
+   * \class HWAnalogStickMessage
    * \brief The message class that gets passed back to the event listener
    * when a HWAnalogStick event occurs
    */
@@ -85,12 +86,12 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::
   public:
     HWAnalogStickMessage(const tHWAnalogStickData& data);
     virtual LeapFrog::Brio::U16 GetSizeInBytes(void) const;
-    
+
     tHWAnalogStickData 	GetAnalogStickData(void) const;
   private:
     tHWAnalogStickData 	data_;
   };
- 
+
 } // namespace Hardware
 } // namespace LF
 #endif // __INCLUDE_HARDWARE_HWANALOGSTICKTYPES_H__

@@ -26,7 +26,7 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 /// \class HWControllerEventQueue
-///
+/// NOTE: For use with LeapTV applications ONLY.
 /// Helper class for polling controller events.
 ///
 /// This class exists as a simplified way to poll for controller events and not

@@ -6,7 +6,7 @@
 
 namespace LF {
 namespace Hardware {
-  
+
   // forward declaration
   class HWController;
   class HWControllerEventMessagePIMPL;
@@ -14,8 +14,9 @@ namespace Hardware {
   /*!
    * \class HWControllerEventMessage
    *
+   * NOTE: For use with LeapTV applications ONLY.
    * HWControllerEventMessage is used to send information back to the application
-   * code when HWController events occur.  These messgaes get sent via an 
+   * code when HWController events occur.  These messgaes get sent via an
    * IEventListener implemented in the application code.
    */
   class HWControllerEventMessage : public LeapFrog::Brio::IEventMessage {
@@ -32,7 +33,7 @@ namespace Hardware {
      * \brief Default destructor
      */
     virtual ~HWControllerEventMessage(void);
-    
+
     /*!
      * \brief GetController returns the HWController associated with this message
      * \return A const pointer to the HWController associated with this message
