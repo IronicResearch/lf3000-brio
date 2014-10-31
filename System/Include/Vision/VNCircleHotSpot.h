@@ -16,6 +16,7 @@ namespace Vision {
   /*!
    * \class VNCircleHotSpot
    *
+   * NOTE: For use with LeapTV applications only.
    * \brief A VNCircleHotSpot is a hot spot that covers a circular region of the
    * framebuffer.  The circle is defined by a center,and a raidus.
    */
@@ -42,9 +43,9 @@ namespace Vision {
      * \brief Default destructor
      */
     virtual ~VNCircleHotSpot(void);
-    
+
     /*!
-     * \brief Trigger the virtual method used to determine if this hot spot 
+     * \brief Trigger the virtual method used to determine if this hot spot
      * should be triggered in the current algorithmic cycle
      * \param input a cv::Mat reference containing the CV_8U binary image
      * representing the change that the hot spot should trigger against.
@@ -74,7 +75,7 @@ namespace Vision {
      * \return the radius
      */
     float GetRadius(void) const;
-    
+
   private:
     boost::shared_ptr<VNCircleHotSpotPIMPL> pimpl_;
 

@@ -6,12 +6,13 @@
 
 namespace LF {
 namespace Vision {
-  
+
   // forward declaration
   class VNDurationTriggerPIMPL;
 
   /*!
-   * kVNDurationTriggerDefault
+   * \class kVNDurationTriggerDefault
+   * NOTE: For use with LeapTV applications only.
    * \brief If no value is specified for the duration, a VNDurationTrigger
    * will use this value as the time required to trigger.
    */
@@ -21,7 +22,7 @@ namespace Vision {
    * \class VNDurationTrigger
    *
    */
-  class VNDurationTrigger : public VNTemporalTriggering { 
+  class VNDurationTrigger : public VNTemporalTriggering {
   public:
 
     /*!

@@ -14,9 +14,11 @@ namespace Vision {
   /*!
    * \class VNPointTrigger
    *
+   * NOTE: For use with LeapTV applications only.
+   *
    * \brief A VNPointTrigger object is used to determine when a hot spot is triggered
    * based on if a point of interest, defined by the algorithm, is within the hot spot.
-   * This type of trigger is typically used in conjunction with the VNWandTracking 
+   * This type of trigger is typically used in conjunction with the VNWandTracking
    * algorithm
    */
   class VNPointTrigger : public VNSpatialTrigger {
@@ -34,7 +36,7 @@ namespace Vision {
 
     /*!
      * \brief Triggered is the virtual method required for all VNTrigger objects.  This
-     * method is called once per algorithm cycle (VNAlgorithm) to determine if the 
+     * method is called once per algorithm cycle (VNAlgorithm) to determine if the
      * hot spot(s) using this trigger is in fact triggered.
      * \return true if triggered, false if not
      */

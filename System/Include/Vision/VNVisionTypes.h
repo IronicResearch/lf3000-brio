@@ -16,14 +16,17 @@ namespace Vision {
 
   /*!
    * VN_VISION_EVENTS
+   *
+   * NOTE: For use with LeapTV applications ONLY.
+   *
    * \brief the events that can cause VNHotSpotEventMessages to fire
-   * kVNHotSpotTriggeredEvent 
+   * kVNHotSpotTriggeredEvent
    *  - a single notify per hot spot that is triggered
-   * kVNHotSpotTriggerChangeEvent 
+   * kVNHotSpotTriggerChangeEvent
    *  - a single notify per hot spot that changes it's triggered state
-   * kVNHotSpotGroupTriggeredEvent 
+   * kVNHotSpotGroupTriggeredEvent
    *  - a single notify per vision iteration containing all hot spots that were triggered
-   * kVNHotSpotGroupTriggerChangeEvent 
+   * kVNHotSpotGroupTriggerChangeEvent
    *  - a single notify per vision iteration containing all hot spots who's triggered state changed
    */
 #define VN_VISION_EVENTS		\
@@ -71,7 +74,7 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupVision), VN_VISION_ERRORS)
    */
   typedef std::pair<LeapFrog::Brio::CString, float> VNInputParameter;
   typedef std::vector<VNInputParameter> VNInputParameters;
-  
+
   /*!
    * \class VNPoint
    *
@@ -92,7 +95,7 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupVision), VN_VISION_ERRORS)
      */
   VNPoint(LeapFrog::Brio::S16 x_, LeapFrog::Brio::S16 y_):
       x(x_), y(y_) { }
-    
+
     /*!
      * The x value of the point, publicly available
      */

@@ -5,21 +5,23 @@
 
 namespace LF {
 namespace Vision {
-  
+
   /*!
    * \class VNSpatialTrigger
    *
+   * NOTE: For use with LeapTV applications ONLY.
+   *
    * VNSpatialTrigger is the base lass for a set of trigger classes that
    * have spatial awareness and cause hot spot triggering based on location
-   * information. 
+   * information.
    *
    * At this time, a VNSpatialTrigger adds no new functionality on top of
    * the VNTrigger.  However, the distinction is necessary to create a clean
-   * separation of logic for compound triggers.  
+   * separation of logic for compound triggers.
    */
   class VNSpatialTrigger : public VNTrigger {
   public:
-    
+
   };
 }
 }

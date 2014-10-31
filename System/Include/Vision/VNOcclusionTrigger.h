@@ -21,10 +21,12 @@ namespace Vision {
   /*!
    * \class VNOcclusionTrigger
    *
+   * NOTE: For use with LeapTV applications only.
+   *
    * \brief A VNOcclusionTrigger object is used to determine when a hot spot is triggered
    * based on the percentage of the hot spot that is occluded during foreground/background
-   * segmentation.  This class is typically used in conjunction with the VNVirtualTouch 
-   * algorithm.  
+   * segmentation.  This class is typically used in conjunction with the VNVirtualTouch
+   * algorithm.
    *
    * NOTE: If the hot spot is only partially visible, as in when part of it is off screen,
    * only the pixels in the visible portion of the hot spot are considered for occlusiong
@@ -39,7 +41,7 @@ namespace Vision {
     /*!
      * \brief Default constructor
      * \param percentOccluded the percentage of the hot spot that must be occluded
-     * in order to cause a triggering event to occur.  If no value is specified 
+     * in order to cause a triggering event to occur.  If no value is specified
      * percentOccluded defaults to kVNDefaultPercentOccludedToTrigger
      */
     VNOcclusionTrigger(float percentOccluded = kVNDefaultPercentOccludedToTrigger);
@@ -51,15 +53,15 @@ namespace Vision {
 
     /*!
      * \brief Triggered is the virtual method required for all VNTrigger objects.  This
-     * method is called once per algorithm cycle (VNAlgorithm) to determine if the 
+     * method is called once per algorithm cycle (VNAlgorithm) to determine if the
      * hot spot(s) using this trigger is in fact triggered.
      * \return true if triggered, false if not
      */
     virtual bool Triggered(const VNHotSpot *hotSpot);
 
     /*!
-     * \biref SetOcclusionTriggerPercentage 
-     * \param percentOccluded represents the percentage of the hot spot that must be 
+     * \biref SetOcclusionTriggerPercentage
+     * \param percentOccluded represents the percentage of the hot spot that must be
      * occluded in order to cause a triggering event to occur
      */
     void SetOcclusionTriggerPercentage(float percentOccluded);
@@ -79,7 +81,7 @@ namespace Vision {
      * occluded for individual hot spots you will need a unique VNOcclusionTrigger
      * for each hot spot.
      * \return the float value of the most recent occlusion calculation
-     * for the most recent hot spot.  
+     * for the most recent hot spot.
      */
     float GetPercentOccluded(void) const;
 

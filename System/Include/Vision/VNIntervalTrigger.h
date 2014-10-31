@@ -20,8 +20,9 @@ namespace Vision {
   /*!
    * \class VNIntervalTrigger
    *
+   * NOTE: For use with LeapTV applications only.
    */
-  class VNIntervalTrigger : public VNTemporalTriggering { 
+  class VNIntervalTrigger : public VNTemporalTriggering {
   public:
 
     /*!

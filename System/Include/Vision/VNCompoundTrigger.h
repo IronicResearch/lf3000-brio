@@ -15,9 +15,10 @@ namespace Vision {
   /*!
    * \class VNCompoundTrigger
    *
+   * NOTE: For use with LeapTV applications only.
    * \brief A VNCompoundTrigger object combines the functionality of a VNSpatialTrigger
-   * object and a VNTemporalTriggering object allowing for the tracking of a  
-   * spatial and temporal triggering event.  
+   * object and a VNTemporalTriggering object allowing for the tracking of a
+   * spatial and temporal triggering event.
    *
    */
   class VNCompoundTrigger : public VNTrigger {
@@ -37,7 +38,7 @@ namespace Vision {
 
     /*!
      * \brief Triggered is the virtual method required for all VNTrigger objects.  This
-     * method is called once per algorithm cycle (VNAlgorithm) to determine if the 
+     * method is called once per algorithm cycle (VNAlgorithm) to determine if the
      * hot spot(s) using this trigger is in fact triggered.  VNCompoundTrigger objects
      * will first check the spatial
      * \return true if triggered, false if not

@@ -30,6 +30,8 @@ namespace Vision {
   /*!
    * \class VNVirtualTouch
    *
+   * NOTE: For use with LeapTV applications ONLY.
+   *
    * VNVirtualTouch is a foreground/background segmentation algorithm that gives the
    * VNVisionMPI the ability to determine the foreground object.  The VNVirtualTouch
    * algorithm uses a learning rate that affects how fast the background is updated.

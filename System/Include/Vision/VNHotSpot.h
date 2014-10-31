@@ -21,9 +21,10 @@ namespace Vision {
   /*!
    * \class VNHotSpot
    *
-   * VNHotSpots are regions associated with the framebuffers from a live video feed from 
+   * NOTE: For use with LeapTV applications only.
+   * VNHotSpots are regions associated with the framebuffers from a live video feed from
    * the camera.  VNHotSpots are used in conjunction with a VNAlgorithm to determine when
-   * triggering events occur for a given hot spot.  
+   * triggering events occur for a given hot spot.
    *
    * Each VNHotSpot contains a pointer to a VNTrigger object which houses the logic for
    * determining when and how a hot spot is triggered.  Developers are able to register
@@ -34,7 +35,7 @@ namespace Vision {
    * portion of the hot spot that is visible will be considered for triggering.  This
    * does not impact the VNPointTrigger in that if the point is inside of the portion
    * of the hot spot that is visible it will still trigger, however, if you are using a
-   * VNOcclusionTrigger you should read the note in the VNOcclusionTrigger.h file as 
+   * VNOcclusionTrigger you should read the note in the VNOcclusionTrigger.h file as
    * it will be harder to trigger a hot spot with an occlusion trigger when part of the
    * hot spot is not visible.
    *
@@ -43,7 +44,7 @@ namespace Vision {
    */
   class VNHotSpot {
   public:
-    
+
     /*!
      * Default constructor
      */
@@ -55,18 +56,18 @@ namespace Vision {
     virtual ~VNHotSpot(void);
 
     /*!
-     * \brief Trigger 
+     * \brief Trigger
      * \param input a cv::Mat reference containing the CV_8U binary image
      * representing the change that the hot spot should trigger against.
      */
     virtual void Trigger(cv::Mat &input) const = 0;
-    
+
     /*!
      * \brief IsTriggered
      * \return true if the hot spot is triggered, false otherwise
      */
     bool IsTriggered(void) const;
-    
+
     /*!
      * \brief SetTrigger sets the logic for determining when the hot spot
      * gets triggered
@@ -76,19 +77,19 @@ namespace Vision {
     void SetTrigger(VNTrigger *trigger);
 
     /*!
-     * \brief GetTrigger returns the current VNTrigger object used to determine 
+     * \brief GetTrigger returns the current VNTrigger object used to determine
      * when and how this hot spot gets triggered.
      * \return The VNTrigger* associated witht his hot spot
      */
     VNTrigger* GetTrigger(void) const;
-    
+
     /*!
      * \brief SetTag allows developers to set custom identification tags.
-     * By default, the VNHotSpot class uses a monotonically increasing U32 
+     * By default, the VNHotSpot class uses a monotonically increasing U32
      * value as the default tag for each new hot spot.  This allows each hot
      * spot to have a unique tag regardless of developer setting.  Keep in mind
-     * it is posible to have multiple hot spots with the same tag, it is the 
-     * responsibility of the developer to manage tags. 
+     * it is posible to have multiple hot spots with the same tag, it is the
+     * responsibility of the developer to manage tags.
      * \param tag a U32 identification tag
      */
     void SetTag(LeapFrog::Brio::U32 tag);
@@ -98,16 +99,16 @@ namespace Vision {
      * \return The U32 identification tag used to identify this hot spot
      */
     LeapFrog::Brio::U32 GetTag(void) const;
-    
+
   private:
     boost::shared_ptr<VNHotSpotPIMPL> pimpl_;
-    
+
     /*!
      * Explicitly disable copy semantic
      */
     VNHotSpot(const VNHotSpot& hotSpot);
     VNHotSpot& operator=(const VNHotSpot& hotSpot);
-    
+
     /*!
      * Friend classes
      */
