@@ -79,6 +79,7 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::
 
   /*!
    * \class HWAnalogStickMessage
+   * NOTE: For use with LeapTV applications ONLY.
    * \brief The message class that gets passed back to the event listener
    * when a HWAnalogStick event occurs
    */
