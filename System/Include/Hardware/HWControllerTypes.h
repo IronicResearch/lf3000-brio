@@ -11,14 +11,14 @@ using LeapFrog::Brio::tEventType;
 using LeapFrog::Brio::tErrType;
 namespace LF {
 namespace Hardware {
-
-  // forward declaration
-  class HWController;
-
-  /*!
+ /*!
    * HW_CONTROLLER_EVENTS
    * \brief the events that can cause a \ref HWControllerEventMessage to fire
+   * NOTE: For use with LeapTV applications ONLY.
    */
+  class HWController;
+
+
 #define HW_CONTROLLER_EVENTS						\
   (kHWControllerDataChanged)						\
   (kHWControllerAccelerometerDataChanged)				\
@@ -31,15 +31,15 @@ namespace Hardware {
   (kHWControllerConnected)						\
   (kHWControllerSyncSuccess)					\
   (kHWControllerSyncFailure)
-    
+
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, LeapFrog::Brio::FirstEvent(LeapFrog::Brio::kGroupController), HW_CONTROLLER_EVENTS)
 
   /*!
    * \brief all controller events
    */
-  
+
   const LeapFrog::Brio::tEventType kHWAllControllerEvents = LeapFrog::Brio::AllEvents(LeapFrog::Brio::kGroupController);
- 
+
 
   /*!
    * HW_CONTROLLER_ERRORS
@@ -55,7 +55,7 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::
    * HWController constant definitions
    */
   const LeapFrog::Brio::U8 kHWDefaultControllerID = 0;
-  
+
   /*!
    * HWController functionality bit masks
    */
@@ -99,7 +99,7 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::
    */
 
   typedef LeapFrog::Brio::U32 HWControllerButtonMask;
- 
+
 } // namespace Hardware
 } // namespace LF
 #endif // __INCLUDE_HARDWARE_HWCONTROLLERTYPES_H__

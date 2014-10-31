@@ -16,6 +16,7 @@ namespace Hardware {
   /*!
    * \class HWControllerMPI
    *
+   * NOTE: For use with LeapTV applications ONLY.
    * HWControllerMPI class to support communication about controller objects.  Controllers
    * are physical devices that can connect to the LF platform and contain button events,
    * analog stick input, color end effects and accelerometer data.  This class facilitates
