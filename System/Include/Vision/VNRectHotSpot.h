@@ -7,7 +7,13 @@
 namespace LF {
 namespace Vision {
 
-  // forward declarations
+  /*!
+     * \class VNRectHotSpot
+     *
+     * NOTE: For use with LeapTV applications only.
+     *
+   */
+
   class VNVisionMPI;
   class VNArbitraryShapeHotSpot;
   class VNRectHotSpotPIMPL;
@@ -35,9 +41,9 @@ namespace Vision {
      * \brief Default destructor
      */
     virtual ~VNRectHotSpot(void);
-    
+
     /*!
-     * \brief Trigger the virtual method used to determine if this hot spot 
+     * \brief Trigger the virtual method used to determine if this hot spot
      * should be triggered in the current algorithmic cycle
      * \param input a cv::Mat reference containing the CV_8U binary image
      * representing the change that the hot spot should trigger against.

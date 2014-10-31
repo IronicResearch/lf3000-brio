@@ -10,6 +10,7 @@ namespace Vision {
   /*!
    * \class VNAlgorithm
    *
+   * NOTE: For use with LeapTV applications only.
    * VNAlgorithm is the virtual base class for all vision library algorithms.
    * Each algorithm implements it's own Execute method that is responsible for
    * performing the algorithm, taking a cv::Mat as input and manipulating the

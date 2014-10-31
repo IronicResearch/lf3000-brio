@@ -3,9 +3,11 @@
 
 namespace LF {
 namespace Vision {
-  
+
   /*!
    * \class VNTemporalTriggering
+   *
+   * NOTE: For use with LeapTV applications ONLY.
    *
    * Virtual base class for all temporally related triggering logic.  A VNTemporalTriggering
    * operates in conjunction with a NVTrigger object within a VNCompoundTrigger to determine

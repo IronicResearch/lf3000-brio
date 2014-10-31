@@ -15,15 +15,16 @@ namespace Vision {
   /*!
    * \class VNHotSpotEventMessage
    *
+   * NOTE: For use with LeapTV applications only.
    * VNHotSpotEventMessage is used to send information back to the application
-   * code when VNHotSpots are triggered.  These messgaes get sent via an 
+   * code when VNHotSpots are triggered.  These messgaes get sent via an
    * IEventListener implemented in the application code.
    */
   class VNHotSpotEventMessage : public LeapFrog::Brio::IEventMessage {
   public:
     /*!
-     * \brief Constructor with single hot spot.  This constructor 
-     * will be called if the event listener is listening for either a 
+     * \brief Constructor with single hot spot.  This constructor
+     * will be called if the event listener is listening for either a
      * kVNHotSpotTriggeredEvent or kVNHotSpotTriggerChangeEvent event.
      * \param type the event types that will trigger message generation
      * \param hotSpot the VNHotSpot associated with the event type
@@ -45,10 +46,10 @@ namespace Vision {
      * \brief Default destructor
      */
     virtual ~VNHotSpotEventMessage(void);
-    
+
     /*!
      * \brief GetHotSpot returns the VNHotSpot associated with this message.  If
-     * the event type for the listener is kVNHotSpotTriggeredEvent or 
+     * the event type for the listener is kVNHotSpotTriggeredEvent or
      * kVNHotSpotTriggerChangeEvent this method will return a non-NULL value
      * associated with the VNHotSpot.  If the event type for the listener is
      * kVNHotSpotGroupTriggeredEvent or kVNHotSpotGroupTriggerChangeEvent this
@@ -59,7 +60,7 @@ namespace Vision {
 
     /*!
      * \brief GetHotSpots returns the vector of VNHotSpot associated with this message.  In the
-     * case where the event listener is listening for kVNHotSpotTriggeredEvent or a 
+     * case where the event listener is listening for kVNHotSpotTriggeredEvent or a
      * kVNHotSpotTriggerChangeEvent the vector returned will always be length 1 containing the
      * single hot spots associated witht his message.
      * \return A vector of const pointers to the the VNHotSpots associated with this message

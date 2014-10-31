@@ -21,7 +21,7 @@ namespace Vision {
   /*!
    * kVNMinPercentToScaleKey
    * The string key used to override the default minimum percent to scale
-   * the wand to.  This refers to the size of the scaled input box relative to 
+   * the wand to.  This refers to the size of the scaled input box relative to
    * the size of the screen dimensions. \sa SetAutomaticWandScaling
    */
   extern const LeapFrog::Brio::CString kVNMinPercentToScaleKey;
@@ -43,7 +43,7 @@ namespace Vision {
 
   /*!
    * kVNNumFramesToCacheLocationKey
-   * The key used to set the number of frames to cache the last known location 
+   * The key used to set the number of frames to cache the last known location
    * of the wand LED.  If wand smoothing is on, and the wand is no longer visible
    * by the VNWandTracker algorithm, either by occlusion, off screen or noise, the
    * location reported for the LED will be the last known location for n frames where
@@ -62,8 +62,9 @@ namespace Vision {
 
   /*!
    * \class VNWandTracker
+   * NOTE: For use with LeapTV applications ONLY.
    *
-   * \brief The VNWandTracker class is a discrete algorithm used to track the 
+   * \brief The VNWandTracker class is a discrete algorithm used to track the
    * end of the LF wand, a colored light source.  The basic algorithm filters
    * the input video frames based on a specific hue, based on the light color,
    * then thresholds the resulting image based on saturation and intensity or
@@ -74,7 +75,7 @@ namespace Vision {
    * used to determine the center of this light source, and therefore update the
    * current location of the wand "pointer" on the screen.
    *
-   * Currently the hue, saturation and intensity are fixed for the specific 
+   * Currently the hue, saturation and intensity are fixed for the specific
    * LF wand light color.
    */
   class VNVisionMPIPIMPL;
@@ -126,18 +127,18 @@ namespace Vision {
      * when closer to the camera.  If the wand input is not scaled the child would have
      * to physically move further side-to-side and up-and-down in order to reach the
      * edges of the display space.  Scaling the wand input is the mechanism that
-     * scales smaller physical movement to larger display movement. 
+     * scales smaller physical movement to larger display movement.
      *
      * When automatic wand scaling is turned on, by calling this method with autoScale
      * set to true, the WandTracker algorithm will scale the physical input space based
-     * on a the relative distance the wand is from the camera.  The benefit of turning 
+     * on a the relative distance the wand is from the camera.  The benefit of turning
      * on automatic wand scaling is the child can traverse the entire display using the
      * wand with much smaller physical movements.  A potential downside to scaling the
      * wand input is that the relative movement of the pointer is faster when the child
-     * is further from the camera than when they are closer. 
+     * is further from the camera than when they are closer.
      *
-     * To further illustrate this functionality the following graphic depicts how this 
-     * behavior works.  On the right is what we will refer to as Display Space, the 
+     * To further illustrate this functionality the following graphic depicts how this
+     * behavior works.  On the right is what we will refer to as Display Space, the
      * rectangle that represent the display surface that is shown on screen.  Vision
      * Space refers to the rectangle that represents what the camera sees.  Sub-Vision
      * Space refers to the sub-rectangle of Vision Space that is used to scale the wand
@@ -157,7 +158,7 @@ namespace Vision {
      *                                 |                                 |
      *                                 *---------------------------------*Pd
      *
-     * In this small dipiction, when wand scaling is turned off, the vision 
+     * In this small dipiction, when wand scaling is turned off, the vision
      * pooint Pv will map to the display point Pd.  When wand scaling is turned on the
      * sub vision point Ps will map to the display point Pd even thought he camera still
      * see the entire vision space.

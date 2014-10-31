@@ -25,11 +25,13 @@ namespace Vision {
   /*!
    * \class VNVisionMPI
    *
-   * \brief VNVisionMPI is the controller of all computer vision related activities.  This includes 
+   * NOTE: For use with LeapTV applications ONLY.
+   *
+   * \brief VNVisionMPI is the controller of all computer vision related activities.  This includes
    * setting the particular vision algorithm and adding/removing hot spots.
    * The algorithm is run on a separate thread, and when active, will copy framebuffers from the camera
    * and process them.  The thread is active after the first call to \sa {Start}, and image processing
-   * continues until \sa {Pause} or \sa {Stop} is called.  In between calls to \sa {Pause} and \sa {Start} the 
+   * continues until \sa {Pause} or \sa {Stop} is called.  In between calls to \sa {Pause} and \sa {Start} the
    * thread is active, using compute cycles, just not processing images.  A call to \sa {Stop} will destroy
    * the thread and stop all image processing.
    *
@@ -60,7 +62,7 @@ namespace Vision {
      * \brief Destructor
      */
     virtual ~VNVisionMPI(void);
-    
+
     /*!
      * \defgroup Virtual Base Class Methods
      * \brief These five methods are declared as virtual in the base class, ICoreMPI
@@ -73,7 +75,7 @@ namespace Vision {
 
     /*!
      * \brief SetAlgorithm allows the developer to set what computer vision algorithm
-     * the mpi should use. The application calling this method is responsible for the 
+     * the mpi should use. The application calling this method is responsible for the
      * memory management of the VNAlgorithm* passed in.  VNVisionMPI does not delete the pointer
      * \param algorithm the specific VNAlgorithm to use
      */
@@ -87,7 +89,7 @@ namespace Vision {
 
     /*!
      * DEPRECATED - this method only returns NULL and is begin removed in
-     * an upcomgin release. 
+     * an upcomgin release.
      * GetWandByID
      * \breif With no parameter, this method will return the default wand
      * \param id the unique identifier of the desired wand.
@@ -128,7 +130,7 @@ namespace Vision {
      * \param dispatchSynchronously DEPRECATED This input parameter is now deprecated as it
      * is no longer necessary or adventageous to launch an asynchronous vision update.  In future
      * releases of the API/SDK the signature of this method will change to reflect this.
-     * the VNVisionMPI::Update method once per state update. 
+     * the VNVisionMPI::Update method once per state update.
      * \param displayRect an optional parameter that specifies the display rectangle the application
      * code intends to use.  If pass in, the vision library will use this as the basis for
      * scaling between the vision processing coordinate system and the display coordinate
@@ -154,9 +156,9 @@ namespace Vision {
     LeapFrog::Brio::Boolean Stop(void);
 
     /*!
-     * \brief Pause will pause the vision processing video capture. If Start was called 
-     * with dispatchSynchronously set to true this call will not destroy the current 
-     * thread and therefore the thread is still alive and active it's just not processing 
+     * \brief Pause will pause the vision processing video capture. If Start was called
+     * with dispatchSynchronously set to true this call will not destroy the current
+     * thread and therefore the thread is still alive and active it's just not processing
      * the framebuffers
      * \return true if successful
      */
@@ -184,7 +186,7 @@ namespace Vision {
     void SetFrameProcessingRate(float frameProcessingRate);
 
     /*!
-     * \brief GetFrameProcessingRate 
+     * \brief GetFrameProcessingRate
      * \return the rate at which the algorithm will process frames
      */
     float GetFrameProcessingRate(void) const;

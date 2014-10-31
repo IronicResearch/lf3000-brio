@@ -3,15 +3,17 @@
 
 namespace LF {
 namespace Vision {
-  
+
   // forward decleration
   class VNHotSpot;
 
   /*!
    * \class VNTrigger
    *
+   * NOTE: For use with LeapTV applications ONLY.
+   *
    * \brief Virtual base class for all trigger logic.  VNTrigger objects are used in conjunction
-   * with VNHotSpots to determine if the hot spot was triggered.  Triggering events are 
+   * with VNHotSpots to determine if the hot spot was triggered.  Triggering events are
    * based on the type of trigger and the current agorithm the VNVisionMPI is using.
    */
   class VNTrigger {
