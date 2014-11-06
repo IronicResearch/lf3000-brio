@@ -9,6 +9,7 @@
 #include <Hardware/HWAnalogStickMPI.h>
 #include <DebugMPI.h>
 #include <Hardware/HWControllerEventMessage.h>
+#include <vector>
 
 namespace LF {
 
@@ -17,6 +18,9 @@ namespace Vision {
 }
 
 namespace Hardware {
+
+#define BASE_CONTROLLER_FW_A_BASE_NAME "ControllerA_"
+#define BASE_CONTROLLER_FW_B_BASE_NAME "ControllerB_"
 
   class HWControllerPIMPL {
   public:
@@ -29,6 +33,12 @@ namespace Hardware {
     LeapFrog::Brio::U8 GetID(void) const;
     LeapFrog::Brio::U8 GetHwVersion(void) const;
     LeapFrog::Brio::U16 GetFwVersion(void) const;
+    std::vector<LeapFrog::Brio::U16>& GetFwUpdateVersions(void);
+    LeapFrog::Brio::tErrType UpdateControllerFw(const LeapFrog::Brio::U16 version = 0);
+    LeapFrog::Brio::U8 GetUpdateProgress(void) const;
+    void SetUpdateProgress(LeapFrog::Brio::U8 progress);
+    LF::Hardware::HWFwUpdateResult GetFwUpdateResult(void) const;
+    void SetFwUpdateResult(LF::Hardware::HWFwUpdateResult result);
     HWControllerMode GetCurrentMode(void) const;
     bool IsConnected(void) const;
     LeapFrog::Brio::U32 GetControllerUpdateRate(void) const;
@@ -94,6 +104,9 @@ namespace Hardware {
     LeapFrog::Brio::U8 id_;
     LeapFrog::Brio::U8 hw_version_;
     LeapFrog::Brio::U16 fw_version_;
+    std::vector<LeapFrog::Brio::U16> fw_update_versions_;
+    LeapFrog::Brio::U8 fw_update_progress_;
+    LF::Hardware::HWFwUpdateResult fw_update_result_;
     HWControllerMode mode_;
     HWControllerLEDColor color_;
     LeapFrog::Brio::U32 updateRate_;
@@ -111,6 +124,7 @@ namespace Hardware {
 
     char blueToothAddress_[64];
     bool connected_;
+    bool lowBatteryStatus_;
 
     HWControllerEventMessage analogStickMsg_;
     HWControllerEventMessage accelerometerMsg_;
@@ -125,6 +139,7 @@ namespace Hardware {
     void ConvertAnalogStickToDpad(const tHWAnalogStickData& theData);
     void ThresholdAnalogStickButton(float stickPos, U32 buttonMask);
     void ProcessLowBatteryStatus(U8 batteryStatus);
+    void DetermineAvailableFwUpdates(void);
 
   };
 

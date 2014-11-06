@@ -43896,3 +43896,12 @@ By cmiller (cmiller@leapfrog.com) on 10/31/14 10:20 AM
 25,533 ms. (Cumulative: 31,164,596 ms)
 
 ----------------
+Revision 11,169 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Extend Brio SDK to allow for updating of Controller firmware. (FWGLAS-1734)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 11/6/14 3:43 PM
+7 changed, 0 added, 0 deleted.
+25,507 ms. (Cumulative: 31,190,197 ms)
+
+----------------

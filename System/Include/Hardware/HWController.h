@@ -10,6 +10,7 @@
 #include <EventMPI.h>
 #include <SystemTypes.h>
 #include <boost/shared_ptr.hpp>
+#include <vector>
 
 namespace LF {
 namespace Hardware {
@@ -51,8 +52,17 @@ namespace Hardware {
 
     /*!
      * \brief Returns the firmware version/revision of the controller
+     * \note This function will only return version numbers up to 255, once the version number exceeds this value use
+     * \note GetFwVersionEx as this function will continue to return 255
+     * \note This function is currently deprecated, use GetFwVersionEx() for all new code.
      */
     LeapFrog::Brio::U8 GetFwVersion(void) const;
+
+    /*!
+     * \brief Returns the firmware version/revision of the controller, including version numbers above 255
+     * \note This is currently the preferred API for getting the controller firmware version
+     */
+    LeapFrog::Brio::U16 GetFwVersionEx(void) const;
 
     /*!
      * Obtain the current mode of the controller
@@ -230,6 +240,39 @@ namespace Hardware {
      * \return character string of bluetooth address.
      */
      const char* GetBluetoothAddress();
+
+  protected:
+     /*!
+      * \brief Get a collection of available firmware update version numbers for this controller
+      * \return A sorted collection of version numbers, the most current version number will be the last element in the collection
+      * \note This method is only intended for use by the Glasgow UI when updating controller firmware
+      */
+     std::vector<LeapFrog::Brio::U16>& GetFwUpdateVersions(void) const;
+
+     /*!
+      * \brief Begin an update to the controller with the given firmware version number
+      * \brief This method will return immediately, while the full updating process will take several minutes
+      * \brief The events kHWControllerUpdateProgress, kHWControllerUpdateSuccess, kHWControllerUpdateFailure may be monitored to track progress
+      * \brief The method GetUpdateProgress() and GetFwUpdateResult() also provide more status detail
+      * \param version The Controller version number to update to, must be in the collection returned by GetFwUpdateVersions(), if 0 will update to the most current version available
+      * \return Result of the attempt to start an update: kNoError - update started, kNoImplErr - controller cannot be updated, kUnspecifiedErr - any other failure starting the update
+      * \note This method is only intended for use by the Glasgow UI when updating controller firmware
+      */
+     LeapFrog::Brio::tErrType UpdateControllerFw(const LeapFrog::Brio::U16 version = 0);
+
+     /*!
+      * \brief Get the result from the latest attempt to update the Controller firmware
+      * \return The result of the latest update attempt
+      * \note This method is only intended for use by the Glasgow UI when updating controller firmware
+      */
+     LF::Hardware::HWFwUpdateResult GetFwUpdateResult(void) const;
+
+     /*!
+      * \brief Get the progress of the current firmware update
+      * \return The current update progress as a percentage of complete, 0 if no firmware update in progress
+      * \note This method is only intended for use by the Glasgow UI when updating controller firmware
+      */
+     LeapFrog::Brio::U8 GetUpdateProgress(void) const;
 
   private:
     boost::shared_ptr<HWControllerPIMPL> pimpl_;
