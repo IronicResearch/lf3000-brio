@@ -12,6 +12,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <dirent.h>
+#include <algorithm>
 
 // flat profiler
 //#define VN_PROFILE 1
@@ -29,6 +31,10 @@ static const U32 kHWControllerDefaultRate = 50;
 #define GLASGOW_CONTROLLER_VERSION_MAX 31 // Max limit of firmwware version numbers for Glasgow, Start CIP/LeapTV2 from 32=0x20
 #define BATTERY_STATE_MESSAGE_THRESHOLD 6000 // Once you send a low battery event, wait for 20ms * 50 * 60 * 2 = 2 minutes to send the next one.
 
+#define BASE_CONTROLLER_FW_PATH 		"/LF/Bulk/Data/Controller/"
+#define CONTROLLER_FW_FILE_EXTENSION	".bin"
+#define CONTROLLER_VERSION_NUM_LENGTH	4
+
 namespace LF {
 namespace Hardware {
 
@@ -36,6 +42,10 @@ namespace Hardware {
     controller_(controller),
     wand_(NULL),
     id_(kHWDefaultControllerID),
+    hw_version_(0),
+    fw_version_(0),
+    fw_update_progress_(0),
+    fw_update_result_(LF::Hardware::kHWControllerUpdateNotStarted),
     mode_(kHWControllerMode),
     color_(kHWControllerLEDOff),
     updateRate_(kHWControllerDefaultRate),
@@ -43,6 +53,7 @@ namespace Hardware {
     updateCounter_(0),
     has100KOhmJoystick_(1), // Production defaults to 100K; FEP had 10K
     connected_(false),
+    lowBatteryStatus_(false),
     analogStickDeadZone_(0.14f), //Specified by EE team at +/-7%, which is -0.14..+0.14 in -1.0..+1.0 scale.  FWGLAS-779)
     analogStickMode_(kHWAnalogStickModeAnalog),
     accelerometerMode_(kAccelerometerModeContinuous),
@@ -139,6 +150,57 @@ namespace Hardware {
   LeapFrog::Brio::U16
   HWControllerPIMPL::GetFwVersion(void) const {
 	  return fw_version_;
+  }
+
+  std::vector<LeapFrog::Brio::U16>&
+  HWControllerPIMPL::GetFwUpdateVersions(void) {
+
+	  if(fw_update_versions_.empty())
+	  {
+		  DetermineAvailableFwUpdates();
+	  }
+
+	  return fw_update_versions_;
+  }
+
+  LeapFrog::Brio::tErrType
+  HWControllerPIMPL::UpdateControllerFw(const LeapFrog::Brio::U16 version) {
+
+	  LeapFrog::Brio::U16 targetVersion = version;
+
+	  if(lowBatteryStatus_) {
+		  fw_update_result_ = kHWControllerUpdateLowBattery;
+		  return kUnspecifiedErr;
+	  }
+
+	  //If the latest version has been requested, and we have a version available, fill in the highest version available
+	  if((targetVersion == 0) && !fw_update_versions_.empty()) {
+		  targetVersion = fw_update_versions_.back();
+	  }
+
+	  return HWControllerMPIPIMPL::Instance()->UpdateControllerFw(controller_, targetVersion);
+  }
+
+  LeapFrog::Brio::U8
+  HWControllerPIMPL::GetUpdateProgress(void) const {
+	  return fw_update_progress_;
+  }
+
+  void
+  HWControllerPIMPL::SetUpdateProgress(LeapFrog::Brio::U8 progress)
+  {
+	  if(progress > 100) progress = 100;
+	  fw_update_progress_ = progress;
+  }
+
+  LF::Hardware::HWFwUpdateResult
+  HWControllerPIMPL::GetFwUpdateResult(void) const {
+	  return fw_update_result_;
+  }
+
+  void
+  HWControllerPIMPL::SetFwUpdateResult(LF::Hardware::HWFwUpdateResult result) {
+	  fw_update_result_ = result;
   }
 
   HWControllerMode
@@ -751,10 +813,12 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
 	  else
 	  {
 		  lowBatteryCounter = 0;
+		  lowBatteryStatus_ = false;
 	  }
 	  
 	  if(lowBatteryCounter >= BATTERY_STATE_COUNT_THRESHOLD)
 	  {
+		  lowBatteryStatus_ = true;
 		  //debugMPI_.DebugOut(kDbgLvlValuable, "lowBatteryMsgSent = %u lowBatteryMsgCounter = %u \n", (unsigned int)lowBatteryMsgSent, (unsigned int)lowBatteryMsgCounter);
 		  if(!lowBatteryMsgSent) //FWGLAS-1662: This is the 1st time low battery occurred, send the event right away.
 		  { 
@@ -845,5 +909,44 @@ HWControllerPIMPL::ThresholdAnalogStickButton(float stickPos, U32 buttonMask) {
         wand_->pimpl_->SetBluetoothAddress(blueToothAddress_);
       } 
     }
+
+    void
+    HWControllerPIMPL::DetermineAvailableFwUpdates(void) {
+    	DIR *directory;
+    	struct dirent *dirEntry;
+    	size_t baseNameLength = strlen(BASE_CONTROLLER_FW_A_BASE_NAME);
+    	const size_t extensionLength = strlen(CONTROLLER_FW_FILE_EXTENSION);
+    	const size_t postFixLength = CONTROLLER_VERSION_NUM_LENGTH + extensionLength;
+    	const size_t expectedLength = strlen(BASE_CONTROLLER_FW_A_BASE_NAME) + postFixLength;
+
+    	fw_update_versions_.clear();
+
+    	//Iterate over the available files and extract the version numbers of those that match the controller type we are looking for
+    	if((directory = opendir(BASE_CONTROLLER_FW_PATH)) != NULL) {
+			while((dirEntry = readdir(directory)) != NULL) {												//Directory is present
+				if(strncmp(BASE_CONTROLLER_FW_A_BASE_NAME, dirEntry->d_name, baseNameLength) == 0) {		//Base name matches
+					if(strlen(dirEntry->d_name) == expectedLength) {										//Overall length matches
+						char *extensionPos = dirEntry->d_name + (expectedLength - extensionLength);
+						if(strncmp(CONTROLLER_FW_FILE_EXTENSION, extensionPos, extensionLength) == 0) {		//Extension matches
+							LeapFrog::Brio::U16 tempVersionNumber = atoi(extensionPos - CONTROLLER_VERSION_NUM_LENGTH);
+							fw_update_versions_.push_back(tempVersionNumber);
+						}
+					}
+				}
+			}
+			closedir(directory);
+    	}
+
+    	//Sort the version numbers
+    	std::sort(fw_update_versions_.begin(), fw_update_versions_.end());
+
+    	//Display the version numbers collected in the debug output
+    	debugMPI_.DebugOut(kDbgLvlValuable, "HWControllerPIMPL::DetermineAvailableFwUpdate versions:");
+    	for(unsigned i = 0; i < fw_update_versions_.size(); i++) {
+    		debugMPI_.DebugOut(kDbgLvlValuable, "%u ", fw_update_versions_[i]);
+    	}
+    	debugMPI_.DebugOut(kDbgLvlValuable, "\n");
+    }
+
 }	// namespace Hardware
 }	// namespace LF

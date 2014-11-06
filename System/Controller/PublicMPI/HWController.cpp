@@ -33,10 +33,56 @@ namespace Hardware {
 
   LeapFrog::Brio::U8
   HWController::GetFwVersion(void) const {
+	  if(pimpl_.get()) {
+		  LeapFrog::Brio::U16 tempVersion = pimpl_->GetFwVersion();
+		  if(tempVersion > 255) tempVersion = 255;
+		  return static_cast<LeapFrog::Brio::U8>(tempVersion);
+	  }
+	  else {
+		  return 0;
+	  }
+  }
+
+  LeapFrog::Brio::U16
+  HWController::GetFwVersionEx(void) const{
 	  if(pimpl_.get())
 		  return pimpl_->GetFwVersion();
 	  else
 		  return 0;
+  }
+
+  std::vector<LeapFrog::Brio::U16>&
+  HWController::GetFwUpdateVersions(void) const {
+	  static std::vector<LeapFrog::Brio::U16> emptyVersions;
+
+	  if(pimpl_.get())
+		  return pimpl_->GetFwUpdateVersions();
+	  else
+		  return emptyVersions;
+  }
+
+  LeapFrog::Brio::tErrType
+  HWController::UpdateControllerFw(const LeapFrog::Brio::U16 version) {
+	  if(pimpl_.get())
+		  return pimpl_->UpdateControllerFw(version);
+	  else
+		  return 0;
+  }
+
+  LeapFrog::Brio::U8
+  HWController::GetUpdateProgress(void) const {
+	  if(pimpl_.get())
+		  return pimpl_->GetUpdateProgress();
+	  else
+		  return 0;
+  }
+
+  LF::Hardware::HWFwUpdateResult
+  HWController::GetFwUpdateResult(void) const {
+	  if(pimpl_.get())
+		  return pimpl_->GetFwUpdateResult();
+	  else
+		  return LF::Hardware::kHWControllerUpdateNotStarted;
   }
 
   LeapFrog::Brio::U8

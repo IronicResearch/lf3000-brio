@@ -33,6 +33,8 @@ static const LeapFrog::Brio::tTimerProperties kProps = {TIMER_RELATIVE_SET,
 										 	{{0, 0}, {30, 0}},
 	                                    };
 
+#define CONTROLLER_AUTO_UPDATE_FLAG_PATH "/flags/autoupdate_controllers"
+
 namespace LF {
 namespace Hardware {
 
@@ -335,8 +337,9 @@ namespace Hardware {
 							numConnectedControllers_++;
 							debugMPI_.DebugOut(kDbgLvlImportant, "Controller connected\n");
 				      		      	HWControllerEventMessage qmsg(kHWControllerConnected, testController);
-							eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);		
-    							break;
+							eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
+							CheckForControllerUpdate(testController);
+    						break;
 						}
 						else
 							printf("\ncontroller in list is connected\n"); 
@@ -362,7 +365,8 @@ namespace Hardware {
 				      	controller->pimpl_->SetConnected(true);
 					debugMPI_.DebugOut(kDbgLvlImportant, "Controller connected\n");
 		      		      	HWControllerEventMessage qmsg(kHWControllerConnected, controller);
-					eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);		
+					eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
+					CheckForControllerUpdate(controller);
 				  }
 			}					
 		}
@@ -422,6 +426,24 @@ debug  		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
 #ifdef ENABLE_PROFILING
       TimeStampOn(controller->GetID());
 #endif
+  }
+
+  bool
+  HWControllerMPIPIMPL::CheckForControllerUpdate(HWController *controller) {
+	  std::vector<LeapFrog::Brio::U16>& updateVersions = controller->pimpl_->GetFwUpdateVersions();
+	  if(!updateVersions.empty()) {
+			if(updateVersions.back() > controller->pimpl_->GetFwVersion()) {		//Checks the highest available version against the current controller version
+				HWControllerEventMessage fwUpdateMessage(kHWControllerUpdateAvailable, controller);
+				eventMPI_.PostEvent(fwUpdateMessage, kHWControllerDefaultEventPriority);
+
+			    struct stat st;
+			    if (stat(CONTROLLER_AUTO_UPDATE_FLAG_PATH, &st) == 0) { /* file exists */
+			    	controller->pimpl_->UpdateControllerFw();
+			    }
+				return true;
+			}
+	  }
+	  return false;
   }
 
   HWController*
@@ -723,6 +745,25 @@ debug  		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
 	  const LeapFrog::Brio::U8 kHWMaximumNumberOfControllers = 2; //< maximum number of simultaneously connected controllers
 
 	  return kHWMaximumNumberOfControllers;
+  }
+
+  LeapFrog::Brio::tErrType
+  HWControllerMPIPIMPL::UpdateControllerFw(HWController* controller, LeapFrog::Brio::U16 version) {
+	  char *btaddr = FindControllerLink(controller);
+
+	  boost::shared_ptr<HWControllerPIMPL> controllerPIMPL = controller->pimpl_;
+
+	  if(!btaddr) {
+		  debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL::UpdateControllerFw - not able to find bt address of given controller.\n");
+		  controllerPIMPL->SetFwUpdateResult(LF::Hardware::kHWControllerUpdatePrematureDisconnect);
+		  return kUnspecifiedErr;
+	  }
+
+	  debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL::UpdateControllerFw - updating controller to version %u.\n", static_cast<unsigned int>(version));
+
+	  debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL::UpdateControllerFw - exiting update - not fully implemented yet!\n");
+
+	  return kUnspecifiedErr;
   }
 
 }	// namespace Hardware

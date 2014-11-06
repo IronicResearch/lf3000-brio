@@ -71,6 +71,7 @@ namespace Hardware {
 
     int SendCommand(HWController*, int command, void* data, int length);
     int QueryStatus(HWController*, int command, void* data, int length);
+    LeapFrog::Brio::tErrType UpdateControllerFw(HWController* controller, LeapFrog::Brio::U16 version);
 
     LeapFrog::Brio::tErrType EnableControllerSync(bool enable);
 
@@ -84,6 +85,7 @@ namespace Hardware {
 
     void ScanForDevices(void);
     void AddController(char* link, int ControllerIsConnected);
+    bool CheckForControllerUpdate(HWController *controller);
     void SendPairingSuccess(void);
     HWController* FindController(char* link);
     char* FindControllerLink(HWController* controller);

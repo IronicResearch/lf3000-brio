@@ -30,7 +30,11 @@ namespace Hardware {
   (kHWControllerDisconnected)					\
   (kHWControllerConnected)						\
   (kHWControllerSyncSuccess)					\
-  (kHWControllerSyncFailure)
+  (kHWControllerSyncFailure)					\
+  (kHWControllerUpdateAvailable)				\
+  (kHWControllerUpdateProgress)					\
+  (kHWControllerUpdateSuccess)					\
+  (kHWControllerUpdateFailure)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, LeapFrog::Brio::FirstEvent(LeapFrog::Brio::kGroupController), HW_CONTROLLER_EVENTS)
 
@@ -73,6 +77,20 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::
     kHWControllerMode,       //< the controller is in controller mode
     kHWControllerWandMode    //< the controller is in wand pointing mode
   } HWControllerMode;
+
+  /*!
+   * Results from starting an OAD update process on the controller
+   */
+  typedef enum HWFwUpdateResult {
+	  kHWControllerUpdateSuccessful = 0, 		//< The update was successful
+	  kHWControllerUpdateNotStarted,			//< An update has not been started on this Controller since it was connected
+	  kHWControllerUpdateMissingImage, 			//< The Controller binary image needed was not found
+	  kHWControllerUpdateCorruptImage,			//< The Controller binary image needed was found to be corrupt in some way
+	  kHWControllerUpdateLowBattery,			//< The Controller battery is too low to complete the update process reliably
+	  kHWControllerUpdateExcessiveNoise,		//< The update process failed as there is too much RF noise in the environment
+	  kHWControllerUpdatePrematureDisconnect,	//< The Controller disconnected unexpectedly before the update process was finished
+	  kHWControllerUpdateAlreadyInProgress		//< There is an update already in progress, only one allowed currently
+  } HWFwUpdateResult;
 
   /*!
    * All possible colors of the controller LED in bitmask form
