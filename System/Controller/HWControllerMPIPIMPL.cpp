@@ -84,6 +84,7 @@ namespace Hardware {
 	    isMaxControllerDisconnect_ = false;
 	    timer = NULL;
 	    props = kProps;
+	    fwUpdateController_ = NULL;
 
 	    // Dynamically load Bluetooth client lib
 		dll_ = dlopen(BTIO_LIB_NAME, RTLD_LAZY);
@@ -98,6 +99,8 @@ namespace Hardware {
 			pBTIO_EnableBluetoothDebug_ = (pFnEnableBluetoothDebug)dlsym(dll_, "BTIO_EnableBluetoothDebug");
 			pBTIO_SetDebugZoneMaskPID_  = (pFnSetDebugZoneMaskPID)dlsym(dll_, "BTIO_SetDebugZoneMaskPID");
 			pBTIO_DisconnectDevice_     = (pFnDisconnectDevice)dlsym(dll_, "BTIO_DisconnectDevice");
+			pBTIO_UpdateControllerFw_   = (pFnUpdateControllerFw)dlsym(dll_, "BTIO_UpdateControllerFw");
+			pBTIO_AbortUpdateControllerFw_ = (pFnAbortUpdateControllerFw)dlsym(dll_, "BTIO_AbortUpdateControllerFw");
 
 			// Connect to Bluetooth client service?
 			handle_ = pBTIO_Init_(this);
@@ -310,7 +313,8 @@ namespace Hardware {
 			      }
 			      debugMPI_.DebugOut(kDbgLvlImportant, "Controller connected \n");
       		      	      HWControllerEventMessage qmsg(kHWControllerConnected, controller);
-			      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);						     
+			      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
+			      CheckForControllerUpdate(controller);
 			}				
 			else{  //if controller object does not exist or the BLE address was changed to assign controller ID to a different controller 
 				   bool DisconnectedObjectFound=false;
@@ -379,6 +383,7 @@ namespace Hardware {
 				      if (numConnectedControllers_ < 0)
 						numConnectedControllers_ = 0;
 			      }
+			      CancelFwUpdate(controller);
 			      debugMPI_.DebugOut(kDbgLvlImportant, "Controller disconnected\n");
                               HWControllerEventMessage qmsg(kHWControllerDisconnected, controller);
 			      eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);		
@@ -749,21 +754,120 @@ debug  		    debugMPI_.DebugOut(kDbgLvlImportant, "Disconnecting ... ");
 
   LeapFrog::Brio::tErrType
   HWControllerMPIPIMPL::UpdateControllerFw(HWController* controller, LeapFrog::Brio::U16 version) {
-	  char *btaddr = FindControllerLink(controller);
+	  LeapFrog::Brio::tErrType updateResult = kUnspecifiedErr;
 
-	  boost::shared_ptr<HWControllerPIMPL> controllerPIMPL = controller->pimpl_;
+	  //Ensure an update is not already in progress before we start one,
+	  if(fwUpdateController_ != NULL) {
+		  controller->pimpl_->SetFwUpdateResult(LF::Hardware::kHWControllerUpdateAlreadyInProgress);
+		  return updateResult;
+	  }
+	  fwUpdateController_ = controller;
 
+	  //Capture the various identification information for the controller we are about to update
+	  char *btaddr = FindControllerLink(fwUpdateController_);
+	  boost::shared_ptr<HWControllerPIMPL> controllerPIMPL = fwUpdateController_->pimpl_;
+
+	  //Ensure the Controller is still connected before starting
 	  if(!btaddr) {
 		  debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL::UpdateControllerFw - not able to find bt address of given controller.\n");
-		  controllerPIMPL->SetFwUpdateResult(LF::Hardware::kHWControllerUpdatePrematureDisconnect);
+		  CancelFwUpdate(fwUpdateController_);		//Force the notification of a premature disconnect
 		  return kUnspecifiedErr;
 	  }
 
+	  //Begin the update on the Controller - status will be reported back through FwUpdateCallback()
 	  debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL::UpdateControllerFw - updating controller to version %u.\n", static_cast<unsigned int>(version));
+	  updateResult = pBTIO_UpdateControllerFw_(btaddr, version, FwUpdateCallback);
 
-	  debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL::UpdateControllerFw - exiting update - not fully implemented yet!\n");
+	  //This is temporary code for use until the full OAD functionality is implemented
+	  if(updateResult == kOadSuccess) {
+	   	  CancelFwUpdate(fwUpdateController_);
+		  debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL::UpdateControllerFw - exiting update - not fully implemented yet!\n");
+	  }
+	  /////////////////////////////////////////////////////////////////////////
 
-	  return kUnspecifiedErr;
+	  return updateResult;
+  }
+
+  void
+  HWControllerMPIPIMPL::CancelFwUpdate(HWController* testController)
+  {
+	  bool controllerInUpdateDisconnected = false;
+
+	  if(fwUpdateController_ == testController) {
+		  fwUpdateController_ = NULL;
+		  controllerInUpdateDisconnected = true;
+	  }
+
+	  if(controllerInUpdateDisconnected) {
+		  pBTIO_AbortUpdateControllerFw_();
+		  testController->pimpl_->SetFwUpdateResult(LF::Hardware::kHWControllerUpdatePrematureDisconnect);
+		  HWControllerEventMessage qmsg(LF::Hardware::kHWControllerUpdateFailure , testController);
+		  eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
+	  }
+  }
+
+  void
+  HWControllerMPIPIMPL::FwUpdateCallback(OadResult curResult, unsigned int curProgress) {
+
+	  boost::shared_ptr<HWControllerMPIPIMPL> pModule = HWControllerMPIPIMPL::Instance();
+
+	  //This is temporary code for use until the full OAD functionality is implemented
+	  pModule->debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL::FwUpdateCallback called with curResult = %u, curProgress = %u\n",
+			  static_cast<unsigned int>(curResult), curProgress);
+	  //////////////////////////////////////////////
+
+	  //Should never happen but if we lose the controller here, abort the update
+	  if(pModule->fwUpdateController_ == NULL) {
+		  pModule->pBTIO_AbortUpdateControllerFw_();
+		  pModule->debugMPI_.DebugOut(kDbgLvlImportant, "HWControllerMPIPIMPL::FwUpdateCallback - exiting update - fwUpdateController somehow became NULL!\n");
+		  return;
+	  }
+
+	  boost::shared_ptr<HWControllerPIMPL> controllerPIMPL = pModule->fwUpdateController_->pimpl_;
+	  LeapFrog::Brio::tEventType msgType = kHWControllerUpdateFailure;
+	  LF::Hardware::HWFwUpdateResult updateResult = kHWControllerUpdateUnknownFailure;
+
+	  switch(curResult) {
+	  case kOadSuccess:
+		  controllerPIMPL->SetUpdateProgress(static_cast<LeapFrog::Brio::U8>(curProgress));
+		  if(curProgress == 100) {
+			  msgType = kHWControllerUpdateSuccess;
+			  pModule->fwUpdateController_ = NULL;				//OAD has completed, flag that it is ok to start another
+		  }
+		  else {
+			  msgType = kHWControllerUpdateProgress;
+		  }
+		  break;
+	  case kOadFailure:
+		  updateResult = kHWControllerUpdateUnknownFailure;
+		  break;
+	  case kOadMissingImage:
+		  updateResult = kHWControllerUpdateMissingImage;
+		  break;
+	  case kOadCorruptImage:
+		  updateResult = kHWControllerUpdateCorruptImage;
+		  break;
+	  case kOadLowBattery:
+		  updateResult = kHWControllerUpdateLowBattery;
+		  break;
+	  case kOadExcessiveNoise:
+		  updateResult = kHWControllerUpdateExcessiveNoise;
+		  break;
+	  case kOadPrematureDisconnect:
+		  updateResult = kHWControllerUpdatePrematureDisconnect;
+		  break;
+	  case kOadAlreadyInProgress:
+		  updateResult = kHWControllerUpdateAlreadyInProgress;
+		  break;
+	  default:
+		  updateResult = kHWControllerUpdateUnknownFailure;
+		  break;
+	  }
+
+	  controllerPIMPL->SetFwUpdateResult(updateResult);
+	  HWControllerEventMessage qmsg(msgType, pModule->fwUpdateController_);
+	  pModule->eventMPI_.PostEvent(qmsg, kHWControllerDefaultEventPriority);
+
   }
 
 }	// namespace Hardware

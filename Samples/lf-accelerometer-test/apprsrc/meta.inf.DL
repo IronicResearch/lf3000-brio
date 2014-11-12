@@ -1,0 +1,17 @@
+MetaVersion="1.0"
+Device="LeapPadExplorer"
+Type="Application"
+ProductID=0x00000050
+PackageID="MULT-0x00000050-000000"
+Version="1.0.0"
+Locale="en-us"
+Name="ACC"
+ShortName="ACC"
+3LD="ESP"
+Publisher="LeapFrog, Inc."
+Developer="LeapFrog, Inc."
+Hidden=0
+Description="Explorer ACC Project"
+PartNumber="123-456789"
+AppSo="App.so"
+Icon="BaseImage.png"

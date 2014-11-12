@@ -1,0 +1,35 @@
+"""
+Lightning Example Game SConscript file.
+"""
+
+import os
+import glob
+import CoreTools.CopyTree
+
+Import(['env_vars', 'env'])
+myEnv = env.Clone()     #clone this, so we're not changing the original
+
+libname = 'App'     #env_vars['tld']
+
+#global libs
+sources = glob.glob(os.path.join('Src', '*.cpp')) #this should get everything in subdirectories
+
+# Set up targets
+myEnv.Append(CPPPATH = ['Include'])
+myEnv.Append(CPPPATH = ['../Tutorials/EnglishGeometryTutorial/Include'])
+
+myEnv.Append(LIBS = ['LightningJSON'])
+myEnv.Append(LIBS = ['LightningBase'])
+
+
+objs  = myEnv.SharedObject(sources)
+
+myResources = CoreTools.CopyTree.CopyTree(myEnv, 'apprsrc', env_vars['bin_deploy_dir'])
+myModule = myEnv.SharedLibrary(os.path.join(env_vars['bin_deploy_dir'], libname), objs, SHLIBPREFIX='')
+myEnv.Depends(myModule, myResources)
+myEnv.Default(myModule)
+
+
+if env_vars['runtests']:
+	CoreTools.stdLightningEnv.runTests(myEnv, libname)
+

@@ -1,0 +1,33 @@
+#=============================================================================
+# LightningCore: Top level SConstruct file for the SCons build system
+#
+# Quick tour of SCons:
+#
+#   SCons is a build tool that replaces "make" functionality.
+#   It executes as a Python script, which gives you the full power
+#   of the Python scripting language in defining build steps.
+#
+#=============================================================================
+
+import EnvTargets
+
+tld = 'CAM'
+
+#Get environments dictionary and declare libs
+#environments = EnvTargets.GetStdEnvironments(ARGUMENTS, tld, app_type='Cart', optional_features=['ImageIO', 'PlayerProfile2', 'GameViewFrame', 'ImageIO', 'Camera', 'Accelerometer', 'Microphone', 'Pressure'])
+environments = EnvTargets.GetStdEnvironments(ARGUMENTS, tld, app_type='Leaplet', lfplatform='Emerald')
+#NOTE: lfplatform = 'Emerald', 'Madrid', 'Lucy' or 'Valencia'
+
+#Include LFOS SDK
+EnvTargets.IncludeSDK(environments, ARGUMENTS)
+
+for target, env in environments.iteritems():
+	Export('env')
+	print env['variant_dir']
+	SConscript('SConscript', variant_dir = env['variant_dir'], duplicate=0)
+
+	#Build final package - optional
+#	if env['install_dir']:
+#		env['targets'] += env.PackageMulti( 'pkgs/%s'% env['name'], env['install_dir'] )
+
+EnvTargets.CreateTargets(environments)

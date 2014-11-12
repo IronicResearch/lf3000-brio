@@ -1,0 +1,15 @@
+SKU	
+PackageID	THDS-0x00000051-DA0000
+Type	DeviceAsset
+Version	1.0.0.0
+MinVersion	1.0.0.0
+Locale	en_US
+Name	MZHTT
+DisplayName	MZHTT
+Category	
+PreviewImage	
+Depends	
+Hidden	1
+Size	TBD
+PlatformsSupported	THD1
+TargetPackageType	lf2

@@ -1,0 +1,12 @@
+MetaVersion="1.0"
+Type="Application"
+ProductID=0x00000001
+PackageID="MULT-0x00000001-000000"
+Version="1.0.0.0"
+Locale="en-us"
+Name="STUB"
+Publisher="LeapFrog Enterprises, Inc."
+Developer="LeapFrog Enterprises, Inc."
+PartNumber="123-45678"
+AppSo="App.so"
+Icon="BaseImage.png"

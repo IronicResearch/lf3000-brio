@@ -1,0 +1,38 @@
+#=============================================================================
+# LightningCore: Top level SConstruct file for the SCons build system
+#
+# Quick tour of SCons:
+#
+#   SCons is a build tool that replaces "make" functionality.
+#   It executes as a Python script, which gives you the full power
+#   of the Python scripting language in defining build steps.
+#
+#=============================================================================
+
+
+import EnvTargets
+
+tld = 'ALS'
+
+#Get environments dictionary
+#environments = EnvTargets.GetStdEnvironments(ARGUMENTS, tld, app_type='Cart', optional_features=['Accelerometer'])
+environments = EnvTargets.GetStdEnvironments(ARGUMENTS, tld, app_type='Leaplet', lfplatform='Glasgow')
+
+#Include LFOS SDK
+EnvTargets.IncludeSDK(environments, ARGUMENTS)
+
+for target, env in environments.iteritems():
+	Export('env')
+	print env['variant_dir']
+	SConscript('SConscript', variant_dir = env['variant_dir'], duplicate=0)
+
+EnvTargets.CreateTargets(environments)
+
+#Export(['env_vars', 'env'])
+#run the scripts that do the actual work of building stuff:
+#SConscript(['SConscript', 
+#		'../LightningCore/Tutorials/EnglishPreAlgebraTutorial/SConscript',
+#		'../LightningCore/Tutorials/GenericAnimatedTutorial/SConscript',
+#		'data/SConscript'])
+
+

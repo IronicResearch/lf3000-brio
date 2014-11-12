@@ -1,0 +1,21 @@
+lf-controller-test
+
+Revision: 1
+Date: 2/10/2014
+
+
+The lf-controller-test app demonstrates acquiring accelerometer, button and
+analog stick events/data from a controller class that is conencted to a 
+physical controller device (currently the Wiimote).  All controller data
+is acquired via controller events being sent to the main state of this
+application.  The controller class is passed in the controller message and
+data is then read out from the controller class.  Current output of
+the data is in the following format:
+* analog stick data moves rendered prism
+* accelerometer data is printed out to the console
+* button data is printed out to the console
+
+NOTES:
+* The Wii Nunchuck is used as the controller input
+* lf-input-daemon needs to be run and paired with a Wiimote + Nunchuck
+  before starting the app

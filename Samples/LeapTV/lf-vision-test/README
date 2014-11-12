@@ -1,0 +1,36 @@
+lf-vision-test
+
+Revision: 1.4
+Original Date: 1/16/2014
+Update 1.1 1/24/2014
+  * Moved the circular hot spot to be partially offscreen to test clipping
+    of VNCircleHotSpot objects
+  * Moved one of the rectangular hot spots to be partially offscree to test
+    clipping of VNRectHotSpot objects
+  * Added a VNArbitraryHotSpot that is programmatically created and is 
+    partially offscreen to test the clipping of VNArbitraryShapeHotSpot
+    objects.  This also tests arbitrary shape hot spots with the occlusion
+    trigger
+Update 1.2 2/15/2014
+  * Fix vision image size
+  * Render camera image scaled to size of display
+  * Render hot spots scaled from vision size to display size
+Update 1.3 4/2/2014
+  * Updated UI to fill screen on both device and in emulation
+  * Added a scale factor to the capture size allowing for easier transition
+    between qVGA and VGA modes in the app
+  * Moves scaling of hot spot locations back in to the application code
+    while continued progress is made to keep the scaling internal to VisionMPI
+Update 1.4 5/29/2014
+  * Do not call VNVisionMPI::Update as that is being driven by the camera now
+
+The lf-wand-test will show a video preview on the screen.  Towards the top
+of the preview there should be two outlines of rectangular boxes.  The color
+of the outline should stay constant, even if you move in front of them. If
+you have one of the prototype wands with the green light and move the wand
+such that the green light is over one of the boxes (the center of the light 
+mustbe inside of the box) the color of the outline should change.  Once 
+you remove the light from within the box the outline should go back to the
+original color.
+
+This tests the VNWandTracker algorithm and VNPointTrigger classes.

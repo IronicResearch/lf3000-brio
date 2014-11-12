@@ -43909,3 +43909,28 @@ By Lloyd Moore (lmoore@leapfrog.com) on 11/6/14 3:43 PM
 Completed in 31,190,322 ms
 
 ===================================================
+===================================================
+Resuming from mapping "branch", revision 11,170
+===================================================
+
+===================================================
+Resuming from mapping "branch", revision 11,170
+===================================================
+
+===================================================
+Resuming from mapping "branch", revision 11,170
+===================================================
+
+===================================================
+Resuming from mapping "branch", revision 11,170
+===================================================
+
+Revision 11,170 from http://source.leapfrog.com/Software/Brio/Brio2/BRANCHES/Brio_LF2000:
+
+Connect BTIO OAD functionality to Brio layer (FWGLAS-1750)
+
+By Lloyd Moore (lmoore@leapfrog.com) on 11/12/14 1:32 PM
+6 changed, 3,890 added, 0 deleted.
+730,012 ms. (Cumulative: 749,736 ms)
+
+----------------

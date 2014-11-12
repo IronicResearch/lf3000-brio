@@ -19,9 +19,6 @@ namespace Vision {
 
 namespace Hardware {
 
-#define BASE_CONTROLLER_FW_A_BASE_NAME "ControllerA_"
-#define BASE_CONTROLLER_FW_B_BASE_NAME "ControllerB_"
-
   class HWControllerPIMPL {
   public:
     HWControllerPIMPL(HWController* controller);

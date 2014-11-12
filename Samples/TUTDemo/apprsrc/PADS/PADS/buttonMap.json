@@ -1,0 +1,40 @@
+{
+	"ViewFrameConfigs":	
+	{
+		"Default":
+		{
+			"png": "tcbg.png",
+			"x": 16,
+			"y": 16,
+			"w": 320,
+			"h": 240
+		}
+	},
+	"ButtonConfigs":
+	{
+		"Default":
+		{
+			"PauseButton":
+			{
+				"x": 348,
+				"y": 16,
+				"pngRelease": "buttonPrelease.png",
+				"pngPress": "buttonPpress.png"
+			},
+			"HomeButton":
+			{
+				"x": 392,
+				"y": 16,
+				"pngRelease": "buttonMrelease.png",
+				"pngPress": "buttonMpress.png"
+			},
+			"HintButton":
+			{
+				"x": 437,
+				"y": 16,
+				"pngRelease": "buttonHrelease.png",
+				"pngPress": "buttonHpress.png"
+			}			
+		}
+	}
+}

@@ -1,0 +1,660 @@
+{
+	"ElementType": 3,
+	"ID": 0,
+	"Position": [160.000000, 120.000000],
+	"Animation":    [
+		{
+		"ElementType": 2,
+		"ID": 0,
+		"Duration": 996,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0,
+				"URL": "Art_cube_hilite0001.png",
+				"Position": [61.350000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 1,
+				"URL": "Art_sphere_hilite0001.png",
+				"Position": [-59.950000, 30.000000, 0.099000],
+				"Reg": [27.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 1,
+		"Duration": 5395,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_DifferentThrDmnsnlShpsHv_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 1
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 2,
+		"Duration": 666
+		},
+		{
+		"ElementType": 2,
+		"ID": 3,
+		"Duration": 581,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 2,
+				"URL": "Art_cube_hilite0021.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [32.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 4,
+		"Duration": 83,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_WhenYJnFcsTgthrYGtThrDmn_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 2
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 5,
+		"Duration": 664,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 3,
+				"URL": "Art_cube_hilite0022.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 6,
+		"Duration": 664,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4,
+				"URL": "Art_cube_hilite0023.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 7,
+		"Duration": 664,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 5,
+				"URL": "Art_cube_hilite0026.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 8,
+		"Duration": 664,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 6,
+				"URL": "Art_cube_hilite0027.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 9,
+		"Duration": 664,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7,
+				"URL": "Art_cube_hilite0028.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 10,
+		"Duration": 1328,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 8,
+				"URL": "Art_cube_hilite0029.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 11,
+		"Duration": 1000
+		},
+		{
+		"ElementType": 2,
+		"ID": 12,
+		"Duration": 581,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 2
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 13,
+		"Duration": 83,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_TheCrnrsOfThrDmnsnlShpsA_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 2
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 14,
+		"Duration": 664,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 3
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 15,
+		"Duration": 664,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 16,
+		"Duration": 1079,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 9,
+				"URL": "Art_cube_hilite0024.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 17,
+		"Duration": 2158,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 10,
+				"URL": "Art_cube_hilite0025.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 18,
+		"Duration": 1328,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 9
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 19,
+		"Duration": 666
+		},
+		{
+		"ElementType": 2,
+		"ID": 20,
+		"Duration": 498,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 11,
+				"URL": "Art_cube_hilite0001.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 21,
+		"Duration": 830,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_ACube_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 11
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 22,
+		"Duration": 332,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_HasSixFaces_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 11
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 23,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 12,
+				"URL": "Art_cube_hilite0002.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 24,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 13,
+				"URL": "Art_cube_hilite0003.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 25,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 14,
+				"URL": "Art_cube_hilite0004.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 26,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 15,
+				"URL": "Art_cube_hilite0005.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 27,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16,
+				"URL": "Art_cube_hilite0006.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 28,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 17,
+				"URL": "Art_cube_hilite0007.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 29,
+		"Duration": 498,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 11
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 30,
+		"Duration": 249,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_AndEightCorners_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 11
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 31,
+		"Duration": 996,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 18,
+				"URL": "Art_cube_hilite0030.png",
+				"Position": [1.050000, 19.500000, 0.100000],
+				"Reg": [31.000000, 23.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 32,
+		"Duration": 996,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 11
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 33,
+		"Duration": 666
+		},
+		{
+		"ElementType": 2,
+		"ID": 34,
+		"Duration": 498,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 19,
+				"URL": "Art_sphere_hilite0001.png",
+				"Position": [0.000000, 29.950000, 0.100000],
+				"Reg": [27.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 35,
+		"Duration": 747,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_However_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 19
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 36,
+		"Duration": 4067,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_ASphereIsRndThrDmn1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 19
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 37,
+		"Duration": 1411,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 20,
+				"URL": "Art_sphere_hilite0002.png",
+				"Position": [0.000000, 29.950000, 0.100000],
+				"Reg": [27.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 38,
+		"Duration": 2988,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 19
+				}
+			]
+		}
+	]
+}

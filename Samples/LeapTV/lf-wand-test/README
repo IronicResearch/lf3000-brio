@@ -1,0 +1,58 @@
+lf-wand-test
+
+Revision: 1.7
+Original Date: 1/16/2014
+Update 1.1 1/24/2014
+  * Stop rendering the camera feed and use a solid color background
+  * Render the cursor
+  * Adjust one rectangular hot spot to be partially offscreen to test the
+    clipping functionality of VNRectHotSpot objects when used in the 
+    VNWandTracker algorithm
+  * Add an arbitrary shape hot spot via loading an image file into a 
+    CBlitBuffer object.  The image is a plus sign.  This hot spot is
+    also partially off the screen to test the clipping functionality
+    of VNArbitraryShapeHotSpot objects with an tFontSurf as input and
+    when used in the VNWandTracker algorithm.
+Update 1.2 2/15/2014
+  * Adjust rendering to fit full screen
+  * Render hot spots scaled based on vision and screen sizes
+Update 1.3 3/19/2014
+  * Add wand scaling to wand tracking algorithm
+  * Add optional input parameters and pass in to wnad tracker constructor
+  * User should notice as they get further from the camera the distance 
+    side-to-side and up-and-down they must move the wand to traverse the
+    entire screen is smaller.
+Update 1.4 4/2/2014
+  * Updated UI to fill screen on both device and in emulation
+  * Added a scale factor to the capture size allowing for easier transition
+    between qVGA and VGA modes in the app
+  * Moves scaling of hot spot locations back in to the application code
+    while continued progress is made to keep the scaling internal to VisionMPI
+Update 1.5 4/13/2014
+  * Added the ability to cycle through the LED lights
+  * Use controller A button to cycle through LED colors
+  * Use controller B button to turn off the LED
+Update 1.6 5.13.2014
+  * Change the vision back to running on it's own thread to verify
+    memory issue when shutting down the state.
+Update 1.7 6/4/2014
+  * Add support to switch wand LED tracking between multiple connected controllers
+  * Use the '?' (hint) button to start tracking a controller
+  * Change back non threaded vision update as that mode of running is deprecated now
+Update 1.8 6/5/2014 (PP)
+  * Some Modifications to logic.
+  * Use A button to steal control (turn off other controllers light and turn on self)
+  * B button will cycle light only on controller with control
+  * HOME button to quit
+  * removed HINT button switch, since it was confusing
+  
+The lf-wand-test will show a video preview on the screen.  Towards the top
+of the preview there should be two outlines of rectangular boxes.  The color
+of the outline should stay constant, even if you move in front of them. If
+you have one of the prototype wands with the green light and move the wand
+such that the green light is over one of the boxes (the center of the light 
+mustbe inside of the box) the color of the outline should change.  Once 
+you remove the light from within the box the outline should go back to the
+original color.
+
+This tests the VNWandTracker algorithm and VNPointTrigger classes.

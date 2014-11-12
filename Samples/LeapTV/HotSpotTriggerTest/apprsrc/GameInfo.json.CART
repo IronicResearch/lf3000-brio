@@ -1,0 +1,8 @@
+{
+	"Title":"VTCH",
+	"LargeIcon":"GAMS/GAMS/PopupIcon.png",
+	"Audio":"GAMS/GAMS/PopupAudio.mp3",
+	"IconGAMS":"GAMS/BaseImage.png",
+	"IconLabel":"Game",
+	"ViewFrame":"PADS/PADS/buttonMap.json"
+}

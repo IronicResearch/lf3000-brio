@@ -1,0 +1,10 @@
+MetaVersion="1.0"
+Type="DeviceAsset"
+ProductID=0x00000010
+PackageID="PADS-0x00000010-DA0000"
+Version="1.0.0.0"
+Locale="en-us"
+Publisher="LeapFrog Enterprises, Inc."
+Developer="LeapFrog Enterprises, Inc."
+PackageFiles="BaseImage.png";"BaseImage1.png";"GameInfo.json"
+BuildDate="m28209627993m"

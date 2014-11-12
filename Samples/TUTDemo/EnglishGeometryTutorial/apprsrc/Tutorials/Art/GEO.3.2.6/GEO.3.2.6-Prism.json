@@ -1,0 +1,1076 @@
+{
+	"ElementType": 3,
+	"ID": 0,
+	"Position": [160.000000, 120.000000],
+	"Animation":    [
+		{
+		"ElementType": 2,
+		"ID": 0,
+		"Duration": 996,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0,
+				"URL": "Art_prism_tri_hilite0001.png",
+				"Position": [3.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 1,
+				"URL": "Art_prism_rec_hilite0001.png",
+				"Position": [-75.000000, 16.850000, 0.099000],
+				"Reg": [41.000000, 31.000000],
+				"Size": [128.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 2,
+				"URL": "Art_prism_pent_hilite0001.png",
+				"Position": [85.000000, 16.850000, 0.098000],
+				"Reg": [25.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 3,
+				"URL": "Text_text_prisms.png",
+				"Position": [-31.000000, -50.000000, 0.097000],
+				"Reg": [1.000000, 16.000000],
+				"Size": [64.000000, 16.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 1,
+		"Duration": 4731,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_PrismsArThrDmnsnlShpsTht_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 1
+				},
+				{
+				"ElementType": 0,
+				"ID": 2
+				},
+				{
+				"ElementType": 0,
+				"ID": 3
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 2,
+		"Duration": 666
+		},
+		{
+		"ElementType": 2,
+		"ID": 3,
+		"Duration": 498,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4,
+				"URL": "Text_text_tri_prism.png",
+				"Position": [-2.000000, -50.000000, 0.100000],
+				"Reg": [75.000000, 16.000000],
+				"Size": [256.000000, 16.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 5,
+				"URL": "Art_prism_tri_hilite0001.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 4,
+		"Duration": 2490,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_ThisPrsmIsClldTrnglrPrsm_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 5
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 5,
+		"Duration": 498,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_BecauseItsBsIsATrngl_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 5
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 6,
+		"Duration": 1494,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 6,
+				"URL": "Art_prism_tri_hilite0006.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 7,
+		"Duration": 664,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 5
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 8,
+		"Duration": 1328,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_ATriangularPrsmHsFvFcs_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 5
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 9,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 7,
+				"URL": "Art_prism_tri_hilite0002.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 10,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 8,
+				"URL": "Art_prism_tri_hilite0003.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 11,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 9,
+				"URL": "Art_prism_tri_hilite0004.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 12,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 10,
+				"URL": "Art_prism_tri_hilite0005.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 13,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 6
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 14,
+		"Duration": 332,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 5
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 15,
+		"Duration": 249,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_AndSixCorners_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 5
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 16,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 11,
+				"URL": "Art_prism_tri_hilite0007.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 17,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 12,
+				"URL": "Art_prism_tri_hilite0008.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 18,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 13,
+				"URL": "Art_prism_tri_hilite0009.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 19,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 14,
+				"URL": "Art_prism_tri_hilite0010.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 20,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 15,
+				"URL": "Art_prism_tri_hilite0011.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 21,
+		"Duration": 415,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 16,
+				"URL": "Art_prism_tri_hilite0012.png",
+				"Position": [-8.000000, 16.850000, 0.100000],
+				"Reg": [16.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 22,
+		"Duration": 996,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 5
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 23,
+		"Duration": 666
+		},
+		{
+		"ElementType": 2,
+		"ID": 24,
+		"Duration": 664,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 17,
+				"URL": "Text_text_rec_prism.png",
+				"Position": [-2.050000, -56.950000, 0.100000],
+				"Reg": [82.000000, 9.000000],
+				"Size": [256.000000, 16.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 18,
+				"URL": "Art_prism_rec_hilite0001.png",
+				"Position": [-1.000000, 25.350000, 0.100000],
+				"Reg": [41.000000, 31.000000],
+				"Size": [128.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 25,
+		"Duration": 1411,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_ARectangularPrism_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 17
+				},
+				{
+				"ElementType": 0,
+				"ID": 18
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 26,
+		"Duration": 332,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_HasTwIdntclRctnglsFrBss_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 17
+				},
+				{
+				"ElementType": 0,
+				"ID": 18
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 27,
+		"Duration": 1660,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 17
+				},
+				{
+				"ElementType": 0,
+				"ID": 19,
+				"URL": "Art_prism_rec_hilite0008.png",
+				"Position": [-1.000000, 25.350000, 0.100000],
+				"Reg": [41.000000, 31.000000],
+				"Size": [128.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 28,
+		"Duration": 1577,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 17
+				},
+				{
+				"ElementType": 0,
+				"ID": 18
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 29,
+		"Duration": 666
+		},
+		{
+		"ElementType": 2,
+		"ID": 30,
+		"Duration": 664,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 20,
+				"URL": "Text_text_pent_prism.png",
+				"Position": [-1.000000, -50.000000, 0.100000],
+				"Reg": [80.000000, 16.000000],
+				"Size": [256.000000, 16.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 21,
+				"URL": "Art_prism_pent_hilite0001.png",
+				"Position": [0.550000, 12.150000, 0.100000],
+				"Reg": [25.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 31,
+		"Duration": 1411,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_PentagonalPrisms_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 20
+				},
+				{
+				"ElementType": 0,
+				"ID": 21
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 32,
+		"Duration": 166,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_HaveIdntclPntgnsFrBss_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 20
+				},
+				{
+				"ElementType": 0,
+				"ID": 21
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 33,
+		"Duration": 1494,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 20
+				},
+				{
+				"ElementType": 0,
+				"ID": 22,
+				"URL": "Art_prism_pent_hilite0002.png",
+				"Position": [0.550000, 12.150000, 0.100000],
+				"Reg": [25.000000, 73.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 34,
+		"Duration": 1245,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 20
+				},
+				{
+				"ElementType": 0,
+				"ID": 21
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 35,
+		"Duration": 666
+		},
+		{
+		"ElementType": 2,
+		"ID": 36,
+		"Duration": 664,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 23,
+				"URL": "Text_text_hex_prism.png",
+				"Position": [-1.900000, -50.000000, 0.100000],
+				"Reg": [75.000000, 16.000000],
+				"Size": [256.000000, 16.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 24,
+				"URL": "Art_prism_hex_hilite0001.png",
+				"Position": [0.550000, 12.150000, 0.100000],
+				"Reg": [26.000000, 78.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 37,
+		"Duration": 1577,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_AndHexagonalPrisms_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 23
+				},
+				{
+				"ElementType": 0,
+				"ID": 24
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 38,
+		"Duration": 83,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_HaveIdntclHxgnsFrBss_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 23
+				},
+				{
+				"ElementType": 0,
+				"ID": 24
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 39,
+		"Duration": 1494,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 23
+				},
+				{
+				"ElementType": 0,
+				"ID": 25,
+				"URL": "Art_prism_hex_hilite0002.png",
+				"Position": [0.550000, 12.150000, 0.100000],
+				"Reg": [26.000000, 78.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 40,
+		"Duration": 1245,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 23
+				},
+				{
+				"ElementType": 0,
+				"ID": 24
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 41,
+		"Duration": 666
+		},
+		{
+		"ElementType": 2,
+		"ID": 42,
+		"Duration": 664,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 26,
+				"URL": "Text_text_prisms.png",
+				"Position": [-31.000000, -50.000000, 0.100000],
+				"Reg": [1.000000, 16.000000],
+				"Size": [64.000000, 16.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 27,
+				"URL": "Art_prism_pent_par_hilite0001.png",
+				"Position": [75.100000, 11.700000, 0.100000],
+				"Reg": [25.000000, 73.000000],
+				"Size": [128.000000, 128.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 28,
+				"URL": "Art_prism_rec_hilite0001.png",
+				"Position": [-0.950000, 10.950000, 0.099000],
+				"Reg": [41.000000, 31.000000],
+				"Size": [128.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 29,
+				"URL": "Art_prism_hex_hilite0001.png",
+				"Position": [-79.450000, 12.150000, 0.098000],
+				"Reg": [26.000000, 78.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 43,
+		"Duration": 1992,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_TheFacesOfAPrismCanBe_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 26
+				},
+				{
+				"ElementType": 0,
+				"ID": 27
+				},
+				{
+				"ElementType": 0,
+				"ID": 28
+				},
+				{
+				"ElementType": 0,
+				"ID": 29
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 44,
+		"Duration": 1660,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_RectanglesSquares_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 26
+				},
+				{
+				"ElementType": 0,
+				"ID": 27
+				},
+				{
+				"ElementType": 0,
+				"ID": 30,
+				"URL": "Art_prism_rec_hilite0009.png",
+				"Position": [-0.950000, 10.950000, 0.099000],
+				"Reg": [42.000000, 30.000000],
+				"Size": [128.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 31,
+				"URL": "Art_prism_hex_hilite0003.png",
+				"Position": [-79.450000, 12.150000, 0.098000],
+				"Reg": [27.000000, 78.000000],
+				"Size": [64.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 45,
+		"Duration": 332,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 26
+				},
+				{
+				"ElementType": 0,
+				"ID": 27
+				},
+				{
+				"ElementType": 0,
+				"ID": 28
+				},
+				{
+				"ElementType": 0,
+				"ID": 29
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 46,
+		"Duration": 1328,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_OrParallelograms_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 26
+				},
+				{
+				"ElementType": 0,
+				"ID": 32,
+				"URL": "Art_prism_pent_par_hilite0002.png",
+				"Position": [75.100000, 11.700000, 0.100000],
+				"Reg": [26.000000, 72.000000],
+				"Size": [128.000000, 128.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 28
+				},
+				{
+				"ElementType": 0,
+				"ID": 29
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 47,
+		"Duration": 498,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 26
+				},
+				{
+				"ElementType": 0,
+				"ID": 27
+				},
+				{
+				"ElementType": 0,
+				"ID": 28
+				},
+				{
+				"ElementType": 0,
+				"ID": 29
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 48,
+		"Duration": 2988,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_TheseAreAllPrisms_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 26
+				},
+				{
+				"ElementType": 0,
+				"ID": 27
+				},
+				{
+				"ElementType": 0,
+				"ID": 28
+				},
+				{
+				"ElementType": 0,
+				"ID": 29
+				}
+			]
+		}
+	]
+}

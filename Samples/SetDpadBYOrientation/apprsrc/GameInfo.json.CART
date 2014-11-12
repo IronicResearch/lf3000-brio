@@ -1,0 +1,8 @@
+{
+	"Title":"SetDpadByOrientation",
+	"LargeIcon":"GAMS/GAMS/PopupIcon.png",
+	"Audio":"GAMS/GAMS/PopUpAudio.mp3",
+	"IconGAMS":"GAMS/BaseImage.png",
+	"IconLabel":"Dev Tool",
+	"ViewFrame":"None"
+}

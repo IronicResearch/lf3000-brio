@@ -1,0 +1,15 @@
+SKU	
+PackageID	PADS-0x00000001-DA0000
+Type	DeviceAsset
+Version	1.0.0.0
+MinVersion	1.0.0.0
+Locale	en_US
+Name	WND
+DisplayName	WND
+Category	
+PreviewImage	
+Depends	
+Hidden	1
+Size	TBD
+PlatformsSupported	LPAD;PAD2
+TargetPackageType	lf2

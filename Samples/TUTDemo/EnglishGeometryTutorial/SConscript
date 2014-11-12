@@ -1,0 +1,16 @@
+"""
+Lightning Example Game SConscript file.
+"""
+
+import os
+import CopyTree
+
+Import('env')
+myEnv = env.Clone()     #clone this, so we're not changing the original
+
+libname = 'App'     #env_vars['tld']
+
+if env['cpu']:
+	myResources = CopyTree.CopyTree(myEnv, Dir('apprsrc').abspath, os.path.join(env['install_dir'].abspath))
+	env['targets'] += myResources
+

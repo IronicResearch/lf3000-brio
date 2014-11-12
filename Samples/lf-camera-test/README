@@ -1,0 +1,10 @@
+lf-camera-test
+
+Revision: 1.1
+Original Date: 1/16/2014
+Update 1.1 2/20/2014
+  * Pause, Stop and Resume video capturing when state Pauses, Stops and Resumes
+
+The lf-camera-test shows how to setup a video capture session using the a 
+CCameraMPI object.  By running the capture session you should see a preview
+of the video stream on the display.  
