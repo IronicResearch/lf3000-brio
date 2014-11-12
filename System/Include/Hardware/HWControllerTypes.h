@@ -89,7 +89,8 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, LeapFrog::Brio::FirstErr(LeapFrog::Brio::
 	  kHWControllerUpdateLowBattery,			//< The Controller battery is too low to complete the update process reliably
 	  kHWControllerUpdateExcessiveNoise,		//< The update process failed as there is too much RF noise in the environment
 	  kHWControllerUpdatePrematureDisconnect,	//< The Controller disconnected unexpectedly before the update process was finished
-	  kHWControllerUpdateAlreadyInProgress		//< There is an update already in progress, only one allowed currently
+	  kHWControllerUpdateAlreadyInProgress,		//< There is an update already in progress, only one allowed currently
+	  kHWControllerUpdateUnknownFailure			//< There was a failure but no additional information is available
   } HWFwUpdateResult;
 
   /*!

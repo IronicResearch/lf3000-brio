@@ -31,10 +31,6 @@ static const U32 kHWControllerDefaultRate = 50;
 #define GLASGOW_CONTROLLER_VERSION_MAX 31 // Max limit of firmwware version numbers for Glasgow, Start CIP/LeapTV2 from 32=0x20
 #define BATTERY_STATE_MESSAGE_THRESHOLD 6000 // Once you send a low battery event, wait for 20ms * 50 * 60 * 2 = 2 minutes to send the next one.
 
-#define BASE_CONTROLLER_FW_PATH 		"/LF/Bulk/Data/Controller/"
-#define CONTROLLER_FW_FILE_EXTENSION	".bin"
-#define CONTROLLER_VERSION_NUM_LENGTH	4
-
 namespace LF {
 namespace Hardware {
 

@@ -1,0 +1,52 @@
+--- theorarm-merge-branch/lib/Makefile.in	2010-08-03 16:19:07.000000000 -0700
++++ theorarm-merge-branch.save2/lib/Makefile.in	2010-08-03 12:13:44.000000000 -0700
+@@ -60,6 +60,7 @@
+ am__libtheora_la_SOURCES_DIST = apiwrapper.c bitpack.c decapiwrapper.c \
+ 	decinfo.c decode.c dequant.c fragment.c huffdec.c idct.c \
+ 	info.c internal.c quant.c state.c arm/ARMfrag.s arm/ARMidct.s \
++	arm/bitwise2.s arm/ARMdecode.s arm/ARMfilter.s \
+ 	arm/ARMpp.s arm/ARMstate.c x86/mmxidct.c x86/mmxfrag.c \
+ 	x86/mmxstate.c x86/x86state.c analyze.c fdct.c encfrag.c \
+ 	encapiwrapper.c encinfo.c encode.c enquant.c huffenc.c \
+@@ -67,6 +68,7 @@
+ 	x86/mmxfdct.c x86/x86enc.c x86/sse2encfrag.c x86/sse2fdct.c \
+ 	encoder_disabled.c Version_script theora.exp
+ @CPU_ARM_TRUE@am__objects_1 = ARMfrag.lo ARMidct.lo ARMpp.lo \
++@CPU_ARM_TRUE@	ARMbitwise2.lo ARMdecode.lo ARMfilter.lo \
+ @CPU_ARM_TRUE@	ARMstate.lo
+ am__objects_2 = mmxidct.lo mmxfrag.lo mmxstate.lo x86state.lo
+ @CPU_ARM_TRUE@@CPU_x86_32_FALSE@@CPU_x86_64_FALSE@am__objects_3 = $(am__objects_1)
+@@ -97,6 +99,7 @@
+ am__libtheoradec_la_SOURCES_DIST = apiwrapper.c bitpack.c \
+ 	decapiwrapper.c decinfo.c decode.c dequant.c fragment.c \
+ 	huffdec.c idct.c info.c internal.c quant.c state.c \
++	arm/ARMbitwise2.s arm/ARMdecode.s arm/ARMfilter.s \
+ 	arm/ARMfrag.s arm/ARMidct.s arm/ARMpp.s arm/ARMstate.c \
+ 	x86/mmxidct.c x86/mmxfrag.c x86/mmxstate.c x86/x86state.c \
+ 	Version_script-dec theoradec.exp
+@@ -404,6 +407,9 @@
+ 	x86/x86state.c
+ 
+ @CPU_ARM_TRUE@decoder_arm_sources = \
++@CPU_ARM_TRUE@	arm/ARMbitwise2.s \
++@CPU_ARM_TRUE@	arm/ARMdecode.s \
++@CPU_ARM_TRUE@	arm/ARMfilter.s \
+ @CPU_ARM_TRUE@	arm/ARMfrag.s \
+ @CPU_ARM_TRUE@	arm/ARMidct.s \
+ @CPU_ARM_TRUE@	arm/ARMpp.s \
+@@ -693,6 +699,15 @@
+ .s.lo:
+ 	$(LTCCASCOMPILE) -c -o $@ $<
+ 
++ARMbitwise2.lo: arm/ARMbitwise2.s
++	$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CCAS) $(AM_CCASFLAGS) $(CCASFLAGS) -c -o ARMbitwise2.lo `test -f 'arm/ARMbitwise2.s' || echo '$(srcdir)/'`arm/ARMbitwise2.s
++
++ARMdecode.lo: arm/ARMdecode.s
++	$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CCAS) $(AM_CCASFLAGS) $(CCASFLAGS) -c -o ARMdecode.lo `test -f 'arm/ARMdecode.s' || echo '$(srcdir)/'`arm/ARMdecode.s
++
++ARMfilter.lo: arm/ARMfilter.s
++	$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CCAS) $(AM_CCASFLAGS) $(CCASFLAGS) -c -o ARMfilter.lo `test -f 'arm/ARMfilter.s' || echo '$(srcdir)/'`arm/ARMfilter.s
++
+ ARMfrag.lo: arm/ARMfrag.s
+ 	$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CCAS) $(AM_CCASFLAGS) $(CCASFLAGS) -c -o ARMfrag.lo `test -f 'arm/ARMfrag.s' || echo '$(srcdir)/'`arm/ARMfrag.s
+ 

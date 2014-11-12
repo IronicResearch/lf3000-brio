@@ -1,0 +1,12 @@
+--- theorarm-merge-branch/lib/Makefile.am	2010-04-24 07:22:55.000000000 -0700
++++ theorarm-merge-branch.save2/lib/Makefile.am	2010-08-03 12:12:55.000000000 -0700
+@@ -98,6 +98,9 @@
+ 
+ if CPU_ARM
+ decoder_arm_sources = \
++	arm/ARMbitwise2.s \
++	arm/ARMdecode.s \
++	arm/ARMfilter.s \
+ 	arm/ARMfrag.s \
+ 	arm/ARMidct.s \
+ 	arm/ARMpp.s \

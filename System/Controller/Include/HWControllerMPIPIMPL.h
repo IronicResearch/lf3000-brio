@@ -93,6 +93,7 @@ namespace Hardware {
 				 LeapFrog::Brio::tEventPriority priority);
     bool HandleTimerEvent(const LeapFrog::Brio::IEventMessage &msgIn,
                                  LeapFrog::Brio::tEventPriority priority);
+    void CancelFwUpdate(HWController* testController);
 #if defined(EMULATION)
     LeapFrog::Brio::tEventStatus HandleLegacyEvents(const LeapFrog::Brio::IEventMessage &msgIn,
 						    LeapFrog::Brio::tEventPriority priority);
@@ -130,6 +131,10 @@ namespace Hardware {
     pFnEnableBluetoothDebug	pBTIO_EnableBluetoothDebug_;
     pFnSetDebugZoneMaskPID	pBTIO_SetDebugZoneMaskPID_;
     pFnDisconnectDevice 	pBTIO_DisconnectDevice_;
+    pFnUpdateControllerFw	pBTIO_UpdateControllerFw_;
+    pFnAbortUpdateControllerFw	pBTIO_AbortUpdateControllerFw_;
+
+    HWController* fwUpdateController_;
 
     static LeapFrog::Brio::tMutex instanceMutex_;
     static LeapFrog::Brio::tMutex disconnectedControllerMutex_;
@@ -137,6 +142,7 @@ namespace Hardware {
     static void DeviceCallback(void*, void*, int);
     static void InputCallback(void*, void*, int, char*);
     static void ScanCallback(void*, void*, int);
+    static void FwUpdateCallback(OadResult, unsigned int);
 
     friend class HWControllerPIMPL;
   };
