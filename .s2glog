@@ -43981,3 +43981,16 @@ Revision 11,178 from http://source.leapfrog.com/Software/Brio/Brio2/BRANCHES/Bri
 Completed in 828,623 ms
 
 ===================================================
+===================================================
+Resuming from mapping "branch", revision 11,171
+===================================================
+
+Revision 11,171 from http://source.leapfrog.com/Software/Brio/Brio2/BRANCHES/Brio_LF2000/:
+
+Updated for ARIA 555 - singleton object
+
+By cmiller (cmiller@leapfrog.com) on 11/13/14 5:27 PM
+2 changed, 0 added, 0 deleted.
+800,381 ms. (Cumulative: 824,865 ms)
+
+----------------
