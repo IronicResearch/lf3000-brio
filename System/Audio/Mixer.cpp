@@ -1198,14 +1198,14 @@ Boolean CAudioMixer::IsPlayerPlaying( tAudioID id )
 	CStream *pStream;
 	Boolean playing = false;
 
-	MIXER_LOCK;
+//	MIXER_LOCK;
 	pStream = FindStreamInternal(id);
 	if (pStream && pStream->GetPlayer() && !pStream->IsDone())
 	{
 		// Additionally qualify stream state
 		playing = true;
 	}
-	MIXER_UNLOCK;
+//	MIXER_UNLOCK;
 	return playing;
 }
 
