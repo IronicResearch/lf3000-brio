@@ -31,7 +31,7 @@ namespace Vision {
   VNIntervalTriggerPIMPL::Triggered(bool spatiallyTriggered) {
     bool result = false;
     if (spatiallyTriggered) {
-      if (!firstTrigger_ || timer_.elapsed() >= interval_) {
+      if (!firstTrigger_ || timer_.elapsed() < 0 || timer_.elapsed() >= interval_) {
 	firstTrigger_ = true;
 	timer_.restart();
 	result = true;
