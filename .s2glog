@@ -44035,3 +44035,16 @@ Revision 11,178 from http://source.leapfrog.com/Software/Brio/Brio2/BRANCHES/Bri
 Completed in 893,601 ms
 
 ===================================================
+===================================================
+Resuming from mapping "branch", revision 11,172
+===================================================
+
+Revision 11,172 from http://source.leapfrog.com/Software/Brio/Brio2/BRANCHES/Brio_LF2000/:
+
+Fix for GSPRT HotSpots stop working.  For currently unknown reasons, sometimes the boost::timer returns a negative number.  This causes VNIntervalTrigger to stop triggering (not enough time has elapsed).  Now counting negative numbers as triggering.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/14/14 4:08 PM
+2 changed, 0 added, 0 deleted.
+796,278 ms. (Cumulative: 815,874 ms)
+
+----------------
