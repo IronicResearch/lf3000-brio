@@ -44083,3 +44083,24 @@ Revision 11,178 from http://source.leapfrog.com/Software/Brio/Brio2/BRANCHES/Bri
 Completed in 901,054 ms
 
 ===================================================
+===================================================
+Resuming from mapping "branch", revision 11,173
+===================================================
+
+Revision 11,173 from http://source.leapfrog.com/Software/Brio/Brio2/BRANCHES/Brio_LF2000/:
+
+Relax mixer lock when querying audio player status.
+
+Safe to query read-only status on stream slot since players
+are added/removed to stream slots instead of dynamic list.
+
+Tested in context of games which poll for audio player status
+(DANCE and SPORTS), though difficult to discern any effect.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/14/14 6:39 PM
+2 changed, 0 added, 0 deleted.
+852,127 ms. (Cumulative: 870,292 ms)
+
+----------------
