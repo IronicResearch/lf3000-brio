@@ -6,6 +6,7 @@
 #include <FontMPI.h>
 #include <DisplayMPI.h>
 #include <BrioOpenGLConfig.h>
+#include <GLES/gl.h>
 #include <UnitTestUtils.h>
 
 #include <ft2build.h>		// FreeType auto-conf settings

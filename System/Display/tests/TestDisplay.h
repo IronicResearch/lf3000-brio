@@ -7,6 +7,7 @@
 #include <KernelMPI.h>
 #include <UnitTestUtils.h>
 #include <BrioOpenGLConfig.h>
+#include <GLES/gl.h>
 #include <Utility.h>
 
 //For memset
