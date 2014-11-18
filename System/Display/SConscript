@@ -70,8 +70,7 @@ if env['cpu'] == 'x86':
 
 if env['buildtests']:
 	if env['cpu'] != 'x86':
-		#targets.append(RunMyTests(module_name, [], mpilibs + ['DebugMPI', 'EventMPI', 'Utility', 'ButtonMPI'], myenv))
-		print "WARNING: Display test disabled in emulation until fixed!"
+		targets.append(RunMyTests(module_name, [], mpilibs + ogllibs + ['DebugMPI', 'EventMPI', 'Utility'], myenv))
 	else:
 		print "WARNING: Display test disabled in emulation until fixed!"
 
