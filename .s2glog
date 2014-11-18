@@ -44170,3 +44170,16 @@ Revision 11,178 from http://source.leapfrog.com/Software/Brio/Brio2/BRANCHES/Bri
 Completed in 870,267 ms
 
 ===================================================
+===================================================
+Resuming from mapping "branch", revision 11,175
+===================================================
+
+Revision 11,175 from http://source.leapfrog.com/Software/Brio/Brio2/BRANCHES/Brio_LF2000/:
+
+Fixed NEON depedencies for compiling LF3000.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/18/14 11:57 AM
+3 changed, 0 added, 0 deleted.
+770,476 ms. (Cumulative: 788,680 ms)
+
+----------------

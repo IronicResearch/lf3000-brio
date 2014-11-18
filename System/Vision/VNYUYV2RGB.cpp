@@ -1,7 +1,7 @@
 #include "VNYUYV2RGB.h"
 #include <stdio.h>
 #include "VNAlgorithmHelpers.h"
-#if !defined(EMULATION)
+#if !defined(EMULATION) && defined(LF3000)
 #define VN_NEON_YUYV2GRAY 1
 #define VN_NEON_YUYV2RGB 0
 #else

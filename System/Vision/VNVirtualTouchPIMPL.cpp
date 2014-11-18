@@ -17,7 +17,7 @@
 #include "VNAccumulate.h"
 #include "VNFixedPoint.h"
 
-#define VN_NEON_OPTIMIZE_FRAME_PASSES !defined(EMULATION)
+#define VN_NEON_OPTIMIZE_FRAME_PASSES !defined(EMULATION) && defined(LF3000)
 
 #if VN_NEON_OPTIMIZE_FRAME_PASSES
 #include <arm_neon.h>
