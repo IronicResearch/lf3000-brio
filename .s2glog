@@ -44200,3 +44200,16 @@ Revision 11,178 from http://source.leapfrog.com/Software/Brio/Brio2/BRANCHES/Bri
 Completed in 811,453 ms
 
 ===================================================
+===================================================
+Resuming from mapping "branch", revision 11,176
+===================================================
+
+Revision 11,176 from http://source.leapfrog.com/Software/Brio/Brio2/BRANCHES/Brio_LF2000/:
+
+Trying Alex L's experimental convert IntervalTrigger to use Kernel Timer instead of boost::timer.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/18/14 5:28 PM
+3 changed, 0 added, 0 deleted.
+766,140 ms. (Cumulative: 783,658 ms)
+
+----------------

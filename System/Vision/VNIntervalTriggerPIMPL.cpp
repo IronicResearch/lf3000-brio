@@ -1,4 +1,5 @@
 #include <VNIntervalTriggerPIMPL.h>
+#include <KernelMPI.h>
 
 namespace LF {
 namespace Vision {
@@ -6,10 +7,14 @@ namespace Vision {
   VNIntervalTriggerPIMPL::VNIntervalTriggerPIMPL(float interval) :
     firstTrigger_(false) {
 	  SetInterval(interval);
+	  timerProperties_.type = LeapFrog::Brio::TIMER_RELATIVE_SET;
+	  timerHndl_ = kernelMPI_.CreateTimer(NULL, timerProperties_);
   }
 
   VNIntervalTriggerPIMPL::~VNIntervalTriggerPIMPL(void) {
-
+	  if (timerHndl_ != LeapFrog::Brio::kInvalidTimerHndl) {
+	    kernelMPI_.DestroyTimer(timerHndl_);
+	  }
   }
 
   float
@@ -31,9 +36,27 @@ namespace Vision {
   VNIntervalTriggerPIMPL::Triggered(bool spatiallyTriggered) {
     bool result = false;
     if (spatiallyTriggered) {
-      if (!firstTrigger_ || timer_.elapsed() < 0 || timer_.elapsed() >= interval_) {
+      float elapsedTimeInS = 0.0f;
+
+      // determine the elapsed time
+      if (timerHndl_ != LeapFrog::Brio::kInvalidTimerHndl) {
+	LeapFrog::Brio::U32 elapsedTimeInMs = 0;
+	kernelMPI_.GetTimerElapsedTime(timerHndl_, &elapsedTimeInMs);
+	elapsedTimeInS = (static_cast<float>(elapsedTimeInMs))/1000.0f; // FIXME: DO not use hardcoded value for milliseconds in second
+      }
+
+      // if we have not been triggered before or our elapsed time is negative or we have a valid timer and the elapsed time
+      // is greater than the interval we are looking for or we don't have a valid timer, then trigger
+      if (!firstTrigger_ ||
+	  elapsedTimeInS < 0 ||
+	  (timerHndl_ != LeapFrog::Brio::kInvalidTimerHndl && elapsedTimeInS >= interval_) ||
+	  (timerHndl_ == LeapFrog::Brio::kInvalidTimerHndl)) {
 	firstTrigger_ = true;
-	timer_.restart();
+
+	if (timerHndl_ != LeapFrog::Brio::kInvalidTimerHndl) {
+	  kernelMPI_.ResetTimer(timerHndl_, timerProperties_);
+	}
+
 	result = true;
       } 
     }
