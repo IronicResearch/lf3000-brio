@@ -1,7 +1,8 @@
 #ifndef __VISION_INCLUDE_VNINTERVALTRIGGERPIMPL_H__
 #define __VISION_INCLUDE_VNINTERVALTRIGGERPIMPL_H__
 
-#include <boost/timer.hpp>
+//#include <boost/timer.hpp>
+#include <KernelMPI.h>
 
 namespace LF {
 namespace Vision {
@@ -18,10 +19,13 @@ namespace Vision {
     bool Triggered(bool spatiallyTriggered);
 
     bool firstTrigger_;
-    boost::timer timer_;
+    //boost::timer timer_;
+    LeapFrog::Brio::tTimerHndl timerHndl_;
+    LeapFrog::Brio::CKernelMPI kernelMPI_;
 
   private:
     float interval_;
+    LeapFrog::Brio::tTimerProperties timerProperties_;
   };
     
 } // namespace Vision
