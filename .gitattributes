@@ -9,6 +9,10 @@
 *.js	text
 *.case	text
 *.html  text
+*.cpp  	text
+*.h   	text
+*.hpp	text
+*.c
 
 # Declare files that will always have CRLF line endings on checkout.
 *.bat 	text eol=crlf
