@@ -11,14 +11,14 @@ import Etc.Tools.SConsTools.Priv.LfUtils
 # EnsureSConsVersion(1, 3, 0)
 
 opts = Variables()
-opts.Add('platform', 'Set platform to use', 'LF2000')
+opts.Add('platform', 'Set platform to use', 'LF3000')
 opts.Add(BoolVariable('monolithic', 'Set "monolithic=t" to link EXEs against .a files rather than .so files', False))
 opts.Add(BoolVariable('debug', 'Builds libraries and unit tests with symbols', False))
 opts.Add(BoolVariable('samples', 'Include samples if building an SDK target', True))
 opts.Add(BoolVariable('runtests', 'Builds and runs unit tests (implies buildtests)', False))
 opts.Add(BoolVariable('buildtests', 'Builds unit tests but does not run them', False))
 opts.Add(BoolVariable('deploylibs', 'Deploys 3rd-party libs from Brio repository', True))
-opts.Add(BoolVariable('nosvn', 'Don\'t use svn', False))
+opts.Add(BoolVariable('nosvn', 'Don\'t use svn', True))
 
 opts.Add('setup', 'Set to "TRUNK" or branch name to setup source tree for a platform', '')
 opts.Add('host', 'The architecture that will run the embedded binaries', 'arm-linux')
