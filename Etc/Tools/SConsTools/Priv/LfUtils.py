@@ -25,16 +25,10 @@ def GetRepositoryVersion(platform, branch):
 	common = imp.load_source(platform + '_common', os.path.join('Etc/Tools/SConsTools', platform + '_common.py'))
 	mappings = common.GetRepositoryMappings()
 	path = ''
-	revision = 'XXXX'
-	for repo, reldir in mappings.iteritems():
-		command = 'svn info ' + os.path.join(repo, branch)
-		info = os.popen(command)
-		rev = info.read()
-		begin = rev.find('Last Changed Rev:')
-		end = rev.find('\n', begin)
-		rev = rev[begin+18:end]
-		revision = rev
+	revision = '9999'
 			
+	# FIXME: Replace method for querying revision from non-SVN repository
+
 	print '*** Using repository revision "' + revision + '" as build number ***'
 	return revision
 

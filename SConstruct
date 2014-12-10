@@ -24,6 +24,7 @@ opts.Add('setup', 'Set to "TRUNK" or branch name to setup source tree for a plat
 opts.Add('host', 'The architecture that will run the embedded binaries', 'arm-linux')
 opts.Add('libc', 'The c runtime library to use for exporting and linking libraries', 'uclibc')
 opts.Add('build_version', 'The 3 number build version to use along with the svn revision', '9.9.9')
+opts.Add('version', 'The version suffix which had historically been queried from svn revision', '9999')
 
 opts.Add('staging_dir', 'Root where we find linux standard libs and headers, usually nfsroot', '')
 opts.Add('embedded_root', 'Where to place Brio arm libraries',  '')
@@ -75,12 +76,6 @@ if not master_env['emulation_root']:
 		master_env['emulation_root'] = os.path.join(os.environ['HOME'], 'emuroot')
 
 master_env['emulation_root'] = Dir(master_env['emulation_root']).Dir(default_subdir)
-
-#Get svn repo numbering
-if master_env['nosvn']:
-	master_env['version'] = '9.9.99999'
-else:
-	master_env['version'] = Etc.Tools.SConsTools.Priv.LfUtils.GetRepositoryVersion(master_env['platform'], master_env['setup'])
 
 #Fix up SDK path and samples flag based on legacy targets or not
 if not master_env['sdk_root']:
