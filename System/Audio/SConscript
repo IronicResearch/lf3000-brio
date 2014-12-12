@@ -39,6 +39,7 @@ myenv		= env.Clone()
 
 #myenv.Append(CPPDEFINES = ['USE_VORBIS'])
 myenv.Append(CPPDEFINES = ['USE_44KHZ'])
+myenv.Append(CPPFLAGS = ['-Wno-deprecated-declarations'])
 
 myenv.Append(CPPPATH = [os.path.join(myenv['staging_dir'].abspath, 'usr', 'include')])
 myenv.Append(LIBPATH = [os.path.join(myenv['staging_dir'].abspath, 'usr', 'lib')])
