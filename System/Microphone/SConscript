@@ -22,12 +22,7 @@ mpilibs		= ['ModuleMPI']
 #-----------------------------------------------------------------------------
 myenv		= env.Clone()
 
-myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
-myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
-
-myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
-myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
-
+myenv.Append(CPPPATH = [env['staging_dir'].Dir('usr').Dir('include')])
 myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 
 myenv.Append(CPPPATH=['Include'])
