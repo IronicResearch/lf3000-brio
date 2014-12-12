@@ -16,30 +16,44 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 
-				'pthread', 'vorbisidec', 'ogg', 'sndfile',
+				'pthread', 'ogg', 'sndfile',
 				'Utility', 'avcodec', 'avformat', 'avutil', 'asound']
 if env['cpu'] == 'x86':
-	modlibs += ['portaudio']
-	
+	modlibs += ['vorbisfile']
+else:
+	modlibs += ['vorbisidec']
 mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 						
 #-----------------------------------------------------------------------------
-# Modify the build environment and build the module
+# TODO: Tool to check x86 packages for emulation
+#-----------------------------------------------------------------------------
+# sudo apt-get install libasound2-dev
+# sudo apt-get install libsndfile1-dev
+# sudo apt-get install libvorbis-dev
+# sudo apt-get install libavcodec-dev
+# sudo apt-get install libavformat-dev
+# sudo apt-get install libavutil-dev
+#-----------------------------------------------------------------------------
 
+#-----------------------------------------------------------------------------
+# Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Clone()
 
-#myenv.Append(CPPDEFINES = ['USE_VORBIS'])
+if env['cpu'] == 'x86':
+	myenv.Append(CPPDEFINES = ['USE_VORBIS'])
 myenv.Append(CPPDEFINES = ['USE_44KHZ'])
-myenv.Append(CPPPATH = ['#ThirdParty/Portaudio/Include'])
-myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
-myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
-myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
-myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/' + env['cpu']])
-myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/' + env['cpu']])
-myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
-myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
 
+#myenv.Append(CPPPATH = ['#ThirdParty/Portaudio/Include'])
+#myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
+#myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
+#myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
+#myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/' + env['cpu']])
+#myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/' + env['cpu']])
+#myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
+#myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
+
+myenv.Append(CPPPATH = [os.path.join(myenv['staging_dir'].abspath, 'usr', 'include')])
 myenv.Append(LIBPATH = [os.path.join(myenv['staging_dir'].abspath, 'usr', 'lib')])
 
 myenv.Append(CPPPATH=['Include'])
