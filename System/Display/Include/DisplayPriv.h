@@ -92,6 +92,7 @@ struct tDisplayContext {
 	BrioOpenGLConfig *openGLScaler;
 	void	*eGLSourceImage;
 	U32		eGLSourceTexture;
+	void	*nxMemoryHandle;
 };
 
 struct tBuffer {
