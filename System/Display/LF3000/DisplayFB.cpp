@@ -31,6 +31,8 @@
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 #include <Utility.h>
+#include <EGL/fbdev_window.h>
+#include <lf3000/nx_alloc_mem.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -389,19 +391,11 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->openGLScaler		= 0;
 	ctx->eGLSourceImage		= 0;
 	ctx->eGLSourceTexture	= 0;
+	ctx->nxMemoryHandle		= 0;
 
 	// Allocate framebuffer memory if onscreen context
 	if (pBuffer == NULL)
 	{	
-		if (!AllocBuffer(ctx, aligned))
-		{
-			dbg_.DebugOut(kDbgLvlCritical, "%s: No framebuffer allocation available\n", __FUNCTION__);
-			delete ctx;
-			return kInvalidDisplayHandle;
-		}
-		// Clear the onscreen display buffer
-		memset(ctx->pBuffer, 0, ctx->pitch * ctx->height);
-
 		//For scaling up tutorials and other 2D content
 		//Check to make sure pBuffer is NULL (some things like OpenGL pass in a address, but it already does it's own scale
 		//Don't want to do this for the VideoBuffer, as the VideoScaler can take care of that.
@@ -416,20 +410,43 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 
 			ctx->openGLScaler = new BrioOpenGLConfig();
 
-			nexell_clientbuffer_t egl_client_buffer;
-			EGLint egl_image_attribute[] = { EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE };
-			egl_client_buffer.width           = width;
-			egl_client_buffer.height          = height;
-			if(colorDepth == kPixelFormatARGB8888)
-				egl_client_buffer.format          = EGL_NEXELL_BGRA;
-			else
-				egl_client_buffer.format          = EGL_NEXELL_BGR;
-			egl_client_buffer.stride          = width;
-			egl_client_buffer.bsize           = 0;
+			fbdev_pixmap pixmap;
+			pixmap.width = width;
+			pixmap.height = height;
+			pixmap.flags = (fbdev_pixmap_flags)(FBDEV_PIXMAP_COLORSPACE_sRGB |FBDEV_PIXMAP_DMA_BUF);
+			pixmap.data = (unsigned short *)calloc(1, sizeof(int));
+			switch(colorDepth)
+			{
+			case kPixelFormatARGB8888:
+				pixmap.bytes_per_pixel = 4;
+				pixmap.buffer_size = 32;
+				pixmap.red_size = 8;
+				pixmap.green_size = 8;
+				pixmap.blue_size = 8;
+				pixmap.alpha_size = 8;
+				pixmap.luminance_size = 0;
+				break;
+			case kPixelFormatRGB888:
+				pixmap.bytes_per_pixel = 3;
+				pixmap.buffer_size = 24;
+				pixmap.red_size = 8;
+				pixmap.green_size = 8;
+				pixmap.blue_size = 8;
+				pixmap.alpha_size = 0;
+				pixmap.luminance_size = 0;
+				break;
+			}
+			ctx->nxMemoryHandle = NX_AllocateMemory(width * height * pixmap.bytes_per_pixel, 64);
+			*((int*)pixmap.data) = (int)((NX_MEMORY_HANDLE)ctx->nxMemoryHandle)->privateDesc;
+			ctx->pBuffer = (U8*)((NX_MEMORY_HANDLE)ctx->nxMemoryHandle)->virAddr;
 
-			egl_client_buffer.virtual_address = (void*)ctx->pBuffer;
-			egl_client_buffer.physical_address= (void*)ctx->pBuffer;
-			ctx->eGLSourceImage = eglCreateImageKHR(ctx->openGLScaler->eglDisplay, ctx->openGLScaler->eglContext, EGL_NATIVE_BUFFER_NEXELL, (EGLClientBuffer)&egl_client_buffer, egl_image_attribute );
+			EGLint imageAttributes[] = {
+					EGL_IMAGE_PRESERVED_KHR, EGL_TRUE,
+					EGL_NONE
+			};
+			ctx->eGLSourceImage = eglCreateImageKHR(ctx->openGLScaler->eglDisplay, EGL_NO_CONTEXT,
+					EGL_NATIVE_PIXMAP_KHR, (EGLClientBuffer)&pixmap, imageAttributes);
+			free(pixmap.data);
 
 			glGenTextures(1, (GLuint*)&ctx->eGLSourceTexture);
 			glBindTexture(GL_TEXTURE_2D, (GLuint)ctx->eGLSourceTexture);
@@ -439,6 +456,14 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 			glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glEGLImageTargetTexture2DOES ( GL_TEXTURE_2D, ctx->eGLSourceImage); // bind an EGLImage(egl_image) to current binded texture
 		}
+		else if (!AllocBuffer(ctx, aligned))
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "%s: No framebuffer allocation available\n", __FUNCTION__);
+			delete ctx;
+			return kInvalidDisplayHandle;
+		}
+		// Clear the onscreen display buffer
+		memset(ctx->pBuffer, 0, ctx->pitch * ctx->height);
 	}
 	
 	// Fixup offscreen context info if cloned from onscreen context (VideoMPI)
@@ -482,9 +507,6 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 		vyres = yres;
 	}
 
-	if (!ctx->isAllocated)
-		DeAllocBuffer(ctx);
-
 	//Check to see if we allocated the memory
 	//2D buffer, where the scale doesn't match
 	if(ctx->openGLScaler)
@@ -494,6 +516,7 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 		eglMakeCurrent(ctx->openGLScaler->eglDisplay, ctx->openGLScaler->eglSurface, ctx->openGLScaler->eglSurface, ctx->openGLScaler->eglContext);
 		glDeleteTextures(1, (GLuint*)&ctx->eGLSourceTexture);
 		eglDestroyImageKHR(ctx->openGLScaler->eglDisplay, ctx->eGLSourceImage);
+		NX_FreeMemory((NX_MEMORY_HANDLE)ctx->nxMemoryHandle);
 		delete ctx->openGLScaler;
 
 		std::map<BrioOpenGLConfigPrivate *, tOpenGLContext>::iterator opengl_context_finder = brioopenglconfig_context_map.begin();
@@ -505,6 +528,8 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 					opengl_context_finder->first->eglContext);
 		}
 	}
+	else if (!ctx->isAllocated)
+		DeAllocBuffer(ctx);
 	
 	delete ctx;
 	
