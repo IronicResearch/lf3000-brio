@@ -21,11 +21,7 @@ mpilibs		= ['ModuleMPI']
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Clone()
-myenv.Append(CPPPATH = ['#ThirdParty/FreeType/Include',
-						'#ThirdParty/FreeType/Include/freetype'])
-
-myenv.Append(LIBPATH = ['#ThirdParty/FreeType/Libs/' + env['cpu']])
-						
+myenv.Append(CPPPATH = [ env['staging_dir'].Dir('usr').Dir('include').Dir('freetype2') ] )
 myenv.Append(CPPPATH=['Include'])
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
@@ -41,7 +37,6 @@ ogllibs		= env['cpu'] == 'x86' and ['gles_cl'] or hwlibs
 if env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
-	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/FreeType/Libs/x86').abspath)
 	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/PowerVR/Libs').abspath)
 elif env['platform'] == 'LF2000' or env['platform'] == 'LF3000':
 	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])

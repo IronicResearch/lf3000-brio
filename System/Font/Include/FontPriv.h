@@ -22,8 +22,8 @@
 #include <DisplayTypes.h> 
 
 #include <ft2build.h>		// FreeType auto-conf settings
-#include <freetype.h>
-#include <ftglyph.h>
+#include <freetype/freetype.h>
+#include <freetype/ftglyph.h>
 #define  USE_FONT_CACHE_MGR		1   
 #if 	 USE_FONT_CACHE_MGR
 #include FT_CACHE_H

@@ -18,10 +18,6 @@
 #include <FontPriv.h>
 #include <KernelMPI.h>
 
-#include <ft2build.h>		// FreeType auto-conf settings
-#include <freetype.h>
-#include <ftglyph.h>
-#include <ftsizes.h>
 #include FT_TRUETYPE_IDS_H
 
 LF_BEGIN_BRIO_NAMESPACE()

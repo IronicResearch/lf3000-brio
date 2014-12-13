@@ -20,9 +20,7 @@ myenv		= env.Clone()
 myenv.Append(CPPDEFINES = ['BRIO_IMAGEIO'])
 
 myenv.Append(CPPPATH = ['Include'])
-myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
 
-myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 	
 
