@@ -1,0 +1,248 @@
+Index: Include/CTRLMainState.h
+===================================================================
+--- Include/CTRLMainState.h	(revision 10796)
++++ Include/CTRLMainState.h	(working copy)
+@@ -88,11 +88,12 @@
+   
+   struct ControllerData
+   {
+-	  float x_, y_;  ///< analog stick data
++	  float x_, y_, lx_, ly_;  ///< analog stick data
+ 	  float x_pos_, y_pos_, z_pos_; ///< position for pyramid indicator object
+ 	  float dx_, dy_, dz_; ///< incremental updates to the position
+-	  int   rotationY_, rotationX_; ///< rotation of the pyramid indicator object
++	  int   rotationY_, rotationX_, rotationZ_; ///< rotation of the pyramid indicator object
+ 	  LeapFrog::Brio::S32 ax_,ay_,az_;
++	  LeapFrog::Brio::S32 lax_, lay_, laz_;
+ 	  bool analog_stick_on_; ///< flag indicating if we are using the analog stick
+   };
+   float initial_z_; ///< the initial z position of the object
+@@ -174,6 +175,7 @@
+   void UnregisterEventListeners(void);
+   
+   void GetControllers(void);
++  float getTheta(float x, float y);
+ 
+ };
+ 
+Index: Src/CTRLMainState.cpp
+===================================================================
+--- Src/CTRLMainState.cpp	(revision 10796)
++++ Src/CTRLMainState.cpp	(working copy)
+@@ -7,6 +7,7 @@
+ #include <Hardware/HWController.h>
+ #include <AccelerometerTypes.h>
+ #include <KeyboardManager.h>
++#include <math.h>
+ 
+ 
+ using LeapFrog::Brio::S16;
+@@ -70,7 +71,7 @@
+ 		}
+ 		else
+ 		{
+-			DoAccEventLoop(i);
++			//DoAccEventLoop(i);
+ 			MoveObjectWithGravity(i);
+ 		}
+ 	}
+@@ -89,8 +90,13 @@
+ 	{
+ 		LF::Hardware::tHWAnalogStickData data = controller->GetAnalogStickData();
+ 		// Update current accelerometer x,y,z data
+-		controllerData[ID].x_ = data.x;
+-		controllerData[ID].y_ = data.y;
++		//quicky filter
++		float filterCoefficient = 0.5;
++		controllerData[ID].x_ = controllerData[ID].lx_ + filterCoefficient*(data.x - controllerData[ID].lx_);
++		controllerData[ID].y_ = controllerData[ID].ly_ + filterCoefficient*(data.y - controllerData[ID].ly_);
++
++		controllerData[ID].lx_ = controllerData[ID].x_;
++		controllerData[ID].ly_ = controllerData[ID].y_;
+ 		//printf("%d\t(%f, %f)\n", ID, data.x, data.y);
+ 		return LeapFrog::Brio::kEventStatusOKConsumed;
+ 	}
+@@ -128,9 +134,16 @@
+ 	else if (msgIn.GetEventType() == LF::Hardware::kHWControllerAccelerometerDataChanged)
+ 	{
+ 		LeapFrog::Brio::tAccelerometerData data = controller->GetAccelerometerData();
+-		controllerData[ID].ax_ = data.accelX;
+-		controllerData[ID].ay_ = -data.accelY;
+-		controllerData[ID].az_ = data.accelZ;
++
++		//quicky filter
++		float filterCoefficient = 0.5;
++		controllerData[ID].ax_ = controllerData[ID].lax_ + filterCoefficient*(data.accelX - controllerData[ID].lax_);
++		controllerData[ID].ay_ = controllerData[ID].lay_ + filterCoefficient*(-data.accelY - controllerData[ID].lay_);
++		controllerData[ID].az_ = controllerData[ID].laz_ + filterCoefficient*(data.accelZ - controllerData[ID].laz_);
++
++		controllerData[ID].lax_ = controllerData[ID].ax_;
++		controllerData[ID].lay_ = controllerData[ID].ay_;
++		controllerData[ID].laz_ = controllerData[ID].az_;
+ 
+ 		//printf( "acceleration: %ld, %ld, %ld\n", data.accelX, data.accelY, data.accelZ );
+ 		return LeapFrog::Brio::kEventStatusOKConsumed;
+@@ -157,6 +170,7 @@
+ }
+ 
+ void CTRLMainState::MoveObjectWithGravity(int i) {
++	/*
+ 	float dist = kLongestSide*kObjectSize;
+ 	controllerData[i].x_pos_-=(gravity_*controllerData[i].dx_);
+ 	if(controllerData[i].x_pos_>screen_width_/2-dist) {
+@@ -178,12 +192,48 @@
+ 
+ 	controllerData[i].z_pos_+=(gravity_*controllerData[i].dz_);
+ 	if (controllerData[i].z_pos_<-far_plane_+dist) {
+-		controllerData[i].z_pos_ = -far_plane_+dist;
++		controllerData[i].z_pos_ = -far_plane_+dist;controllerData[i].ay_
+ 		controllerData[i].dz_ = -controllerData[i].dz_/2;
+ 	} else if(controllerData[i].z_pos_>-near_plane_-dist) {
+ 		controllerData[i].z_pos_ = -near_plane_-dist;
+ 		controllerData[i].dz_ = -controllerData[i].dz_/2;
+ 	}
++	*/
++
++	float ax = (float)controllerData[i].ax_;
++	float ay = (float)controllerData[i].ay_;
++	float az = (float)controllerData[i].az_;
++
++	float thetaX = getTheta(-az, ay);
++	float thetaY = getTheta(az, ax);
++	float thetaZ = getTheta(-ax, ay);
++
++	controllerData[i].rotationX_ = thetaX;
++	controllerData[i].rotationY_ = thetaY;
++	controllerData[i].rotationZ_ = thetaZ;
++
++	//printf("(%f, %f, %f)(%f, %f,%f))\n", thetaX, thetaY, thetaZ, ax,ay,az);
++}
++
++float CTRLMainState::getTheta(float x, float y)
++{
++	float z;
++	z = atan(x/y)*(float)(180/M_PI);
++	if(x>0)
++	{
++		if(y>=0)
++		{
++			z+=180;
++		}
++	}
++	else
++	{
++		if(y>=0)
++		{
++			z+=180;
++		}
++	}
++	return z;
+ }
+ 
+ void CTRLMainState::RenderOGL(void) {
+@@ -228,35 +278,59 @@
+ 	//Transformations
+ 	for(int i=0; i<numControllers; ++i)
+ 	{
+-		GLubyte myColors[] = {
+-				255*i,	255-(i*127),	0, 255,
+-				255*i,	255-(i*127),	0, 255,
+-				255*i,	255-(i*127),	0, 255,
+-				255*i,	255-(i*127),	0, 255,
+-				255*i,	255-(i*127),	0, 255,
+-				255*i,	255-(i*127),	0, 255,
+-				255*i,	255-(i*127),	0, 255,
+-				255*i,	255-(i*127),	0, 255,
+-				255*i,	255-(i*127),	0, 255,
+-				255*i,	255-(i*127),	0, 255,
+-				255*i,	255-(i*127),	0, 255,
+-				255*i,	255-(i*127),	0, 255,
+-		};
+ 
+ 		glLoadIdentity();
+ 		//printf("%d (%f, %f, %f)\n", i, controllerData[i].x_pos_, controllerData[i].y_pos_, controllerData[i].z_pos_);
+ 
+-		glTranslatef(controllerData[i].x_pos_, controllerData[i].y_pos_, controllerData[i].z_pos_);
+-		++controllerData[i].rotationX_;
+-		++controllerData[i].rotationY_;
+-		glRotatef(controllerData[i].rotationX_, 1.0f, 0.0f, 0.0f);
+-		glRotatef(controllerData[i].rotationY_, 0.0f, 1.0f, 0.0f);
++		if(controllerData[i].analog_stick_on_)
++		{
++			GLubyte myColors[] = {
++					255*i,	255-(i*127),	0, 255,
++					255*i,	255-(i*127),	0, 255,
++					255*i,	255-(i*127),	0, 255,
++					255*i,	255-(i*127),	0, 255,
++					255*i,	255-(i*127),	0, 255,
++					255*i,	255-(i*127),	0, 255,
++					255*i,	255-(i*127),	0, 255,
++					255*i,	255-(i*127),	0, 255,
++					255*i,	255-(i*127),	0, 255,
++					255*i,	255-(i*127),	0, 255,
++					255*i,	255-(i*127),	0, 255,
++					255*i,	255-(i*127),	0, 255,
++			};
++			glPushMatrix();
++			glColorPointer(4, GL_UNSIGNED_BYTE, 0, myColors);
++
++			glTranslatef(controllerData[i].x_pos_, controllerData[i].y_pos_, controllerData[i].z_pos_);
++		}
++		else
++		{
++			GLubyte myColors[] = {
++					255,	255,	0,		255,
++					0,		255,	0,		255,
++					0,		255,	0,		255,
++					255,	255,	0,		255,
++					255,	0,		255,	255,
++					0,		0,		255,	255,
++					0,		0,		255,	255,
++					255,	0,		255,	255,
++					255,	0,		255,	255,
++					255,	255,	0,		255,
++					0,		0,		255,	255,
++					0,		0,		255,	255,
++			};
++			glPushMatrix();
++			glColorPointer(4, GL_UNSIGNED_BYTE, 0, myColors);
++
++			glTranslatef(0,0,-near_plane_ - kLongestSide*kObjectSize);
++			glRotatef(controllerData[i].rotationX_, 1.0f, 0.0f, 0.0f);
++			glRotatef(controllerData[i].rotationY_, 0.0f, 1.0f, 0.0f);
++			glRotatef(controllerData[i].rotationZ_, 0.0f, 0.0f, 1.0f);
++		}
+ 
+-		glPushMatrix();
+ 
+ 		//draw it
+ 		glVertexPointer(3, GL_FLOAT, 0, myVertices);
+-		glColorPointer(4, GL_UNSIGNED_BYTE, 0, myColors);
+ 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 12);
+ 
+ 		glPopMatrix();
+@@ -273,6 +347,11 @@
+ 
+ 	controllerData[i].rotationX_ = 0;
+ 	controllerData[i].rotationY_ = 0;
++	controllerData[i].rotationZ_ = 0;
++
++	controllerData[i].lax_ = 0;
++	controllerData[i].lay_ = 0;
++	controllerData[i].laz_ = 0;
+ }
+ 
+ void CTRLMainState::InitOGL(void) {
+@@ -359,12 +438,6 @@
+ void CTRLMainState::RegisterEventListeners(void) {
+ 	GetControllers();
+ 	controller_mpi_.RegisterEventListener(this);
+-	// FIXME
+-	//LF::Hardware::HWController *controller = controller_mpi_.GetControllerByID(LF::Hardware::kHWDefaultControllerID);
+-	/*if (controller)
+-		controller->SetAnalogStickMode(LF::Hardware::kHWAnalogStickModeDPad);
+-*/
+-
+ }
+ 
+ void CTRLMainState::GetControllers(void)

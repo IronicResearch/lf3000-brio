@@ -39,6 +39,7 @@ myenv.Append(CPPFLAGS = '-Wno-deprecated-declarations')
 myenv.Append(CPPPATH = ['#System/Display/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/MfgData/lib'])
+myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
 
 if env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/include'])
@@ -49,9 +50,6 @@ elif env['platform'] == 'Lightning' and env['cpu_bare']:
 
 myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/MfgData/lib/' + env['cpu']])
-
-myenv.Append(CPPPATH = [env['staging_dir'].Dir('usr').Dir('include')])
-myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 
 myenv.Append(CPPPATH=['Include'])
 if not env['cpu'] == 'x86':

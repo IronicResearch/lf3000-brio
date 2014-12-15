@@ -1,0 +1,365 @@
+{
+	"ElementType": 3,
+	"ID": 0,
+	"Position": [160.000000, 120.000000],
+	"Animation":    [
+		{
+		"ElementType": 2,
+		"ID": 0,
+		"Duration": 996,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0,
+				"URL": "Text_text_sphere.png",
+				"Position": [-32.000000, -50.000000, 0.100000],
+				"Reg": [0.000000, 16.000000],
+				"Size": [64.000000, 16.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 1,
+				"URL": "Art_sphere_hilite0001.png",
+				"Position": [0.000000, 29.950000, 0.100000],
+				"Reg": [27.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 1,
+		"Duration": 2490,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_ASphereIsThrDmnsnlShpWth_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 1
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 2,
+		"Duration": 1494,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 2,
+				"URL": "Art_sphere_hilite0002.png",
+				"Position": [0.000000, 29.950000, 0.100000],
+				"Reg": [27.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 3,
+		"Duration": 1826,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 1
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 4,
+		"Duration": 5063,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_ASphereHsNEdgsNCrnrsAndN_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 1
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 5,
+		"Duration": 664,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 6,
+		"Duration": 498,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 3,
+				"URL": "Art_sphere_small.png",
+				"Position": [6.850000, 29.900000, 0.100000],
+				"Reg": [19.000000, 45.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 4,
+				"URL": "Art_sphere_large.png",
+				"Position": [-77.150000, 29.900000, 0.099000],
+				"Reg": [37.000000, 92.000000],
+				"Size": [128.000000, 128.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 5,
+				"URL": "Art_sphere_hilite0001.png",
+				"Position": [86.850000, 29.900000, 0.098000],
+				"Reg": [27.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 7,
+		"Duration": 3071,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_TheseAreAllSpheres_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 3
+				},
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 5
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 8,
+		"Duration": 664,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 9,
+		"Duration": 498,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 6,
+				"URL": "Art_sphere_globe0001.png",
+				"Position": [-60.000000, 29.950000, 0.100000],
+				"Reg": [37.000000, 91.000000],
+				"Size": [128.000000, 128.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 7,
+				"URL": "Art_sphere_ball0001.png",
+				"Position": [60.000000, 29.950000, 0.099000],
+				"Reg": [29.000000, 35.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 10,
+		"Duration": 996,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_ThisGlobe_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 8,
+				"URL": "Art_sphere_globe0002.png",
+				"Position": [-60.000000, 29.950000, 0.100000],
+				"Reg": [38.000000, 90.000000],
+				"Size": [128.000000, 128.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 7
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 11,
+		"Duration": 332,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 6
+				},
+				{
+				"ElementType": 0,
+				"ID": 7
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 12,
+		"Duration": 996,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_AndThisBall_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 6
+				},
+				{
+				"ElementType": 0,
+				"ID": 9,
+				"URL": "Art_sphere_ball0002.png",
+				"Position": [60.000000, 29.950000, 0.099000],
+				"Reg": [31.000000, 33.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 13,
+		"Duration": 332,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 6
+				},
+				{
+				"ElementType": 0,
+				"ID": 7
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 14,
+		"Duration": 1826,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_AreBothSpheres_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 8
+				},
+				{
+				"ElementType": 0,
+				"ID": 9
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 15,
+		"Duration": 996,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 6
+				},
+				{
+				"ElementType": 0,
+				"ID": 7
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,15 @@
+SKU	12345-67890
+PackageID	THDS-0x00000050-000000
+Type	Application
+Version	1.0.0.0
+MinVersion	1.0.0.0
+Locale	en_US
+Name	CTRL
+DisplayName	CTRL
+Category	Game
+PreviewImage	0x00000050.png
+Depends	THDS-0x00000050-DA0000,1.0.0.0
+Hidden	0
+Size	TBD
+PlatformsSupported	LST3, LPAD, GAM2, PAD2
+TargetPackageType	lf3

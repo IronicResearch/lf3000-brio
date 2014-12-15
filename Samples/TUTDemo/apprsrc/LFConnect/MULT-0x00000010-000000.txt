@@ -1,0 +1,15 @@
+SKU	12345-67890
+PackageID	MULT-0x00000010-000000
+Type	Application
+Version	1.0.0.0
+MinVersion	1.0.0.0
+Locale	en_US
+Name	TUT Demo
+DisplayName	TUT Demo
+Category	Tool
+PreviewImage	0x00000010.png
+Depends	GAMS-0x00000010-DA0000,1.0.0.0;PADS-0x00000010-DA0000,1.0.0.0;PHRS-0x0031000A-000018,1.0.0.0;MULT-0x0022000A-000505,5.5.0
+Hidden	0
+Size	TBD
+PlatformsSupported	LST3;LPAD;GAM2;PAD2;PHR1
+TargetPackageType	lf2

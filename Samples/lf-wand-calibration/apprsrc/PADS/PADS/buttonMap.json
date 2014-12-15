@@ -1,0 +1,368 @@
+{
+	"ViewFrameConfigs":	
+	{
+		"Default":
+		{
+			"png": "Tangled.png",
+			"x": 16,
+			"y": 16,
+			"w": 320,
+			"h": 240
+		},
+		"Fone":
+		{
+			"png": "cw.png",
+			"x": 16,
+			"y": 16,
+			"w": 320,
+			"h": 240
+		},
+		"Ftwo":
+		{
+			"png": "red.png",
+			"x": 16,
+			"y": 16,
+			"w": 320,
+			"h": 240
+		},
+		"Fthree":
+		{
+			"png": "blue.png",
+			"x": 16,
+			"y": 16,
+			"w": 320,
+			"h": 240
+		},
+		"Ffour":
+		{
+			"png": "green.png",
+			"x": 16,
+			"y": 16,
+			"w": 320,
+			"h": 240
+		},
+		"Ffive":
+		{
+			"png": "star.png",
+			"x": 16,
+			"y": 16,
+			"w": 320,
+			"h": 240
+		},
+		"Fsix":
+		{
+			"png": "tcbg.png",
+			"x": 16,
+			"y": 16,
+			"w": 320,
+			"h": 240
+		}
+	},
+	"ButtonConfigs":
+	{
+		"Default":
+		{
+			"AButton":
+			{
+				"x": 366,
+				"y": 114,
+				"pngRelease": "buttonArelease.png",
+				"pngPress": "buttonApress.png"
+			},
+			"BButton":
+			{
+				"x": 421,
+				"y": 81,
+				"pngRelease": "buttonBrelease.png",
+				"pngPress": "buttonBpress.png"
+			},
+			"PauseButton":
+			{
+				"x": 348,
+				"y": 16,
+				"pngRelease": "buttonPrelease.png",
+				"pngPress": "buttonPpress.png"
+			},
+			"HomeButton":
+			{
+				"x": 392,
+				"y": 16,
+				"pngRelease": "buttonMrelease.png",
+				"pngPress": "buttonMpress.png"
+			},
+			"HintButton":
+			{
+				"x": 437,
+				"y": 16,
+				"pngRelease": "buttonHrelease.png",
+				"pngPress": "buttonHpress.png",
+				"pngHighlight": "buttonHhigh.png" 
+			}
+		},
+		"BCone":
+		{
+			"AButton":
+			{
+				"x": 348,
+				"y": 80,
+				"pngRelease": "buttonArelease.png",
+				"pngPress": "buttonApress.png"
+			},
+			"BButton":
+			{
+				"x": 415,
+				"y": 82,
+				"pngRelease": "buttonBrelease.png",
+				"pngPress": "buttonBpress.png"
+			},
+			"PauseButton":
+			{
+				"x": 353,
+				"y": 10,
+				"pngRelease": "buttonPrelease.png",
+				"pngPress": "buttonPpress.png"
+			},
+			"HomeButton":
+			{
+				"x": 394,
+				"y": 10,
+				"pngRelease": "buttonMrelease.png",
+				"pngPress": "buttonMpress.png"
+			},
+			"HintButton":
+			{
+				"x": 437,
+				"y": 10,
+				"pngRelease": "buttonHrelease.png",
+				"pngPress": "buttonHpress.png",
+				"pngHighlight": "buttonHhigh.png" 
+			},
+			"LeftShoulderButton":
+			{
+				"x": 352,
+				"y": 231,
+				"pngRelease": "buttonLrelease.png",
+				"pngPress": "buttonLpress.png"
+			},
+			"RightShoulderButton":
+			{
+				"x": 413,
+				"y": 232,
+				"pngRelease": "buttonRrelease.png",
+				"pngPress": "buttonRpress.png"
+			},
+			"ComboRightShoulderAButton":
+			{
+				"x": 354,
+				"y": 143,
+				"pngRelease": "combo1release.png",
+				"pngPress": "combo1press.png"
+			},
+			"ComboRightShoulderBButton":
+			{
+				"x": 416,
+				"y": 143,
+				"pngRelease": "combo2release.png",
+				"pngPress": "combo2press.png"
+			}			
+		},
+		"BCtwo":
+		{
+			"AButton":
+			{
+				"x": 348,
+				"y": 80,
+				"pngRelease": "buttonArelease.png",
+				"pngPress": "buttonApress.png"
+			},
+			"BButton":
+			{
+				"x": 415,
+				"y": 82,
+				"pngRelease": "buttonBrelease.png",
+				"pngPress": "buttonBpress.png"
+			},
+			"PauseButton":
+			{
+				"x": 353,
+				"y": 10,
+				"pngRelease": "buttonPrelease.png",
+				"pngPress": "buttonPpress.png"
+			},
+			"HomeButton":
+			{
+				"x": 394,
+				"y": 10,
+				"pngRelease": "buttonMrelease.png",
+				"pngPress": "buttonMpress.png"
+			},
+			"HintButton":
+			{
+				"x": 437,
+				"y": 10,
+				"pngRelease": "buttonHrelease.png",
+				"pngPress": "buttonHpress.png",
+				"pngHighlight": "buttonHhigh.png" 
+			},
+			"LeftShoulderButton":
+			{
+				"x": 352,
+				"y": 231,
+				"pngRelease": "buttonLrelease.png",
+				"pngPress": "buttonLpress.png"
+			},
+			"RightShoulderButton":
+			{
+				"x": 413,
+				"y": 232,
+				"pngRelease": "buttonRrelease.png",
+				"pngPress": "buttonRpress.png"
+			}			
+		},
+		"BCthree":
+		{
+			"AButton":
+			{
+				"x": 348,
+				"y": 80,
+				"pngRelease": "buttonArelease.png",
+				"pngPress": "buttonApress.png"
+			},
+			"BButton":
+			{
+				"x": 415,
+				"y": 82,
+				"pngRelease": "buttonBrelease.png",
+				"pngPress": "buttonBpress.png"
+			},
+			"PauseButton":
+			{
+				"x": 353,
+				"y": 10,
+				"pngRelease": "buttonPrelease.png",
+				"pngPress": "buttonPpress.png"
+			},
+			"HintButton":
+			{
+				"x": 437,
+				"y": 10,
+				"pngRelease": "buttonHrelease.png",
+				"pngPress": "buttonHpress.png",
+				"pngHighlight": "buttonHhigh.png" 
+			},
+			"ComboRightShoulderAButton":
+			{
+				"x": 354,
+				"y": 143,
+				"pngRelease": "combo1release.png",
+				"pngPress": "combo1press.png"
+			},
+			"ComboRightShoulderBButton":
+			{
+				"x": 416,
+				"y": 143,
+				"pngRelease": "combo2release.png",
+				"pngPress": "combo2press.png"
+			}			
+		},
+		"BCfour":
+		{
+			"AButton":
+			{
+				"x": 348,
+				"y": 80,
+				"pngRelease": "buttonArelease.png",
+				"pngPress": "buttonApress.png"
+			},
+			"BButton":
+			{
+				"x": 415,
+				"y": 82,
+				"pngRelease": "buttonBrelease.png",
+				"pngPress": "buttonBpress.png"
+			},
+			"PauseButton":
+			{
+				"x": 353,
+				"y": 10,
+				"pngRelease": "buttonPrelease.png",
+				"pngPress": "buttonPpress.png"
+			},
+			"HomeButton":
+			{
+				"x": 394,
+				"y": 10,
+				"pngRelease": "buttonMrelease.png",
+				"pngPress": "buttonMpress.png"
+			},
+			"HintButton":
+			{
+				"x": 437,
+				"y": 10,
+				"pngRelease": "buttonHrelease.png",
+				"pngPress": "buttonHpress.png",
+				"pngHighlight": "buttonHhigh.png" 
+			},
+			"LeftShoulderButton":
+			{
+				"x": 352,
+				"y": 231,
+				"pngRelease": "buttonLrelease.png",
+				"pngPress": "buttonLpress.png"
+			},
+			"RightShoulderButton":
+			{
+				"x": 413,
+				"y": 232,
+				"pngRelease": "buttonRrelease.png",
+				"pngPress": "buttonRpress.png"
+			},
+			"ComboRightShoulderAButton":
+			{
+				"x": 354,
+				"y": 143,
+				"pngRelease": "combo1release.png",
+				"pngPress": "combo1press.png"
+			},
+			"ComboRightShoulderBButton":
+			{
+				"x": 416,
+				"y": 143,
+				"pngRelease": "combo2release.png",
+				"pngPress": "combo2press.png"
+			}			
+		},
+		"BCfive":
+		{
+			"AButton":
+			{
+				"x": 348,
+				"y": 80,
+				"pngRelease": "myArelease.png",
+				"pngPress": "myApressed.png"
+			},
+			"BButton":
+			{
+				"x": 415,
+				"y": 82,
+				"pngRelease": "myBrelease.png",
+				"pngPress": "myBpressed.png"
+			},
+			"HomeButton":
+			{
+				"x": 394,
+				"y": 10,
+				"pngRelease": "myMrelease.png",
+				"pngPress": "myMpressed.png"
+			},
+			"HintButton":
+			{
+				"x": 437,
+				"y": 10,
+				"pngRelease": "myHrelease.png",
+				"pngPress": "myHpressed.png",
+				"pngHighlight": "myHhigh.png" 
+			}			
+		}
+	}
+}

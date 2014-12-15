@@ -1,0 +1,6 @@
+{
+	"IconPADS":"BaseImage.png",
+	"IconPHRS":"BaseImage1.png",
+	"IconLabel":"Sample",
+	"ViewFrame":"PADS/buttonMap.json"
+}

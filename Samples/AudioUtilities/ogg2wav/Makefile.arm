@@ -1,0 +1,40 @@
+# source files.
+SRC = oggi2wav.cpp
+OBJ = $(SRC:.cpp=.o)
+OUT = oggi2wav
+
+# C++ compiler flags (-g -O2 -Wall)
+# ARM flags -O2 -mcpu=arm926ej-s -fsigned-char 
+CCFLAGS = -O4 -mcpu=arm926ej-s -fsigned-char -D_CPU_IS_ARM
+
+# compiler
+# x86: g++   ARM: arm-linux-gcc
+CCC = arm-linux-gcc
+
+# library paths
+LIBS     = -lsndfile -ldsputil -lvorbisidec -lm
+LIBS_O4  = -lsndfile -ldsputil -lvorbisidec_O4
+LIBS_ARM_ASSEM = -lsndfile -ldsputil -lvorbisidec_ARM_ASSEM
+LIBS_926 = -lsndfile -ldsputil -lvorbisidec_926
+LIBS_ALL = -lsndfile -ldsputil -lvorbisidec_ALL
+
+# compile flags
+LDFLAGS = -g
+
+.SUFFIXES: .cpp
+
+default: dep $(OUT)
+
+.cpp.o:
+	$(CCC) $(INCLUDES) $(CCFLAGS) -c $< -o $@
+
+$(OUT): $(OBJ)
+	$(CCC) -o $(OUT) $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS) 
+
+depend: dep
+
+dep:
+	makedepend -- $(CFLAGS) -- $(INCLUDES) $(SRC)
+
+clean:
+	rm -f $(OBJ) $(OUT) Makefile.bak 

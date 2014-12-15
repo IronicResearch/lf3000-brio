@@ -1,0 +1,8 @@
+{
+	"Title": "VTS",
+	"LargeIcon": "GAMS/GAMS/PopupIcon.png",
+	"Audio": "GAMS/GAMS/PopupAudio.mp3",
+	"IconGAMS":"GAMS/GAMS/BaseImage.png",
+	"IconPADS":"PADS/BaseImage.png",
+	"IconLabel":"Game"
+}

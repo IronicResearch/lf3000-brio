@@ -1,0 +1,47 @@
+#=============================================================================
+# LightningCore: Top level SConstruct file for the SCons build system
+#
+# Quick tour of SCons:
+#
+#                           crappily
+#   SCons is a build tool that replaces "make" functionality.
+#                             ^
+#   It executes as a Python script, which gives you the full power
+#   of the Python scripting language in defining build steps.
+#
+#=============================================================================
+
+
+import os
+import sys
+
+#Pick the lightning core that it is built against.
+#(not needed if the title doesn't use lightningCore)
+lightningcore_dir = os.path.join(os.path.pardir, 'LightningCore')
+sys.path.append(lightningcore_dir)
+import CoreTools.stdLightningEnv
+
+#pick the SDK folder that it is built against:
+cdevkit_dir = '/home/lfu/LightningSDK_2743'
+
+#TLD for the project.  This is used in constructing paths.
+tld = 'didjiBUG'
+
+if not os.path.isdir(cdevkit_dir):
+	print "WARNING:  Could not find cdevkit_dir:", cdevkit_dir
+	Exit(-1)
+
+verbose = ARGUMENTS.get('verbose', False)
+env, env_vars = CoreTools.stdLightningEnv.getEnv(
+			args = ARGUMENTS, 
+			tld = tld,                #pass in our 3LD
+			cdevkit_dir = cdevkit_dir, 
+			verbose_output = verbose)
+
+Export(['env_vars', 'env'])
+#run the scripts that do the actual work of building stuff:
+SConscript(['SConscript', 
+		'data/SConscript'])
+
+
+

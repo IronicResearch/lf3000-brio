@@ -1,0 +1,797 @@
+{
+	"ElementType": 3,
+	"ID": 0,
+	"Position": [160.000000, 120.000000],
+	"Animation":    [
+		{
+		"ElementType": 2,
+		"ID": 0,
+		"Duration": 996,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0,
+				"URL": "Art_cube_hilite0001.png",
+				"Position": [71.100000, -12.500000, 0.100000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 1,
+				"URL": "Art_sphere_hilite0001.png",
+				"Position": [70.050000, 66.000000, 0.099000],
+				"Reg": [27.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 2,
+				"URL": "Art_triangle_equ_hilite0001.png",
+				"Position": [-70.000000, -9.850000, 0.098000],
+				"Reg": [28.000000, 32.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 3,
+				"URL": "Art_square_hilite0001.png",
+				"Position": [-70.250000, 66.000000, 0.097000],
+				"Reg": [24.000000, 40.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 4,
+				"URL": "Art_divider.png",
+				"Position": [0.000000, 17.650000, 0.096000],
+				"Reg": [1.000000, 167.000000],
+				"Size": [2.000000, 256.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 5,
+				"URL": "Text_text_3d_small.png",
+				"Position": [10.000000, -50.000000, 0.095000],
+				"Reg": [0.000000, 16.000000],
+				"Size": [128.000000, 16.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 6,
+				"URL": "Text_text_2d_small.png",
+				"Position": [-133.000000, -50.000000, 0.094000],
+				"Reg": [0.000000, 16.000000],
+				"Size": [128.000000, 16.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 1,
+		"Duration": 6142,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_ShapesCnBEthrTwDmnsnl2DO_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 0
+				},
+				{
+				"ElementType": 0,
+				"ID": 1
+				},
+				{
+				"ElementType": 0,
+				"ID": 2
+				},
+				{
+				"ElementType": 0,
+				"ID": 3
+				},
+				{
+				"ElementType": 0,
+				"ID": 4
+				},
+				{
+				"ElementType": 0,
+				"ID": 5
+				},
+				{
+				"ElementType": 0,
+				"ID": 6
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 2,
+		"Duration": 666
+		},
+		{
+		"ElementType": 2,
+		"ID": 3,
+		"Duration": 498,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7,
+				"URL": "Text_text_2d.png",
+				"Position": [-3.000000, -50.000000, 0.100000],
+				"Reg": [75.000000, 16.000000],
+				"Size": [256.000000, 16.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 8,
+				"URL": "Art_triangle_equ_hilite0001.png",
+				"Position": [60.000000, 22.150000, 0.100000],
+				"Reg": [28.000000, 32.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 9,
+				"URL": "Art_square_hilite0001.png",
+				"Position": [-60.000000, 30.000000, 0.099000],
+				"Reg": [24.000000, 40.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 4,
+		"Duration": 3403,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_TwoDmnsnlShpsArFltShpsSc_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7
+				},
+				{
+				"ElementType": 0,
+				"ID": 8
+				},
+				{
+				"ElementType": 0,
+				"ID": 9
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 5,
+		"Duration": 747,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_Squares_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7
+				},
+				{
+				"ElementType": 0,
+				"ID": 8
+				},
+				{
+				"ElementType": 0,
+				"ID": 10,
+				"URL": "Art_square_hilite0003.png",
+				"Position": [-60.000000, 30.000000, 0.099000],
+				"Reg": [24.000000, 40.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 6,
+		"Duration": 332,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7
+				},
+				{
+				"ElementType": 0,
+				"ID": 8
+				},
+				{
+				"ElementType": 0,
+				"ID": 9
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 7,
+		"Duration": 249,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_OrTriangles_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7
+				},
+				{
+				"ElementType": 0,
+				"ID": 8
+				},
+				{
+				"ElementType": 0,
+				"ID": 9
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 8,
+		"Duration": 747,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7
+				},
+				{
+				"ElementType": 0,
+				"ID": 11,
+				"URL": "Art_triangle_equ_hilite0005.png",
+				"Position": [60.000000, 22.150000, 0.100000],
+				"Reg": [29.000000, 31.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 9
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 9,
+		"Duration": 498,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7
+				},
+				{
+				"ElementType": 0,
+				"ID": 8
+				},
+				{
+				"ElementType": 0,
+				"ID": 9
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 10,
+		"Duration": 1245,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_TheyHaveOnly_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7
+				},
+				{
+				"ElementType": 0,
+				"ID": 8
+				},
+				{
+				"ElementType": 0,
+				"ID": 9
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 11,
+		"Duration": 83,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_Length_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7
+				},
+				{
+				"ElementType": 0,
+				"ID": 8
+				},
+				{
+				"ElementType": 0,
+				"ID": 9
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 12,
+		"Duration": 830,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7
+				},
+				{
+				"ElementType": 0,
+				"ID": 12,
+				"URL": "Art_triangle_equ_hilite0011.png",
+				"Position": [60.000000, 22.150000, 0.100000],
+				"Reg": [31.000000, 29.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 13,
+				"URL": "Art_square_hilite0008.png",
+				"Position": [-60.000000, 30.000000, 0.099000],
+				"Reg": [28.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 13,
+		"Duration": 166,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_AndWidth_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7
+				},
+				{
+				"ElementType": 0,
+				"ID": 12
+				},
+				{
+				"ElementType": 0,
+				"ID": 13
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 14,
+		"Duration": 1494,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 7
+				},
+				{
+				"ElementType": 0,
+				"ID": 14,
+				"URL": "Art_triangle_equ_hilite0012.png",
+				"Position": [60.000000, 22.150000, 0.100000],
+				"Reg": [31.000000, 29.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 15,
+				"URL": "Art_square_hilite0009.png",
+				"Position": [-60.000000, 30.000000, 0.099000],
+				"Reg": [28.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 15,
+		"Duration": 666
+		},
+		{
+		"ElementType": 2,
+		"ID": 16,
+		"Duration": 498,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16,
+				"URL": "Text_text_3d.png",
+				"Position": [-1.000000, -50.000000, 0.100000],
+				"Reg": [85.000000, 16.000000],
+				"Size": [256.000000, 16.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 17,
+				"URL": "Art_sphere_hilite0001.png",
+				"Position": [60.050000, 30.000000, 0.100000],
+				"Reg": [27.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 18,
+				"URL": "Art_cube_hilite0001.png",
+				"Position": [-58.900000, 19.500000, 0.099000],
+				"Reg": [30.000000, 24.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 17,
+		"Duration": 3320,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_ThreeDmnsnlOr3DShpsSchAs_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 17
+				},
+				{
+				"ElementType": 0,
+				"ID": 18
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 18,
+		"Duration": 664,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_Cubes_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 17
+				},
+				{
+				"ElementType": 0,
+				"ID": 19,
+				"URL": "Art_cube_hilite0017.png",
+				"Position": [-58.900000, 19.500000, 0.099000],
+				"Reg": [31.000000, 23.000000],
+				"Size": [64.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 19,
+		"Duration": 249,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 17
+				},
+				{
+				"ElementType": 0,
+				"ID": 18
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 20,
+		"Duration": 332,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_AndSpheres_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 17
+				},
+				{
+				"ElementType": 0,
+				"ID": 18
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 21,
+		"Duration": 664,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 20,
+				"URL": "Art_sphere_hilite0003.png",
+				"Position": [60.050000, 30.000000, 0.100000],
+				"Reg": [28.000000, 36.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 18
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 22,
+		"Duration": 249,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 17
+				},
+				{
+				"ElementType": 0,
+				"ID": 18
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 23,
+		"Duration": 913,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_AreShapesThatHaveLength_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 17
+				},
+				{
+				"ElementType": 0,
+				"ID": 18
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 24,
+		"Duration": 830,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 21,
+				"URL": "Art_sphere_hilite0004.png",
+				"Position": [60.050000, 30.000000, 0.100000],
+				"Reg": [35.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 22,
+				"URL": "Art_cube_hilite0018.png",
+				"Position": [-58.900000, 19.500000, 0.099000],
+				"Reg": [37.000000, 24.000000],
+				"Size": [128.000000, 64.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 25,
+		"Duration": 83,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_Width_1"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 21
+				},
+				{
+				"ElementType": 0,
+				"ID": 22
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 26,
+		"Duration": 830,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 23,
+				"URL": "Art_sphere_hilite0005.png",
+				"Position": [60.050000, 30.000000, 0.100000],
+				"Reg": [35.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 24,
+				"URL": "Art_cube_hilite0019.png",
+				"Position": [-58.900000, 19.500000, 0.099000],
+				"Reg": [37.000000, 88.000000],
+				"Size": [128.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 27,
+		"Duration": 249,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_NA_AndDepth_3"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 23
+				},
+				{
+				"ElementType": 0,
+				"ID": 24
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 28,
+		"Duration": 1577,
+		"Operations": [
+				{
+				"Opcode": 5,
+				"Oparg": ["L_SX_TutEmphasis_6"]
+				}
+			],
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 25,
+				"URL": "Art_sphere_hilite0006.png",
+				"Position": [60.050000, 30.000000, 0.100000],
+				"Reg": [35.000000, 37.000000],
+				"Size": [64.000000, 64.000000]
+				},
+				{
+				"ElementType": 0,
+				"ID": 26,
+				"URL": "Art_cube_hilite0020.png",
+				"Position": [-58.900000, 19.500000, 0.099000],
+				"Reg": [37.000000, 88.000000],
+				"Size": [128.000000, 128.000000]
+				}
+			]
+		},
+		{
+		"ElementType": 2,
+		"ID": 29,
+		"Duration": 1079,
+			"Children": [
+				{
+				"ElementType": 0,
+				"ID": 16
+				},
+				{
+				"ElementType": 0,
+				"ID": 17
+				},
+				{
+				"ElementType": 0,
+				"ID": 18
+				}
+			]
+		}
+	]
+}

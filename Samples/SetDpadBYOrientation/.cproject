@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?>
+
+<cproject>
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="0.917320199">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="0.917320199" moduleId="org.eclipse.cdt.core.settings" name="embedded">
+				<externalSettings>
+					<externalSetting/>
+				</externalSettings>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="" artifactName="LEG" buildProperties="" description="Uses arm gcc toolchain" id="0.917320199" name="embedded" parent="org.eclipse.cdt.build.core.prefbase.cfg">
+					<folderInfo id="0.917320199." name="/" resourcePath="">
+						<toolChain id="org.eclipse.cdt.build.core.prefbase.toolchain.475525981" name="No ToolChain" resourceTypeBasedDiscovery="false" superClass="org.eclipse.cdt.build.core.prefbase.toolchain">
+							<targetPlatform id="org.eclipse.cdt.build.core.prefbase.toolchain.475525981.2037853622" name=""/>
+							<builder arguments="embedded verbose=t" autoBuildTarget="all" buildPath="${project_path}" cleanBuildTarget="-c" command="scons" enableAutoBuild="false" enableCleanBuild="true" enabledIncrementalBuild="true" id="org.eclipse.cdt.build.core.settings.default.builder.102304164" incrementalBuildTarget="" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" stopOnErr="false" superClass="org.eclipse.cdt.build.core.settings.default.builder"/>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.libs.1861622025" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.1839512659" name="Assembly" superClass="org.eclipse.cdt.build.core.settings.holder">
+								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.391597536" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath">
+									<listOptionValue builtIn="false" value="/home/lfu/nfsroot/usr/include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/Lightning2D/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningJSON/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_4530/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_4530/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningBase/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningUI/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_4530/Include/ThirdParty/ustring"/>
+								</option>
+								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.596009829" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths"/>
+								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.266086074" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+							</tool>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.1541214498" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
+								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.778516073" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths"/>
+								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.149010021" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths"/>
+								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1609395633" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+							</tool>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.1004910864" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
+								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.1216526323" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath">
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2986/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2948/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2948/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2986/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3011/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/Tutorials/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2681/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/nfsroot/usr/include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2881/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3011/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2597/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2992/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3011/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2981/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningBase/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2940/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3222/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2791/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2791/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3005/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/EnglishMathFactsTutorial/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2940/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2881/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2948/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2981/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2839/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2839/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningUI/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2681/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3222/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LEG/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningJSON/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/Tutorials/EnglishGeometryTutorial/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2597/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2981/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/Tutorials/Tutorials/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2986/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3005/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2681/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2614/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2839/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2923/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2992/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3005/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2923/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/Lightning2D/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2791/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2614/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningJSON/Src/PCAppLib"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2597/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2923/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2881/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2940/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2614/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3222/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2992/Include/OpenGL/Lightning"/>
+								</option>
+								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.712829751" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+		</cconfiguration>
+		<cconfiguration id="0.917320199.2109278749">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="0.917320199.2109278749" moduleId="org.eclipse.cdt.core.settings" name="emulation">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="LEG" buildProperties="" description="Uses gcc toolchain" id="0.917320199.2109278749" name="emulation" parent="org.eclipse.cdt.build.core.prefbase.cfg">
+					<folderInfo id="0.917320199.2109278749." name="/" resourcePath="">
+						<toolChain id="org.eclipse.cdt.build.core.prefbase.toolchain.653404770" name="No ToolChain" resourceTypeBasedDiscovery="false" superClass="org.eclipse.cdt.build.core.prefbase.toolchain">
+							<targetPlatform id="org.eclipse.cdt.build.core.prefbase.toolchain.653404770.1950032113" name=""/>
+							<builder arguments="emulation verbose=t" autoBuildTarget="all" buildPath="${project_path}" cleanBuildTarget="-c" command="scons" enableAutoBuild="false" enableCleanBuild="true" enabledIncrementalBuild="true" id="org.eclipse.cdt.build.core.settings.default.builder.103512994" incrementalBuildTarget="" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" stopOnErr="false" superClass="org.eclipse.cdt.build.core.settings.default.builder"/>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.libs.1534987032" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.67435612" name="Assembly" superClass="org.eclipse.cdt.build.core.settings.holder">
+								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1052264569" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+							</tool>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.1460581491" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
+								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.2053253917" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+							</tool>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.467200975" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
+								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1821505836" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+		</cconfiguration>
+		<cconfiguration id="0.917320199.1283452147">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="0.917320199.1283452147" moduleId="org.eclipse.cdt.core.settings" name="debug">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="" artifactName="LEG" buildProperties="" description="" id="0.917320199.1283452147" name="debug" parent="org.eclipse.cdt.build.core.prefbase.cfg">
+					<folderInfo id="0.917320199.1283452147." name="/" resourcePath="">
+						<toolChain id="org.eclipse.cdt.build.core.prefbase.toolchain.1155259558" name="No ToolChain" resourceTypeBasedDiscovery="false" superClass="org.eclipse.cdt.build.core.prefbase.toolchain">
+							<targetPlatform id="org.eclipse.cdt.build.core.prefbase.toolchain.1155259558.640248816" name=""/>
+							<builder arguments="debug verbose=t" autoBuildTarget="all" buildPath="${project_path}" cleanBuildTarget="-c" command="scons" enableAutoBuild="false" enableCleanBuild="true" enabledIncrementalBuild="true" id="org.eclipse.cdt.build.core.settings.default.builder.2069308046" incrementalBuildTarget="" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" stopOnErr="false" superClass="org.eclipse.cdt.build.core.settings.default.builder"/>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.libs.294110735" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.1449488862" name="Assembly" superClass="org.eclipse.cdt.build.core.settings.holder">
+								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.1346363775" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath">
+									<listOptionValue builtIn="false" value="/home/lfu/nfsroot/usr/include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/Lightning2D/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningJSON/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_4530/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_4530/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningBase/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningUI/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_4530/Include/ThirdParty/ustring"/>
+								</option>
+								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.261450377" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths"/>
+								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1279866212" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+							</tool>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.632099854" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
+								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.959204095" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath">
+									<listOptionValue builtIn="false" value="/home/lfu/nfsroot/usr/include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/Lightning2D/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningJSON/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_4530/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_4530/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningBase/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningUI/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_4530/Include/ThirdParty/ustring"/>
+								</option>
+								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.991492865" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/Tutorials/EnglishBaseTutorial/TutorialApp/Include"/>
+								</option>
+								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.705427740" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+							</tool>
+							<tool id="org.eclipse.cdt.build.core.settings.holder.229547972" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
+								<option id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths.1436752691" name="Undefined Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.undef.incpaths" valueType="undefIncludePath">
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2986/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2948/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2948/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2986/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3011/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/Tutorials/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2681/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/nfsroot/usr/include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2881/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3011/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2597/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2992/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3011/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2981/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningBase/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2940/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3222/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2791/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2791/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3005/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/EnglishMathFactsTutorial/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2940/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2881/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2948/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2981/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2839/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2839/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningUI/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2681/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3222/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LEG/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningJSON/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/Tutorials/EnglishGeometryTutorial/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2597/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2981/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/Tutorials/Tutorials/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2986/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3005/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2681/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2614/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2839/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2923/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2992/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3005/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2923/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/Lightning2D/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2791/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2614/Include/ThirdParty/ustring"/>
+									<listOptionValue builtIn="false" value="/home/lfu/workspace/LightningCore/LightningJSON/Src/PCAppLib"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2597/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2923/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2881/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2940/Include/OpenGL/Lightning"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2614/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_3222/Include"/>
+									<listOptionValue builtIn="false" value="/home/lfu/LightningSDK_2992/Include/OpenGL/Lightning"/>
+								</option>
+								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.929906610" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="LEG.null.1252095099" name="LEG"/>
+	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="debug"/>
+		<configuration configurationName="emulation">
+			<resource resourceType="PROJECT" workspacePath="/ESP"/>
+		</configuration>
+		<configuration configurationName="embedded">
+			<resource resourceType="PROJECT" workspacePath="/ESP"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
+		<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
+			<buildOutputProvider>
+				<openAction enabled="true" filePath=""/>
+				<parser enabled="true"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
+			<buildOutputProvider>
+				<openAction enabled="true" filePath=""/>
+				<parser enabled="true"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="makefileGenerator">
+				<runAction arguments="-f ${project_name}_scd.mk" command="make" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfile">
+			<buildOutputProvider>
+				<openAction enabled="false" filePath=""/>
+				<parser enabled="false"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP">
+			<buildOutputProvider>
+				<openAction enabled="false" filePath=""/>
+				<parser enabled="false"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.cpp" command="g++" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC">
+			<buildOutputProvider>
+				<openAction enabled="false" filePath=""/>
+				<parser enabled="false"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.c" command="gcc" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfile">
+			<buildOutputProvider>
+				<openAction enabled="false" filePath=""/>
+				<parser enabled="false"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileCPP">
+			<buildOutputProvider>
+				<openAction enabled="false" filePath=""/>
+				<parser enabled="false"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.cpp" command="g++" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileC">
+			<buildOutputProvider>
+				<openAction enabled="false" filePath=""/>
+				<parser enabled="false"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.c" command="gcc" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<scannerConfigBuildInfo instanceId="0.917320199.1283452147">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="0.917320199.2109278749">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
+			<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="makefileGenerator">
+					<runAction arguments="-f ${project_name}_scd.mk" command="make" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.cpp" command="g++" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.c" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileCPP">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.cpp" command="g++" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileC">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.c" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="0.917320199">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
+			<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="makefileGenerator">
+					<runAction arguments="-f ${project_name}_scd.mk" command="make" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.cpp" command="g++" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.c" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileCPP">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.cpp" command="g++" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileC">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.c" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+</cproject>

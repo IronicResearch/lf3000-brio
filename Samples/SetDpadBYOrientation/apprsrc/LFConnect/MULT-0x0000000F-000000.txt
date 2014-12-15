@@ -1,0 +1,15 @@
+SKU	12345-67890
+PackageID	MULT-0x0000000F-000000
+Type	Application
+Version	1.0.0.0
+MinVersion	1.0.0.0
+Locale	en_US
+Name	SetDpadByOrientation
+DisplayName	SetDpadByOrientation
+Category	Tool
+PreviewImage	0x0000000F.png
+Depends	GAMS-0x0000000F-DA0000,1.0.0.0;PADS-0x0000000F-DA0000,1.0.0.0
+Hidden	0
+Size	TBD
+PlatformsSupported	LST3;LPAD;GAM2;PAD2;PHR1;PAD3
+TargetPackageType	lf2

@@ -1,0 +1,15 @@
+MetaVersion="1.0"
+Device="LeapsterExplorer"
+Type="Application"
+ProductID=0x0000000F
+PackageID="MULT-0x0000000F-000000"
+Version="1.0.0.0"
+Locale="en-us"
+Name="SetDpadByOrientation"
+Publisher="LeapFrog Enterprises, Inc."
+Developer="LeapFrog Enterprises, Inc."
+PartNumber="123-45678"
+AppSo="App.so"
+Icon="GAMS/BaseImage.png"
+DeviceAccess=1
+Category="Other"

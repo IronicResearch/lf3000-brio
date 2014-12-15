@@ -1,0 +1,12 @@
+lf-vision-YUV-test
+
+Revision: 1.1
+Original Date: 5/29/2014
+
+This test is meant to test the virtual touch algorithm with a variety of
+hot spot types and trigger types.  It also does the camera frame redenring
+via the DisplayMPI viewfinder as opposed to using OpenGL.  In additon this
+application can be configured to turn off OpenGL rendering by changing the
+DRAW_HOTSPOTS defnition to:
+#define DRAW_HOTSPOTS 0
+

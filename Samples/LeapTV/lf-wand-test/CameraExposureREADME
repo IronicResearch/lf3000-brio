@@ -1,0 +1,33 @@
+CameraExposureREADME
+
+In order to use the wand (light tracking) in emulation you must install and
+use v4l2ucp, a control panel for video4linux cameras.  
+
+INSTALLATION
+From your Ubuntu command line, type:
+$ sudo apt-get install v4l2ucp
+
+This should download, unpack and install the appropriate libraries and 
+executables to use v4l2ucp.
+
+RUNNING
+Launch the app:
+$ v4l2ucp
+
+The app defaults to the camera on /dev/video0, you can open other cameras via
+File->Open, however, the VNVisionMPI library is expecting to use the camera
+located at /dev/video0 in emulation.
+
+ADJUST SETTINGS
+Follow these steps once the app is open and every time after you launch your
+wand tracking app:
+* change "Exposure, Auto" to "Manual Mode"
+* press the "Update" button next to the Exposure, Auto drop down menu
+* press the "Update button next the "Exposure (Absolute)" setting
+* adjust the "Exposure (Absolute)" slider by moving it up and then down to
+  the lowest possible value.  This is setting the exposure time to the shortest
+  duration possible
+
+You can leave the v4l2ucp app open during multiple runnings of your wand 
+tracking app, however each time you restart your wand tracking app you will
+need to follow the steps under ADJUST SETTINGS.

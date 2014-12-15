@@ -1,0 +1,15 @@
+SKU	
+PackageID	GAMS-0x00000020-DA0000
+Type	DeviceAsset
+Version	1.0.0.0
+MinVersion	1.0.0.0
+Locale	en_US
+Name	Buttons
+DisplayName	Buttons
+Category	
+PreviewImage	
+Depends	
+Hidden	1
+Size	TBD
+PlatformsSupported	LST3;GAM2
+TargetPackageType	lf2

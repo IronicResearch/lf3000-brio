@@ -1,0 +1,11 @@
+{
+	"Status": 1,
+	"ExitCyoOnMastery": false,
+	"CyoSpellingList": [
+		"hat",
+		"cat",
+		"rat",
+		"mat",
+		"bat"
+	]
+}

@@ -1,0 +1,65 @@
+{
+    "controllers" : {
+        "default" : {
+            "green" : {
+                "ymin" : 1,
+                "ymax" : 255,
+                "umin" : 184,
+                "umax" : 254,
+                "vmin" : 144,
+                "vmax" : 214
+            },
+            "red" : {
+                "ymin" : 1,
+                "ymax" : 255,
+                "umin" : 32,
+                "umax" : 102,
+                "vmin" : 56,
+                "vmax" : 126
+            },
+            "blue" : {
+                "ymin" : 1,
+                "ymax" : 255,
+                "umin" : 36,
+                "umax" : 106,
+                "vmin" : 178,
+                "vmax" : 248
+            },
+            "yellow" : {
+                "ymin" : 40,
+                "ymax" : 255,
+                "umin" : 8,
+                "umax" : 78,
+                "vmin" : 17,
+                "vmax" : 87
+            },
+            "cyan" : {
+                "ymin" : 1,
+                "ymax" : 255,
+                "umin" : 0,
+                "umax" : 70,
+                "vmin" : 173,
+                "vmax" : 243
+            },
+            "magenta" : {
+                "ymin" : 1,
+                "ymax" : 255,
+                "umin" : 37,
+                "umax" : 107,
+                "vmin" : 38,
+                "vmax" : 108
+            },
+            "off" : {
+                "ymin" : 0,
+                "ymax" : 0,
+                "umin" : 0,
+                "umax" : 0,
+                "vmin" : 0,
+                "vmax" : 0
+            }
+
+
+        }
+    }
+
+}

@@ -1,0 +1,35 @@
+#-----------------------------------------------------------------------------
+# Brio
+# Install Brio Samples
+#-----------------------------------------------------------------------------
+
+import os
+from Etc.Tools.SConsTools.Priv.CopyTree import *
+Import('env')
+
+targets = []
+
+if env['base_dir']:
+	samples = [
+		'lf-camera-test', 
+		'LeapTV/lf-vision-test',
+		'LeapTV/lf-vision-YUV-test',
+		'LeapTV/lf-wand-test', 
+		'LeapTV/lf-controller-test', 
+		'LeapTV/HotSpotTriggerTest',
+		'LeapTV/USBEventDemo',
+		'AudioListener',
+		'OpenGLMovingSprite',
+		'STUB',
+		'Video',
+		'BUTTONS',
+		'SetDpadBYOrientation',
+		'TUTDemo',
+		'Docs'
+	]
+	dest_dir = Dir(env['base_dir']).Dir('Samples')
+	for s in samples:
+		targets += CopyTree(env, s, dest_dir.Dir(s).abspath )
+		
+Return("targets")
+
