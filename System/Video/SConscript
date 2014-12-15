@@ -16,7 +16,7 @@ mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['AudioMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI', 
 					 'DebugMPI', 'ogg', 'theora', 
 					 'avformat', 'avcodec', 'avutil'] 
-if (env['platform'] == 'LF2000' or env['platform'] == 'LF3000') and env['cpu_bare']:
+if (env['platform'] == 'LF2000' or env['platform'] == 'LF3000'):
 	modlibs	+= ['gstreamer-0.10', 'glib-2.0', 'gobject-2.0', 'gstvideo-0.10']
 mpilibs		= ['ModuleMPI']
 						
@@ -25,7 +25,8 @@ mpilibs		= ['ModuleMPI']
 # sudo apt-get install libavcodec-dev
 # sudo apt-get install libavformat-dev
 # sudo apt-get install libavutil-dev
-# sudo apt-get install gstreamer-0.10-dev
+# sudo apt-get install libgstreamer0.10-dev
+# sudo apt-get install libgstreamer-plugins-base0.10-dev
 #-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
@@ -33,20 +34,15 @@ mpilibs		= ['ModuleMPI']
 #-----------------------------------------------------------------------------
 myenv		= env.Clone()
 myenv.Append(CPPFLAGS = ['-Wno-deprecated-declarations'])
+myenv.Append(CPPFLAGS = ['-Wno-error=format'])
 myenv.Append(CPPPATH = ['#System/Display/Include'])
 
-nfsroot		= os.getenv('OECORE_TARGET_SYSROOT')
-if nfsroot == None:
-	nfsroot = env['staging_dir'].abspath
-if env['cpu'] == 'x86':
-	nfsroot = '/'
-myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'glib-2.0')])
-myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'gstreamer-0.10')])
-myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'libxml2')])
-myenv.Append(LIBPATH = [os.path.join(nfsroot, 'usr', 'lib')])
-if (env['platform'] == 'LF2000' or env['platform'] == 'LF3000') and env['cpu_bare']:
+if (env['platform'] == 'LF2000' or env['platform'] == 'LF3000'):
 	myenv.Append(CPPDEFINES = ['USE_GSTREAMER=1'])
 	myenv.Append(CPPDEFINES = ['HAVE_CONFIG_H', 'G_THREADS_MANDATORY', 'G_DISABLE_CAST_CHECKS', 'G_DISABLE_ASSERT'])
+	myenv.Append(CPPPATH = [env['staging_dir'].Dir('usr').Dir('include').Dir('glib-2.0')])
+	myenv.Append(CPPPATH = [env['staging_dir'].Dir('usr').Dir('include').Dir('gstreamer-0.10')])
+	myenv.Append(CPPPATH = [env['staging_dir'].Dir('usr').Dir('include').Dir('libxml2')])
 
 myenv.Append(CPPPATH = [env['staging_dir'].Dir('usr').Dir('include')])
 myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
