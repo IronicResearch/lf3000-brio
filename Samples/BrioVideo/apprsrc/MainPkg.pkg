@@ -1,8 +1,0 @@
-# Fields are: uriBasePath, uriNode, srcFile, type/packingInstruction(optional), version(optional)
-# Only the 3rd and 4th fields are supported now.
-# The resource type is normally determined by the file extension--use the
-# type field to set OggVorbis compression level, or OggVorbis extraction.
-# CAUTION: This is Linux and filenames ARE case-sensitive!
-
-,,Theora10Vorbis0_mono16kHz.ogg
-,,Theora10Vorbis0_mono16kHz.ogg,AVOG_0_16000

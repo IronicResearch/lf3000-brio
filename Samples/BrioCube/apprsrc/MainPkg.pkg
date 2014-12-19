@@ -1,9 +1,0 @@
-# Fields are: uriBasePath, uriNode, srcFile, type/packingInstruction(optional), version(optional)
-# Only the 3rd and 4th fields are supported now.
-# The resource type is normally determined by the file extension--use the
-# type field to set OggVorbis compression level
-# CAUTION: This is Linux and filenames ARE case-sensitive
-
-,,BlueNile44m.wav,AOGG_0_16000
-,,SINE44.wav,AOGG_0_16000
-,,DidjPropBold.ttf

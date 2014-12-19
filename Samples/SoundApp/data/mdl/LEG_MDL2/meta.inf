@@ -1,9 +1,0 @@
-Device="Didj"
-Type="MicroDownload"
-Name="LEG MDL 2"
-Publisher="LeapFrog, Inc."
-Developer="LeapFrog, Inc."
-ProductID=0x00040044
-PartNumber="pong152-2343"
-Version="015"
-ProfileAccess=0,1,2,3

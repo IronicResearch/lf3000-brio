@@ -1,4 +1,0 @@
-# Fields are: uriBasePath, uriNode, srcFile, type/packingInstruction(optional), version(optional)
-# Only the 3rd and 4th fields are supported now.
-,,DidjPropBold.ttf
-
