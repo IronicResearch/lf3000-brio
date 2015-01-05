@@ -280,6 +280,18 @@ Boolean CNXPCameraModule::InitCameraInt(const tCaptureMode* mode, bool reinit)
 	overlay_ = false;
 	streaming_ = false;
 
+	// Pre-allocate ION memory buffers for max capture size
+	for (int i = 0; i < maxcnt_; i++)
+	{
+		// Use ION memory for V4L buffers
+		nxpmbuf_[i] = NX_AllocateMemory(4096 * UXGA.height, 64);
+		nxpvbuf_[i] = new NX_VID_MEMORY_INFO;
+		if (nxpmbuf_[i] == NULL) {
+			maxcnt_ = i;
+			break;
+		}
+	}
+
 	return true;
 }
 
@@ -327,19 +339,25 @@ Boolean CNXPCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
     NX_VID_MEMORY_INFO    *vm;
 	NX_MEMORY_INFO    	  *mi;
 
-	DeinitCameraBufferInt(pCamCtx);
+//	DeinitCameraBufferInt(pCamCtx);
 
 	v4l2_reqbuf(nxphndl_, clipper_, maxcnt_);
 	v4l2_reqbuf(nxphndl_, nxp_v4l2_mlc0_video, maxcnt_);
 
 	for (int i = 0; i < maxcnt_; i++)
 	{
+#if 0
 		// Use ION memory for V4L buffers
 	//	nxpvbuf_[i] = vm = NX_VideoAllocateMemory(64, 4096, camCtx_.mode.height, NX_MEM_MAP_TILED, FOURCC_MVS0);
 		nxpmbuf_[i] = mi = NX_AllocateMemory(4096 * camCtx_.mode.height, 64);
 		nxpvbuf_[i] = vm = new NX_VID_MEMORY_INFO;
 		if (nxpmbuf_[i] == NULL)
 			continue;
+#else
+		mi = (NX_MEMORY_INFO*)nxpmbuf_[i];
+		vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[i];
+#endif
+
 	//	PackVidBuf(vb, vm);
 		PackVidBuf(vb, mi);
 		PackVidBuf(vm, mi, camCtx_.mode.width, camCtx_.mode.height);
@@ -370,6 +388,7 @@ Boolean CNXPCameraModule::DeinitCameraBufferInt(tCameraContext *pCamCtx)
 		nxpvbuf_[i] = NULL;
 		nxpmbuf_[i] = NULL;
 	}
+
 	return true;
 }
 //----------------------------------------------------------------------------
@@ -581,7 +600,7 @@ Boolean CNXPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 
 	DeInitCameraTask(&camCtx_);
 	StopVideoCaptureInt(camCtx_.fd);
-	DeinitCameraBufferInt(&camCtx_);
+//	DeinitCameraBufferInt(&camCtx_);
 
 	camCtx_.hndl = kInvalidVidCapHndl;
 	
