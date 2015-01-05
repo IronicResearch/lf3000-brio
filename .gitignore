@@ -1,2 +1,4 @@
 System/Temp
 Build
+*.orig
+tmp
