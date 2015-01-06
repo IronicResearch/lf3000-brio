@@ -2,3 +2,7 @@ System/Temp
 Build
 *.orig
 tmp
+*.pyc
+Etc/Tools/lf-input-daemon/lf-input-daemon
+*.o
+.sconsign.dblite
