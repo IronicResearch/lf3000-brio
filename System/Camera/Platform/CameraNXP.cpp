@@ -320,6 +320,14 @@ Boolean CNXPCameraModule::DeinitCameraInt(bool reinit)
 	StopVideoCapture(camCtx_.hndl);
 	DeinitCameraBufferInt(&camCtx_);
 
+	for (int i = maxcnt_-1; i >= 0; i--)
+	{
+		NX_FreeMemory((NX_MEMORY_HANDLE)nxpmbuf_[i]);
+		delete (NX_VID_MEMORY_HANDLE)nxpvbuf_[i];
+		nxpvbuf_[i] = NULL;
+		nxpmbuf_[i] = NULL;
+	}
+
 	v4l2_unlink(nxphndl_, clipper_, nxp_v4l2_mlc0_video);
 	v4l2_unlink(nxphndl_, sensor_, clipper_);
 
@@ -347,12 +355,10 @@ Boolean CNXPCameraModule::InitCameraBufferInt(tCameraContext *pCamCtx)
 		mi = (NX_MEMORY_INFO*)nxpmbuf_[i];
 		vm = (NX_VID_MEMORY_INFO*)nxpvbuf_[i];
 
-	//	PackVidBuf(vb, vm);
 		PackVidBuf(vb, mi);
 		PackVidBuf(vm, mi, camCtx_.mode.width, camCtx_.mode.height);
 
 		v4l2_qbuf(nxphndl_, clipper_, vb.plane_num, i, &vb, -1, NULL);
-	//	v4l2_qbuf(nxphndl_, nxp_v4l2_mlc0_video, vb.plane_num, i, &vb, -1, NULL);
 	}
 
 	index_ = 0;
@@ -368,15 +374,6 @@ Boolean CNXPCameraModule::DeinitCameraBufferInt(tCameraContext *pCamCtx)
 
 	if (streaming_)
 		StopVideoCaptureInt(camCtx_.fd);
-
-	for (int i = maxcnt_-1; i >= 0; i--)
-	{
-	//	NX_FreeVideoMemory((NX_VID_MEMORY_HANDLE)nxpvbuf_[i]);
-		NX_FreeMemory((NX_MEMORY_HANDLE)nxpmbuf_[i]);
-		delete (NX_VID_MEMORY_HANDLE)nxpvbuf_[i];
-		nxpvbuf_[i] = NULL;
-		nxpmbuf_[i] = NULL;
-	}
 
 	return true;
 }
