@@ -518,6 +518,7 @@ Boolean CNXPCameraModule::InitCameraStartInt(tCameraContext *pCamCtx)
 		overlay_ = true;
 	}
 	streaming_ = true;
+	pCamCtx->bVPaused = pCamCtx->bPaused = false;
 	return true;
 }
 //----------------------------------------------------------------------------
