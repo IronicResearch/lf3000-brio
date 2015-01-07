@@ -3289,11 +3289,11 @@ tVideoSurf* 	CCameraModule::GetCaptureVideoSurface(const tVidCapHndl hndl)
 {
   if (camCtx_.frame) {
     static tVideoSurf surf; // FIXME
-    surf.format = kPixelFormatYUYV422; 
+    surf.format = (camCtx_.frame->pixelformat == kCaptureFormatYUV420) ? kPixelFormatYUV420 : kPixelFormatYUYV422;
     surf.width  = camCtx_.frame->width;
     surf.height = camCtx_.frame->height;
     surf.buffer = (U8*)camCtx_.frame->data;
-    surf.pitch  = (surf.height > 0) ? camCtx_.frame->size / surf.height : 0;
+    surf.pitch  = (camCtx_.frame->pixelformat == kCaptureFormatYUV420) ? 4096 : (surf.height > 0) ? camCtx_.frame->size / surf.height : 0;
     return &surf;
   }
   return NULL;
