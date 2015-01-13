@@ -36,6 +36,8 @@ inline U32 GetFrameCount()
 {
 	unsigned int framecount = 0;
 	FILE* fp = fopen("/sys/devices/platform/vip.0/frame_count", "r");
+	if (!fp)
+		fp = fopen("/sys/devices/platform/nxp-v4l2.0/clipper_count", "r");
 	if (fp) {
 		fscanf(fp, "%u", &framecount);
 		fclose(fp);
@@ -212,7 +214,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testBrightness()
+	void XXXXtestBrightness()
 	{
 		PRINT_TEST_NAME();
 
@@ -303,7 +305,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testAutoWhiteBalance()
+	void XXXXtestAutoWhiteBalance()
 	{
 		PRINT_TEST_NAME();
 
