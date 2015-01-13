@@ -214,7 +214,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void XXXXtestBrightness()
+	void testBrightness()
 	{
 		PRINT_TEST_NAME();
 
@@ -305,7 +305,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void XXXXtestAutoWhiteBalance()
+	void testAutoWhiteBalance()
 	{
 		PRINT_TEST_NAME();
 
