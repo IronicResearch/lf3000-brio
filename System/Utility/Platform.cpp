@@ -161,6 +161,8 @@ bool HasPlatformCapability(tPlatformCaps caps)
 		return ("GLASGOW" == GetPlatformFamily());
 	case kCapsVision:
 		return ("GLASGOW" == GetPlatformFamily());
+	case kCapsMultiProfile:
+		return ("GLASGOW" == GetPlatformFamily());
 	case kCapsButtonMask(kButtonUp):
 	case kCapsButtonMask(kButtonDown):
 	case kCapsButtonMask(kButtonRight):
