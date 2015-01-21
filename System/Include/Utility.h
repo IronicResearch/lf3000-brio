@@ -242,6 +242,7 @@ enum tPlatformCaps {
 	kCapsAnalogStick,				///< Has Analog controller device?
 	kCapsGamePadController, 		///< Has one or more hand-held gaming controllers
 	kCapsVision,					///< Has a vision based controller system
+	kCapsMultiProfile,				///< Has multiprofile capability, supports more than 3 profiles
 	kCapsReserved1 = 0x10000000,
 	kCapsReserved2 = 0x20000000,
 	kCapsButtonSet = 0x40000000,	///< Has Button in kCapsButtonMask() set?
