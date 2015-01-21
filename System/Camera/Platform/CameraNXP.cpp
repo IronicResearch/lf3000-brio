@@ -732,8 +732,14 @@ Boolean	CNXPCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *
 
 	if (overlay_ && outcnt_ >= maxcnt_) {
 		int index = 0;
-		v4l2_dqbuf(nxphndl_, nxp_v4l2_mlc0_video, 3, &index, NULL);
-		outcnt_--;
+		int flags = 0;
+		for (index = 0; index < maxcnt_; index++) {
+			int r = v4l2_query_buf(nxphndl_, nxp_v4l2_mlc0_video, 3, index, &flags);
+			if (r == 0 && (flags & V4L2_BUF_FLAG_DONE)) {
+				v4l2_dqbuf(nxphndl_, nxp_v4l2_mlc0_video, 3, &index, NULL);
+				outcnt_--;
+			}
+		}
 	}
 
 	kernel_.UnlockMutex(mutex_);
