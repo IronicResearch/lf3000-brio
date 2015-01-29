@@ -42,6 +42,7 @@ public:
 	Boolean 		SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop);
 	Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay);
 	S64 			GetVideoLength(tVideoHndl hVideo);
+	bool 			GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame);
 };
 
 LF_END_BRIO_NAMESPACE()	

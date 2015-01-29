@@ -82,10 +82,20 @@ Boolean CVPUPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean 
 	return CAVIPlayer::SeekVideoFrame(hVideo, pCtx, bExact, bUpdateVideoDisplay);
 }
 
+//----------------------------------------------------------------------------
 S64 CVPUPlayer::GetVideoLength(tVideoHndl hVideo)
 {
 	return CAVIPlayer::GetVideoLength(hVideo);
 }
+
+//----------------------------------------------------------------------------
+bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame)
+{
+	// TODO: The *main* method which needs to be overridden from LibAV calls to VPU calls
+	return CAVIPlayer::GetNextFrame(pFormatCtx, pCodecCtx, iVideoStream, pFrame);
+}
+
+//----------------------------------------------------------------------------
 
 LF_END_BRIO_NAMESPACE()	
 

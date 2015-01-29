@@ -62,7 +62,7 @@ namespace
 //==============================================================================
 // Local Functions
 //==============================================================================
-bool GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, 
+bool CAVIPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
     int iVideoStream, AVFrame *pFrame)
 {
     static AVPacket packet;
