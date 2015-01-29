@@ -27,11 +27,13 @@ LF_BEGIN_BRIO_NAMESPACE()
 CVPUPlayer::CVPUPlayer()
 	: CAVIPlayer()
 {
+	dbg_.DebugOut(kDbgLvlCritical, "%s\n", __FUNCTION__);
 }
 
 //----------------------------------------------------------------------------
 CVPUPlayer::~CVPUPlayer()
 {
+	dbg_.DebugOut(kDbgLvlCritical, "%s\n", __FUNCTION__);
 }
 
 //----------------------------------------------------------------------------

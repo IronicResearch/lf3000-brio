@@ -34,7 +34,7 @@
 #include <VideoPlayer.h>
 #include <TheoraPlayer.h>
 #include <AVIPlayer.h>
-
+#include <VPUPlayer.h>
 #if USE_GSTREAMER
 #include <GStreamerPlayer.h>
 #endif
@@ -295,6 +295,12 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, const CPath& pathAudio
 			goto Success;
 	}
 #endif
+
+	// Create VPU video player
+	if (!pVidCtx->pPlayer) {
+		CVPUPlayer*     pPlayer = new CVPUPlayer();
+		pVidCtx->pPlayer = pPlayer;
+	}
 
 	// Create Theora video player
 	if (!pVidCtx->pPlayer && strcmp(flags, "theora") == 0 && filepath.rfind(".ogg") != std::string::npos) {
