@@ -24,9 +24,10 @@
 #include <pthread.h>
 
 #include <nx_alloc_mem.h>
-#include <nxp-v4l2-media.h>
 
 #define	DISPLAY_MAX_BUF_SIZE	2
+
+//#define	DISABLE_PORT_CONFIG
 
 enum {
 	DISPLAY_PORT_LCD	= 0x00,
@@ -38,51 +39,49 @@ enum {
 	DISPLAY_MODULE_MLC1			= 0x01,
 };
 
-typedef struct DISPLAY_INFO			DISPLAY_INFO;
-typedef struct DISPLAY_HANDLE_INFO	DISPLAY_HANDLE_INFO, *DISPLAY_HANDLE;
+typedef struct DSP_IMG_RECT {
+	int32_t		left;
+	int32_t		top;
+	int32_t		right;
+	int32_t		bottom;
+} DSP_IMG_RECT;
 
-struct DISPLAY_INFO {
-	int32_t		port;		// port
-	int32_t		module;		// module
+typedef struct DISPLAY_INFO {
+	int32_t			port;		// port ( DISPLAY_PORT_LCD or DISPLAY_PORT_HDMI )
+	int32_t			module;		// module ( DISPLAY_MODULE_MLC0 or DISPLAY_MODULE_MLC1 )
 
-	int32_t		width;		// width
-	int32_t		height;		// height
+	int32_t			width;		// source width
+	int32_t			height;		// source height
+	int32_t			stride;		// source image's strid
+	int32_t			fourcc;		// source image's format fourcc
+	int32_t			numPlane;	// source image's plane number
 
-	int32_t		left;		// left
-	int32_t		top;		// top
-	int32_t		right;		// right
-	int32_t		bottom;		// bottom
-};
+	DSP_IMG_RECT 	dspSrcRect;	// source image's crop region
+	DSP_IMG_RECT	dspDstRect;	// target display rect
+} DISPLAY_INFO;
 
-struct DISPLAY_HANDLE_INFO {
-	V4L2_PRIVATE_HANDLE	hPrivate;
-
-	//  Setting values
-	DISPLAY_INFO		displayInfo;
-	int32_t				mlcId;
-	int32_t				hdmiId;
-	
-	//  Buffer Control Informations
-	NX_VID_MEMORY_INFO	*videoBuf[DISPLAY_MAX_BUF_SIZE];
-	int32_t				numPlane;			// video memory plane
-	int32_t				numberV4L2ReqBuf;	// vidoe buffer size
-	int32_t				lastQueueIdx;
-
-	bool				streamOnFlag;		// on/off flag
-	pthread_mutex_t		hMutex;
-};
+typedef struct DISPLAY_HANDLE_INFO	*DISPLAY_HANDLE;
 
 #ifdef __cplusplus
 extern "C"{
 #endif
 
-DISPLAY_HANDLE	NX_DspInit			( DISPLAY_INFO *pDspInfo );
-void			NX_DspClose			( DISPLAY_HANDLE hDisplay );
-int32_t			NX_DspStreamControl	( DISPLAY_HANDLE hDisplay, bool enable );	
+DISPLAY_HANDLE	NX_DspInit					( DISPLAY_INFO *pDspInfo );
+void			NX_DspClose					( DISPLAY_HANDLE hDisplay );
+int32_t			NX_DspStreamControl			( DISPLAY_HANDLE hDisplay, int32_t bEnable );	
 
-int32_t			NX_DspQueueBuffer	( DISPLAY_HANDLE hDisplay, NX_VID_MEMORY_INFO *pVidBuf );
-int32_t			NX_DspDequeueBuffer	( DISPLAY_HANDLE hDisplay );
+int32_t			NX_DspQueueBuffer			( DISPLAY_HANDLE hDisplay, NX_VID_MEMORY_INFO *pVidBuf );
+int32_t			NX_DspDequeueBuffer			( DISPLAY_HANDLE hDisplay );
 
+int32_t			NX_DspVideoSetSourceFormat 	( DISPLAY_HANDLE hDisplay, int32_t width, int32_t height, int32_t stride, int32_t fourcc );
+int32_t			NX_DspVideoSetSourceCrop	( DISPLAY_HANDLE hDisplay, DSP_IMG_RECT *pRect );
+int32_t 		NX_DspVideoSetPosition		( DISPLAY_HANDLE hDisplay, DSP_IMG_RECT *pRect );
+
+int32_t			NX_DspVideoSetPriority		( int32_t module, int32_t priority );
+int32_t			NX_DspVideoGetPriority		( int32_t module, int32_t *priority );
+
+int32_t			NX_DspSetColorKey			( int32_t module, int32_t colorkey );
+int32_t			NX_DspGetColorKey			( int32_t module, int32_t *colorkey );
 #ifdef __cplusplus
 }
 #endif
