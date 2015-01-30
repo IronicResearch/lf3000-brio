@@ -17,6 +17,10 @@
 #include <VideoPriv.h>
 #include <VPUPlayer.h>
 
+#include <nx_alloc_mem.h>
+#include <nx_video_api.h>
+#include <nx_fourcc.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -39,12 +43,20 @@ CVPUPlayer::~CVPUPlayer()
 //----------------------------------------------------------------------------
 Boolean	CVPUPlayer::InitVideo(tVideoHndl hVideo)
 {
+//	hDec = NX_VidDecOpen( NX_VPX_THEORA, MAKEFOURCC('T', 'H', 'E', 'O'), 0, NULL );
+	hDec = NX_VidDecOpen( NX_AVC_DEC, MAKEFOURCC('H', '2', '6', '4'), 0, NULL );
+	dbg_.DebugOut(kDbgLvlCritical, "%s: NX_VidDecOpen returned %p\n", __FUNCTION__, hDec);
+	if (hDec == NULL)
+		return false;
+
 	return CAVIPlayer::InitVideo(hVideo);
 }
 
 //----------------------------------------------------------------------------
 Boolean	CVPUPlayer::DeInitVideo(tVideoHndl hVideo)
 {
+	NX_VidDecClose(hDec);
+
 	return CAVIPlayer::DeInitVideo(hVideo);
 }
 
