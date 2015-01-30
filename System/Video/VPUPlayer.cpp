@@ -105,8 +105,42 @@ S64 CVPUPlayer::GetVideoLength(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame)
 {
+#if 0
 	// TODO: The *main* method which needs to be overridden from LibAV calls to VPU calls
 	return CAVIPlayer::GetNextFrame(pFormatCtx, pCodecCtx, iVideoStream, pFrame);
+#else
+	int ret;
+	int done = 0;
+	AVPacket pkt;
+
+	do {
+
+		do {
+			ret = av_read_frame(pFormatCtx, &pkt);
+			if (ret < 0)
+				break;
+
+			if (pkt.stream_index == iVideoStream)
+				; // parse packet for VPU codec...
+			else
+				av_free_packet(&pkt);
+		} while (pkt.stream_index != iVideoStream);
+
+		while (pkt.size > 0) {
+			ret = avcodec_decode_video2(pCodecCtx, pFrame, &done, &pkt);
+			if (ret < 0 || done)
+				break;
+
+			pkt.data += ret;
+			pkt.size -= ret;
+		}
+
+		av_free_packet(&pkt);
+
+	} while (!done && !(ret < 0));
+
+	return (done != 0);
+#endif
 }
 
 //----------------------------------------------------------------------------
