@@ -3,6 +3,7 @@
 #include <CameraPriv.h>
 #include <DisplayPriv.h>
 #include <DisplayMPI.h>
+#include <Utility.h>
 
 #if !defined(EMULATION) //&& defined(LF2000)
 #include <fcntl.h>
@@ -400,6 +401,12 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 
 		if (hndl == kInvalidVidCapHndl)
 			hndl = kStreamingActive;
+
+		// RIO VIP driver handled viewfinder visibility
+		if (GetPlatformName() != "RIO") {
+			CDisplayMPI display;
+			display.Invalidate(0);
+		}
 	}
 
 out:
