@@ -111,10 +111,13 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 #else
 	int ret;
 	int done = 0;
-	AVPacket pkt;
+	AVPacket pkt, pkt2;
+
+	av_init_packet(&pkt);
 
 	do {
 
+		// read packet for next frame
 		do {
 			ret = av_read_frame(pFormatCtx, &pkt);
 			if (ret < 0)
@@ -126,13 +129,15 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 				av_free_packet(&pkt);
 		} while (pkt.stream_index != iVideoStream);
 
-		while (pkt.size > 0) {
-			ret = avcodec_decode_video2(pCodecCtx, pFrame, &done, &pkt);
+		// decode packet working copy, for more than one pass per frame
+		pkt2 = pkt;
+		while (pkt2.size > 0) {
+			ret = avcodec_decode_video2(pCodecCtx, pFrame, &done, &pkt2);
 			if (ret < 0 || done)
 				break;
 
-			pkt.data += ret;
-			pkt.size -= ret;
+			pkt2.data += ret;
+			pkt2.size -= ret;
 		}
 
 		av_free_packet(&pkt);

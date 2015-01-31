@@ -57,7 +57,7 @@ public:
 	S64 			GetVideoLength(tVideoHndl hVideo);
 
 protected:
-	bool 			GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame);
+	virtual bool 	GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame);
 	
 protected:
 	AVFormatContext*	pFormatCtx;			// container context
