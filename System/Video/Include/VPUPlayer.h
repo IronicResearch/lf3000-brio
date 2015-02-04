@@ -48,6 +48,11 @@ public:
 
 private:
 	NX_VID_DEC_HANDLE 	hDec;
+	NX_VID_SEQ_IN 		seqIn;
+	NX_VID_SEQ_OUT 		seqOut;
+	NX_VID_DEC_IN 		decIn;
+	NX_VID_DEC_OUT 		decOut;
+	unsigned char*		pStreamBuffer;
 };
 
 LF_END_BRIO_NAMESPACE()	

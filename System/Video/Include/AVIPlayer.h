@@ -25,6 +25,14 @@
 # endif
 #endif
 
+#ifndef INT64_C
+# if __WORDSIZE == 64
+# define INT64_C(c) c ## L
+# else
+# define INT64_C(c) c ## LL
+# endif
+#endif
+
 extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
