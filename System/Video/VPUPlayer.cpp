@@ -278,6 +278,7 @@ CVPUPlayer::~CVPUPlayer()
 	dbg_.DebugOut(kDbgLvlCritical, "%s\n", __FUNCTION__);
 }
 
+int frameSize = 0; // FIXME
 //----------------------------------------------------------------------------
 Boolean	CVPUPlayer::InitVideo(tVideoHndl hVideo)
 {
@@ -306,10 +307,11 @@ Boolean	CVPUPlayer::InitVideo(tVideoHndl hVideo)
 	NX_AVCC_TYPE avcc; // FIXME
 	VID_ERROR_E vidret;
 
+	memset(&avcc, 0, sizeof(avcc));
 	seqSize = GetSequenceHeader( pFormatCtx, pStream, &avcc, seqData, sizeof(seqData) );
 	if ( seqSize > 0 )
 		memcpy( pStreamBuffer, seqData, seqSize );
-
+	frameSize = avcc.nal_length_size; // FIXME
 
 	if ( 0 != ReadStream( pFormatCtx, pStream, &avcc, pStreamBuffer+seqSize, &readSize, &isKey, &timeStamp ) ) {
 		dbg_.DebugOut(kDbgLvlCritical, "%s: ReadStream failed\n", __FUNCTION__);
@@ -351,7 +353,49 @@ Boolean CVPUPlayer::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 //----------------------------------------------------------------------------
 Boolean CVPUPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
+#if 0
 	return CAVIPlayer::PutVideoFrame(hVideo, pCtx);
+#else
+	tVideoSurf* surf = pCtx;
+	NX_VID_MEMORY_INFO src = decOut.outImg;
+
+	if (!surf)
+		return false;
+
+	if (decOut.outImgIdx == -1)
+		return false;
+
+	if (surf && surf->buffer)
+	{
+		U8* 		sy = (U8*)src.luVirAddr;
+		U8*			su = (U8*)src.cbVirAddr;
+		U8*			sv = (U8*)src.crVirAddr;
+		U8*			dy = surf->buffer; // + (y * surf->pitch) + (x * 2);
+		U8*			du = dy + surf->pitch/2; // U,V in double-width buffer
+		U8*			dv = du + surf->pitch * (surf->height/2);
+		if (sy && su && sv)
+		{
+			int width = src.imgWidth;
+			for (int i = 0; i < src.imgHeight; i++)
+			{
+				memcpy(dy, sy, width);
+				sy += src.luStride;
+				dy += surf->pitch;
+				if (i % 2)
+				{
+					memcpy(du, su, width/2);
+					memcpy(dv, sv, width/2);
+					su += src.cbStride;
+					sv += src.crStride;
+					du += surf->pitch;
+					dv += surf->pitch;
+				}
+			}
+		}
+	}
+
+	return true;
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -390,7 +434,7 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 #if 0
 	// TODO: The *main* method which needs to be overridden from LibAV calls to VPU calls
 	return CAVIPlayer::GetNextFrame(pFormatCtx, pCodecCtx, iVideoStream, pFrame);
-#else
+#elif 0
 	int ret;
 	int done = 0;
 	AVPacket pkt, pkt2;
@@ -427,6 +471,37 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 	} while (!done && !(ret < 0));
 
 	return (done != 0);
+#else
+	int ret;
+	int readSize, isKey;
+	long long timeStamp;
+	NX_AVCC_TYPE avcc; // FIXME
+	VID_ERROR_E vidret;
+	AVStream* pStream = pFormatCtx->streams[iVideoStream];
+
+	memset(&avcc, 0, sizeof(avcc));
+	avcc.nal_length_size = frameSize; // FIXME
+
+	do {
+		ret = ReadStream( pFormatCtx, pStream, &avcc, pStreamBuffer, &readSize, &isKey, &timeStamp );
+		if (ret < 0) {
+			dbg_.DebugOut(kDbgLvlCritical, "%s: ReadStream failed, error = %d\n", __FUNCTION__, ret);
+			return false;
+		}
+
+		memset(&decIn, 0, sizeof(decIn));
+		decIn.strmBuf = pStreamBuffer;
+		decIn.strmSize = readSize;
+		decIn.timeStamp = timeStamp;
+		decIn.eos = 0;
+		vidret = NX_VidDecDecodeFrame( hDec, &decIn, &decOut );
+		if (vidret < VID_ERR_NONE) {
+			dbg_.DebugOut(kDbgLvlCritical, "%s: NX_VidDecDecodeFrame failed, error = %d\n", __FUNCTION__, (int)vidret);
+			return false;
+		}
+	} while (vidret == VID_NEED_STREAM);
+
+	return (vidret == VID_ERR_NONE);
 #endif
 }
 
