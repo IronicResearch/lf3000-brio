@@ -53,6 +53,7 @@ private:
 	NX_VID_DEC_IN 		decIn;
 	NX_VID_DEC_OUT 		decOut;
 	unsigned char*		pStreamBuffer;
+	int           		reqSize;
 };
 
 LF_END_BRIO_NAMESPACE()	

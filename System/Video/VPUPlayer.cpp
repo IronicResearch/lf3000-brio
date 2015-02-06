@@ -225,7 +225,7 @@ namespace
 	}
 
 	//----------------------------------------------------------------------------
-	int ReadStream( AVFormatContext *format, AVStream *stream, NX_AVCC_TYPE *avcc, unsigned char *buffer, int *size, int *isKey, long long *timeStamp )
+	int ReadStream( AVFormatContext *format, AVStream *stream, int reqSize, unsigned char *buffer, int *size, int *isKey, long long *timeStamp )
 	{
 		int ret;
 		AVPacket pkt;
@@ -244,7 +244,7 @@ namespace
 				// H264 codec
 				if ( codecId == CODEC_ID_H264 && stream->codec->extradata_size > 0 && stream->codec->extradata[0]==1 )
 				{
-					*size = ParseAVCStream( &pkt, avcc->nal_length_size, buffer, 0 );
+					*size = ParseAVCStream( &pkt, reqSize, buffer, 0 );
 					*isKey = (pkt.flags & AV_PKT_FLAG_KEY) ? 1 : 0;
 					if ( pkt.pts != AV_NOPTS_VALUE )
 						*timeStamp = pkt.pts * timeStampRatio;
@@ -278,7 +278,6 @@ CVPUPlayer::~CVPUPlayer()
 	dbg_.DebugOut(kDbgLvlCritical, "%s\n", __FUNCTION__);
 }
 
-int frameSize = 0; // FIXME
 //----------------------------------------------------------------------------
 Boolean	CVPUPlayer::InitVideo(tVideoHndl hVideo)
 {
@@ -311,9 +310,9 @@ Boolean	CVPUPlayer::InitVideo(tVideoHndl hVideo)
 	seqSize = GetSequenceHeader( pFormatCtx, pStream, &avcc, seqData, sizeof(seqData) );
 	if ( seqSize > 0 )
 		memcpy( pStreamBuffer, seqData, seqSize );
-	frameSize = avcc.nal_length_size; // FIXME
+	reqSize = avcc.nal_length_size; // format specific size
 
-	if ( 0 != ReadStream( pFormatCtx, pStream, &avcc, pStreamBuffer+seqSize, &readSize, &isKey, &timeStamp ) ) {
+	if ( 0 != ReadStream( pFormatCtx, pStream, reqSize, pStreamBuffer+seqSize, &readSize, &isKey, &timeStamp ) ) {
 		dbg_.DebugOut(kDbgLvlCritical, "%s: ReadStream failed\n", __FUNCTION__);
 		return false;
 	}
@@ -475,15 +474,11 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 	int ret;
 	int readSize, isKey;
 	long long timeStamp;
-	NX_AVCC_TYPE avcc; // FIXME
 	VID_ERROR_E vidret;
 	AVStream* pStream = pFormatCtx->streams[iVideoStream];
 
-	memset(&avcc, 0, sizeof(avcc));
-	avcc.nal_length_size = frameSize; // FIXME
-
 	do {
-		ret = ReadStream( pFormatCtx, pStream, &avcc, pStreamBuffer, &readSize, &isKey, &timeStamp );
+		ret = ReadStream( pFormatCtx, pStream, reqSize, pStreamBuffer, &readSize, &isKey, &timeStamp );
 		if (ret < 0) {
 			dbg_.DebugOut(kDbgLvlCritical, "%s: ReadStream failed, error = %d\n", __FUNCTION__, ret);
 			return false;
