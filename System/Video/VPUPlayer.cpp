@@ -312,10 +312,14 @@ Boolean	CVPUPlayer::InitVideo(tVideoHndl hVideo)
 		memcpy( pStreamBuffer, seqData, seqSize );
 	reqSize = avcc.nal_length_size; // format specific size
 
+	do {
+
 	if ( 0 != ReadStream( pFormatCtx, pStream, reqSize, pStreamBuffer+seqSize, &readSize, &isKey, &timeStamp ) ) {
 		dbg_.DebugOut(kDbgLvlCritical, "%s: ReadStream failed\n", __FUNCTION__);
 		return false;
 	}
+
+	printf("%s: seqSize=%d, readSize=%d, isKey=%d, timeStamp=%lld\n", __func__, seqSize, readSize, isKey, timeStamp);
 
 	memset( &seqIn, 0, sizeof(seqIn) );
 	seqIn.addNumBuffers = 4;
@@ -329,6 +333,10 @@ Boolean	CVPUPlayer::InitVideo(tVideoHndl hVideo)
 		dbg_.DebugOut(kDbgLvlCritical, "%s: NX_VidDecInit failed\n", __FUNCTION__);
 		return false;
 	}
+
+	seqSize = 0;
+
+	} while (vidret == VID_NEED_STREAM);
 
 	return true;
 }
@@ -406,7 +414,16 @@ Boolean CVPUPlayer::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 //----------------------------------------------------------------------------
 Boolean CVPUPlayer::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 {
+#if 0
 	return CAVIPlayer::GetVideoTime(hVideo, pTime);
+#else
+	if (!pTime)
+		return false;
+	pTime->frame = pCodecCtx->frame_number;
+	pTime->time  = pTime->frame * 30; //pFrame->pts;
+	dbg_.DebugOut(kDbgLvlCritical, "%s: frame=%lld, time=%lld\n", __FUNCTION__, pTime->frame, pTime->time);
+	return true;
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -484,6 +501,8 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 			return false;
 		}
 
+		dbg_.DebugOut(kDbgLvlCritical, "%s: ReadStream ret=%d, req=%d, read=%d, key=%d, time=%lld\n", __FUNCTION__, ret, reqSize, readSize, isKey, timeStamp);
+
 		memset(&decIn, 0, sizeof(decIn));
 		decIn.strmBuf = pStreamBuffer;
 		decIn.strmSize = readSize;
@@ -495,6 +514,27 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 			return false;
 		}
 	} while (vidret == VID_NEED_STREAM);
+
+	// Update LibAV context params for GetVideoTime()
+	pCodecCtx->frame_number++;
+
+	dbg_.DebugOut(kDbgLvlCritical, "%s: NX_VidDecDecodeFrame ret=%d, frm=%d, idx=%d, yuv=%08x, %08x, %08x\n", __FUNCTION__, vidret, pCodecCtx->frame_number,
+			decOut.outImgIdx, decOut.outImg.luVirAddr, decOut.outImg.cbVirAddr, decOut.outImg.crVirAddr);
+
+	// Update LibAV context params for PutVideoFrame()
+	if (decOut.outImgIdx >= 0) {
+		pFrame->data[0] = (uint8_t*)decOut.outImg.luVirAddr;
+		pFrame->data[1] = (uint8_t*)decOut.outImg.cbVirAddr;
+		pFrame->data[2] = (uint8_t*)decOut.outImg.crVirAddr;
+		pFrame->linesize[0] = decOut.outImg.luStride;
+		pFrame->linesize[1] = decOut.outImg.cbStride;
+		pFrame->linesize[2] = decOut.outImg.crStride;
+		pFrame->pts = timeStamp;
+		pFrame->key_frame = isKey;
+
+		// Defer releasing buffer when multi-buffered display online
+		NX_VidDecClrDspFlag( hDec, &decOut.outImg, decOut.outImgIdx );
+	}
 
 	return (vidret == VID_ERR_NONE);
 #endif
