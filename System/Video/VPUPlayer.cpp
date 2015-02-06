@@ -319,8 +319,6 @@ Boolean	CVPUPlayer::InitVideo(tVideoHndl hVideo)
 		return false;
 	}
 
-	printf("%s: seqSize=%d, readSize=%d, isKey=%d, timeStamp=%lld\n", __func__, seqSize, readSize, isKey, timeStamp);
-
 	memset( &seqIn, 0, sizeof(seqIn) );
 	seqIn.addNumBuffers = 4;
 	seqIn.enablePostFilter = 0;
@@ -414,16 +412,7 @@ Boolean CVPUPlayer::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 //----------------------------------------------------------------------------
 Boolean CVPUPlayer::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 {
-#if 0
 	return CAVIPlayer::GetVideoTime(hVideo, pTime);
-#else
-	if (!pTime)
-		return false;
-	pTime->frame = pCodecCtx->frame_number;
-	pTime->time  = pTime->frame * 30; //pFrame->pts;
-	dbg_.DebugOut(kDbgLvlCritical, "%s: frame=%lld, time=%lld\n", __FUNCTION__, pTime->frame, pTime->time);
-	return true;
-#endif
 }
 
 //----------------------------------------------------------------------------
@@ -501,8 +490,6 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 			return false;
 		}
 
-		dbg_.DebugOut(kDbgLvlCritical, "%s: ReadStream ret=%d, req=%d, read=%d, key=%d, time=%lld\n", __FUNCTION__, ret, reqSize, readSize, isKey, timeStamp);
-
 		memset(&decIn, 0, sizeof(decIn));
 		decIn.strmBuf = pStreamBuffer;
 		decIn.strmSize = readSize;
@@ -517,9 +504,6 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 
 	// Update LibAV context params for GetVideoTime()
 	pCodecCtx->frame_number++;
-
-	dbg_.DebugOut(kDbgLvlCritical, "%s: NX_VidDecDecodeFrame ret=%d, frm=%d, idx=%d, yuv=%08x, %08x, %08x\n", __FUNCTION__, vidret, pCodecCtx->frame_number,
-			decOut.outImgIdx, decOut.outImg.luVirAddr, decOut.outImg.cbVirAddr, decOut.outImg.crVirAddr);
 
 	// Update LibAV context params for PutVideoFrame()
 	if (decOut.outImgIdx >= 0) {
