@@ -296,17 +296,19 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, const CPath& pathAudio
 	}
 #endif
 
-	// Create VPU video player
-	if (!pVidCtx->pPlayer) {
-		CVPUPlayer*     pPlayer = new CVPUPlayer();
-		pVidCtx->pPlayer = pPlayer;
-	}
-
 	// Create Theora video player
 	if (!pVidCtx->pPlayer && strcmp(flags, "theora") == 0 && filepath.rfind(".ogg") != std::string::npos) {
 		CTheoraPlayer*  pPlayer = new CTheoraPlayer();
 		pVidCtx->pPlayer = pPlayer;
 	}
+
+#if defined(LF3000)
+	// Create VPU video player
+	if (!pVidCtx->pPlayer) {
+		CVPUPlayer*     pPlayer = new CVPUPlayer();
+		pVidCtx->pPlayer = pPlayer;
+	}
+#endif
 
 	// Create AVI video player object
 	if (!pVidCtx->pPlayer) {

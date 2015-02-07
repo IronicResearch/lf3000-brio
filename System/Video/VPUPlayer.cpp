@@ -267,37 +267,48 @@ namespace
 
 //----------------------------------------------------------------------------
 CVPUPlayer::CVPUPlayer()
-	: CAVIPlayer()
+	: CAVIPlayer(),
+	  hDec(NULL),
+	  reqSize(0),
+	  pStreamBuffer(NULL)
 {
 	dbg_.DebugOut(kDbgLvlCritical, "%s\n", __FUNCTION__);
+
+	pStreamBuffer = new unsigned char[8192*1024];
 }
 
 //----------------------------------------------------------------------------
 CVPUPlayer::~CVPUPlayer()
 {
 	dbg_.DebugOut(kDbgLvlCritical, "%s\n", __FUNCTION__);
+
+	delete[] pStreamBuffer;
 }
 
 //----------------------------------------------------------------------------
 Boolean	CVPUPlayer::InitVideo(tVideoHndl hVideo)
 {
-	Boolean ret = false;
-
-//	hDec = NX_VidDecOpen( NX_VPX_THEORA, MAKEFOURCC('T', 'H', 'E', 'O'), 0, NULL );
-	hDec = NX_VidDecOpen( NX_AVC_DEC, MAKEFOURCC('H', '2', '6', '4'), 0, NULL );
-	dbg_.DebugOut(kDbgLvlCritical, "%s: NX_VidDecOpen returned %p\n", __FUNCTION__, hDec);
-	if (hDec == NULL)
-		return false;
-
 	// Init LibAV video context
-	ret = CAVIPlayer::InitVideo(hVideo);
+	Boolean ret = CAVIPlayer::InitVideo(hVideo);
 	if (ret == false) {
 		dbg_.DebugOut(kDbgLvlCritical, "%s: CAVIPlayer::InitVideo failed\n", __FUNCTION__);
 		return false;
 	}
 
 	AVStream* pStream = pFormatCtx->streams[iVideoStream];
-	pStreamBuffer = new unsigned char[8192*1024];
+
+	// VPU codec supported?
+	if (pCodec->id != CODEC_ID_H264) {
+		dbg_.DebugOut(kDbgLvlCritical, "%s: CVPUPlayer codec %d not supported\n", __FUNCTION__, (int)pCodec->id);
+		return false;
+	}
+
+	// Init VPU decoder
+	hDec = NX_VidDecOpen( NX_AVC_DEC, MAKEFOURCC('H', '2', '6', '4'), 0, NULL );
+	if (hDec == NULL) {
+		dbg_.DebugOut(kDbgLvlCritical, "%s: NX_VidDecOpen failed, returned %p\n", __FUNCTION__, hDec);
+		return false;
+	}
 
 	// Get VPU codec sequence header
 	unsigned char seqData[4096];
@@ -312,27 +323,29 @@ Boolean	CVPUPlayer::InitVideo(tVideoHndl hVideo)
 		memcpy( pStreamBuffer, seqData, seqSize );
 	reqSize = avcc.nal_length_size; // format specific size
 
+	// Read packet(s) from stream to init VPU codec
 	do {
 
-	if ( 0 != ReadStream( pFormatCtx, pStream, reqSize, pStreamBuffer+seqSize, &readSize, &isKey, &timeStamp ) ) {
-		dbg_.DebugOut(kDbgLvlCritical, "%s: ReadStream failed\n", __FUNCTION__);
-		return false;
-	}
+		int ret = ReadStream( pFormatCtx, pStream, reqSize, pStreamBuffer+seqSize, &readSize, &isKey, &timeStamp );
+		if (ret != 0) {
+			dbg_.DebugOut(kDbgLvlCritical, "%s: ReadStream failed, error = %d\n", __FUNCTION__, ret);
+			return false;
+		}
 
-	memset( &seqIn, 0, sizeof(seqIn) );
-	seqIn.addNumBuffers = 4;
-	seqIn.enablePostFilter = 0;
-	seqIn.seqInfo = pStreamBuffer;
-	seqIn.seqSize = readSize+seqSize;
-	seqIn.enableUserData = 0;
-	seqIn.disableOutReorder = 0;
-	vidret = NX_VidDecInit( hDec, &seqIn, &seqOut );
-	if ( 0 != vidret ) {
-		dbg_.DebugOut(kDbgLvlCritical, "%s: NX_VidDecInit failed\n", __FUNCTION__);
-		return false;
-	}
+		memset( &seqIn, 0, sizeof(seqIn) );
+		seqIn.addNumBuffers = 4;
+		seqIn.enablePostFilter = 0;
+		seqIn.seqInfo = pStreamBuffer;
+		seqIn.seqSize = readSize+seqSize;
+		seqIn.enableUserData = 0;
+		seqIn.disableOutReorder = 0;
+		vidret = NX_VidDecInit( hDec, &seqIn, &seqOut );
+		if (vidret < VID_ERR_NONE) {
+			dbg_.DebugOut(kDbgLvlCritical, "%s: NX_VidDecInit failed, error = %d\n", __FUNCTION__, (int)vidret);
+			return false;
+		}
 
-	seqSize = 0;
+		seqSize = 0; // if more to read
 
 	} while (vidret == VID_NEED_STREAM);
 
@@ -343,8 +356,6 @@ Boolean	CVPUPlayer::InitVideo(tVideoHndl hVideo)
 Boolean	CVPUPlayer::DeInitVideo(tVideoHndl hVideo)
 {
 	NX_VidDecClose(hDec);
-
-	delete[] pStreamBuffer;
 
 	return CAVIPlayer::DeInitVideo(hVideo);
 }
