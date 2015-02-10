@@ -13,6 +13,9 @@
 //		Defines the VPUPlayer class derived from AVIPlayer.
 //
 //==============================================================================
+
+#if USE_VPU
+
 #include <SystemTypes.h>
 #include <VideoTypes.h>
 #include <VideoPlayer.h>
@@ -56,7 +59,10 @@ private:
 	int           		reqSize;
 };
 
-LF_END_BRIO_NAMESPACE()	
+LF_END_BRIO_NAMESPACE()
+
+#endif // USE_VPU
+
 #endif // LF_BRIO_VPUPLAYER_H
 
 // EOF

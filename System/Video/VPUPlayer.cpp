@@ -11,6 +11,9 @@
 //		Implementation of the VPUPlayer class derived from AVIPlayer.
 //
 //==============================================================================
+
+#if USE_VPU
+
 #include <SystemTypes.h>
 #include <VideoTypes.h>
 #include <VideoPlayer.h>
@@ -538,5 +541,7 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 //----------------------------------------------------------------------------
 
 LF_END_BRIO_NAMESPACE()	
+
+#endif // USE_VPU
 
 // EOF
