@@ -52,7 +52,9 @@ if master_env['runtests']:
 #Fix up usrlib_dir
 #TODO: It would be good to have this based on embedded_root if it's not specified
 if not master_env['staging_dir']:
-	if 'ROOTFS_PATH' in os.environ:
+	if 'OECORE_TARGET_SYSROOT' in os.environ:
+		master_env['staging_dir'] = os.environ['OECORE_TARGET_SYSROOT']
+	elif 'ROOTFS_PATH' in os.environ:
 		master_env['staging_dir'] = os.environ['ROOTFS_PATH']
 	else:
 		master_env['staging_dir'] = os.path.join(os.environ['HOME'], 'nfsroot')

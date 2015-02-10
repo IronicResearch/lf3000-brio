@@ -100,6 +100,10 @@ const U64	MIN_FREE	= 0x100000ULL;		/* 1MB. NOTE: UBIFS is internally padded,
 // Typedefs
 //==============================================================================
 
+#ifndef JDCT_HW
+#define JDCT_HW 	(JDCT_FLOAT+1)
+#endif
+
 // How to render JPEGs
 typedef enum {
 	JPEG_SLOW	= JDCT_ISLOW,		/* sw IDCT & jpeg_read_scanlines() - best for photos */

@@ -23,6 +23,10 @@ extern "C" {
 #include <libavutil/avutil.h>
 }
 
+#ifndef URL_WRONLY
+#define URL_WRONLY 			(2)
+#endif
+
 //==============================================================================
 // Defines for compatibility with avilib
 //==============================================================================
