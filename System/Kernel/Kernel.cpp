@@ -928,8 +928,8 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 	listMemory.push_back( ptrList );
 
 	pthread_mutex_unlock( &timers_mutex);
-	mDebugMPI.DebugOut(kDbgLvlValuable, "CreateTimer tTimerHndl=0x%x callback=0x%x SIGRT%d\n",
-		           (unsigned int )hndl, (unsigned int )callback, signum);;
+	mDebugMPI.DebugOut(kDbgLvlValuable, "CreateTimer tTimerHndl=0x%x callback=%p SIGRT%d\n",
+		           (unsigned int )hndl, callback, signum);;
 	
 	// Create timer thread, if not already exists
 	if(!timer_task_handle)
