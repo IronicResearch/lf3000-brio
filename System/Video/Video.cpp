@@ -306,7 +306,14 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, const CPath& pathAudio
 	// Create VPU video player
 	if (!pVidCtx->pPlayer) {
 		CVPUPlayer*     pPlayer = new CVPUPlayer();
-		pVidCtx->pPlayer = pPlayer;
+		if (pPlayer->InitVideo(hVideo)) {
+			pVidCtx->pPlayer = pPlayer;
+			goto Success;
+		}
+		else {
+			pPlayer->DeInitVideo(hVideo);
+			delete pPlayer;
+		}
 	}
 #endif
 
