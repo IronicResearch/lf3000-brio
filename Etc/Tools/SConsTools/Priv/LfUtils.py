@@ -9,6 +9,8 @@ from SCons.Node.FS import FS
 from SCons.Script import Glob
 #import pysvn
 import imp
+import GitCommits
+
 
 root_dir = os.path.normpath(os.path.join(__file__, '../../../../..'))
 
@@ -26,10 +28,11 @@ def GetRepositoryVersion(platform, branch):
 	mappings = common.GetRepositoryMappings()
 	path = ''
 	revision = '9999'
+	commit_count = GitCommits.getCommitCount(".", 0)
 			
 	# FIXME: Replace method for querying revision from non-SVN repository
-
-	print '*** Using repository revision "' + revision + '" as build number ***'
+  
+	print '*** Using repository revision "' + str(commit_count) + '" as build number ***'
 	return revision
 
 
