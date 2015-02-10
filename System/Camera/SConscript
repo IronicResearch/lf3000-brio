@@ -34,12 +34,12 @@ mpilibs		= ['ModuleMPI', 'MicrophoneMPI']
 myenv		= env.Clone()
 
 myenv.Append(CPPDEFINES = '__STDC_CONSTANT_MACROS')
+myenv.Append(CPPFLAGS = '-Wno-deprecated-declarations')
+
 myenv.Append(CPPPATH = ['#System/Display/Include'])
-myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
-myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
-myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/MfgData/lib'])
+myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
 
 if env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/include'])
@@ -48,13 +48,8 @@ if env['cpu'] == 'x86':
 elif env['platform'] == 'Lightning' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
 
-myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + env['cpu']])
-myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
-myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/MfgData/lib/' + env['cpu']])
-
-myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 
 myenv.Append(CPPPATH=['Include'])
 if not env['cpu'] == 'x86':
