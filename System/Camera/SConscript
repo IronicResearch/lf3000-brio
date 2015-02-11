@@ -51,6 +51,9 @@ elif env['platform'] == 'Lightning' and env['cpu_bare']:
 myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/MfgData/lib/' + env['cpu']])
 
+myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
+myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
+
 myenv.Append(CPPPATH=['Include'])
 if not env['cpu'] == 'x86':
 	if env['platform'] == 'LF3000':

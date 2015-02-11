@@ -47,6 +47,9 @@ if (env['platform'] == 'LF2000' or env['platform'] == 'LF3000'):
 myenv.Append(CPPPATH = [env['staging_dir'].Dir('usr').Dir('include')])
 myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 
+myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
+myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
+
 #OpenGL emulation
 if env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/include'])
