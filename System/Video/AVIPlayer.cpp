@@ -223,6 +223,16 @@ Boolean	CAVIPlayer::InitVideo(tVideoHndl hVideo)
     // Allocate video frame
     pFrame = avcodec_alloc_frame();
 
+    // FIXME: some LibAV codec time base contexts do not match stream time base
+    AVStream* pStream = pFormatCtx->streams[iVideoStream];
+    if (pCodecCtx->time_base.den / pCodecCtx->time_base.num != pStream->time_base.den / pStream->time_base.num) {
+    	dbg_.DebugOut(kDbgLvlImportant, "codec  (%d:%d)\n", (int)pCodecCtx->time_base.den, (int)pCodecCtx->time_base.num);
+    	dbg_.DebugOut(kDbgLvlImportant, "stream (%d:%d)\n", (int)pStream->time_base.den, (int)pStream->time_base.num);
+    	dbg_.DebugOut(kDbgLvlImportant, "stream (%d:%d)\n", (int)pStream->r_frame_rate.num, (int)pStream->r_frame_rate.den);
+    	pCodecCtx->time_base.den = pStream->r_frame_rate.num;
+    	pCodecCtx->time_base.num = pStream->r_frame_rate.den;
+    }
+
     // Cache video info
 	pVidCtx->info.width 	= pCodecCtx->width;
 	pVidCtx->info.height 	= pCodecCtx->height;
