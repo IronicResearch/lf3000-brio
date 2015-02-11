@@ -10,7 +10,7 @@
 #include <UnitTestUtils.h>
 
 #include <ft2build.h>		// FreeType auto-conf settings
-#include <freetype.h>
+#include <freetype/freetype.h>
 
 LF_USING_BRIO_NAMESPACE()
 
