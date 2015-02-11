@@ -391,7 +391,7 @@ Boolean CVPUPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 		U8*			sv = (U8*)src.crVirAddr;
 		U8*			dy = surf->buffer; // + (y * surf->pitch) + (x * 2);
 		U8*			du = dy + surf->pitch/2; // U,V in double-width buffer
-		U8*			dv = du + surf->pitch * (surf->height/2);
+		U8*			dv = du + surf->pitch * (src.imgHeight/2);
 		if (sy && su && sv)
 		{
 			int width = src.imgWidth;
