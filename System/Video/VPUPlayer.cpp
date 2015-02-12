@@ -372,7 +372,7 @@ Boolean CVPUPlayer::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 //----------------------------------------------------------------------------
 Boolean CVPUPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
-#if 0
+#if 1
 	return CAVIPlayer::PutVideoFrame(hVideo, pCtx);
 #else
 	tVideoSurf* surf = pCtx;
@@ -521,6 +521,7 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 
 	// Update LibAV context params for PutVideoFrame()
 	if (decOut.outImgIdx >= 0) {
+		pCodecCtx->pix_fmt = PIX_FMT_YUV420P;
 		pFrame->data[0] = (uint8_t*)decOut.outImg.luVirAddr;
 		pFrame->data[1] = (uint8_t*)decOut.outImg.cbVirAddr;
 		pFrame->data[2] = (uint8_t*)decOut.outImg.crVirAddr;
@@ -532,6 +533,9 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 
 		// Defer releasing buffer when multi-buffered display online
 		NX_VidDecClrDspFlag( hDec, &decOut.outImg, decOut.outImgIdx );
+	}
+	else {
+		pCodecCtx->pix_fmt = PIX_FMT_NONE;
 	}
 
 	return (vidret == VID_ERR_NONE);
