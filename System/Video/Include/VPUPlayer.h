@@ -22,6 +22,7 @@
 #include <AVIPlayer.h>
 
 #include <nx_video_api.h>
+#include <nx_dsp.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -48,15 +49,19 @@ public:
 	Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay);
 	S64 			GetVideoLength(tVideoHndl hVideo);
 	bool 			GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame);
+	bool 			GetNextFrameSW(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame);
+	bool 			GetNextFrameHW(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame);
 
 private:
 	NX_VID_DEC_HANDLE 	hDec;
+	DISPLAY_HANDLE 		hDsp;
 	NX_VID_SEQ_IN 		seqIn;
 	NX_VID_SEQ_OUT 		seqOut;
 	NX_VID_DEC_IN 		decIn;
 	NX_VID_DEC_OUT 		decOut;
 	unsigned char*		pStreamBuffer;
 	int           		reqSize;
+	int           		outIdx;
 };
 
 LF_END_BRIO_NAMESPACE()

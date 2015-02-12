@@ -19,10 +19,12 @@
 #include <VideoPlayer.h>
 #include <VideoPriv.h>
 #include <VPUPlayer.h>
+#include <DisplayMPI.h>
 
 #include <nx_alloc_mem.h>
 #include <nx_video_api.h>
 #include <nx_fourcc.h>
+#include <nx_dsp.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -262,6 +264,39 @@ namespace
 	}
 
 	//----------------------------------------------------------------------------
+	DISPLAY_HANDLE InitDisplay(tVideoSurf* surf)
+	{
+		DISPLAY_INFO 	dspInfo;
+		DISPLAY_HANDLE	hDsp;
+		CDisplayMPI 	dispmgr;
+		tDisplayHandle 	hvideo = dispmgr.GetCurrentDisplayHandle(surf->format);
+		S16 			dx, dy;
+		U16 			dw, dh, sw, sh;
+		Boolean			vis, ctr;
+
+		// Get video window position and scaler size via DisplayMPI
+		dispmgr.GetWindowPosition(hvideo, dx, dy, dw, dh, vis);
+		dispmgr.GetVideoScaler(hvideo, sw, sh, ctr);
+
+		// Setup equivalent video window params for the V4L output driver
+		memset(&dspInfo, 0, sizeof(dspInfo));
+		dspInfo.port = 0;
+		dspInfo.module = 0;
+		dspInfo.width  = sw; //surf->width;
+		dspInfo.height = sh; //surf->height;
+		dspInfo.numPlane = 1;
+		dspInfo.dspSrcRect.left   = 0;
+		dspInfo.dspSrcRect.top    = 0;
+		dspInfo.dspSrcRect.right  = dspInfo.width;
+		dspInfo.dspSrcRect.bottom = dspInfo.height;
+		dspInfo.dspDstRect.left   = dx;
+		dspInfo.dspDstRect.top    = dy;
+		dspInfo.dspDstRect.right  = dx + dw;
+		dspInfo.dspDstRect.bottom = dy + dh;
+		hDsp = NX_DspInit( &dspInfo );
+
+		return hDsp;
+	}
 }
 
 //==============================================================================
@@ -272,7 +307,9 @@ namespace
 CVPUPlayer::CVPUPlayer()
 	: CAVIPlayer(),
 	  hDec(NULL),
+	  hDsp(NULL),
 	  reqSize(0),
+	  outIdx(-1),
 	  pStreamBuffer(NULL)
 {
 	dbg_.DebugOut(kDbgLvlCritical, "%s\n", __FUNCTION__);
@@ -360,6 +397,8 @@ Boolean	CVPUPlayer::DeInitVideo(tVideoHndl hVideo)
 {
 	NX_VidDecClose(hDec);
 
+	NX_DspClose(hDsp);
+
 	return CAVIPlayer::DeInitVideo(hVideo);
 }
 
@@ -372,49 +411,22 @@ Boolean CVPUPlayer::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 //----------------------------------------------------------------------------
 Boolean CVPUPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
-#if 1
-	return CAVIPlayer::PutVideoFrame(hVideo, pCtx);
-#else
-	tVideoSurf* surf = pCtx;
-	NX_VID_MEMORY_INFO src = decOut.outImg;
+	// Queue decoded frame via V4L output driver for multi-buffering
+	if (hDec) {
+		if (!hDsp)
+			hDsp = InitDisplay(pCtx);
 
-	if (!surf)
-		return false;
+		if (decOut.outImgIdx != -1)
+			NX_DspQueueBuffer( hDsp, &decOut.outImg );
 
-	if (decOut.outImgIdx == -1)
-		return false;
+		if (outIdx != -1)
+			NX_DspDequeueBuffer( hDsp );
 
-	if (surf && surf->buffer)
-	{
-		U8* 		sy = (U8*)src.luVirAddr;
-		U8*			su = (U8*)src.cbVirAddr;
-		U8*			sv = (U8*)src.crVirAddr;
-		U8*			dy = surf->buffer; // + (y * surf->pitch) + (x * 2);
-		U8*			du = dy + surf->pitch/2; // U,V in double-width buffer
-		U8*			dv = du + surf->pitch * (src.imgHeight/2);
-		if (sy && su && sv)
-		{
-			int width = src.imgWidth;
-			for (int i = 0; i < src.imgHeight; i++)
-			{
-				memcpy(dy, sy, width);
-				sy += src.luStride;
-				dy += surf->pitch;
-				if (i % 2)
-				{
-					memcpy(du, su, width/2);
-					memcpy(dv, sv, width/2);
-					su += src.cbStride;
-					sv += src.crStride;
-					du += surf->pitch;
-					dv += surf->pitch;
-				}
-			}
-		}
+		outIdx = decOut.outImgIdx;
+		return true;
 	}
 
-	return true;
-#endif
+	return CAVIPlayer::PutVideoFrame(hVideo, pCtx);
 }
 
 //----------------------------------------------------------------------------
@@ -448,12 +460,8 @@ S64 CVPUPlayer::GetVideoLength(tVideoHndl hVideo)
 }
 
 //----------------------------------------------------------------------------
-bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame)
+bool CVPUPlayer::GetNextFrameSW(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame)
 {
-#if 0
-	// TODO: The *main* method which needs to be overridden from LibAV calls to VPU calls
-	return CAVIPlayer::GetNextFrame(pFormatCtx, pCodecCtx, iVideoStream, pFrame);
-#elif 0
 	int ret;
 	int done = 0;
 	AVPacket pkt, pkt2;
@@ -490,7 +498,10 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 	} while (!done && !(ret < 0));
 
 	return (done != 0);
-#else
+}
+
+bool CVPUPlayer::GetNextFrameHW(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame)
+{
 	int ret;
 	int readSize, isKey;
 	long long timeStamp;
@@ -539,7 +550,14 @@ bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCode
 	}
 
 	return (vidret == VID_ERR_NONE);
-#endif
+}
+
+bool CVPUPlayer::GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame)
+{
+	if (hDec)
+		return GetNextFrameHW(pFormatCtx, pCodecCtx, iVideoStream, pFrame);
+	else
+		return GetNextFrameSW(pFormatCtx, pCodecCtx, iVideoStream, pFrame);
 }
 
 //----------------------------------------------------------------------------
