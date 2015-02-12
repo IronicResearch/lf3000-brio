@@ -47,6 +47,9 @@ myenv.Append(LIBPATH = [os.path.join(myenv['staging_dir'].abspath, 'usr', 'lib')
 myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
 myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
 
+myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
+myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
+
 myenv.Append(CPPPATH=['Include'])
 
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
