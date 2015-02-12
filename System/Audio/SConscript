@@ -50,6 +50,9 @@ myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
 myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
 myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
 
+myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
+myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/' + env['cpu']])
+
 myenv.Append(CPPPATH=['Include'])
 
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
