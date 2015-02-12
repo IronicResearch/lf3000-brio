@@ -25,6 +25,9 @@ myenv		= env.Clone()
 myenv.Append(CPPPATH = [env['staging_dir'].Dir('usr').Dir('include')])
 myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 
+myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
+myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
+
 myenv.Append(CPPPATH=['Include'])
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)

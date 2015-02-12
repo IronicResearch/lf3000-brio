@@ -23,6 +23,8 @@ myenv.Append(CPPPATH = ['Include'])
 
 myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 	
+myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
+myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + env['cpu']])
 
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
 

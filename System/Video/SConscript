@@ -50,6 +50,9 @@ myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
 myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
 
+myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
+myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/' + env['cpu']])
+
 #OpenGL emulation
 if env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/include'])
