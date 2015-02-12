@@ -18,7 +18,7 @@ opts.Add(BoolVariable('samples', 'Include samples if building an SDK target', Tr
 opts.Add(BoolVariable('runtests', 'Builds and runs unit tests (implies buildtests)', False))
 opts.Add(BoolVariable('buildtests', 'Builds unit tests but does not run them', False))
 opts.Add(BoolVariable('deploylibs', 'Deploys 3rd-party libs from Brio repository', True))
-opts.Add(BoolVariable('nosvn', 'Don\'t use svn', True))
+opts.Add(BoolVariable('nogit', 'Don\'t use git versioning number', False))
 
 opts.Add('setup', 'Set to "TRUNK" or branch name to setup source tree for a platform', '')
 opts.Add('host', 'The architecture that will run the embedded binaries', 'arm-linux')
@@ -78,6 +78,12 @@ if not master_env['emulation_root']:
 		master_env['emulation_root'] = os.path.join(os.environ['HOME'], 'emuroot')
 
 master_env['emulation_root'] = Dir(master_env['emulation_root']).Dir(default_subdir)
+
+#Get git repo numbering
+if master_env['nogit']:
+	master_env['version'] = '9.9.99999'
+else:
+	master_env['version'] = Etc.Tools.SConsTools.Priv.LfUtils.GetRepositoryVersion(master_env['platform'], master_env['setup'])
 
 #Fix up SDK path and samples flag based on legacy targets or not
 if not master_env['sdk_root']:

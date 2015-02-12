@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Build FreeType libs for x86
+./configure
+make
+cp -a objs/.libs/libfreetype.so* ../../Libs/x86/
+
