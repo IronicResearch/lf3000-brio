@@ -121,11 +121,15 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsLF1000:
 		return (0 == stat("/sys/devices/platform/lf1000-alvgpio", &stbuf));
 	case kCapsLF2000:
+		if ("BOGOTA" == GetPlatformName()) // FIXME
+			return false;
 		return (0 == stat("/sys/devices/platform/lf2000-alive", &stbuf) &&
 				"GLASGOW" != GetPlatformFamily());
 	case kCapsLF3000:
 		return (0 == stat("/sys/devices/platform/mali-utgard.0", &stbuf)); // FIXME
 	case kCapsTouchscreen:
+		if ("BOGOTA" == GetPlatformName()) // FIXME
+			return true;
 		return (0 == stat("/sys/devices/platform/lf1000-touchscreen", &stbuf)) ||
 		       (0 == stat("/sys/devices/platform/lf2000-touchscreen", &stbuf));
 	case kCapsCamera:
@@ -146,6 +150,8 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsScreenLEX:
 		return ("LEX" == GetPlatformFamily());
 	case kCapsScreenLPAD:
+		if ("BOGOTA" == GetPlatformName()) // FIXME
+			return false;
 		return ("LPAD" == GetPlatformFamily());
 	case kCapsWifi:
 		return (0 == stat("/sys/class/net/wlan0", &stbuf) &&
