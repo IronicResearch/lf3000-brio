@@ -96,6 +96,7 @@ public:
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
+		tVideoInfo	info;
 
 		disp = pDisplayMPI_->CreateHandle(SCREEN_HEIGHT, SCREEN_WIDTH, kPixelFormatYUV420);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -111,6 +112,11 @@ public:
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
 		video = pVideoMPI_->StartVideo("LIVEACTION-2997fps-480x272_h264.mp4");
 		TS_ASSERT( video != kInvalidVideoHndl );
+
+		pVideoMPI_->GetVideoInfo(video, &info);
+		TS_ASSERT( info.fps != 0 );
+		pDisplayMPI_->SetVideoScaler(disp, info.width, info.height, false);
+		pDisplayMPI_->SetWindowPosition(disp, 0, 0, info.width, info.height, false);
 
 		for (int i = 0; i < 100; i++)
 		{
@@ -165,6 +171,56 @@ public:
 		TS_ASSERT( info.fps != 0 );
 
 		for (int i = 0; i < 100; i++)
+		{
+			Boolean 	r;
+			tVideoTime	vt;
+			CKernelMPI  kernel;
+			int         delta = 1000 / info.fps;
+
+			kernel.TaskSleep(delta);
+
+			r = pVideoMPI_->GetVideoTime(video, &vt);
+			TS_ASSERT( r == true );
+			TS_ASSERT( vt.frame >= i );
+			TS_ASSERT( vt.time >= 0 );
+		}
+
+		pVideoMPI_->StopVideo(video);
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+	}
+
+	//------------------------------------------------------------------------
+	void testVideoPlaybackAudio()
+	{
+		PRINT_TEST_NAME();
+
+		tVideoHndl	video;
+		tVideoSurf	surf;
+		tDisplayHandle disp;
+		tVideoInfo	info;
+
+		disp = pDisplayMPI_->CreateHandle(SCREEN_HEIGHT, SCREEN_WIDTH, kPixelFormatYUV420);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo("LIVEACTION-2997fps-480x272_h264.mp4", "LIVEACTION-2997fps-480x272_h264.mp4", &surf);
+		TS_ASSERT( video != kInvalidVideoHndl );
+
+		pVideoMPI_->GetVideoInfo(video, &info);
+		TS_ASSERT( info.fps != 0 );
+
+		for (int i = 0; i < 1000; i++)
 		{
 			Boolean 	r;
 			tVideoTime	vt;
