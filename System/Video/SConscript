@@ -62,6 +62,12 @@ if env['platform'] == 'LF2000' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 	myenv.Append(CPPDEFINES = ['USE_ROTATOR=1'])
 						
+if env['platform'] == 'LF3000' and env['cpu_bare']:
+	myenv.Append(CPPDEFINES = ['USE_VPU=1'])
+	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include/lf3000'])
+	myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
+	modlibs += ['nxvpu', 'nxvmem', 'nxv4l2', 'nxdsp']
+						
 elif env['platform'] == 'Lightning' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
 

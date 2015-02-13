@@ -34,7 +34,7 @@
 #include <VideoPlayer.h>
 #include <TheoraPlayer.h>
 #include <AVIPlayer.h>
-
+#include <VPUPlayer.h>
 #if USE_GSTREAMER
 #include <GStreamerPlayer.h>
 #endif
@@ -301,6 +301,21 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, const CPath& pathAudio
 		CTheoraPlayer*  pPlayer = new CTheoraPlayer();
 		pVidCtx->pPlayer = pPlayer;
 	}
+
+#if defined(LF3000)
+	// Create VPU video player
+	if (!pVidCtx->pPlayer) {
+		CVPUPlayer*     pPlayer = new CVPUPlayer();
+		if (pPlayer->InitVideo(hVideo)) {
+			pVidCtx->pPlayer = pPlayer;
+			goto Success;
+		}
+		else {
+			pPlayer->DeInitVideo(hVideo);
+			delete pPlayer;
+		}
+	}
+#endif
 
 	// Create AVI video player object
 	if (!pVidCtx->pPlayer) {

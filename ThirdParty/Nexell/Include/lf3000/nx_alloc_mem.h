@@ -1,22 +1,3 @@
-//------------------------------------------------------------------------------
-//
-//  Copyright (C) 2013 Nexell Co. All Rights Reserved
-//  Nexell Co. Proprietary & Confidential
-//
-//  NEXELL INFORMS THAT THIS CODE AND INFORMATION IS PROVIDED "AS IS" BASE
-//  AND WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING
-//  BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS
-//  FOR A PARTICULAR PURPOSE.
-//
-//  Module      :
-//  File        :
-//  Description :
-//  Author      : 
-//  Export      :
-//  History     :
-//
-//------------------------------------------------------------------------------
-
 #ifndef __NX_ALLOC_MEM_H__
 #define __NX_ALLOC_MEM_H__
 
@@ -81,6 +62,9 @@ void NX_FreeMemory( NX_MEMORY_HANDLE handle );
 //	Video Specific Allocator Wrapper
 NX_VID_MEMORY_HANDLE NX_VideoAllocateMemory( int align, int width, int height, int memMap, int fourCC );
 void NX_FreeVideoMemory( NX_VID_MEMORY_HANDLE handle );
+
+//	For Interlace Camera 3 plane only
+NX_VID_MEMORY_HANDLE NX_VideoAllocateMemory2( int align, int width, int height, int memMap, int fourCC );
 
 
 #ifdef	__cplusplus

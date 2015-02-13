@@ -25,6 +25,14 @@
 # endif
 #endif
 
+#ifndef INT64_C
+# if __WORDSIZE == 64
+# define INT64_C(c) c ## L
+# else
+# define INT64_C(c) c ## LL
+# endif
+#endif
+
 extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
@@ -55,13 +63,18 @@ public:
 	Boolean 		SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop);
 	Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay);
 	S64 			GetVideoLength(tVideoHndl hVideo);
+
+protected:
+	virtual bool 	GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx, int iVideoStream, AVFrame *pFrame);
 	
-private:
+protected:
 	AVFormatContext*	pFormatCtx;			// container context
 	AVCodecContext*		pCodecCtx;			// codec context
 	AVCodec*			pCodec;				// video codec
 	AVFrame*			pFrame;				// video frame buffer
     int					iVideoStream;		// index of video stream
+
+	friend class 		CVPUPlayer;
 };
 
 LF_END_BRIO_NAMESPACE()	

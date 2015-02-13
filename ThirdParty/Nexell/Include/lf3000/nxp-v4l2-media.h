@@ -44,17 +44,26 @@ struct nxp_vid_buffer {
 
 /* pixel format */
 #define PIXFORMAT_YUV422_PACKED     V4L2_PIX_FMT_YUYV
-#define PIXFORMAT_YUV420_PLANAR     V4L2_PIX_FMT_YUV420M
+#define PIXFORMAT_YUV420_PLANAR     V4L2_PIX_FMT_YUV420M        //  3 plane
+#define PIXFORMAT_YUV420_YV12       V4L2_PIX_FMT_YUV420         //  1 Plane
 #define PIXFORMAT_YUV422_PLANAR     V4L2_PIX_FMT_YUV422P
 #define PIXFORMAT_YUV444_PLANAR     V4L2_PIX_FMT_YUV444
 
 enum {
     YUV422_PACKED = 0,
-    YUV420_PLANAR,
+    YUV420_PLANAR,      //  3 Plane
+    YUV420_YV12,        //  1 Plane
     YUV422_PLANAR,
     YUV444_PLANAR,
     MAX_PIXFORMAT
 };
+
+struct PixFormatPixCode {
+    uint32_t format;
+    uint32_t code;
+};
+
+extern struct PixFormatPixCode PixelArray[MAX_PIXFORMAT];
 
 #ifndef ANDROID
 #ifdef __cplusplus
@@ -109,6 +118,10 @@ int v4l2_set_format(V4L2_PRIVATE_HANDLE pHandle, int id, int w, int h, int f);
 int v4l2_get_format(V4L2_PRIVATE_HANDLE pHandle, int id, int *w, int *h, int *f);
 int v4l2_set_crop(V4L2_PRIVATE_HANDLE pHandle, int id, int l, int t, int w, int h);
 int v4l2_get_crop(V4L2_PRIVATE_HANDLE pHandle, int id, int *l, int *t, int *w, int *h);
+int v4l2_set_format_with_pad(V4L2_PRIVATE_HANDLE pHandle, int id, int pad, int w, int h, int f);
+int v4l2_get_format_with_pad(V4L2_PRIVATE_HANDLE pHandle, int id, int pad, int *w, int *h, int *f);
+int v4l2_set_crop_with_pad(V4L2_PRIVATE_HANDLE pHandle, int id, int pad, int l, int t, int w, int h);
+int v4l2_get_crop_with_pad(V4L2_PRIVATE_HANDLE pHandle, int id, int pad, int *l, int *t, int *w, int *h);
 int v4l2_set_ctrl(V4L2_PRIVATE_HANDLE pHandle, int id, int ctrl_id, int value);
 int v4l2_get_ctrl(V4L2_PRIVATE_HANDLE pHandle, int id, int ctrl_id, int *value);
 int v4l2_reqbuf(V4L2_PRIVATE_HANDLE pHandle, int id, int buf_count);
@@ -123,6 +136,7 @@ int	v4l2_streamon(V4L2_PRIVATE_HANDLE pHandle, int id);
 int	v4l2_streamoff(V4L2_PRIVATE_HANDLE pHandle, int id);
 int	v4l2_get_timestamp(V4L2_PRIVATE_HANDLE pHandle, int id, long long *timestamp);
 int	v4l2_set_preset(V4L2_PRIVATE_HANDLE pHandle, int id, uint32_t preset);
+int v4l2_get_device_fd(V4L2_PRIVATE_HANDLE pHandle, int id);
 int v4l2_query_buf(V4L2_PRIVATE_HANDLE pHandle, int id, int plane_num, int index, int *flags);
 
 #ifndef ANDROID

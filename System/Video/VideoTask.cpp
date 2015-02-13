@@ -25,6 +25,10 @@
 #include <GStreamerPlayer.h>
 #endif
 
+#if USE_VPU
+#include <VPUPlayer.h>
+#endif
+
 #if USE_ROTATOR
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -154,6 +158,7 @@ void* VideoTaskMain( void* arg )
 	tDisplayHandle	aHndl[2];
 	int				ibuf = 0;
 	bool			bDoubleBuffered = false;
+	bool			bNoDoubleBuffering = false;
 	U32				zerotime = kernel.GetElapsedTimeAsMSecs();
 	
 	// Sync video thread startup with InitVideoTask()
@@ -169,8 +174,14 @@ void* VideoTaskMain( void* arg )
 		pListener = pVideoListener;
 	}
 
+#if USE_VPU
+	// VPU player does its own multi-buffering via V4L
+	if (dynamic_cast<CVPUPlayer*>(pctx->pPlayer))
+		bNoDoubleBuffering = true;
+#endif
+
 	// Support double buffering by replicating YUV planar video contexts
-	if (pSurf->format == kPixelFormatYUV420 && pSurf->pitch == 4096) {
+	if (pSurf->format == kPixelFormatYUV420 && pSurf->pitch == 4096 && !bNoDoubleBuffering) {
 		aSurf[0] = aSurf[1] = *pSurf;
 		aSurf[1].buffer += 1024;
 		aHndl[0] = dispmgr.CreateHandle(aSurf[0].height, aSurf[0].width, aSurf[0].format, aSurf[0].buffer);
