@@ -1,0 +1,3412 @@
+===========================================
+Lightning C++ Development Kit Release Notes
+===========================================
+
+===========================================
+Brio v1.2.7.9082 (January 28, 2011)
+===========================================
+
+===========================================
+Brio v1.2.3.9039 (December 21, 2010)
+===========================================
+
+===========================================
+Brio v1.2.2.9010 (December 17, 2010)
+===========================================
+
+===========================================
+Brio v1.1.40.8020 (August 23, 2010)
+===========================================
+
+-- Merged -c7902: L3B TTPro 2714: Camera unit test: Stop video stream 
+before letting camera module go out of scope.
+
+-- Merged -c7915: Camera module: random pointers are freed (e.g., 
+micCtx_.status) if module is destroyed when camera is absent.  
+(Additional fix for L3B TTPro 2700)
+
+-- Merged -c7920: TTPro 2712.  Fixed up Vorbis Codec.  Now error checks 
+the page it tried to read in.  Previously, it would assume page was read fine, 
+and when it wasn't able to pull a packet from the page, it would try to read the
+previous page.  This would get stuck in an infinite loop if you seeked
+to the first page, and that was not an audio page.
+
+-- Merged these changes TTP 2507:
+
+-r7922: CameraMPI: Apply drop-frame logic as condition for viewfinder 
+rendering during video+audio recording session. (TTP 2507)
+
+-r7946: CameraMPI: (TTP 2507) Mods to use local copies of frame buffer 
+info in separate rendering thread. Interim checkin leaves rendering thread
+option disabled due to lockups on thread termination.
+
+-r7949: CameraMPI: (TTP 2507) Mods to use TryLockMutex to avoid mutex 
+deadlock
+case in StopVideoCapture().
+
+-r7950: CameraMPI: (TTP 2507) Remove locks in render thread for 
+performance
+reasons.
+
+-- Merged for TTPRO 2507:
+-r7967: CameraMPI: Revert number of V4L buffers back to 3 for minimum 
+latency.
+-r7982: CameraMPI: Bump number of V4L buffers up to 4 as spare cushion 
+for
+rendering thread.
+-r8004: CameraMPI: Added internal camera lock inside RenderFrame() to 
+serialize calls between GrabFrame() and camera render thread, so as to avoid
+contention crashes during still-frame modes.
+
+-- Merged -c7954: TTPro 1969.  Changed Brio Mixer's Lock/Unlock strategy 
+during AddPlayer.  Now instead of unlocking it for the entire duration of
+CreatePlayer, CreatePlayer now unlocks for the duration of newing all
+new players.  This prevents deletion of a player while it is in the
+middle of rendering, while still keeping the audio lag down.
+
+===========================================
+Brio v1.1.35.7889 (August 2, 2010)
+===========================================
+
+-- CameraMPI: Change video frame duplication logic to be effective 
+immediately whenever video frame count lags behind audio block count to 
+maintain sync in video+audio recordings. (TTP #2507)
+
+-- CameraMPI: Create separate thread just for video frame rendering to 
+offload impact on FPS rate and video+audio sync (TTP 2507). 
+Conditionally compiled by local USE_RENDER_THREAD define. Attempt to 
+defer rendering, saving, and requeuing V4L buffer in separate thread 
+was problematic, so only rendering is done separately at present.
+
+-- VideoMPI: Replace global var tracking stale video handle with list of 
+active video handles. The previous stale video handle hack was too 
+easily fooled after multiple calls to StopVideo(). (TTP 2657, 2568) 
+
+-- VideoMPI: Revert back to using audio timestamps for (disabled in svn 
+-r7310) now that AVIs record audio tracks with matching video lengths. 
+(TTP 2507)
+
+-- VideoMPI: Reinstate drop-frame option for audio timestamp sync during 
+video playback, with drop-frame support added to AVI player. Maintains 
+audio+video sync during AVI playback on the device. (TTP 2507)
+
+-- CameraMPI: Use atomic file API for saving JPG files. (TTP #2692)
+
+-- CameraMPI: Use atomic file API for saving PNG files. (TTP #2692)
+
+-- CameraMPI: Use atomic file API for saving PNG files with cleanup for 
+error cases. (TTP #2692)
+
+-- Newer GCC requires printf to be prototyped with #include <stdin.h>
+
+-- L3B TTPro 2693: Camera MPI: Add warnings to doxygen documentation about
+maintaining consistent recordings.  Comments only; no functional 
+changes.
+
+-- TTPro 2666.  Brio no longer enables the YUV immediately if it needs to 
+change the layer of the YUV layer.  This prevents it from becoming 
+visible till it's filled.  YUV is already enabled on the first frame.
+
+-- L3B TTPro 2697: Apply overrides to camera control defaults.
+
+-- TTPro 2661.  Brio was only able to remember 1 bufferswap.  So pushing a 
+buffer swap (Accessory movie) on top of another buffer swap (Tutorial) 
+caused Brio to forget the old buffer swap.  Overhauled how Brio handles 
+SwapBuffer.  Eliminated the single global FlippedContext, added to all 
+display handles a FlippedContext.  SwapBuffer no longer repoints 
+pdcVisible to the new context, instead it points pdcVisible's 
+flippedContext to the new context.  Modified code elsewhere to check 
+for FlippedContext, and use that instead.  This includes Updating 
+offscreen contexts, and GetBuffer.
+
+-- Merged -c7844: TTPro 2661. Small fix to SwapBuffer. Fixed context 
+address calculation when using offscreen FlippedContext. This problem 
+showed up as garbage graphics in XMV if you press Home, Pause, then 
+Unpaused
+
+-- Merged -c7851: L3B TTPro 2700: *_alloca() function returns are valid 
+only within/beneath the enclosing stack frame. Since swparams, 
+hwparams, and status are accessed elsewhere, malloc them instead.
+
+-- Merged -c7857: Changed GetBuffer back to returning buffer of the handle 
+in question instead of FlippedContext if it exists. To solve the 
+hijacking problem, GetCurrentHandle now returns to FlippedContext if it 
+exists.
+
+-- Merged -c7866:  Multi-issue camera checkin: 1.) To support LinuxDist 
+-r7861 and -7862 (roll UVC driver from 2.6.31 to 2.6.34-patched) a.) 
+Semantics of VIDIOC_STREAMOFF has changed (order of VIDIOC_STREAMOFF 
+and VIDIOC_REQBUFS flipped) b.) WHITEBALANCE control now exposed, but 
+fails to be set, so it is disabled 2.) Disable separate render thread 
+in CameraTask because it had race conditions resulting in invalid 
+JPEGs. 3.) Remove soft-clipper hack in CameraTask because it is no 
+longer needed (solved by LinuxDist -r7861)
+
+-- Merged -c7680:  TTPro 2706. When seeking is done, now updating nexttime 
+and marktime. This allows for proper operation of DropFrames.
+
+-- Merged -c7874:  VideoMPI: Case-insensitive checks for .OGG and .AVI 
+file extensions. (TTP 2707)
+
+-- Merged -c7875: Theora: Update libtheora.so codec with ARM-optimized 
+version for faster performance (TTP 2482). Built from 
+LinuxDist-Emerald/package s/theorarm.
+
+-- Merged -c7883:  Added check to see if video was seeked, before dropping 
+frames. Previously, if you rewind wile in the middle of a SyncFrame, it 
+would immediately drop frames until it was back where it was before the 
+rewind. This happens in rewind because it's a "live" seek. The scrub 
+bar pauses the video, and seeks while paused.
+
+===========================================
+Brio v1.1.30.7814 (July 22, 2010)
+===========================================
+
+-- CameraMPI: Video frame duplication only conditional when audio active.
+
+-- Camera module: fix for occasional crashes when recording muted videos.
+buf->timestamp is zeroed during the camera thread, and is not 
+guaranteed to be
+valid during thread exit.
+
+-- Camera module: set scaler only when dealing with the YUV video layer.  
+(MFG test app uses RGB rendering, and this was causing a crash).
+
+-- L3B TTPro 2642: ALSA crashes when attempting to call 
+snd_pcm_hw_params() on a stream that we have paused, regardless of what is reported by 
+snd_pcm_state().
+
+This checkin is more of a workaround than a fix, because the above behavior is
+not well understood.
+
+Also, make sure recording videos pause/unpause audio appropriately, and
+
+-- L3B TTPro 2643: Reduce frame rate during still image capture to attempt to
+improve JPEG quality.
+
+-- L3B TTPro 2589: Do not count paused time against recording quotas, 
+either requested time-out or disk-space usage.
+
+Also, use either recorded audio size or v4l2 frame timestamps for IEventListener
+elapsed time accounting, rather than KernelMPI::GetElapsedTimeAsMSecs()
+
+-- Setting camera frame rate to 5 fps globally for reduced framerate:improved image
+quality correlation verification (updated below)
+
+-- TTPro 2641.  Impelemted IsCameraPresent.  Does the same thing that 
+IsValid does.
+
+-- TTPro 2479.  Added TaskSleep to StopAudio with 
+kStopAudioOptionsDoneMsg.  This helps ensure that the DoneMessage will 
+be delivered by the time StopAudio finishes.  This way developers who 
+StopAudio with callbacks don't have to worry about having to sleep and 
+wait till the message gets back.
+
+-- TTPro 2479.  Moved the StopAudio's sleep outside of all mutex locks.  
+This avoids unneeded resource locking.
+
+-- L3B TTPro 2669: Instead of scaling 9-bit IDCT output to 8-bit colors, use a
+simple clamp.  This prevents the resulting colors from looking washed-out.
+
+-- TTPro 2646.  Moved StopVideo's disabling of Codec to before attempt to 
+lock Mutex.  This prevents StopVideo from sleeping for long periods of 
+time waiting for the video to get back into synch.
+
+Technical Details
+
+When StopVideo is called, StopVideo attempts to lock the video's Mutex, 
+but if it's already locked, it will sleep for 10 milliseconds and try 
+again.  When the trailer is out of sync, the Mutex is constantly being 
+locked and unlocked (for every frame being rendered).  Everytime 
+StopVideo is trying to lock the Mutex, it's already locked.  This keeps 
+happening till the video catches up (which may or may not happen before 
+the movie ends), or by some miracle coincidence of timing StopVideo 
+wakes up right in between the rendering of two frames.  The rendering 
+does check to see if the Codec is ready before locking the Mutex.  
+StopVideo set the Codec to false before trying to lock the Mutex, the 
+Video rendering will no longer lock the Mutex which lets StopVideo lock 
+the Mutex in a more timely fashion.
+
+-- CameraMPI: Default back to 15 FPS for video streaming modes, switch to 
+5 FPS for still frame grabbing mode.
+
+-- VideoMPI: Use fractional FPS time base info for calculating more 
+accurate cummulative frame times during video rendering loop. 
+
+-- CameraMPI: Correct seek functionality for AVIPlayer SeekVideoFrame().
+
+-- DisplayMPI: Undo the internal display context hack to make an OGL 
+context compatible with DisplayMPI Register (svn -r6980). This makes 
+the memory allocations tally up properly again. (TTP #2468)
+
+-- CameraMPI: Treat severe warnings other than "extranous bytes" as 
+errors, since they produce corrupt images which should be discarded. 
+(TTP #2570)
+
+-- Merged -c7753: TTPro 2654 & 2687 (in conjunction with LightningCore 
+Changes). Added in new function to DisplayMPI, GetAvailableFormat. This 
+function returns YUV if that layer is free, or RGBA if that layer is 
+free, or returns Error if neither are free. This is to support new 
+VolumeBars. Now storing isBlended and alphaLevel on a per display 
+handle basis. Now restoring isBlended and alphaLevel flags when a layer 
+is reactivated. Now restoring video layer priority (when not an 
+offscreen context).
+
+-- Merged -c7761: Removing an unneeded debuging print statement.
+
+-- Merged -c7764: Change to VideoModule, now when playing videos, will 
+only change scaler settings if the layer is YUV420 or YUYV. This 
+prevents a problem with garbage graphics when playing a 3D only title, 
+pressing Pause, adjusting the Volume, and inserting the Camera Widget.
+
+===========================================
+Brio v1.1.25.7676 (July 2, 2010)
+===========================================
+
+-- Camera module: L3B TTPro 2556.  This change bypasses some of libjpeg 
+and uses the LF1000's IDCT block for JPEG decoding.  Cursory unit tests 
+show that it provides about a 5 fps improvement, from ~15 to ~20 fps 
+when using a YUV viewfinder and capturing audio.  Disabled for now 
+because it does not yet support scaling or RGB conversion.
+
+-- L3B TTPro 2527: Set minimum free space to maintain to 1 MB.  UBIFS is
+internally padded, so applications are not responsible for maintaining
+free space, and Brio's restriction simply serves as a safeguard.
+
+Also, enforce recording quota in microphone MPI.
+
+-- Revert non-blocking flag since it breaks still snapshot modes.
+
+-- L3B TTPro 2527: Correction to svn 7578.  Normal timeout/quota timeout 
+are now reported correctly.
+
+-- Added script to make tarball of ThirdParty open source files
+
+-- Removed SConscript from tarball
+
+-- TTPro 2550.  Updated GetFrame comment to be more Doxygen friendly.
+
+-- Changing Emulation button, power, and usb task thread to use 
+non-blocking polling model.
+
+This thread now properly ends even without a keypreass, so emulation 
+AppManager now properly exits from idle timeout.  Restoring auto-repeat 
+on the keyboard.
+
+-- L3B TTPro 2556: Improve frame rate by using HW IDCT for JPEG decoding.
+This checkin activates svn 7574 for non-scaled viewfinders.  Also, add
+a frame rate unit test for scaled-viewfinder measurement.
+
+This rendering pipeline:
+Camera QVGA->libjpeg QQVGA->HW scaler QVGA->viewfinder
+
+has better performance that this one:
+Camera QVGA->HW IDCT QVGA->viewfinder
+
+so it is used for recording.  First attempts at this pipeline:
+Camera QVGA->HW IDCT QQVGA->HW scaler QVGA->viewfinder
+
+yielded a slight performance increase, but the drop in quality was 
+severe.
+
+-- Camera module:  muted AVIs are slightly malformed, e.g., Ubuntu's 
+thumbnailer (totem-video-thumbnailer) fails to render an icon, and can't provide a
+properties page because the AVI header refers to an audio track that is 
+not present.
+
+-- Keyboard: close file handles for keyboards that don't match
+
+When looking for a particular keyboard, make sure that we close the 
+file handle in the case that the keyboard name doesn't match (or can't be retrived) 
+and we therefore continue looking.  ttpro 2627
+
+-- CameraMPI: Modify default camera frame rate request from 15 to 20 FPS 
+to boost AVI recording FPS. (TTP #2556)
+
+-- CameraMPI: Save timestamp indexes to AVI, plus bitrate calculation for 
+~10K/frame JPEGs.
+
+-- CameraMPI: Wait for first video frame input before saving audio data. 
+(TTP #2507) Use difference between first and last video time stamps for calculating 
+FPS in video-only AVIs.
+
+-- TTPro 2479.  New StopAudio function, this one can post audio done 
+messages.  New enum added to support new function.
+
+-- CameraMPI: Enable timestamp support for tracking audio input updates. 
+(TTP 2507)
+
+-- CameraMPI: Calculate audio callback period time from nominal FPS rate. 
+Needed to adapt to different Pixart cameras for tracking audio data vs 
+video frames. (TTP 2507)
+
+-- CameraMPI: Duplicate video frame saved to AVI if video frame count lags 
+audio block count. Used to maintain audio / video sync when tracking 
+video frames vs audio blocks. (TTP 2507)
+
+-- ALSA: SND_PCM_TSTAMP_ENABLE is new name for SND_PCM_TSTAMP_MMAP.
+
+-- CameraMPI: Video frame duplication only conditional when audio active.
+
+-- Merged -c7659: Camera module: fix for occasional crashes when recording 
+muted videos. buf->timestamp is zeroed during the camera thread, and is 
+not guaranteed to be valid during thread exit.
+
+-- Merged -c7665: Camera module: set scaler only when dealing with the YUV 
+video layer. (MFG test app uses RGB rendering, and this was causing a 
+crash).
+
+-- Merged -c7669: L3B TTPro 2642: ALSA crashes when attempting to call 
+snd_pcm_hw_params() on a stream that we have paused, regardless of what 
+is reported by snd_pcm_state(). This checkin is more of a workaround 
+than a fix, because the above behavior is not well understood. Also, 
+make sure recording videos pause/unpause audio appropriately, and 
+non-recording viewfinders don't stream audio at all.
+
+===========================================
+Brio v1.1.20.7587 (June 6, 2010)
+===========================================
+
+-- CameraMPI: Query period size after setting (requesting?) period time 
+(per ALSA example). TODO: 
+
+-- Separate unit test binaries to allow for more targeted unit testing.
+
+-- testframerates: Record videos with different audio and viewfinder settings to allow for 
+performance comparison.
+
+-- CameraMPI: Period time interval determines callback rate for grabbing 
+input data. 15 FPS rate seems to have best throughput for our typical 
+audio+video AVI recording sessions.
+
+-- Theora: don't fail if patch already applied
+
+-- Reinstate Theora source missing from Brio svn..
+
+-- theora: rework setup script, give option for IDCT support
+
+-- TTPro L3B 2555:  Make CameraMPI hotplug-aware.  The implementation now 
+registers an internal listener which responds appropriately to hotplug events.  
+Active recordings are terminated upon camera removal,
+and calling applications are notified via their registered event listener.
+
+Note: The newly-added utility functions "EnumFolders" and "FindDevice" were 
+copied from LightningCore.  They should be removed from LightningCore 
+once this checkin has propagated to the SDK.
+
+-- Fixed a bug that prevented separated unit test binaries from compiling 
+properly.
+
+-- Increased camera framerate test capture times and added 2 "interactive" 
+unit tests for hotplug events.
+
+-- CameraMPI: Calculate effective FPS rate based on audio samples duration 
+when present, then Save FPS rate as fractional values in AVI header 
+fixup. (TTP 2507)
+
+-- Corrected DisplayMPI SetAlpha() doxygen comments about RGB vs ARGB 
+formats. 
+
+-- Camera: Resolve race conditions present in hotplug handling (L3B TTPro 
+2555).  This is accomplished with a new event type, kUSBDevicePriorityStateChange, 
+which should only be used internally by Brio within device modules, and
+never by applications.
+
+Also, break camera unit tests into separate tests for:
+-Camera
+-Microphone
+-Frame rates
+-Hotplug
+
+-- CameraMPI: Correct framerate request to Video4Linux, default at 15 FPS 
+now. Some internal "fps" vars were misnamed and really meant to 
+represent inverse-fps values, ie, time per frame. Apparently this was 
+not significant until Pixart camera widget FW reinstated support for 
+multiple framerate selections.
+
+-- Re-order USB event enums to preserve backwards compatibility. New enum 
+added in svn -r7502 should have been appended after previously defined 
+enums.
+
+-- VideoMPI: Correct video playback frametime propagated from FPS rational 
+values calculated in respective Theora or AVI players. Otherwise 
+inverse FPS calculations were re-introducing FPS truncation errors, 
+seen as slightly longer frametime intervals during AVI playback. 
+
+-- Camera unit tests: workaround for L3B TTPro 2580
+
+-- CameraMPI: Add YUV video layer HW scaler support. Effective for 
+surfaces created at 320x240 fullscreen, but rendered at other sizes, 
+like 160x120 quarter-size. Quarter-size rendering during capture 
+recording sessions result in higher throughput / FPS rates. (TTP #2569)
+
+-- Brio: don't use "LF1000 USB" keyboard, expect unotify to tell us about 
+both vbus and USB devices
+
+-- TTPro 2550.  Added new optional argument to GetFrame, color_order.  
+This will optionally swizzle the red and blue bytes, making it more 
+useful for people manually putting up frames to a display handle.
+
+WARNING:  This change breaks backward compatiblity.
+
+-- CameraMPI: Change Video4Linux protocol to use triple buffering in order 
+to prevent input corruption. (TTP 2508) Misc other mmap tweaks per 
+Video4Linux docs may not be significant.
+
+-- CameraMPI: Add conditional thread sleeps to yield timeslice when 
+neither audio nor video input data ready. Improves CPU usage with 
+little impact on effective FPS rates, especially when triple buffering 
+active.  
+
+-- Relax mmap flags to run as non-root user.
+
+-- Change control string to const to satisfy emulation compiler.
+
+-- Brio: revert USB Gadget handling improvements until things are fixed
+
+-- Per Dave, removing O_NONBLOCK option from file open for saving still 
+pictures as this was failing due to timing.  The change fixes the 
+saving pictures which was not working in the first 1.1.21 interim build.
+
+===========================================
+Brio v1.1.15.7407 (May 20, 2010)
+===========================================
+
+-- Replace previous avilib support with AVI wrapper-compatible functions 
+for libavformat/libavcodec support. Includes support for rewriting AVI 
+header with actual FPS rate like previous implementation.
+
+-- CameraMPI.StartVideoCapture() addition of optional parameter for 
+capturing audio with video. Defaults to true for previous capture 
+behavior. Toggling false captures video only. 
+
+-- CameraMPI.StartAudioCapture() addition of optional parameter for 
+starting in paused state. This option allows the app to delay audio 
+recording until ready, when ResumeAudioCapture() must be called as 
+noted in Doxygen comments. Defaults to false for previous capture 
+behavior to record immediately.
+
+-- CameraMPI unit test was checking incorrect return code from 
+VideoMPI.StopVideo() call.
+
+-- Simple CameraMPI SDK example.
+
+-- CameraMPI addition of PNG file save option for SnapFrame() using RGB 
+decode buffer. Interim stopgap feature until more general image file 
+saving/loading routines added to LightningCore.
+
+-- microphone: fix input overrun handling
+
+The Alsa documentation says that we should call snd_pcm_recover() when an
+overrun occurs.  Note that a pcm_read would return -22 (-EPIPE) and we will
+tell Alsa that this is the error we got.  Please see:
+
+This seems to resolve the audio stutters problem with the microphone caused
+by doing a pcm_resume in System/Camera/Microphone.cpp RecordCallback() when
+the XRUN state is detected.
+
+-- Fixup AVI header fields manually with actual FPS rate info. Rewriting 
+AVI header via libavformat call works OK for playback using same codec 
+libs, but zeroes out video header fields significant to desktop AVI 
+players.
+
+-- Updated VideoMPI Doxygen comments and unit tests.
+
+-- Updated CameraMPI Doxygen comments and unit tests for SnapFrame() PNG 
+option with full path support.
+
+-- Relocate PNG save option into separate code routine for clarity.
+
+-- Conditionally release temp buffers during cleanup in cases when 
+RenderFrame() fails due to non-existant JPEG files. (TTP #2534)
+
+-- TTPro 2536.  Adding boolean option to SeekVideoFrame and 
+SeekVideoKeyFrame, bUpdateVideoDisplay.  If set to true, the screen 
+will be updated to the newly seeked position.
+
+This is to get around XMV's need to unpause, seek, and then repause to 
+get screen to update.  The VideoTask was getting confused by the rapid 
+change in state.
+
+Also protecting PutVideoFrame with Mutex, this prevents occasional 
+crashes caused when seek is done while VideoTask is decoding.
+
+-- Init CameraMPI context vars so destructors succeed when no camera 
+widget is present. (TTP #2521)
+
+-- Report invalid CameraMPI instances in all tests.
+
+-- Report when signals are caught during automated unit tests.
+
+-- TTPro 2536.  Updating VideoTask with more stable seeking.  Hopefully, 
+will no longer get tripped up by  rapid seeks, pause, and unpause 
+interaction.
+
+-- Camera: clean up microphone error handling (ttpro 2511)
+
+The number of available frames wasn't checked and it can be < 0 on errors (that
+is, an underrun), in which case you should wait for more frames.  Instead, we
+were just grabbing that many (ex: -32 interpreted as an unsigned, so quite a
+lot), causing stutter.
+
+There are still a few issues here:
+
+1) we need to know a period_length which matches up to the output size.  We
+   make assumptions here based on the size of an AVI frame (4000 bytes) but
+   that depends on whether we're capturing audio+video or just audio.  What
+   is the right thing to do here?  Presumably we're OK since we use this to
+   detect underruns only, and we'll just wait for more data then.
+
+2) we have a recovery condition where we snd_pcm_start() the audio again and
+   this errors out due to the FD being already open.  However in some cases we
+   do need to snd_pcm_start() here or the audio recording stops.  We need to
+   investigate further and decide what to really do.  For now you'll just see
+   error messages while we continue.
+
+This rework is modeled after:
+http://www.alsa-project.org/alsa-doc/alsa-lib/_2test_2pcm_8c-example.html#a52
+
+===========================================
+Brio v1.1.10.7315 (May 9, 2010)
+===========================================
+
+-- TTPro 2487.  Reimplemented Justin's build of libjpeg.  Flash is no 
+longer building libjpeg so there should no longer be conflicts (I 
+hope).  Also added in exporting the libjpeg headers.
+
+-- Add seek support to AVI player.
+
+-- Working audio playback for general AVI cases including CameraMPI 
+generated files, not just audio-only AVIs. Account for audio frame 
+buffer holding more decoded bytes than requested per render callback.
+
+-- Make audio context vars player-specific instead of global.
+
+-- Merge minor AVI audio player changes into AVI video player for 
+consistancy.
+
+-- Adding libjpeg to libs of publish build for embedded.  This is needed 
+for Flash, as it no longer includes libjpeg, it needs to link to Brio's 
+for an embedded build.
+
+-- TestCamera:
+- Re-enabled audio path test
+- Added test for capturing video without a preview
+- Cleaned up test code
+
+-- Rebuilt libavformat/libavcodec libs with customized config for AVI, 
+MJPEG, PCM from LinuxDist svn -r7253
+
+-- Camera module: L3B TTPro 2497
+
+-- Add .avi file playback option to PlayAudio SDK example.
+
+-- Add command line overide option for video playback file in VideoDemo 
+SDK example.
+
+-- Add playback of recently created video to video recording tests.
+
+-- These /4s are wrong (at least for our application).  Captuing a AVI
+with 16-bit mono audio yielded incorrect values in the strh as well
+as WAVEFORMATEX.  Older versions of avilib (from Rainer Johanni,
+not modified by Thomas Österreicher) don't have this division.
+
+-- Camera: TTPro 2498.  Persist updated control setting.
+
+-- Pseudo-install jpeg shared libraries (need to be rebuilt on build 
+system due to glibc conflict)
+
+-- Camera: bug - running viewfinder after recording a video causes video 
+to be overwritten with viewfinder stream.
+
+-- Video module: allow StartVideo() to succeed even if the caller didn't 
+clean up their previously expired player.  Does not affect the case 
+where the video pthread is cancelled asynchronously.
+
+-- Rebuilt libavcodec binaries with disabled optimization settings from 
+LinuxDist svn -r7298.
+
+-- Conditionally close mic handle, otherwise cleanup call asserts when 
+non-root user.
+
+-- microphone: Attempt to handle ALSA XRUN.  Still potential sync issues.
+
+-- Modify VideoMPI playback to use system time with audio tracks instead 
+of audio timestamps. Allows video playback to be more continuous on 
+AVIs with mismatched or truncated audio tracks (TTP 2507).
+
+===========================================
+Brio v1.0.9.7230 (April 28, 2010)
+===========================================
+
+-- Rolled version string to 1.0.9
+
+-- Merged -r6702: 
+Fixed YUV Video layer order option, with unit test. (TTP 2326)
+(TTP 726 also)
+
+-- Merged -c6743, 6769,6789:
+
+-- 6734: Created a helper function call BinarySeekFrame, this function 
+uses a binary search to find the frame specified, and if it's a key 
+frame decodes it.  BinarySeekFrame returns the granulepos of the frame 
+it found.  SeekVideoFrame calls BinarySeekFrame for the frame being 
+searched for.  If it's not a keyframe, a second BinarySeekFrame is 
+called to find the keyframe.  Then it keeps decoding till it reaches 
+the target frame.  Also updated UnitTest to seek backwards as a part of 
+it's test.
+
+-- 6769: Corrected BinarySeekFrame to handle packets which span 
+multiple pages.  For the first stage of the search, we're not looking 
+for the framepos but the page with the highest framepos that is still 
+less than the target_framepos.  We later march forward from there.
+
+Also added some logic with left_pageno and right_pageno.  It's purpose 
+is to prevent re-reading pages when we already know we need to look 
+farther left.
+
+-- 6789: Added Mutex to SeekVideoFrame and SynchVideoFrame.  Also added 
+new bSeeked flag.  Modified VideoTask to check for bSeeked flag, and if 
+true will reset it's time to the new current time.
+
+WARNING: Possible race condition.  SeekVideoFrame for an earlier frame 
+might be called after the check f or the bSeeked flag and before the 
+call to SynchVideoFrame.  Doing so will cause the player to "fast 
+forward" in a manner that makes it look like the seek did not occur.
+
+Also added in SeekVideoKeyFrame to VideoMPI and a bool flag to 
+SeekVideoFrame in VideoModule.  Whether you call the MPI's 
+SeekVideoFrame SeekVideoKeyFrame determines if tru or false is passed 
+in.  True makes
+it search for the exact frame asked for, false makes it stop when it 
+finds the keyframe for the target frame.
+
+-- Merged -c6821, 6882:
+
+Update vorbis with patch that makes it seek properly for interleaved 
+files.
+After some tests, it looks like the changes to vorbisfile was not 
+actually needed.  Reverting the change
+s I made to it.  Made some other changes to the setup and make scripts 
+so that it's easier to build.
+
+(TTPRO #2371)
+
+-- Merged -c6906: Add AudioMPI functions for PauseAllAudio() and 
+ResumeAllAudio() with unit tests, for pausing all active audio players 
+without knowing their audio IDs. (TTP #2439)
+
+-- Merged -c6933, 6936: Update invalidated regions prior to video page 
+flips to avoid tearing seen in offscreen contexts. (TTP 2417)
+
+Support double buffering in YUV video context during video playback 
+thread to avoid tearing. This only works for LF1000 YUV420 planar 
+format 1Meg block regions with 4K stride scanlines. (TTP 2417)
+
+-- Merged -c6943, 6980, 6989:
+Account for page-flipped display contexts to determine current 
+visibility during unregistration. Otherwi
+se page-flip contexts could get mistakenly reset after overlay contexts 
+are removed. (TTP 2294)
+
+Fill in more display context info for OGL handle to be useful for 
+repositioning via Register() call. (TT
+P 2457)
+
+Add DisplayMPI function SetWindowPosition() for modifying default 
+window size and position determined by
+ CreateHandle() and Register(). (TTP 2456)
+
+-- Merged -c6911: 
+Additional CButtonEventQueue2 and CTouchEventQueue2 declarations for 
+event queue listeners which consume events instead of propagating them. 
+(TTPRO #2442)
+
+-- Merged -r7127: TTPro 2360.  Added comment about how the frame and time 
+of the pTime is used.
+
+-- Merged -c7152: Modify Brio Module manager to search for valid Module 
+path at runtime via leading LD_LIBRARY_PATH setting before defaulting 
+to hard-coded Module path. Needed to support alternate Brio library 
+installations in cart or download patches. (TTP 2485)
+
+-- Merged -c6822, 6919, 6993,7068 from trunk for videolib. DETAILS:
+
+--c6822: Added in working AudioSeeking (only tested with Vorbis).
+
+AudioMPI now has new function, SeekAudioTime.  All players have their 
+own implementation of SeekAudioTime.  VideoTask is responsible for 
+seeking the audio if the video has been seeked.
+
+Calls to SeekAudioTime go through the Mixer in order to protect access 
+to VorbisFile.
+
+--c6919: Relocate video mutex and context vars for VideoMPI unit tests 
+to run again.
+
+--c6993: Reinstate locks added to SyncVideoFrame() to support live 
+seeking while video playback thread is running. Adjust state var reset 
+in StopVideo() to avoid further locking while stopping.
+
+--c7068: Allow StopVideo() to yield before acquiring lock. Needed for 
+short Start/Sync/Stop sequence in unit test.
+
+===========================================
+Brio v1.0.8.6905 (March 26, 2010)
+===========================================
+
+-- Merged -c6785: TTPro #2369: Add USB state bit definition for hot-plug 
+events from the host adapter. Uses existing USB messaging scheme to 
+notify AppManager of camera or wifi widget connection. 
+
+-- Merged -c6868: Add new ButtonMPI functions for 
+SetTouchMode/GetTouchMode to use only enumerated values for drawing vs 
+default modes, hiding sysfs implementation details from the caller app. 
+(TTP #2419)
+
+-- Merged -c6869: Disable ButtonMPI SetTouchRate() function, keeping 
+default touch rate unchanged by apps. (TTP #2419)
+
+-- Merged -c6875:  Correct touch type for emulation. (TTP 2419)
+
+-- Merged -c6881:  Add more new ButtonMPI functions for 
+SetTouchParam/GetTouchParam to allow low-level setting of touch 
+parameters (debounce down/up, sample rate). API uses paired enum/value 
+arguments to support future settings. (TTP #2419)
+
+-- Merged -c6894:  Touch parameters for drawing mode updated, per Content 
+MrPencil testing. (TTP 2352, 2419)
+
+===========================================
+Brio v1.0.7.6804 (March 16, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
+
+===========================================
+Brio v1.0.7.6783 (March 12, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
+
+===========================================
+Brio v1.0.7.6778 (March 12, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
+
+===========================================
+Brio v1.0.6.6766 (March 10, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
+
+===========================================
+Brio v1.0.5.6735 (March 8, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
+
+===========================================
+Brio v1.0.4.6686 (February 26, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
+
+===========================================
+Brio v1.0.3.6616 (February 17, 2010)
+===========================================
+
+-- Allow EventMPI threads to exit on logic conditionals only, without 
+pthread_cancel() assistance. Cancellation calls may not always be safe. 
+(TTP 2141)
+
+-- Check 3D engine running status to avoid hanging in OGL init callback. 
+All Reg3D status idle bits should be set and clock bits cleared after 
+HW reset or eglTerminate() calls. If 3D engine left running from 
+crashed process without OGL cleanup, clock bits will be set and command 
+reader idle bit 21 will be busy.
+(TTP #2139, 2159)
+
+-- ME source archive for reference. Makefile needs to be fixed up for 
+gcc cross-compile and LF1000 chipset selection.
+
+-- Directory for AtomicI/O unit tests
+
+-- Removing dependencies from base packages (ttpro#95); meta.inf cleanup
+
+===========================================
+Brio v1.0.2.6589 (February 10, 2010)
+===========================================
+
+-- Detect and compensate for quantum jumps in elapsed time in case someone 
+(DFTP) changes the RTC while video is playing (transfer-in-progress 
+video). (TTP #2129)
+
+-- Additional video state check prior to update in looping cases. (TTP 
+#1626) 
+
+-- Disable Brightness & Contrast support in DisplayMPI and mark 
+corresponding functions as deprecated in Doxygen headers. (TTP #2128)
+
+-- Camera updates:
+-Unrolled loop for painting video layer for ~50% speed boost
+-Reduced number of camera buffers allocated to reduce viewfinder lag
+
+-- Camera updates:
+-Separate paths for Video and Still Image resources
+-Added SaveFrame() and OpenFrame() for still image management
+
+-- Handling of USB VBUS physical disconnect event clears all cached state 
+leftover from DFTP. (TTP #1626)
+
+-- Added AudioMPI trace message for speaker / soft-clipper state. (TTP 
+1532)
+
+-- Merged -c6549: Allow EventMPI threads to exit on logic conditionals 
+only, without pthread_cancel() assistance. Cancellation calls may not 
+always be safe. (TTP 2141)
+
+-- Merged -c6548: Revert v1.2.0 Vorbis libs from -r4711. (TTP 1969)
+
+-- Merged -c6564:  Save /tmp/3dlockup as runtime flag for 3D engine lockup 
+condition prior to assert. (TTP #2139, 2159)
+
+-- Merged -c6574, 6576, 6577, 6579:
+ TTPro 2208, the original implementation has proven woefully 
+inadequate. Cases of a game exiting without closing file prevents other 
+games from doing any atomic I/O. We must have a list of open handles. 
+Brings up new failure condition: what if an already fopenAtomic file is 
+fopenAtomic'd again? In this case, we choose to fail (return 0) instead 
+of be smart. Otherwise, as many files as we have RAM are supported now. 
+Add new feature to abort all known atomic files, so that we can do 
+clean up from AppManager on game exit, in case games misbehave. Also 
+add support for append mode, and guaranteed new shadow file names using 
+mktemp. 
+
+ TTPro 2208: Add fabortAllAtomic for new AppManager cleanup 
+
+ TTPro 2208: Better messaging in FR log 
+
+ TTPro 2208: Missing debug object in Brio build 
+
+-- Merged -c6585: Added handshake tracers to EventMPI message thread exit 
+sequence. (TTP 1729)
+
+===========================================
+Brio v1.0.1.6526 (February 2, 2010)
+===========================================
+
+-- Camera Updates:
+-Added camera control initialization
+-skeleton camera task implementation
+-renamed PutFrame to ReturnFrame
+-RenderFrame now optionally updates the display
+-camera test using RGB decoding/display layer
+
+-- Relocate pthread cancel test points after timeouts, plus 
+breakouts at loop iterations. (TTP 1729, 2086)
+
+-- Camera updates:
+-Implemented camera control selection
+-Activated test for threaded capture
+-Added test for control selection
+
+-- Camera updates:
+-added avilib for video file creation (to be moved to ThirdParty and/or rewritten)
+-added pause/resume feature
+
+-- Camera updates:
+-Better pause mechanism (VIDIOC_STREAMOFF requires buffers 
+to be requeued - too heavy for 'pause')
+-Pause/resume test
+
+-- Modified KernelMPI timer support to look for available SIGRT 
+handlers instead of using the same one for every timer. Timer 
+callback function does additional checking for correct callback path. (TTP 2054) 
+
+-- Used MPI-instance state var to track audio resource path 
+instead of module-wide state var. (TTP 1987)  
+
+-- Revert soft clipper state based on speaker state -- on for speaker, 
+off for headphones. AppManager Button event listener will have to call 
+AudioMPI.SetSpeakerEqualizer() on headphone jack state changes. (TTP 1532)
+
+-- Not-integrated code used for profiling audio latency.  
+Matching changes in LinuxDist_Emerald_1000
+
+-- Remove perror messages complaining about devnodes for nonexistant drivers. 
+
+-- Camera updates:
+-Added GrabFrame() to save a snapshot from the viewfinder thread
+
+===========================================
+Brio v1.0.0.6455  (January 26, 2010)
+===========================================
+
+-- merged -c6441: Added missing mktemp export needed by 
+libpthread-0.9.29.so. (TTP 2018)
+
+-- Rolled 0.9.12 to 1.0.0, per Hamid.
+
+===========================================
+Brio v0.9.10.6397 (January 24, 2010)
+===========================================
+
+-- Clean build from branch 0910.
+
+===========================================
+Brio v0.9.10.6397 (January 23, 2010)
+===========================================
+
+-- Merge -c6380 from Brio trunk for pthread_testcancel support.
+
+-- Rolled version to 0.9.10 in this branch
+
+===========================================
+Brio v0.9.9.6369 (January 22, 2010)
+===========================================
+
+-- No changes for patch build except SVN advancing.
+
+===========================================
+Brio v0.9.9.6362 (January 21, 2010)
+===========================================
+
+-- Reset framebuffer start address loaded in HW each new OGL context. 
+Should eliminate remnants of previously displayed OGL framebuffer 
+contents left by OGL triple buffering. (TTP #1896)
+
+-- Delete all players remaining in mixer streams for StopAllAudio() call, 
+including zombie players. (TTP #1931)
+
+-- Camera changes
+1.) Added RenderFrame() function to decompress a captured jpeg to raw bitmap
+2.) Enhanced testCamera to stream 4 seconds of captured video to the video layer
+
+===========================================
+Brio v0.9.7.6293 (January 16, 2010)
+===========================================
+
+-- Disable audio rendering thread option to revert previous mixer functionality, 
+pending additional development.
+
+-- Changing Brio's meta.inf Device to "LeapsterExplorer".
+
+-- Unused EventMessage members flagged by valgrind.
+
+-- Initial checkin of camera widget support.  Building disabled.
+
+-- Adding libjpeg support for camera.  Does not build/install yet.
+
+-- libjpeg support for building CameraMPI
+
+-- Disable YUV layer visibility on DisplayMPI startups for video left 
+behind on prior instances.
+
+-- Keeping event listener trace messages for debugging purposes, with 
+most verbose conditional on DEBUG builds.
+
+-- Merged -c6265:  Revert KernelMPI pthread_mutex_lock hack for performance reasons. 
+
+-- Merged -c6286:  Changed dispmgr pointer behavior, now works like a 
+Singleton. BrioOpenGLConfig will allocate it if needed on construction and 
+delete it on destruction. By not pointing it at BrioOpenGLConfig's personal 
+DisplayMPI, it's possible to destroy OpenGL if someone forgot to delete BrioOpenGLConfig, 
+but somehow it left scope (unloading game plugin)
+
+===========================================
+Brio v0.9.6.6208 (January 10, 2010)
+===========================================
+
+Audio:
+-- Added option for separate rendering thread to decouple audio rendering 
+from mixer callback function. Rendered samples are queued into ring buffer 
+per player stream object for extraction by mixer. Enabled via #define 
+USE_RENDER_THREAD switch. (TTP #860)
+
+Required addition of new Stream.IsDone() state distinct from Player.IsDone() 
+state in order for stream to play to completion after player has rendered 
+all samples.  Fixed looping playback option too to splice player samples 
+properly over loop transition in stream buffer.
+
+-- Added intervening sleep between thread cancel and join steps in 
+order to allow thread switch to be effective. Problem with pthread_join() 
+hanging seen to occur when waiting on button thread to exit. (TTP #1729)
+EventMPI unit test modified to support correct module exit.
+
+-- Reworked Stream.IsDone() logic based on last rendered buffer index.
+
+-- Insure Stream.IsDone() compatibility with Player.IsDone().
+
+-- Init done index to invalid value in order to handle single-buffer 
+short samples.
+
+-- Audio rendering thread throttles itself when more rendering buffers to fill.
+Positive effect on UI narration problems reported in TTP #1815.
+
+-- Merge -c6171:  Disable audio rendering thread option to revert 
+previous mixer functionality, pending additional development.
+
+===========================================
+Brio v0.9.5.6119 (December 31, 2009)
+===========================================
+
+-- Correct DebugMPI timestamp option to display in unsigned format. (TTP #1757) 
+
+-- No interest in speaker state since it has no effect on mixer state. 
+Avoids keyboard enumeration overhead and annoying "no such device" error messages.
+
+-- Add mutex synchronization to EventMPI event listener list. Frequent listener 
+changes observed in NiHao game transitions. (TTP #1666, 1677)
+
+-- Guard against duplicate OGL driver disable calls in case eglTerminate 
+called multiple times during cleanup.
+
+-- Remove timeout from driver blocking call which was no longer needed 
+when low-battery status event was fixed (svn -r4661). 
+
+===========================================
+Brio v0.9.4.6088 (December 22, 2009)
+===========================================
+
+-- This patch addressed TTPro 1693: Brio looks through /dev/input looking for
+eventN files and we had an arbitrary upper limit of 8 files.  Change Brio to
+just "ls" the directory and look at every eventN file rather than having the
+arbitrary limit.  This should not affect existing code/configs, however it
+enables the AppManager to find its devices (touchscreen, for example) in cases
+where those devices are found after additional HID devices like a USB
+keyboard.
+
+On the Linux side, we need more /dev/input/eventN files (device nodes)!  This
+will be addressed separately.  The correct fix is to use hotplug+mdev however
+at this time we'll likely just increase the number of statically-created nodes
+to cover having more devices.  Brio2 however will now be robust enough to
+handle additional nodes, either way.
+
+-- AtomicFile: Optimized with Daniel's fflush before fdatasync instead of sync after fclose
+
+-- Merged in Vorbis v1.2.3 source changes to Tremor.
+
+-- Rebuilt Vorbis libs from v1.2.3 sources.
+
+-- Added mutex protection to display context list, to avoid 
+crash seen during volume bars settings. (may affect TTP 1460)
+
+-- Small precheck optimization to avoid float calculation on 
+most common pan values.
+
+===========================================
+Brio v0.9.3.6044 (December 17, 2009)
+===========================================
+
+-- Added breakout counter to video task stop logic to avoid 
+hanging seen in USB looping video. (TTP #1518)
+
+-- Modify kTouchRateDefault to 100 to reflect new driver default. (TTP #1680)
+
+===========================================
+Brio v0.9.2.6005 (December 15, 2009)
+===========================================
+
+-- Use persistent KernelMPI instance in PortAudio callback to 
+allow thread to terminate properly.
+
+-- Workaround to skip module cleanup to avoid aborts on bad handles.
+
+-- Minor AudioMPI mixer fixes for valgrind uninitialized variable warnings. 
+No real effect in execution.
+
+-- TTPro1616: Add DebugOut logging to Atomic file I/O.
+Note: We assume now that we have Brio and can use DebugOut!
+
+-- Cleanup doxygen comment, add an interface, not used for now.
+
+-- added an interface GetCartridgeType(..), not used for now.
+
+===========================================
+Brio v0.9.1.5941 (December 2, 2009)
+===========================================
+
+-- Audio: Detect incomplete Render callback from MemPlayer stream 
+in order to allow retry attempts. Compensates for unrendered Flash 
+audio packets which would otherwise be output as silence/breakups. 
+(TTP #860)
+
+-- Modify framebuffer size queries to defer to read-only /dev/mlc config values, 
+in order to support non-standard reserve in custom kernels. (Layer-specific sizes 
+seem to be hard-coded.)
+
+===========================================
+Brio v0.9.0.5890 (November 19, 2009)
+===========================================
+
+-- Terminate VideoMPI thread in case of looping.
+
+-- Allow video thread to exit itself gracefully before killing it.
+
+-- Merged -r5884 from TRUNK:
+Wait for VideoMPI thread to run to completion when stopping video playback. (TTP #1489)
+
+------------------------------------------------------------------------
+===========================================
+Brio v0.8.0.5826 (November 12, 2009)
+===========================================
+
+-- Process AppManager restart message
+
+-- Revert audio buffer size back to 4K for interim (TTP 230).
+
+-- Relax InitAudioOutput assert to critical warning since re-tries are now possible.
+
+-- Insure enough space available for mixer buffers used for sample rate conversion. 
+Prevents memory buffer overuns seen with mis-encoded 44KHz OggVorbis samples in 
+NiHao game. (TTP 1232) 
+
+-- Clamp audio player sample rates to fit Brio mixer stream params to prevent 
+buffer overflow problems at outset. (TTP 1232) 
+
+-- AIFF is not supported audio format -- disabled from libSndFile a long time ago.
+
+-- Fix VideoMPI rewind seek op to support looping option.
+
+-- Added VideoMPI unit test for SeekVideoFrame().
+
+===========================================
+Brio v0.7.9.5778 (November 5, 2009)
+===========================================
+
+-- Added DisplayMPI workaround to re-align framebuffer base address 
+if mis-alignment detected after crash from cart hot swap (TTP 1195) 
+or tutorial interruption (TTP 437) .
+
+-- Added DisplayMPI doxygen comments about framebuffer allocations 
+for RGB, YUV, and OGL buffers. (TTP 1208)
+
+-- Added DisplayMPI queries for new read-only framebuffer address/size 
+ioctls, to avoid re-alignment issues with read-write layer register 
+ioctls. (TTP 1195)
+
+-- Unlock mixer around slow CreatePlayer call.  This has the benefit of
+allowing the mixer to render while the slow call is running, rather
+than being held off.  Overall, this reduces underrun cases and gives
+us the freedom to shrink the number of audio buffers in the driver,
+ultimately reducing audio latency.
+
+-- Cart handling moved to CartManager process, Cart thread here only 
+handles message from CartManager
+
+-- Reverting -r5756 from TRUNK to get prior audio behavior in release 0.7.9
+
+===========================================
+Brio v0.7.8.5726 (October 30, 2009)
+===========================================
+
+-- Use same OSS buffer sizes and config for correct Flash audio playback on emulation target.
+
+-- Sleep 3 seconds before starting task
+
+===========================================
+Brio v0.7.7.5615 (October 22, 2009)
+===========================================
+
+-- Atomic Writes: First pass; no support for append yet
+
+-- Removed 'brightness' button listener; now handled in Linux DPC driver.
+
+-- Offscreen display contexts are not supposed to affect layer visibility. (TTP #1203)
+
+-- Remove EventMPI dependency from DisplayMPI since button listener is gone. 
+Need to determine what is wrong with Set/GetBrightness() and Set/GetContrast() support i
+in unit test. (TTP #1221)
+
+-- Merge change -c5576 from Brio trunk for emulation audio compatibility. Fixes 
+Flash audio support for emulation/SDK. (TTP #1252)
+
+===========================================
+Brio v0.7.6.5475 (October 16, 2009)
+===========================================
+
+-- Reinstated exit handlers in BrioOpenGLConfig to destroy OGL context if 
+still enabled, independent of handlers moved into AppManager. (TTP #1063)
+
+-- Clear framebuffer memory per display buffer allocation for cleaner 
+appearance when enabling visibility prematurely. (TTP #697, 841, 844?)
+
+-- Increase audio buffer size for 4K handoff to /dev/dsp for single Brio 
+mixer callback per write. (TTP 597, 860)
+
+===========================================
+Brio v0.7.5.5373 (October 8, 2009)
+===========================================
+
+-- Reinstate original DebugMPI Assert() behavior per developer expectations. (TTP #344) 
+
+-- Fix bug #917
+
+===========================================
+Brio v0.7.4.5312 (October 2, 2009)
+===========================================
+
+-- Fix Battery State reporting, TTPro #902
+
+-- Added checks for registering duplicate display handles and 
+adjust list accordingly. Looks like FlashDidj object is re-registering 
+the same onscreen display handle multiple times during init and 
+resume states. (TTP #804)
+
+-- TTPro #930.  Added to docs for SetTouchRate.
+
+===========================================
+Brio v0.7.3.5259 (September 24, 2009)
+===========================================
+
+-- Fixup KernelMPI annotations for GetElapsedTime*() functions.
+
+===========================================
+Brio v0.7.2.5244 (September 23, 2009)
+===========================================
+
+-- Added an API to stop all audio
+
+-- Locate emulation paths via AppManager emuroot path to avoid SDK path 
+dependencies in libs. (TTP #743)
+
+-- Relocated all internal RPATH linker directives to be applicable only 
+for intended Brio unit tests. (TTP #743)
+
+-- Modify PowerMPI.Reset() to exit with return code 0 to prevent 
+AppManager restarts under default runtime behavior. (TTP #742)
+
+-- Inexpensive sanity checks for NULL display handles which were never 
+expected to be dereferenced. (TTP #694, 765)
+
+-- Update missing Current_Time fields for 
+KernelMPI.GetElapsedTimeAsStruct(). (TTP #878)
+
+===========================================
+Brio v0.7.1.5183 (September 17, 2009)
+===========================================
+
+-- Fixes for YUV offscreen context rendering. (TTP #726)
+
+-- Added an API to stop all audio
+
+===========================================
+Brio v0.7.0.5127 (September 10, 2009)
+===========================================
+
+-- Added for Emulation, Escape key sends a PowerShutdown event through event manager.  
+Using escape now allows you to keep key repeat.  Catching clicking on the X 
+button too, but crashes in X server prevents key repeat from being restored.
+
+===========================================
+Brio v0.6.3.5106 (September 8, 2009)
+===========================================
+
+-- Unify framebuffer allocations using common addresses and offsets shared among RGB and YUV layers. (TTP #68)
+
+-- PowerMPI.Reset() function needs immediate exit to bypass module cleanup problems. (TTP #564)
+
+-- Integrate OGL buffers with framebuffer allocation scheme. 4Meg and 1Meg aligned blocks are allocated 
+top-down from the end of the heap, while variable size buffers are allocated bottom-up from the 
+start of heap. (TTP #68) 
+
+-- Added AudioMPI time event to assist with VideoMPI sync and general timing analysis.
+
+-- Added DisplayMPI.GetDisplayMem() function for tracking framebuffer allocations. (TTP #68)
+
+-- Compact free list buffers back to heap when possible after framebuffer deallocations. (TTP #68)
+
+-- Avoid duplicate deallocation problem seen in unit test with single OGL memory block context. (TTP #68)
+
+-- Emulation unit tests needed to clear cached X window var to avoid X event race problems.
+
+-- Fix KernelMPI unit test for GetSourceFile() with known /usr/lib file, 
+since /usr/include path is no longer present on erootfs. (TTP #555)
+
+-- Bug fix, FR log enhancement, and other optimization
+
+-- 3 cart x icons will restart AppManager
+
+-- Store Brio cartridge task Cartridge state.
+
+-- Use thread-based callbacks for KernelMPI timers instead of signal 
+interrupts which were vulnerable to deadlocks. This feature was not 
+available on the earlier uclibc runtime libs, but the newer libs 
+deadlocked immediately during unit tests. (TTP #543)
+
+-- Added time event callback option to all AudioMPI player objects. Time lapse 
+intervals must be multiples of mixer render time quantum (16 msec) to trigger callbacks. (TTP #230)
+
+-- Remove instrument-based MIDI functions from AudioMPI which are no longer supported. 
+File-based MIDI functions need to remain in AudioMPI class declaration for 
+Foster's game legacy use, but these are now Doxygen-tagged as deprecated in 
+headers. (TTP #582)
+
+-- Use vfork(...) instead of fork() to execute system(...) function.
+
+-- Fix issues related test_Event utility. At this point, the USB task may 
+still cause stuck once in a while.
+
+-- Bump max number of Vorbis channels available to 5, with contingency for 
+reverting back to 3 via /flags/vorbis setting. (TTP #209)
+
+-- Added AudioMPI helper thread to re-try enabling PortAudio output in 
+case /dev/dsp is still in use. (TTP #589)
+
+-- Modified VideoMPI playback thread to use audio time events for sync. 
+Need to resolve cummulative time frame lag, so disabled for interim reference.
+
+-- Attempt to resolve bug #609 "Base crash after ~5 minutes continuous cart 
+insertion and removal" #611 "Base no longer recognizes cart insertion 
+after repid insertion or removal of cart"
+
+-- Added GetTouchRate() / SetTouchRate() functions to ButtonMPI, with 
+defines for min, max, and default Hz. (TTP #255)
+
+-- Need better linked list management for display contexts. (TTP #84, 563)
+
+-- Added VideoMPI.GetCurrentVideoHandle() function for tracking currently 
+playing video. Needed to pause, resume, or stop videos during AppManager 
+Pause, LowBattery, and USB states. (TTP #624)
+
+-- Replaced old custom linked list code for display context management 
+with std::list based version. Tracking of visible display contexts 
+more consistent to match. Better compatibility with AppManager's 
+volume bar overlay rendering now, though that code needs more work. 
+
+-- Added RGB-to-YUV conversion routine to support offscreen rendering of RGB 
+bitmaps onto YUV video surfaces, like AppManager volume bars.
+
+-- Fixes to display context tracking of topmost visible surface.
+
+-- Added pixel packing function for YUYV packed to YUV planar format.
+
+===========================================
+Brio v0.6.2.4964 (August 11, 2009)
+===========================================
+
+-- Allow USB physical connect/disconnect states to be maintained independently of 
+`DFTP event states.
+
+-- Renamed CartridgeMPI unit test to allow rest of Brio unit tests to build. 
+
+-- Minor change in Display module brightness handler for more direct access to 
+internal functions.
+
+-- Manage framebuffer allocations to use linked lists of used vs free buffer 
+regions like a heap. Framebuffer memory is tracked in a used list when buffers are 
+allocated,  and reclaimed back by the heap when deallocated if possible, or saved to a 
+free list for recycling. (Emerald #68)
+
+-- Reinstate clearing buffers to white pixels on pending pixel format changes to 
+eliminate color flashes in Racing scene changes.
+
+-- Make sure there is clean exit from any unknown situation (ButtonPowerUSBTask)
+
+-- Move signal handler to AppManager
+
+-- make sure all open files are closed... (in ButtonPowerUSBTask.cpp)
+
+-- Fixed emulation problem in Brio event manager where additional EventMPI object 
+was being created inside event module thread. (Probably introduced when X event 
+handling code was moved from Button module to Event module.) Seen as emulation 
+race condition when running AppManager on VMWare Linux platform (TTP #524). 
+
+===========================================
+Brio v0.6.1.4873 (July 29, 2009)
+===========================================
+
+-- Merge Vorbis Tremor code which works for general Ogg format streams, including 
+Theora interleaved and Vorbis-only packets. Merge localizes porting changes to 
+main vorbisfile.c file with more flexible Vorbis 1.2 packet parsing logic. 
+Everything else is retained for Tremor fixed-point codec support.  
+
+-- Updated Vorbis Tremor codecs with multi-stream Ogg packet handling. Updated 
+Brio SDK video examples to use same Ogg file for audio and video tracks. (Emerald #216)
+	
+-- Remove DebugMPI.SetMasterDebugLevel() calls from SDK examples.
+
+-- Fix the issue Dave reported: in debug mode, when DidjAssert(...) happens, gdb take control.
+
+-  Added SIGILL and SIGFPE signals to Brio OGL signal handler to prevent freezes on new 
+OGL contexts.  Chain Brio OGL signal handler to default handler in order to 
+generate core dumps. (Emerald #341)
+
+-- Chain Brio OGL signal handler to default handler in order to generate core 
+dumps. (Emerald #341)
+
+-- Initial pass to reorganize framebuffer allocations for DisplayMPI contexts. 
+Framebuffer regions mapped for each layer like Didj, but mapped all at once and 
+sub-allocated more systematically to avoid RGB vs YUV buffer contention. (Emerald TTP #68)
+
+-- Brio buttons now working with FlashPlayer.
+
+-- Added Brio USB event state for RTC setting, to be posted from DFTP daemon to AppManager. 
+(Emerald TTP #379)
+
+-- Touch now works in Emulation Flash.
+
+-- Adding range to boost headers for use with foreach.
+
+-- Added cartridge task to support hot swap cartridge
+
+-- Convert C strstr() call to C++ string::find() call to unblock missing 
+header problem on emulation.
+
+-- Fully qualifying the function CartridgeMPI calls.  Instead of calling itself, 
+it now calls the Utility function.
+
+-- Fake cartridge task in Emulation.  Might be better if we didn't create a cartridge 
+task at all in Emulation.
+
+-- Adding format strings to a few *printf functions to make gcc 4.3 compile and 
+for a bit of safety.
+
+-- Adding #include <string.h> in several files that use memcpy and memset.  gcc 4.3 removed 
+some of the headers including other headers
+
+-- Need to link CartridgeMPI for CartridgeMessage import.
+
+-- Fix support for additional cart event thread setup/teardown inside Event manager.
+
+===========================================
+Brio v0.6.0.4706 (July 9, 2009)
+===========================================
+
+-- Enabled lightweight ButtonModule object to instantiate EventMPI during lifetime. 
+On embedded target, this will activate the Event manager thread so that polling 
+GetButtonData() will always return valid button states. (Emerald TTP #253)
+
+-- Disable optimizations in debug builds to aid single-step debugging.
+
+
+-- Added clean options to doxygen build step in order to regenerate fresh html docs.
+
+-- Remove temporary doom file check and vbus flag overide to return actual USB connected state. 
+
+-- Need KernelMPI object during DisplayMPI module lifetime to avoid segfaults when 
+object is destroyed. (Emerald #247)
+
+-- Modified SDK SysAppDemo for handling USB ethernet connect/disconnect states with 
+billboard screens prototyping device state machine behavior.
+
+-- Added USB socket listener to event-posting drivers in EventMPI thread.  Modify USB 
+demo with test option for posting fake socket messages.  Reorganize USB socket event 
+handling to empty pending messages, and post cached copies for polling compatibility.  
+Allow USB physical disconnect state to be independent of cached USB state.
+
+-- Rebuilt libsndfile with .wav file pcm support re-enabled.
+
+-- Mods to USB socket handling uncovered during testing with MW code.
+
+-- Flight recorder improvements.
+
+-- Fixed build problems related to types and switch to new Linux 30.
+
+-- Deleted old theora source tree.  Updated Ogg, Theora, Vorbis libs from reference releases.
+
+-- Removed low battery polling, as Linux now posts multiple LOW_BATTERY messages via the 
+Input Event system.
+
+-- Fixed  KernelMPI object missing in debug builds.
+
+--  Modified Vorbis player to use Vorbis release libs for testing Ogg Theora 
+multi-stream compatibility. (Emerald #216)
+ 
+-- Moved flat profiler #define into common AudioMPI header for convenience.
+
+-- Re-enable previous Vorbis Tremor libs for Vorbis player support.
+
+-- Tweak DebugMPI message levels in DisplayMPI appropriate for FR logging.
+
+-- Tweak DebugMPI message levels in AudioMPI appropriate for FR logging.
+
+-- Interim merge of Vorbis 1.2.0 code into local Tremor tree. (Development will 
+not impact Brio builds until final binaries are checked in once they are working.) 
+
+Most noteworthy finding is that Tremor code was using old Ogg packet structures and 
+functions internally instead of referencing Ogg headers and libs externally. The 
+merge will be successfully completed when able to parse any mixed-mode Ogg packets 
+like Theora instead of handing only Vorbis packets. The fixed-point decoding and 
+quantization routines are isolated in separate code modules and should not 
+need to be updated. 
+
+-- Added X mouse button events for emulation support of touchscreen events. (Emerald #337, 338)  
+
+-- Updated SDK ButtonDemo example for detecting touch events in addition to button events.
+
+-- Updated touch event emulation support to include X mouse dragging events. (Emerald #337, 338)
+
+===========================================
+Brio v0.5.1.4522 (June 11, 2009)
+===========================================
+
+-- SDK notes updated.  
+
+-- Final 0.5.1 build candidate.
+
+===========================================
+Brio v0.5.1.4500 (June 9, 2009)
+===========================================
+
+-- Fixes for SDK emulation support, including ButtonMPI emulation.
+
+-- DebugMPI separate levels for console and syslog messages.
+
+===========================================
+Brio v0.5.1.4482 (June 5, 2009)
+===========================================
+
+-- New Emerald 0.5.1 folder structure rooted at /LF device path.
+
+-- Relax mmap() flags used for OGL framebuffer mappings. /dev/mem 
+must be used instead of /dev/layer1 to satisfy virtual address 
+requests needed for OGL lib. Change OGL framebuffer mappings for 
+/dev/layer to avoid /dev/mem dependency. (Emerald #246)
+
+-- Additional USB state flags for transfers in progress, errors,
+and pending resets.
+
+===========================================
+Brio v0.5.1.4443 (May 29, 2009)
+===========================================
+
+-- Doxygen comments
+Doxygen fix comments for AudioMPI (IsAudioPlaying).  
+Added doxygen comments for ButtonEventQueue and TouchEventQueue.
+Modified EventMPI and ButtonMPI comments to Doxygen format.
+Update AudioMPI.h header to correct and remove outdated comments.
+
+-- SDK utilities
+Reinstate sf2brio utility for prepending .brio header to raw audio files.
+Added oggenc support lib missing on Ubuntu8.
+Added PrintUptime() function to Utility lib for uniform uptime tracers.
+Fixup Brio SDK examples to enable debug message output with new DebugMPI.
+
+-- Module updates
+Added mutex protection to connected modules list to avoid corruption on exits.
+set masterDebuglevel to Verbose by default.
+Preserve symbol for release build.
+Change embedded target optimizations based on Flash player anomolies.
+
+===========================================
+Brio v0.5.0.4405 (May 20, 2009)
+===========================================
+
+-- DebugMPI additions to support flight recorder.
+
+-- AudioMPI additions to support memory buffer playback.
+
+-- ButtonEventQueue and TouchEventQueue changes for improved performance.
+
+===========================================
+Brio v0.4.2.4311 (May 7, 2009)
+===========================================
+
+Changes in Brio since 0.4.1:
+
+1) Flight recorder logging using DebugMPI (-r4244:4262)
+
+===========================================
+Brio v0.4.1.4204 (April 16, 2009)
+===========================================
+
+No significant changes in Brio since 0.4.0.
+
+===========================================
+Brio v0.4.0.4175 (April 7, 2009)
+===========================================
+
+Emerald 0.4.0 release -- significant changes since 0.3.6:
+
+Modified Event manager internal functions and threads 
+to use common Debug and Kernel MPI objects, otherwise 
+these objects remain loaded until exit time. 
+(Emerald TTP #132) (-r4165)
+
+===========================================
+end of Brio v0.4.0.4175 (April 7, 2009)
+===========================================
+===========================================
+Brio v0.4.1.4204 (April 16, 2009)
+===========================================
+
+No significant changes in Brio since 0.4.0.
+
+===========================================
+Brio v0.4.0.4175 (April 7, 2009)
+===========================================
+
+Emerald 0.4.0 release -- significant changes since 0.3.6:
+
+Modified Event manager internal functions and threads 
+to use common Debug and Kernel MPI objects, otherwise 
+these objects remain loaded until exit time. 
+(Emerald TTP #132) (-r4165)
+
+===========================================
+end of Brio v0.4.0.4175 (April 7, 2009)
+===========================================
+
+===========================================
+Brio v0.3.6.4131 (Mar 27, 2009)
+===========================================
+
+Emerald 0.3.6 release -- take 2.
+
+No changes in Brio2 source.
+
+===========================================
+end of Brio v0.3.6.4131 (Mar 27, 2009)
+===========================================
+
+
+===========================================
+Brio v0.3.6.4126 (Mar 25, 2009)
+===========================================
+
+Emerald 0.3.6 release -- significant changes since 0.3.5:
+
+r4080 | dmilici | 2009-03-12 16:45:34 -0700 (Thu, 12 Mar 2009) | 4 lines
+
+Fixed Brio meta.inf to maintain 1.2.3.SVN version numbering. The extra 
+subminor field should not have been inserted before the trailing SVN 
+number.
+
+------------------------------------------------------------------------
+r4103 | dmilici | 2009-03-17 15:45:19 -0700 (Tue, 17 Mar 2009) | 2 lines
+
+Change Brio package ID to Emerald product assignment (for sync with 
+Emerald 0.3.5 release which is not meant to be OmegaTerm compatible).
+
+Meta.inf file now has SVN revision number appended to version field at 
+build time.
+
+------------------------------------------------------------------------
+r4123 | dmilici | 2009-03-25 10:50:44 -0700 (Wed, 25 Mar 2009) | 1 line
+Changed paths:
+   M /TRUNK/Lightning/meta.inf
+
+Bump Brio version to 0.3.6 for Emerald build.
+========================================================================
+========================================================================
+===========================================
+end of Brio v1.34.4.4011 (Feb 26, 2009)
+===========================================
+
+Changed TouchState to use signed integers for X and Y positions.  This makes
+it easier to clamp values in the appropriate direction.
+
+Changed ButtonEventQueue and TouchEventQueue to use ButtonData2 and TouchData
+instead of message.  This casts off the message wrapper.
+
+Fixed long outstanding bug with Audio module playing "silently" when re-instiated.
+
+Changed 1D/2D BrioOpenGLConfig heap defaults 2/14 for 16MB framebuffer in 64MB firmware.
+
+Flexible input drivers detection added to Event Module.  Now won't assert if Button, Power,
+USB, or Touch aren't found.  It's still possible to call all functions for retrieving these
+states and register listeners for these events.  If the input isn't found, the retrieve states
+will never change, and no events will ever be generated.
+
+===========================================
+Brio v1.34.3.3964 (Feb 19, 2009)
+===========================================
+
+First M2 Brio release for Emearld.  "Build 0.3 - Stability"
+
+Added Touch Events.  TouchTypes.h has definition of TouchMessage.  Event Module
+now also listens to Touch events during combined Button, Power, and USB thread.
+Touch does not have an MPI.  The only thing to do with Touch is to recieve
+the events.
+
+Added ButtonData2 type which includes timestamps.  All events now use new
+ButtonData2.  For backward campatiblity GetButtonState still returns old
+struct, new function GetButtonState returns new struct.
+
+Removal of USBDevice, Power, and Button Modules.  Last remaining functions
+in them are now done by respective MPI directly.
+
+FreeType now being built with default configuration.
+Now Flash doesn't need it's own seperate FreeType.
+
+Additional mapping of linear framebuffer region access at the start of
+OGL 2D heap.  Used for synchronizing linear framebuffer access region
+for interleaved SW + HW rendering.
+
+Corrected destination display context when updating offscreen contexts.
+
+Addition of ButtonEventQueue and TouchEventQueue.
+This simplifies polling for these events in particular.
+
+===========================================
+Brio v1.34.2.3846 (Jan 19, 2009)
+===========================================
+
+Third M1 Brio release for L3X.  "Build 0.2 - Functionality"
+
+No changes to Brio, except version string update.
+
+(end of notes for v1.34.1)
+
+===========================================
+Brio v1.34.1.3839 (Jan 14, 2009)
+===========================================
+
+Second M1 Brio release for L3X.  "Build 0.2 - Functionality"
+
+Changes:
+
+1)
+
+r3819 | dmilici | 2009-01-12 14:31:08 -0800 (Mon, 12 Jan 2009)
+
+Additional time stamp profiling for raw player and Vorbis player startup 
+and StartAudio() call. 
+Profiling disabled unless ENABLE_PROFILING defined. (TTP #2143)
+
+(end of notes for v1.34.1)
+
+===========================================
+Brio v1.34.0.3777 (Dec 16, 2008)
+===========================================
+
+-- First M1 Brio release for L3X.  Edited SVN notes since -r3631 follow:
+
+........................................................................
+r3633 | sesters | 2008-10-29 16:28:53 -0700 (Wed, 29 Oct 2008) | 5 lines
+Change MLC_IOCQADDRESS Assert to check for -EFAULT only.  Previously the
+Assert() checked for the address < 0.  This check failed on Didj09 when
+the SDRAM address is 0x80000000 or greater and is interpeted as a signed
+integer.
+
+........................................................................
+r3644 | dmilici | 2008-10-30 14:48:07 -0700 (Thu, 30 Oct 2008) | 2 lines
+Merged Brio-SP4 updates into Brio trunk, including low-battery power 
+event fix.
+
+........................................................................
+r3655 | sesters | 2008-11-04 18:51:11 -0800 (Tue, 04 Nov 2008) | 2 lines
+Add "#define _FILE_OFFSET_BITS" so mmap works with addresses above 
+0x80000000
+
+........................................................................
+r3656 | sesters | 2008-11-04 19:11:04 -0800 (Tue, 04 Nov 2008) | 2 lines
+Removed conflict.  New code handles Frame Buffer addresses above 
+0x80000000.
+
+........................................................................
+r3674 | dmilici | 2008-11-11 10:31:09 -0800 (Tue, 11 Nov 2008) | 2 lines
+Fixed Brio scons scripts' propogation of buggy "is_runtests" boolean 
+option. Unit tests binaries and resources are not deployed unless 
+"runtests=t" explicitly passed.
+
+........................................................................
+r3675 | dmilici | 2008-11-11 11:18:25 -0800 (Tue, 11 Nov 2008) | 2 lines
+Added "debug=t" option to Brio scons scripts to allow debug symbol builds.
+
+........................................................................
+r3677 | dmilici | 2008-11-12 17:56:38 -0800 (Wed, 12 Nov 2008) | 2 lines
+Leave video layer in XY block addressing mode for cleaner appearance when 
+disabling.
+
+........................................................................
+r3690 | dmilici | 2008-11-14 11:58:02 -0800 (Fri, 14 Nov 2008) | 2 lines
+Modify PortAudio lib to not query audio driver capabilities as 
+work-around to avoid driver thrashing audio amp enable/disable during 
+open/close. (TTP #2005)
+
+........................................................................
+r3704 | sesters | 2008-11-19 15:56:44 -0800 (Wed, 19 Nov 2008) | 2 lines
+Add support for /flags/vbus flag, allowing developers to debug 
+applications with USB connected.
+
+........................................................................
+r3729 | dmilici | 2008-11-25 10:59:41 -0800 (Tue, 25 Nov 2008) | 2 lines
+Propogated scons debug=t option into LightningUtils.py for Brio SDK 
+examples.
+
+........................................................................
+r3732 | dmilici | 2008-12-03 15:54:41 -0800 (Wed, 03 Dec 2008) | 1 line
+Added ..strip-all linker directive for Brio modules release builds to 
+minimize .so run-time sizes
+
+........................................................................
+r3733 | dmilici | 2008-12-03 16:19:40 -0800 (Wed, 03 Dec 2008) | 2 lines
+Added support for mem-mapped file IO via Vorbis callbacks. Disabled as 
+compile option by default pending test results.
+
+........................................................................
+r3767 | gstanfield | 2008-12-15 10:45:12 -0800 (Mon, 15 Dec 2008) | 1 line
+Upped version number to 34.0.3766 for the L3X build
+
+........................................................................
+
+===========================================
+Brio v1.33.4.3631 release (Oct 28, 2008)
+===========================================
+
+-- Reinstate periodic polling of power state to detect low-battery event.
+
+===========================================
+Brio v1.33.4.3625 release (Oct 27, 2008)
+===========================================
+
+-- MIDI support deprecated from Audio MPI. (TTP #2137)
+Mobileer MIDI library and orchestra file removed from deployment.
+
+===========================================
+Brio v1.33.3.3585 release (Oct 16, 2008)
+===========================================
+
+-- Correct event mask for Display MPI brightness button listener.
+
+===========================================
+Brio v1.33.3.3576 release (Oct 14, 2008)
+===========================================
+
+-- Updated MagicEyes OGLES library with fixes post performance optimizations.
+Fixes all StarWars 3D title problems (per Oct 8 email).
+
+===========================================
+Brio v1.33.0.3537 release (Sep 24, 2008)
+===========================================
+
+-- Cummulative changes from Brio trunk in addition to items branched for
+   PatchD and SP3 releases, including the following items:
+
+-- Removing the extra power check for ButtonHandler.  Stops the "bouncing" brightness button.
+
+-- Leave soft clipper always enabled, per TTPro #1977
+
+-- Added 4K page alignments to RGB triple buffer allocations and mappings in order to support 16bpp formats in page-flipped modes. (TTP #2095)
+
+-- Updated MagicEyes OGL lib, with glWeightPointerOES() fix for fixed-point, plus cummulative optimizations and bug fixes. (TTP #2119)
+
+-- Consolidated Button, Power, USB threads in Event manager.
+
+===========================================
+Brio v1.32.6.3458 release (Jul 29, 2008)
+===========================================
+
+-- Updated AudioMPI.h header to document low-level MIDI functions which are currently implemented. Also removed outdated TODO items. Documentation change only.
+
+-- Added Audio MPI unit tests for Get/SetEnabledMidiTracks(), TransposeMidiTracks(), ChangeMidiTempo(), ChangeMidiInstrument(), MidiNoteOn(), MidiNoteOff(), and SendMidiCommand().
+
+-- Added conditional for MIDI file object to MIDI Render() code logic in order to re-instate programmatic MIDI output. Working in GM Brio 3011, broken after mixer rework for Brio 3114. (TTP #2059)
+
+-- Added support for MIDI file meta events, using additional kAudioOptionsMidiEvent flag and tAudioMsgMidiEvent message type. (TTP #1927 feature request)
+
+-- Skip removing display contexts in Display module destructor, for cleaner appearance when AppManager exits. (TTP #2010)
+
+-- Defer video scaler setup to Video MPI, and revert Display MPI to handle video display context dimensions as specified. (TTP #2073)
+
+-- Reinstate audio priority logic to pick most preferable player to bump, ie, lowest priority. (TTP #1958) 
+
+-- Added bug workaround for handling swapped priority and volume params, as found in NLG. (TTP #1999)
+
+===========================================
+Brio v1.32.4.3424 release (Jun 20, 2008)
+===========================================
+
+-- Ethernet over USB change: use /flags/vbus file instead of VBUS environment
+   variable.  Now matches Linux /usr/bin/launch_main script.
+
+-- Disable module manager atexit cleanup in emulation 
+
+
+-- Disable local Debug object instance in Event destructor to prevent Connect module list corruption.
+
+-- Avoid local Kernel object instance in Button destructor to prevent Connect
+   module list corruption. Match Button thread startup/teardown in emulation
+   version.
+
+-- Revert Audio mixer priority logic fix from Brio SVN 3244 to choose least
+   preferable player to bump. This prevents broken functionality of GM-ed
+   games expecting the original priority behavior. (TTP# 1999, 2008)
+
+===========================================
+Brio v1.32.3.3401 release (Jun 18, 2008)
+===========================================
+
+-- Module manager cleanup routine checks and fixes module list for mangled module names. (TTP# 1987)
+
+===========================================
+Brio v1.32.2.3396 release (Jun 17, 2008)
+===========================================
+
+-- Added atexit handler to module manager to destroy remaining connected modules on process exit. 
+
+===========================================
+Brio v1.32.1.3370 release (Jun 6, 2008)
+===========================================
+
+-- Updated DisplayMPI, FontMPI, VideoMPI headers with more Doxygen info.
+Added Doxygen file for Brio2 Eclipse project (modeled after LightningCore version). 
+
+-- Added check for previous OGL context active and destroy it before creating new context. This will only be effective for a currently running process, not for 3D engine left running from a previous process.
+
+-- Re-init mixer SW volume on Audio module creation.  
+
+-- Allow module manager to unload modules when reference count zeroed, as originally intended. AppManager should maintain persistent Brio module instances for max backwards compatibility.
+
+===========================================
+Brio v1.32.0.3339 release (May 19, 2008)
+===========================================
+
+-- Add Audio support for IMA ADPCM wav files.
+
+-- Allow module manager to unload Audio and Video modules only when reference count zeroed. This allows Audio module to be destroyed properly avoiding segfaults at app exit. Video is unloaded too since it is transient on-demand module.
+
+===========================================
+Brio v1.30.0.3222 release (Apr 17, 2008)
+===========================================
+
+-- Added missing call to invalidate font handle from FreeType's cache when handle is disposed.
+   Fixes intermittant font selection glitches (TTP# 1854). 
+
+
+===========================================
+Brio v1.29.1.3203 release (Mar 31, 2008)
+===========================================
+-- Reverted Audio MPI optimization where player objects were deleted after playback
+   is done. Player objects are now deleted prior to new ones being created at next
+   channel assignment step (pre-SVN 3087). Note that since player objects are now being
+   retained longer, additional logic conditionals for player IsDone() are
+   necessary (similar to old IsInUse flag). This reversion is necessary for Nicktoons
+   game title to work with post-GM Brio (TTP# 1860).
+
+===========================================
+Brio v1.29.0.3197 release (Mar 26, 2008)
+===========================================
+-- Mods to Button manager when reference-counted module manager is active.
+   Add persistant Event MPI reference per object lifetime. Remove unused MPI
+   object references. 
+
+-- Added persistent Event MPI reference per Power object lifetime when
+   reference-counted module manager active.
+
+-- Correct Event thread termination when reference-counted module manager active.
+   Module manager destruction remains disabled by default, since all module
+   destructors need to exit cleanly during all unit tests.
+
+-- Make a general patch-set creator, not just for Brio
+
+-- Patch was going in wrong direction!  Used "gm" as patch, not "new"
+   Also fixed bug in removing temp files
+
+-- Added UTF8 example strings for Spanish, French, German to font unit test.
+   UTF8 codes are already unpacked by ustring class.
+
+-- Reverted version 3 tFontProp field for backwards compatibility.
+
+===========================================
+Brio v1.0.3.3188 release (Mar 21, 2008)
+===========================================
+-- Automatic minimal patch-set .lfp maker, that diffs MD5SUM's from GM Brio.lfp
+
+-- Remove extraneous mutex deinit in USBDevice destructor caught by reference
+    counted module manager. Thread shutdown sync via join task.
+
+===========================================
+Brio v1.0.2.3174 release (Mar 19, 2008)
+===========================================
+
+-- Corrected HW display address when more than one 2D RGB buffer is registered. (TTP 1695)
+
+-- Useed persistent Kernel MPI object during Video module lifetime to minimize loads/unloads
+   when module manager reference counting is effective.
+
+-- Deleted context handle used to wrap OGL context data instead of copying to reserved variable.
+
+-- Removed dead code from FreeType example, Resource manager.
+
+-- Updated font properties to version 3 to accomodate FreeType FT_LOAD flags. 
+
+-- Cacheed font properties for encoding and load flags in font instance where they'll remain persistantly.
+
+-- Fixed TTPro #1822, lowest screen setting too dim.  New low backlight setting is
+   -46.  Removed lowest setting, now have 4 levels.  Removed adjustment of
+   LCD brightness.  Added #defines for backlight levels.
+
+-- Initial check-in of TestMIDI from Dave Wise
+
+
+===========================================
+Brio v1.0.0.3114 release (Feb 29, 2008)
+===========================================
+
+-- Asynchronous event posting now works.   In prior versions, if anybody
+   was posting events with priority > 128, there was a high chance of bad
+   pointer dereference in the event manager.
+
+-- Added much documentation on AudioMPI.  Please take note of the known
+   issues described in AudioMPI.h.
+
+-- Audio priority has been implemented.  However, the default behavior
+   has remained the same (i.e., priority is ignored).  Developers who
+   wish to use non-default priority behavior must set the priority policy
+   using SetPriorityPolicy in the AudioMPI.  See the ample comments in
+   AudioMPI.h and AudioTypes.h for details on how the priority behaves.
+
+-- Fixed leak in Font MPI where unloaded font handles were retained in
+   list for no useful reason instead of being released.
+
+-- Fix USB watchdog to take seconds instead of milliseconds, TTPro #1658.
+
+===========================================
+v0.1.47  (Build 3011 released Feb 19, 2008) 
+===========================================
+
+-- This release was built to synchronize the Brio with the LinuDist-0.32.0-3011
+
+-- Minor changes 
+
+===========================================
+v0.1.46  (Build 3005 released Feb 14, 2008) 
+===========================================
+-- Raise lowest backlight setting from -94 to -85.
+   Fixes TTPro item #1627.
+
+-- Default OpenGL heap sizes on embedded: 1Meg for 1D, 12Meg for 2D.
+
+==========================================
+v0.1.45  (Build 2992 released Feb 13, 2008) 
+===========================================
+-- Remove Verdana font from unit tests.
+
+-- Remove Verdana font from SDK examples and replace with DidjPropBold.
+
+===========================================
+v0.1.44  (Build 2986 released Feb 12, 2008) 
+===========================================
+-- nfsroot directory is not populated by embedded libraries
+   built with the "-g" option, Unit tests and resource files    	 
+
+-- Added pixel packing functions for ARGB source to RGB888,565,4444 destinations
+   for future reference.
+
+===========================================
+v0.1.43  (Build 2981 released Feb 12, 2008) 
+===========================================
+-- Replaced mutex locks with codec state checks on internal functions.
+   Codec state only changes on video start/stop calls which are already synchronized.
+
+-- Increased the number of bins in profiler for more refined histogram
+   Use float to calculate mean for improved accuracy.  Note that this calculation
+   happens at deinit time so does not affect time stamping.
+
+-- Fixed misinterpretation of Power State in ButtonHandler, move "internal" 
+   GetPowerState to Utility library since two tasks use it and we want to be
+   consistent.
+
+===========================================
+v0.1.42  (Build 2969 released Feb 11, 2008) 
+===========================================
+-- Forking Audio to Audio2 to optimize without destabilizing the current.
+
+-- Fixed the bugs related to the initial cartridge event was reported incorrectly and
+   inserting or removing a cart while Linux is booting. 
+
+===========================================
+v0.1.41  (Build 2962 released Feb 11, 2008) 
+===========================================
+-- Modified Video task start/stop state with condition signal synchronization logic.
+
+-- Enforced Display MPI CreateHandle() contexts according to available framebuffer regions.
+
+-- Disabling profiling in Audio system by default.
+
+-- Updated MagicEyes OGL lib with ARM optimization settings.
+
+===========================================
+v0.1.40  (Build 2948 released Feb 08, 2008) 
+===========================================
+-- Added mutex test to early out of Video MPI functions called by internal thread
+
+-- Eliminated deadlock in Mixer destructor.
+   Enabling destructors globally from Module manager remains elusive.
+
+-- Removed use of RTC driver in place of gettimeofday() on embedded.
+
+-- Added profiling utility called FlatProfiler.  See FlatProfiler.cpp and
+   FlatProfiler.h for details.
+
+-- Added high-level profiling to Audio Mixer. (Note that, because destructors don't
+   get called, you can't simply enable it and expect output).
+
+===========================================
+v0.1.39  (Build 2923 released Feb 05, 2008) 
+===========================================
+-- Fixup GetBacklight() to use updated dpc ioctl call DPC_IOCQBACKLIGHTVIRT.
+   Now retrieves negative virtual backlight values.
+
+-- Fixed memory leaks in Brio's "kernel timer" implementation.
+
+-- Ignore brightness button if at 'Critical Battery' level or if changing
+   the brightness causes a 'Critical Battery' message.
+
+===========================================
+v0.1.38  (Build 2881 released Feb 01, 2008) 
+===========================================
+-- RGB and YUV buffers are now shared in common framebuffer region
+   in order to accomdate 320x240 size video clips without bleeding
+   into reserved region for OpenGL. This permits either 2D RGB contexts
+   or Video YUV contexts  to be concurrent with 3D OpenGL contexts.
+   RGB and YUV contexts would not be concurrent with each other.
+ 
+===========================================
+v0.1.37  (Build 2871 released Feb 01, 2008) 
+===========================================
+
+-- Reduced the libiconv library size on ~500K by removing a support 
+   following encodings:
+
+   Semitic languages
+        ISO-8859-{6,8}, CP{1255,1256}, CP862, Mac{Hebrew,Arabic}
+   Japanese
+        EUC-JP, SHIFT_JIS, CP932, ISO-2022-JP, ISO-2022-JP-2,
+   	ISO-2022-JP-1 Chinese
+   	EUC-CN, HZ, GBK, CP936, GB18030, EUC-TW, BIG5, CP950,
+   	BIG5-HKSCS, BIG5-HKSCS:2001, BIG5-HKSCS:1999,   ISO-2022-CN,
+   	ISO-2022-CN-EXT
+   Korean
+        EUC-KR, CP949, ISO-2022-KR, JOHAB
+   Armenian
+        ARMSCII-8
+   Georgian
+        Georgian-Academy, Georgian-PS
+   Tajik
+        KOI8-T
+   Kazakh
+        PT154, RK1048
+   Thai
+        ISO-8859-11, TIS-620, CP874, MacThai
+   Vietnamese
+        VISCII, TCVN, CP1258
+
+-- Update Power Demo to handle shutdown message.
+
+-- Fix power driver to post a message on power status changes.  Stop power
+   messages after posting kPowerShutdown message.  This mimics the prior
+   driver behavior.
+
+-- Migrate AudioOutput capability from front end to Mixer.
+
+-- Added GetCurrentDisplayHandle() function to Display MPI to return handle of current visible display context.
+
+-- Re-located video layer enable until 1st update to minimize dead screen time.
+
+
+===========================================
+v0.1.36  (Build 2839 released Jan 28, 2008) 
+===========================================
+
+--Fix handling of brightness and headphone button presses, lost during button refactoring in last build.
+
+--Re-organize code to use mutex protection for any data access during Video MPI function calls.
+
+--Added Video option for fullscreen centering instead of scaling based on Theora videoheader comments tag "LOCATION=center".
+
+--Refactoring of Power and USBDevice handlers.
+
+--Pre-render 1st video frame prior to audio startup to minimize delays.
+
+--Major Audio module overhaul.
+
+--Added locking for Audio mixer context.  This prevents some classes of known bugs when
+buttons are rapidly pressed. TTPro 1153, 1234, 1300, 1312.
+
+--Fixed TTPro #1368: IsAudioPlaying(tAudioID id) always returns true
+
+--Fixed Midi unit test.  It was using the midiID wrong.
+--Fixed TTpro #1253: MIDI: Midi volume should be controllable by SetAudioVolume
+
+--Leave 2D layer enabled with bootup warning screen per SW request.
+
+===========================================
+v0.1.35  (Build 2791 released Jan 28, 2008) 
+===========================================
+-- Added for PlayAudio testing.
+
+-- Re-organized pixel-packing routines to support dirty rect param in Invalidate().
+
+-- Fixed the output file name:Publish to Lightning
+
+-- Integrated page flipping implementation for minimal impact on existing code. Embedded
+   needs more general framebuffer allocation scheme to support double vs triple buffering.
+   Relocated primary context creation on demand to offscreen contexts (embedded only).
+
+-- Added PageFlipDemo to Brio SDK examples to show triple buffering.
+
+===========================================
+v0.1.34  (Build 2743 released Jan 23, 2008) 
+===========================================
+
+-- Re-Align UV buffers on pitch subdivision to work with HW video scaler.
+
+-- Replace lf1000 buttons with keyboard (lf1000-keypad) driver:
+	- remove LF1000 Buttons Driver from defconfig
+	- enable generic input, event, and lf1000-keypad in defconfig
+	- have Brio Mixer use 'get switches' ioctl to retrieve intitial headphone jack state
+	- replace the way ButtonHandler handles buttons
+	- update ButtonDemo to report switches (headphone, cartridge) as well
+
+-- Video module reprograms HW video scaler for source video size to fill screen.
+
+-- Added protection against duplicate StopVideo and DestroyHandle calls.
+
+-- Reworked logic for mapping and unmapping framebuffers.
+
+===========================================
+v0.1.33  (Build 2702 released Jan 21, 2008) 
+===========================================
+
+--This Release is only created for the new LinuxDist-023.0-2700
+
+===========================================
+v0.1.32  (Build 2681 released Jan 17, 2008) 
+===========================================
+--Translate audio jack event to headphone button press correctly
+ 
+--Updated OpenGL ES driver with buffer object recycling fix. (TTP 1097)
+ 
+--Dynamically load MIDI shared library only on demand to AcquireMidiPlayer() calls. (TTP 1126)
+ 
+--Reduced framebuffer mapping regions to actual size used when onscreen display contexts are created.
+ 
+--Fixed intermittant video player bug where audio track would fail to get started. 
+
+===========================================
+v0.1.31  (Build 2614 released Jan 10, 2008) 
+===========================================
+
+* Added GetFreeMem() Utility function for free memory snapshots in user space.
+ 
+* Rebuilt 3rd-party Audio support libraries as shared libraries to conserve
+  memory usage. 
+
+===========================================
+v0.1.30  (Build 2597 released Jan 9, 2008) 
+===========================================
+
+0) Audio:  Fixed Bug#741: Overall volume of device. 
+        Enabled soft clipper algorithm (innate +3dB gain) with preGain of +3dB, for total gain=+6dB
+1) Audio: Fixed for Bug #1041:   Crashed when audio system paused.
+1) MIDI: added definitions for supported MIDI channel messages and controllers to AudioMPI.h
+2) MIDI: fixed CRASH when loading files with local path.  Weird CString issue with same crash
+       in audio and video, though they were fixed in previous release.
+3) MIDI:  2x as loud.  Used to peak at -15dB when other audio files peak at -6dB.  MIDI
+          still need more headroom as multiple notes.  
+4) Audio: reduced memory usage significantly
+5) Audio:  volume raised with soft clipper.  Though, this means that full scale sine wave
+     will now be distorted from -9 to 0 dB by soft clipper on speaker but not headphone.  
+     For general audio content, this is preferable to harder clipping.
+6) Audio:  8000 Hz audio now fully functional
+7) Audio:  Startup pop for 8000/16000 Hz audio and MIDI fixed.  Popped on 2nd play but not on 1st.
+8) Audio: disabled calculation of large floating point test table for faster startup time.
+9) Fix for TTPro #880:  MIDI transpose on single tracks.  Also, fixed issue for MIDI program change.
+
+
+* Audio MPI PauseAudioSystem() pauses audio streams without crashing in PortAudio driver
+  on embedded target. (TTP 1041)
+ 
+* Per-pixel alpha values for ARGB8888 format are blended under control of Display MPI SetAlpha()
+  enable parameter. (TTP 1043)
+ 
+* Offscreen display contexts are now correctly positioned onscreen at Display MPI Register()
+  X,Y parameters. 
+ 
+
+===========================================
+v0.1.29  (Build 2554 released Jan 5, 2008) 
+===========================================
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+	Brio-0.1.28.2554.lfp			= Brio library firmware for either LF1000 boards
+	bootstrap-LF_LF1000-0.19.1.2553.lfp 	= kernel/rootfs firmware for LF1000 form-factor board
+	bootstrap-ME_LF1000-0.19.1.2553.lfp 	= bootstrap loader for LF1000 development board
+	firmware-ME_LF1000-0.19.1.2553.lfp	= kernel/rootfs firmware for LF1000 development board
+	firmware-LF_LF1000-0.19.1.2553.lfp	= kernel/rootfs firmware for LF1000 form-factor board
+	HostTools_2553.tar.gz			= Linux host tools subset for installing firmware
+	LightningSDK_2554.tar.gz		= Lightning SDK for emulation and embedded development
+	nfsroot_SVN2554.tar.gz			= NFS root filesystem for LF1000 development board
+	RidgeRun-toolchain-369009.tar.bz2	= RidgeRun cross-compiler for ARM       
+
+Embedded components rebuilt with new cross-compiler for OpenGL performance improvements.
+You *MUST* rebuild all your embedded binaries with this cross-compiler for subsequent releases.
+
+Enhancements:
+-------------
+* Reduced default task stack size to pthread minimum (16K).
+
+===========================================
+v0.1.28  (Build 2539 released Jan 3, 2008) 
+===========================================
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+	Brio-0.1.28.2539.lfp				= Brio library firmware for either LF1000 boards
+    bootstrap-LF_LF1000-0.19.0.2525.lfp = kernel/rootfs firmware for LF1000 form-factor board
+	bootstrap-ME_LF1000-0.19.0.2525.lfp = bootstrap loader for LF1000 development board
+	firmware-ME_LF1000-0.19.0.2525.lfp	= kernel/rootfs firmware for LF1000 development board
+	firmware-LF_LF1000-0.19.0.2525.lfp	= kernel/rootfs firmware for LF1000 form-factor board
+	HostTools_2525.tar.gz				= Linux host tools subset for installing firmware
+	LightningSDK_2539.tar.gz			= Lightning SDK for emulation and embedded development
+	nfsroot_SVN2539.tar.gz				= NFS root filesystem for LF1000 development board
+	RidgeRun-toolchain-369009.tar.bz2	= RidgeRun cross-compiler for ARM       
+
+Embedded components rebuilt with new cross-compiler for OpenGL performance improvements.
+You *MUST* rebuild all your embedded binaries with this cross-compiler for subsequent releases.
+
+===========================================
+v0.1.27  (Build 2512 released Dec 20, 2007) 
+===========================================
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+	Brio-0.1.27.2512.lfp				= Brio library firmware for either LF1000 boards
+    bootstrap-LF_LF1000-0.18.0.2508.lfp = kernel/rootfs firmware for LF1000 form-factor board
+	bootstrap-ME_LF1000-0.18.0.2508.lfp = bootstrap loader for LF1000 development board
+	firmware-ME_LF1000-0.18.0.2508.lfp	= kernel/rootfs firmware for LF1000 development board
+	firmware-LF_LF1000-0.18.0.2508.lfp	= kernel/rootfs firmware for LF1000 form-factor board
+	HostTools_2508.tar.gz				= Linux host tools subset for installing firmware
+	LightningSDK_2512.tar.gz			= Lightning SDK for emulation and embedded development
+	nfsroot_SVN2512.tar.gz				= NFS root filesystem for LF1000 development board
+        
+
+Enhancements:
+-------------
+* Font MPI GetStringRect() calculation accounts for glyph advance, including
+  space characters. (TTP 612)
+ 
+* Video buffers cleared to white pixels prior to enabling HW layer visibility. (TTP 539, 803, 804)
+ 
+* Headphone jack detection events do not crash Brio apps. (TTP 775)
+
+* Made possible to every instance of the CDebugMPI object to have its debug level (LitBLT:#358)
+
+* Made different improvements and fixes in Audio System, like adding square curve to (Channel Volume
+  and Master volume) instead of linear, reworking storage of audio resource path by copying from
+  video module, found extra semicolon on conditional line that caused major problem with lost audio
+  IDs and many more.
+
+* Fixed memory leak in font manager.
+
+
+Known Issues:
+-------------
+
+* OpenGL transform functions on embedded target incur a siginificant performance slowdown.
+  This problem has been isolated to the OpenGL ES library, not the target hardware.
+  The library will be updated in the next Brio release.
+
+===========================================
+v0.1.26  (Build 2440 released Dec 14, 2007) 
+===========================================
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+	Brio-0.1.26.2440.lfp			= Brio library firmware for either LF1000 boards
+	firmware-ME_LF1000-0.17.1.2428.lfp	= kernel/rootfs firmware for LF1000 development board
+	firmware-LF_LF1000-0.17.1.2428.lfp	= kernel/rootfs firmware for LF1000 form-factor board
+	HostTools_2440.tar.gz			= Linux host tools subset for installing firmware
+	LightningSDK_2440.tar.gz		= Lightning SDK for emulation and embedded development
+	nfsroot_SVN2440.tar.gz			= NFS root filesystem for LF1000 development board
+
+
+Note:	Build 2440 has two differences from Build 2430:
+
+	1. Found and fixed the audio change which kept Build012 AppManager from launching
+	   by reverting Audio IDs to previous types to maintain MPI compatibility
+	
+	2. Removed not used the "bootstrap" files
+        
+See other info below for Build 2430:
+
+===========================================
+v0.1.25  (Build 24?? released Dec 20, 2007) 
+===========================================
+
+Gints's big list of audio defect fixes
+****** FIXED for 12/19/2007 Checkin ******
+  00. Audio: reverted back to -3dB for channel gains
+Y 13. MIDI:  ID issue ?   Add kNoMidiID=U8Max
+Y 18. Audio:  MIDI audio internal render buffers - not needed.
+Y  3. Audio: AudioTypes.h
+//#define kNoAudioID			kU32Max	// ID returned on failure
+   #define kNoAudioID			(0xffffffff)	// ID returned on failure
+    typedef U32		tAudioID
+    ALSO  tMidiPlayerID
+Y 08. Audio:  Set AudioState doesn't work.
+Y 10. Audio:  Level meters short time -> need to average values
+Y 11. Audio:  Add hold time (1 second) for long time level meters
+Y 22. Audio:  WAV file write with file path specified 
+Y 03. Audio: Check SRC gain
+        ChannelGain=-3dB ChannelPan =-3dB  -> -6dB
+    For sine -3dB
+                       fs=32000 fs=16000
+                       -------- --------
+        SRC AddDrop     -9        -9
+        SRC Linear      -9        -9
+		SRC Triangle    -9        -9
+        FIR V6          -9        -2
+        FIR V7          -9        -2
+        FIR V8          -9        -2
+// 6=30dB_15 7=50dB_31 8=50dB_41
+Y 07. Audio:  Check that looping audio file loops seamlessly.  
+                a. RawPlayer -> YES   
+                b. VorbisFile -> YES.  Just ensure file starts with zero crossing and slope
+                   match.  Ogg sampling rate conversion will inject time shift, so don't expect
+                   those to loop.  Just SRC in uncompressed, edit to seamless loop, the Ogg convert               
+
+Y 32. MIDI:  Check that looping MIDI file loops seamlessly.
+                MIDI files loop properly, but there may be a gap at the end.
+            ----> never a problem, just a check
+Y 00. Audio:  Add square curve to (Channel Volume and Master volume) instead of linear, 
+Y 27. Audio: Does Audio Player pad short read with zeros ? (Otherwise a click)
+                a. RawPlayer    -> YES
+                b. VorbisPlayer -> YES, but not totally confirmed
+Y 30. MIDI:  Can't play file and notes at the same time.
+        --> This always worked.  Just didn't have a test to confirm it.  Retested 12/18.
+Y 29. MIDI:  Engine notes linger even with AllNotesOff
+Y 19. Audio:  GetAudioTime() non-functional  --> BUG: lost audio IDs !!!!
+            a. VorbisPlayer  -> yes
+            b. Raw/WAVPlayer -> yes  
+Y 20. Audio:  Major problem with lost audio IDs
+              -> found extra semicolon on conditional line
+Y 09. BrioMixer: Don't handle Audio/MIDI done message properly
+Y 16. BrioMixer: Can toggle A&B buttons and sounds don't turn off as their events are lost
+                ---> was a symptom of lost ID bug
+Y 18. BrioMixer: convert floating point Decibel calculation to larger table
+Y 02. Audio:  Panning only does one channel when two mono sounds are playing.
+                Play A & B at same time and play with panning buttons
+              ----> was a symptom of lost audio ID bug
+Y 11. Audio:  Runs Mixer::Render() even for no audio channels active
+                --> only when a debug output file is specified
+Y 12. Audio: Unify Channel and MIDI volume in single constant in AudioConfig.h
+Y 34. Audio:  StartAudio() crashes with some types of CStrings.
+            Most work from resource paths.  It's local dir file names plus probably some others.
+            WEIRD.  This code was never changed, but it seemed to stop AppManager (013) and     
+            SysAppDemo.
+        --> reworked storage of audio resource path by copying from video module.
+
+===========================================
+v0.1.25  (Build 2430 released Dec 13, 2007) 
+===========================================
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+    bootstrap-ME_LF1000-0.17.1.2428.lfp	= bootstrap loader for LF1000 development board
+	bootstrap-LF_LF1000-0.17.1.2428.lfp	= bootstrap loader for LF1000 form-factor board
+	Brio-0.1.25.2430.lfp			= Brio library firmware for either LF1000 boards
+	firmware-ME_LF1000-0.17.1.2428.lfp	= kernel/rootfs firmware for LF1000 development board
+	firmware-LF_LF1000-0.17.1.2428.lfp	= kernel/rootfs firmware for LF1000 form-factor board
+	HostTools.tar.gz			= Linux host tools subset for installing firmware
+	LightningSDK_2430.tar.gz		= Lightning SDK for emulation and embedded development
+	nfsroot_SVN2430.tar.gz			= NFS root filesystem for LF1000 development board
+
+Enhancements:
+-------------
+NOTE:  In Emulation, audio programs seem to only run in root.  Embedded doesn't have
+this problem as everything is run as root.
+This unresolved permissions issue popped up in this release.  
+Running as non-root reveals a problem with opening the message queue.
+ 
+* Fonts are loaded with new default settings for improved glyph spacing metrics.
+  (TTPro #561)
+
+* Implement Backlight changes for EP1 	  	
+
+* Video playback state behavior improved for audio sync and time stamps
+
+* Removed extranrous gain from SRC algorithm that was causing clipping in
+  16000 Hz samples only (Audio system)
+
+* Added secret functions (not exposed in header file) to read parts of audio driver for   
+  parameter debugging, messaging, audio metering, enabling soft clipper, output EQ, changing
+  sampling rate conversion algorithm, setting read/write file, etc. (Audio system)
+
+* Added level metering (short time, long time with peak/hold, and run-time max values) and removed
+  floating point ops from meter decay function (Audio system) 
+
+
+Known Issues:
+-------------
+
+* OpenGL transform functions on embedded target incur a siginificant performance slowdown.
+  This problem has been isolated to the OpenGL ES library, not the target hardware.
+  The library will be updated in the next Brio release.
+ 
+* Video player task sometimes blocks calling app process in emulation. (TTP# 726)
+
+* If embedded target Brio app exits without destroying OpenGL context, the app will not be able
+  to create a new OpenGL context when relaunched. (TTP# 565)
+
+===========================================
+v0.1.24  (Build 2367 released Dec 06, 2007) 
+===========================================
+
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+* Embedded binaries for LF1000 development board: 
+	bootstrap-ME_LF1000-0.16.0.2361.lfp
+	firmware-ME_LF1000-0.16.0.2361.lf
+
+* Embedded binaries for LF1000 form-factor board: 
+	bootstrap-LF_LF1000-0.16.0.2361.lf
+	firmware-LF_LF1000-0.16.0.2361.lfp
+
+* Brio library binaries:
+	Brio-0.1.24.2367.lfp
+
+* NFS root file system: 
+	nfsroot-SVN2367.tar.gz
+
+* Host tools from LinuxDist
+	HostTools_2361.tar.gz
+
+Enhancements:
+-------------
+
+* Fixed crashes in Font module triggered by SelectFont() calls or underlining due to invalid font metrics.
+
+* Change in libUtility.so (DatasetLoader):
+  Change the return value of LoadDataset fcn to shared_array<U8>
+
+* UNLOCKED and Enabled USB after successful update of FW using
+  automated ATAP cartridge.  Provide updatability of ATAP without OmegaTerm. 
+
+* mkbase.sh creates an automated ATAP cartridge with current FW release (no Brio
+  or Base content).  To update the Brio and Base on this new cartridge, plug into
+  the USB after booting with the ATAP cartridge and put the .lfp packages
+  into the /Packages directory on the MFG_PAYLOAD USB drive. Any future boots with
+  that cartridge will update either the FF Board or LF1000 Dev board to latest
+  releases on that cartridge.
+
+ Known Issuses:
+-------------
+
+* OpenGL transform functions on embedded target incur a siginificant performance slowdown.
+  This problem has been isolated to the OpenGL ES library, not the target hardware.
+  The library will be updated in the next Brio release.
+ 
+---------------------------------------
+Addendum to Lightning SDK release 2292:
+---------------------------------------
+
+The embedded firmware binaries have been updated to release 0.15.1.2309
+to fix 2 significant bugs.
+
+(1) Bootloader uses reduced timings for more reliable bootup.
+(2) Power events correctly detect battery vs external power supply.
+
+The same Brio binaries and nfsroot image may be used with this update.
+Disregard references to firmware and bootstrap version 0.14.0.2280 
+mentioned in ReleaseNotes.txt
+
+* Embedded binaries for LF1000 development board: 
+	bootstrap-ME_LF1000-0.15.1.2309.lfp
+	firmware-ME_LF1000-0.15.1.2309.lfp 
+
+* Embedded binaries for LF1000 form-factor board: 
+	bootstrap-LF_LF1000-0.15.1.2309.lfp
+	firmware-LF_LF1000-0.15.1.2309.lfp 
+
+* Brio library binaries:
+	Brio-0.1.23.2292.lfp
+
+* NFS root file system: 
+	nfsroot-SVN2292.tar.gz
+
+===========================================
+v0.1.23  (Build 2292 released Nov 26, 2007) 
+===========================================
+
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+* Embedded binaries for LF1000 development board: 
+	bootstrap-ME_LF1000-0.14.0.2280.lfp
+	firmware-ME_LF1000-0.14.0.2280.lfp 
+
+* Embedded binaries for LF1000 form-factor board: 
+	bootstrap-LF_LF1000-0.14.0.2280.lfp
+	firmware-LF_LF1000-0.14.0.2280.lfp 
+
+* Brio library binaries:
+	Brio-0.1.23.2292.lfp
+
+* NFS root file system: 
+	nfsroot-SVN2292.tar.gz
+
+Enhancements:
+-------------
+
+* Fix for audio "deadlock" issue, though it was more of a crash due to 
+  multi-threading.  This fix required some thread reorganization, so it 
+  was more of an audio artchitecture change than a simple fix.  Audio 
+  render threads no longer create and delete objects.  Whew.
+
+* Tested with PlayAudio and BrioMixer for Wav/Ogg/Raw/MIDI playback, 
+  SendDone message, and looping.  Everything works.
+
+Known Issuses:
+-------------
+
+* The SendMessageOrWait() and ReceiveMessageOrWait() functions from
+  the KernelMPI inteface can give errors on target
+    
+===========================================
+v0.1.22  (Build 2242 released Nov 14, 2007) 
+===========================================
+
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+* Embedded binaries for LF1000 development board: 
+	bootstrap-ME_LF1000-0.12.0.2230.lfp
+	firmware-ME_LF1000-0.12.0.2230.lfp 
+* Embedded binaries for LF1000 form-factor board: 
+	bootstrap-LF_LF1000-0.12.0.2230.lfp
+	firmware-LF_LF1000-0.12.0.2230.lfp 
+* Brio library binaries:
+	Brio-0.1.22.2242.lfp
+* NFS root file system: 
+	nfsroot-svn2242.tar.gz
+
+Enhancements:
+-------------
+
+* Display contexts for HW layers now support Z order enum kDisplayOnBottom.
+* BrioOpenGLConfig now contains additional display handle member hndlDisplay
+  for setting HW layer alpha.
+  
+
+1. PlayAudio
+    a. Added option for SendDone message
+    b. Added option to set process priority
+    c. Limited input files to 1 MIDI and 3 Audio
+    d. Added some basic tests for MIDI API
+Brio:
+    a. AUDIO: Fixed the looping/loop count, send done problems in Raw, Vorbis and MIDI
+    b. MIDI:  API hookup for ChangeProgram and repaired SetEnableTrackes
+ 
+    Removed -Wextra compiler option
+
+===========================================
+v0.1.21  (Build 2194 released Nov 6, 2007) 
+===========================================
+
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+* Embedded binaries for LF1000 development board: 
+	bootstrap-ME_LF1000-0.11.0.2181.lfp
+	firmware-ME_LF1000-0.11.0.2181.lfp 
+* Embedded binaries for LF1000 form-factor board: 
+	bootstrap-LF_LF1000-0.11.0.2181.lfp
+	firmware-LF_LF1000-0.11.0.2181.lfp 
+* Brio library binaries:
+	Brio-0.1.21.2194.lfp
+* NFS root file system: 
+	nfsroot-svn2194.tar.gz
+
+Refer to accompanying TargetSetup.txt file for firmware update details. 
+
+Enhancements:
+-------------
+* Fixed Font clipping on left and top edges for negative XY coordinates.
+* Fixed OpenGL ES embedded library for Vertex Buffer Object indexed arrays.
+* Equivalent compiler warning levels for embedded vs emulation targets.
+* Fixed Audio done message flag and MIDI file playing status flags.
+ 
+1) Reduced Max Mixer channels to 4:  3 Ogg/Raw/Wav/AIFF and 1 MIDI
+2) Fixed crash exposed at end of MIDI file play
+3) Added support for WAV and AIFF audio files.  A proprietary audio file format
+   such as Brio's RAW just makes for painful development.
+4) All audio file formats loop properly for specified # of iterations
+5) PlayAudio 
+   a. supports WAV/AIFF files
+   b. Multiple files - Can play list of audio files either sequentially or simultaneously
+   c. Each audio file may have indedendent pan and volume (no pan for MIDI as it's stereo)
+
+
+===========================================
+v0.1.20  (Build 2105 released Oct 30, 2007) 
+===========================================
+
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+* Embedded binaries for LF1000 development board: 
+	bootstrap-ME_LF1000-0.10.1.2104.lfp
+	firmware-ME_LF1000-0.10.1.2104.lfp 
+* Embedded binaries for LF1000 form-factor board: 
+	bootstrap-LF_LF1000-0.10.1.2104.lfp
+	firmware-LF_LF1000-0.10.1.2104.lfp 
+* Brio library binaries: basebrio-svn2105.tar.gz
+	Brio-0.1.20.2105.lfp
+* NFS root file system: nfsroot-svn2105.tar.gz
+
+Firmware can now be updated on LF1000 development and form-factor boards using a
+variety of methods: backdoor app transferred over USB, manufacturing cartridge
+provided by LeapFrog, remote serial script, or manual U-boot commands.
+
+Refer to accompanying TargetSetup.txt file for firmware update details. 
+
+Enhancements:
+-------------
+* Firmware now supports auto-update feature via external PC app over USB.
+  Auto-update feature will only be effective *after* the current firmware
+  release is installed onboard.
+* Watchdog timer is now operational.
+* Fixed Display module to disable HW 2D layer set externally of Brio.
+* Fixed Font module text wrapping to handle last words in strings.
+* Added Utility library with Dataset Loader functions.
+* Split out target instructions into separate TargetSetup.txt file.  
+ 
+===========================================
+v0.1.19  (Build 2034 released Oct 23, 2007) 
+===========================================
+
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+* Embedded binaries: embedded-svn2028.tar.gz
+* Brio library binaries: basebrio-svn2034.tar.gz
+* NFS root file system: nfsroot-svn2034.tar.gz
+
+LF1000 development boards can be updated with the following script:
+
+	lightning_install.py /dev/ttyS0 -e lightning-boot-0.9.1-2028-ME_LF1000.bin:0 kernel-0.9.1-2028-ME_LF1000.jffs2:200000 erootfs-0.9.1-2028-ME_LF1000.jffs2:400000 kernel-0.9.1-2028-ME_LF1000.jffs2:1200000 erootfs-0.9.1-2028-ME_LF1000.jffs2:1400000 
+
+LF1000 form-factor boards must be updated by LeapFrog manufacturing team.
+
+Enhancements:
+-------------
+* USB support for /Didj NAND partition stabilized.
+  Exposing NAND partition as USB mass storage device requires that /Didj
+  be unmounted. This means Brio apps cannot enable USB while running. 
+* Watchdog timer added to Kernel MPI.
+* OpenGL on embedded target is now shared library (libopengles_lite.so).
+* Audio mixer updates for equalizer and volume settings.
+* MIDI library updated for loading instruments on demand.
+
+
+===========================================
+v0.1.18  (Build 1938 released Oct 15, 2007) 
+===========================================
+
+Release for LF1000 (green) embedded target boards.
+
+Software components for target hardware:
+
+* Embedded binaries: embedded-svn1937.tar.gz
+* Brio library binaries: basebrio-svn1938.tar.gz
+* NFS root file system: nfsroot-svn1938.tar.gz
+
+*** IMPORTANT NOTE ***: 
+
+The embedded target binaries are significantly different from previous releases. 
+This release now uses a fully embedded filesystem, with the option to expose
+NAND flash partitions as USB mounted devices.
+
+These binaries consist of the following:
+
+	lightning-boot-0.8.3-1937-ME_LF1000.bin	- Lightning boot loader (replaces uniboot)
+	kernel-0.8.3-1937-ME_LF1000.jffs2		- Linux kernel image (replaces zImage and u-boot)
+	erootfs-0.8.3-1937-ME_LF1000.jffs2		- Embedded root filesystem (alternative to nfsroot)
+
+All 3 binaries need to be flashed into new locations: 
+
+	lightning_install.py /dev/ttyS0 -e lightning-boot-0.8.3-1937-ME_LF1000.bin:0 kernel-0.8.3-1937-ME_LF1000.jffs2:200000 erootfs-0.8.3-1937-ME_LF1000.jffs2:400000 kernel-0.8.3-1937-ME_LF1000.jffs2:1200000 erootfs-0.8.3-1937-ME_LF1000.jffs2:1400000 
+
+Refer to the Lightning SDK's 'readme.txt' file for further details.
+ 
+Enhancements:
+-------------
+* Support for embedded NAND filesystem as alternate to NFS mounted filesystem.
+	ROOTFS_PATH variable should be set to USB device mount point instead of NFS path,
+	ie, '/media/disk', when NAND partition is mounted on Linux development system. 
+* Embedded binaries are now located off /Didj root path for embedded (non-NFS) filesystem.
+	Brio libs will be located at /Didj/Base/Brio/lib.
+	Brio apps will be located at /Didj/Base/Brio/bin.
+	Brio app resources will be located at /Didj/Data/<app_name>.
+* SDK example SysAppDemo added to demonstrate handling of system events like USB, Power.
+* Headphone jack detect and Cartridge insert/remove events added to Button MPI.
+* Audio MPI options flag added for looping samples.
+* Updated audio resource processing tools in LightningUtils.py script.
+* Updated Boost template library headers to v1.34.1 release.
+
+Known Issues:
+-------------
+
+* File transfers via USB mounted NAND partition currently have synchronization
+  problems unless the embedded target is rebooted. It is recommended to use the
+  NFS mounted filesystem for external software development until subsequent release.
+  Refer to 'booting to NFS root filesystem' section in SDK readme.txt file.
+* For NFS bootup, you will need to explicitly unmount the NAND /Didj partition
+  after each reboot before the NFS /Didj directory will be effective.
+  ie, 'umount /Didj'.
+* Audio mixer and MIDI updates deferred until subsequent release.
+
+===========================================
+v0.1.17  (Build 1663 released Sep 20, 2007) 
+===========================================
+
+Release for LF1000 (green) and LF2530 (brown, blue) embedded target boards.
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-0.7.2-1659-LF1000 (flash size = 11A800 hex)
+* Linux Kernel Image: zImage-0.7.2-1659-MP2530F (flash size = 11A000 hex)
+* NFS root file system: nfsroot-svn1663-LF1000.tar.gz
+* NFS root file system: nfsroot-svn1662-LF2530.tar.gz
+
+Use the following script to update all firmware (see Readme.txt for details):
+
+	lightning_install.py /dev/ttyS0 uniboot-0.7.2-1659-LF1000.bin:0 u-boot-0.7.2-1659-LF1000.bin:0x80000 zImage-0.7.2-1659-LF1000:0x100000
+
+Or for LF2530 boards:
+
+	lightning_install.py /dev/ttyS0 uniboot-0.7.2-1659-MP2530F.bin:0 u-boot-0.7.2-1659-MP2530F.bin:0x80000 zImage-0.7.2-1659-MP2530F:0x100000
+
+This script will update all 3 major firmware components, including the uniboot loader,
+U-boot, and the Linux kernel zImage. 
+
+Enhancements:
+-------------
+* Resource manager MPI has been completely removed.
+* Audio, Video, and Font MPIs modified to use file system paths now for 
+  locating and loading respective resources.
+* Previous packing tool is now called ProcessResources for copying resources.
+  Audio resources are encoded for OggVorbis and renamed with .ogg extensions.
+  Brio appname may be used for resource subdirectory path on embedded targets.
+* Button MPI added Register/Unregister methods for button event handling.
+* Power MPI added to Brio for power event notifications.
+* USBDevice MPI added to Brio for handling USB events and state.
+* SDK examples updated for latest MPIs. 
+* Uncompressed audio playback fixed.
+* Add API to support loadable MIDI instruments.
+
+===========================================
+v0.1.16  (Build 1510 released Sep 5, 2007) 
+===========================================
+
+Release for LF1000 embedded target boards only (green).
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-0.6.0-1498 (flash size = 112800 hex)
+* NFS root file system: nfsroot-svn1510.tar.gz
+
+Enhancements:
+-------------
+* Updated OpenGL driver for new LF1000 3D hardware.
+* YUV planar video format supported for LF1000 and emulation.
+* Miscellaneous bug fixes to Brio Audio, Display, Kernel, Resource modules.
+
+Known Issues:
+-------------
+
+* OpenGL driver is incomplete. 54 of 58 accelerated functions implemented so far.
+* The ffmpeg package may need to be installed on the development system for video packing.
+  'sudo apt-get install ffmpeg' 
+  
+===========================================
+v0.1.15  (Build 1314 released August 17, 2007) 
+===========================================
+
+Release for LF2530 embedded target boards (blue or brown).
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-0.5.0-1261
+* NFS root file system: nfsroot-svn1314.tar.gz
+
+Enhancements:
+-------------
+* Updated Drivers for button debouncing, volume wheel response, realtime clock.
+* Kernel MPI uses realtime clock support on embedded target for elapsed time. 
+* Video MPI StartVideo() task posts event message to listener when done.
+* Video MPI SeekVideoFrame() and Looping functionality implemented.
+* Font MPI GetStringRect() functionality implemented.
+* Font MPI DrawString() renderings now clip to drawing surface area.
+* Font encoding property supported for Unicode UTF8/UTF16/UTF32 character codes.  
+* Additional Font MPI methods for setting font properties and drawing attributes 
+  more intuitively.
+* Audio MPI - support for multiple MPI instances.
+* Audio MPI - implemented a big chunk of stubbed out functionality.
+* Audio MPI - there is one name change: 
+	tAudioMsgDataCompleted was changed to tAudioMsgAudioCompleted
+	tAudioMsgMidiCompleted was added to support MIDI file events.
+	
+	LightingCore needs this change in two files: 
+		LightningCore/LightningBase/Include/AudioListener.h   line 37
+		LightningCore/Demos/VideoDemo/main.cpp   line 113
+
+* DisplayMPI - multiple display context instances now fixed. 
+
+Known Issues:
+-------------
+* Exception Handling on embedded target doesn't work.
+
+===========================================
+v0.1.14  (Build 1127 released August 1, 2007) 
+===========================================
+
+Release for LF2530 embedded target boards (blue or brown).
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-0.4.0-1078
+* NFS root file system: nfsroot-svn1127.tar.gz
+
+Enhancements:
+-------------
+* OpenGL embedded library updated for 4444 texture fix.
+* Added the Resource Manager AddNewRsrcToPackage(), AddRsrcToPackageFromFile(),
+  and RemoveRsrcFromPackage() functions.
+* Made the CResourceMPI destructor force close all open packages and devices.
+* Removed the CSystemResourceMPI class.  A CResourceMPI instance now succeeds
+  in opening/loading/getting info about tRsrcHndls even if it doesn't have
+  the enclosing package open.
+* Shifted sorting of Resource Manager packed files from runtime to pack time
+* Made Resource Manager URIs case insensitive
+* Avoid packing duplicate files (e.g., if two URIs point to the same source
+  file, only pack it once and at runtime return the same handle for the two URIs.
+* Packer reports errors for multiply defined URIs
+* Added new resource types for bitmaps and data files
+* Tied the audio encoders into SCons dependency checking so they only get
+  reencoded when required, not on every build.
+* BrioOpenGLConfig class constructor now accepts 2 optional parameters for
+  configuring OpenGL embedded library 1D and 2D heap sizes (in Megs).
+* Display MPI now removes 2D or video layer from being visible on Lightning
+  display hardware during cleanup.
+* Video MPI methods added or changed to match Audio MPI functionality.
+  Seek and Loop functionality not implemented yet.
+* Font MPI surface descriptor field added for pixel format type.
+  Formats supported: ARGB8888, RGB888, ARGB4444, RGB565.
+* Removed StartAudio() and StopAudio() calls from the AudioMPI.  Starting the 
+  audio system now happens automatically when you create an MPI instance.
+* Changed type tMidiID to tMidiPlayerID to reflect its actual usage.
+* Many new functions have been added to the AudioMPI, see header for details.
+* New mixer, soon to be optimzed in ARM assembly.
+* Audio System includes a sample rate converter, supports 8KHz, 16KHz, 32KHz
+* Looping of Vorbis files now works.
+* New BrioAudio application demonstrating playback of test files at different rates.
+* Emulation Key Equivilants:
+    Up				= Up Arrow
+	Down			= Down Arrow
+	Left			= Left Arrow
+	Right			= Right Arrow
+	A				= 'a' or '0'
+	B				= 'b' or '1'
+	Hint			= 'h' or Home
+	Right Shoulder	= Page Down
+	Left Shoulder	= Delete
+	Menu			= 'm' or Insert
+	Pause			= 'p' or Page Up 
+     
+NOTE: Starting with this release, uncompressed audio is deprecated.  It will
+work in this release, but it doesn't sound good.  We would like SDK customers 
+to begin using Vorbis for all linear audio playback because this is the officially
+support Brio audio format.  Also, Vorbis audio is streamed from storage, whereas
+uncompressed audio is loaded entirely into RAM before playback. 
+
+===========================================
+v0.1.13  (Build 919 released July 17, 2007) 
+===========================================
+Release for LF2530 embedded target boards (blue or brown).
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-0.3.0-917
+* NFS root file system: nfsroot-svn919.tar.gz
+
+Enhancements:
+-------------
+* Wraped all Brio calls in the "LeapFrog::Brio" namespace.  
+  You may need to add the LF_USING_BRIO_NAMESPACE() macro after 
+  the #include sections of your files.
+* Cleaning a project no longer invokes the packer.
+* Video playback in emulation is color converted from YUV format.
+* Video demo plays audio stream asynchronously with video.
+* Display demo uses button controls for brightness and contrast.
+
+===========================================
+v0.1.12  (Build 873 released July 11, 2007) 
+===========================================
+Release for embedded target -- LF2530 development board with audio.
+
+Software components for target hardware:
+
+* Linux Kernel Image (LF2530 boards only): zImage-0.2.1-854
+* NFS root file system: nfsroot-svn873.tar.gz
+
+Enhancements:
+-------------
+* LCD module on LF2530 boards configured with correct settings.
+* Brightness and Contrast controls added to Display MPI.
+* OpenGL embedded library updated with eglSwapBuffers() fix.
+* OpenGL emulation library updated with glColor4u() fix. 
+* Sound buffer sizes increased for fewer audible clicks.
+* Stricter compiler warnings for *printf() variable arguments.
+* New CKernelMPI methods to better encapsulate system porting: 
+  PowerDown(), Printf(), VPrintf(), GetFilesinDirectory(), 
+  IsDirectory(), LoadModule(), RetrieveSymbolFromModule(), 
+  and UnloadModule().
+* Asserts now flush stdout to insure correct message strings are 
+  output from origin of assertion errors.
+    
+Known Issues:
+-------------
+* Audio MPI Vorbis codec does not support audio stream from
+  interleaved audio-video format Ogg files.
+* Video MPI ignores audio stream in same format Ogg files.
+* Video playback in emulation is not color converted from YUV format,
+  so will appear with wrong colors and aspect ratio. 
+* Key repeats are turned off when running Brio SDK examples
+  in emulation targets, and can only be turned back on manually
+  (System > Preferences > Keyboard). 
+
+===========================================
+v0.1.11  (Build 816 released July 06, 2007) 
+===========================================
+Joint embedded and emulation release
+
+Software components for target hardware:
+
+* No updates
+
+Enhancements:
+-------------
+* OpenGL double-buffering fix to set dirty bit on swap.
+* Build: Turned on '-Werror for all targets, which treats warnings as errors.
+  You can no longer ignore warnings!
+* Build: Turned on '-pedantic-errors' for all targets, which provides a higher
+  level of static code analysis.
+* Build: Turned on '-Wextra' for emulation targets, which provides a higher
+  level of static code analysis.
+* Build: Module files are now copied into a new "/Modules" folder on the embedded
+  target.
+* Emulation: Turned off button key repeats (was an emulation only problem)
+* Emulation: Theora shared object files now distributed in Libs/ThirdParty
+* Resource packing: Fixed an off-by-one issue in generation of packed file names 
+  (keeps all filenames ISO-9660 compliant).
+* Resource packing: The contents of each file in each Build/rsrc source file are 
+  compared against nfsroot/Cart1/rsrc destination files, and if they are different 
+  the /Cart1/rsrc file will be overwritten.  (Fixes the problem where switching
+  between different Eclipse projects didn't update the packed resource folder
+  for embedded builds.)
+* Assert()s updated to provide more information about the location of the failure.
+
+
+
+===========================================
+v0.1.10  (Build 713 released June 28, 2007) 
+===========================================
+Release for embedded target -- ME2530 devkit only.
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-svn713.tar.gz
+* NFS root file system: nfsroot-svn713.tar.gz
+
+Enhancements:
+-------------
+* Provided MPlayer ARM executable with Brio YUV layer output.
+  Invoke as: 'mplayer -vo brioyuv -ao null -nosound YourVideoClip.ogg'
+* Added Video MPI for Ogg video stream playback, with simple VideoDemo.
+* Added anti-aliasing option to Font rendering, on by default.
+* Segmentation faults resolved on exit from all Brio apps.
+* Resource packing tool correctly updates Brio SDK examples on target.
+
+
+===========================================
+v0.1.9  (Build 759 released July 2, 2007) 
+===========================================
+Release for embedded target -- LF2530 development board with audio.
+
+Software components for target hardware:
+
+* Linux Kernel Image (ME2530 devkit): zImage-ME2530-0.0.4-759
+* Linux Kernel Image (LF2530 boards): zImage-LF2530-0.0.4-759
+* NFS root file system: nfsroot-svn759.tar.gz
+
+Enhancements:
+-------------
+* Audio subsystem drivers are functional on LF2530 development boards.
+
+Known Issues:
+-------------
+* No audio driver supported on ME2530 devkits.
+* LCD module on LF2530 boards not setup for correct contrast. 
+
+
+===========================================
+v0.1.8  (Build 614 released June 19, 2007) 
+===========================================
+Release for emulation target. New packing scheme in place
+
+Enhancements:
+-------------
+* Removed the Resource Manager GetPackageVersionStr(), GetPackageName(),
+  GetVersionStr() & GetName() functions
+* Added a PackAllResources() function to the LightingUtils.py build file
+* Updated the samples to use the new packing scheme
+* 'apprsrc' folders now contain *.pkg files that get packed into the
+  'Build/rsrc' folder for actual use by embedded and emulation builds
+
+Known Issues:
+-------------
+* Resources get repacked on every build.  Work needs to be done to
+  make the packing an SCons 'tool' so that resources only get packed
+  when needed.
+
+
+===========================================
+v0.1.7  (Build 589 released June 15, 2007) 
+===========================================
+Release for embedded target. UString class; new Resource Manager
+
+Software components on the target hardware:
+
+* Linux Kernel Image: zImage-svn589.tar.gz
+* root file system: nfsroot-svn589.tar.gz
+
+Enhancements:
+-------------
+* Ported the glib::ustring class to the embedded target.
+* Changed PlayAudio() and PlayMIDIFile() to StartAudio() and StartMidiFile() 
+  to be consistent with the rest of the API.
+* Implemented Pause, Resume, and Stop for audio, midi, and the audio driver.
+* Updated System/Include/ButtonTypes.h to include the full set of Lightning buttons.
+* Updated emulation keyboard->button mappings per Colleen's request.
+* Implemented the Kernel Module mutex and condition functions
+* Replaced CKernelMPI::GetElapsedTime(usec*) with GetElapsedTimeAsMSecs()
+  and GetElapsedTimeAsUSecs().
+* Changed the Font Manager to use the Resource Manager rather than direct
+  font files.
+* Added functions to the Font Manager to return font metrics.
+* In the resource manager, implemented the package interface functions
+* In System/Include/ResourceTypes.h replaced unnamed enumerations with
+  named enumerations.  Some types changed from tXXX to eXXX.
+* For enumerations in ResourceTypes.h, changed kXXXTypeUndefined to kXXXTypeInvalid.
+* For enumerations in ResourceTypes.h, added kXXXTypeAll to facilitate searches.
+* In the Resource Manager, removed the redundant functions GetNumDevices() 
+  and FindFirstDevice() in favor of using GetNumDevices(eDeviceType) and
+  FindFirstDevice(eDeviceType) using the "kRsrcDeviceTypeAll" enumeration value.
+  This is consistent with the GetNumPackages()/FindFirstPackage() call.
+* In the Resource Manager, removed the redundant functions GetNumRsrcs() 
+  and FindFirstRsrc() in favor of using GetNumRsrcs(tRsrcType) and 
+  FindFirstRsrc(tRsrcType) with "kRsrcTypeAll".
+* In the Resource Manager, changed all of the "GetRsrcXXX" accessors function 
+  names to "GetXXX".
+* In the Resource Manager, changed "XXXRsrcPackageXXX" to "XXXPackageXXX" 
+  in member function names.
+* In the Resource Manager, changed "XXXRsrcDeviceTypeXXX" to "XXXDeviceTypeXXX"
+  in type and enumeration names.
+* In the Resource Manager, changed "XXXRsrcPackageTypeXXX" to "XXXPackageTypeXXX"
+  in type and enumeration names.
+* Removed the Resource Manager AddRsrcRef(), DeleteRsrcRef() and 
+  GetRefCount() functions.  Opening/Closing and Loading/Unloading resources
+  does this work.
+* Added a "blocking" parameter to the CResourceMPI constructor to explicitly
+  set the interface for synchronous or asynchronous operation.  For Lighting,
+  only synchronous/blocking operation is supported.  The constructor defaults
+  to using synchronous mode.
+* Modified the sample projects to use the new Resource Manager scheme, where
+  resources are accessed by opening packages.
+* Added CDebugMPI::EnableThrowOnAssert() to allow unit testing to test
+  conditions that normally assert.
+* Cleaned up unit test output by gating CDebugMPI::Assert() calls on whether
+  EnableThrowOnAssert() is enabled.
+  
+Known Issues:
+-------------
+* Only 44.1K mono audio is supported.
+* You can't change the volume of sound after the Play() call.
+* You can't call NoteOn/Off while a MIDI file is playing.
+* You can't play more than one MIDI file at a time.
+* The Audio module doesn't properly support multiple MPI instances yet.
+* Repeated emulation button events are generated when a button is held down
+* Resource Manager URI searching is case-sensitive
+* The packing tool is not yet in place and the sample projects are running
+  off of the packer-generated (user unfriendly) file formats.
+* The Resource Manager GetPackageSizeUnpacked, GetPackageSizePacked,
+  LoadPackage, UnloadPackage, NewRsrc and DeleteRsrc member functions
+  are not implemented.
+
+
+===========================================
+v0.1.6  (Build 456, released May 31, 2007) 
+===========================================
+Release for emulation target. Adds lots of new audio functionality.
+
+Enhancements:
+-------------
+* Audio mixer implemented, currently 4 channels + MIDI.
+* PlayAudio() uses the resource mgr to load and play audio.
+* AudioIDs are returned, and audio done events are posted.
+* Programmatic MIDI NoteOn and NoteOff calls are supported.
+* PlayMIDIFile() will load and play a MIDI file using the default mobileer instruments.
+* SetMasterVolume() now works for the output of the mixer.
+* BrioCube demo now plays a soundfile when the 'a' key is pressed and
+  plays a MIDI file when the 'b' key is pressed.
+  
+  See BrioCube demo and AudioMPI.h for new api and comments.
+  
+* Added KernelMPI Event and Timer functionality 
+  
+Known Issues:
+-------------
+* Only 44.1K mono audio is supported.
+* You can't change the volume of sound after the Play() call.
+* There are no Stop() functions for audio or MIDI yet.
+* You can't call NoteOn/Off while a MIDI file is playing.
+* You can't play more than one MIDI file at a time.
+* The Audio module doesn't properly support multiple MPI instances yet.
+
+===========================================
+v0.1.5  (Build 407, released May 24, 2007) 
+===========================================
+
+Internal maintanence Release for emulation and embedded targets. Mainly fixes to
+samples, headers, and build scripts for compatibility between emulation
+and embedded target builds.
+
+Enhancements:
+-------------
+* Display module supports 2D drawing via X window in emulation target.
+* Font module does not crash if attempting to draw with unloaded font.
+
+Known Issues:
+-------------
+* Audio module not connected to emulation platform libraries.
+
+===========================================
+v0.1.4  (Build 336, released May 18, 2007) 
+===========================================
+
+Release for emulation target with Audio module implementation.
+
+===========================================
+v0.1.3  (Build 321, released May 17, 2007) 
+===========================================
+
+Release only for target hardware, not emulation.
+
+First release that runs on target hardware (MP2530F).  Note that this release
+is meant to work with the following software components on the target
+hardware:
+
+* Linux Kernel Image: zImage-2.6.20.1-dev-00
+* u-boot image: u-boot-svn183.bin
+* root file system: nfsroot-svn321.tar.gz
+
+The cross-compiler for building the embedded target binaries is:
+
+* scratchbox-toolchain-arm-gcc4.1-uclibc20061004
+
+Enhancements:
+-------------
+* 2D layer support via Display Manager.
+* 3D layer and 3D accelerator support via BrioOpenGLConfig. 
+
+Known Issues:
+-------------
+* Some Kernel Manager services need fixing, as seen in testKernel.
+* Resource Manager services will not work until /LF/System directory tree
+  is installed on root file system.
+* Event handling in BrioCube demo is disabled in embedded target build
+  due to Kernel and Resource manager problems.
+* When specifying deploy_dir to scons in the examples, specify the absolute
+  path to where you expect the executable to be installed.  For example:
+  deploy_dir=/home/lfu/nfsroot/usr/local/bin.  However, if INSTALL_PREFIX is
+  set in the environment, INSTALL_PREFIX/usr/local/bin will be the install
+  destination.  Expect this to become cleaner in future releases.
+* Whey you run the scons install target in the examples, only the program is
+  installed; the resources (such as Verdana.ttf) are not installed.  They must
+  be copied over manually.
+* Currently, on the embedded target, the module manager and other components
+  are not properly cleaned up if they crash.  This may be a problem with Brio,
+  or it may be a problem with Linux.  So, if you use ctl-c to kill a Brio app,
+  or if your Brio app crashes, you will probably have to reset the board.
+
+===========================================
+v0.1.2  (Build 154, released May 1, 2007) 
+===========================================
+Emulation only release
+
+Enhancements:
+-------------
+* Massive improvements to the MPI interfaces, including:
+   * Consistent error status scheme (accessors return values, not error codes,
+     e.g., tErrType GetVersion(tVersion) -> tVersion GetVersion())
+   * Consistent ordering of input/output parameters in function parameter lists
+   * Consistent iteration scheme (FindFirstX()/FindNextX())
+   * Const correct interfaces
+   * Pass by reference whenever a parameter is not optional (e.g., 
+     FindRsrc(CURI*) -> FindRsrc(const CURI&))
+   * Framework for using C++ namespaces as documented in Brio spec is in place
+   * Consistent variable naming scheme
+   * Errors and event definitions are now decentralized
+   * Consistently use zero values as invalid state
+   * Reduction of repetitive parameters (e.g., DebugMPI ctor now takes 
+     the signature parameter, which has been removed as the first
+     parameter from all of the DebugOutXXX() functions)
+   * Removed the repetitive GetMPIVersion() functions
+   * Changed the tVersion type from major/minor scheme to a straight U16 value
+   * Function names of form VerbNoun() (e.g., InitMutex() rather than MutexInit())
+   * Simplified timer function interfaces to work with milliseconds only 
+     rather than milliseconds and microseconds
+* Display Manager initial implementation (mainly stubbed out)
+* Font Manager initial implementation
+* Resource Manager "M" functions (seek & write resource functions)
+* Updated sample programs to use the improved MPI interfaces
+* Updated the Simple sample to demonstrate use of the Font Manager interface
+* Extended internal error reporting through the Debug module
+
+Bug Fixes:
+----------
+* Default emulation window size is now 320x240 rather than 240x320
+
+Known Issues:
+-------------
+* Repeated emulation button events are generated when a button is held down
+
+
+===========================================
+v0.1.1  (Build 1, released April 6, 2007)
+===========================================
+Initial release
+Emulation only release
+
+Implementations of the following Modules:
+-----------------------------------------
+* Kernel ("H" functions including Task creation, message queue, 
+  memory allocation)
+* Debug
+* Audio (low level driver in place, StartAudio/StopAudio calls with 
+  audio done events)
+* Event Manager (all events handled at high priority)
+* Button Manager
+* Resource Manager ("H" functions for opening and loading resources)
+

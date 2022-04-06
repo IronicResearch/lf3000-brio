@@ -1,0 +1,237 @@
+======================================================
+Target Setup Notes
+======================================================
+
+Emerald devices used for development are all form-factor devices which use
+Ethernet-over-USB connectivity for communications. (There is no separate
+development board used for Emerald development, so ignore any outdated references.)
+
+======================================================
+Emerald Development Environment Requirements
+======================================================
+
+The Emerald device needs to be connected to the PC host development system with
+the following cables:
+
+	USB device cable (gadget connector supplied for normal use)
+	serial cable with LeapFrog RS232 interface board (optional) 
+	
+The PC host development system (Ubuntu Linux) should have the following packages
+installed and running:
+
+	FTP server (for FTP transfers)
+	NFS server (for NFS shares)
+	RidgeRun GNU uClibc toolchain (for ARM cross-compiling)
+	Eclipse IDE with CDT support (for C++ development)
+
+These packages should already be included in the Ubuntu Linux distribution provided
+provided by Leapfrog as VMWare image.
+
+Additional packages which could be helpful:
+
+	Minicom or PuTTY serial terminal (for serial console)
+
+Many of these instructions have been taken from the LeapFrog internal Wiki site, EMMA.
+For latest overview on setting up a target developement system, visit this site:
+
+http://emma.leapfrog.com/display/BRIO/lightning-dev-env-setup
+	
+======================================================
+Target Preparation -- setting up FTP
+======================================================
+
+Reference Wiki for Setting up FTP server:
+
+http://emma.leapfrog.com/display/BRIO/Interim+Installing+28#InterimInstalling28-SettingUpFTPserveronUbuntu
+
+* Install an FTP server
+
+      $ sudo apt-get install vsftpd
+
+* Fix anonymous and local access
+
+      $ sudo vi /etc/vsftpd.conf
+
+* Change these lines (around line 26) to match
+
+      # Allow anonymous FTP? (Beware - allowed by default if you comment this out).
+      anonymous_enable=NO
+      #
+      # Uncomment this to allow local users to log in.
+      local_enable=YES
+      #
+      # Uncomment this to enable any form of FTP write command.
+      write_enable=YES
+
+* Restart vsftpd
+
+      $ sudo /etc/init.d/vsftpd restart
+
+Once connected, set IP address on ubuntu (Emerald takes care of itself correctly)
+
+      $ sudo ifconfig `ifconfig | grep -i 00:dc:c8:f7:75:05 | awk '{{ print $1 }}'` 192.168.0.113
+
+Since a typical host PC will already have its onboard Ethernet adaptor assigned to
+host device 'eth0', connecting a USB cable from the PC to the Emerald device will
+usually show up as device 'eth1'. This means the preceding command would typically
+be simplified to:
+
+      $ sudo ifconfig eth1 192.168.0.113
+      
+To test the connection is working:
+
+      $ ping 192.168.0.111
+
+Note the FTP commands in these HOWTO notes assume you are running as user 'lfu' on 
+PC host, as typically done on VMWare image. If you are running as another user, 
+you'll need to create user 'lfu', and place all payload files in '/home/lfu/payload'
+path in order to use Emerald's FTP scripts as-is.
+
+======================================================
+Target Preparation -- setting up NFS
+======================================================
+
+Note NFS is not used for booting Emerald devices, but may still be useful for
+mounting shared directories during development. 
+
+You only need to do these steps if your development system hasn't already 
+been configured for NFS.
+
+**** VMWare Note ****:
+It is highly recommended that you connect to Emerald while in the VMWare session.
+VMWare's Windows host should *not* be aware the network connection is even active
+in order to avoid IP address configuration problems.
+
+Your development system image will need to have an NFS server installed
+and running, and one network adapter configured at the fixed IP address
+192.168.0.113. 
+
+	$ sudo apt-get install nfs-user-server
+	$ sudo /etc/init.d/nfs-user-server start
+	
+	$ sudo ifconfig eth1 192.168.0.113 up
+
+	$ sudo apt-get install xinetd
+	$ sudo /etc/init.d/xinetd start
+
+Emerald will be configured to use IP address 192.168.0.111, so this may need 
+to be added to list of allowable addresses in /etc/hosts.allow if firewall
+iptables service is running.
+
+Configure the nfs server using your favorite text editor:
+
+Add these lines to the end of the file /etc/hosts.allow:
+
+	ALL: 192.168.0.111
+
+Add these lines to the end of the file /etc/hosts.deny
+
+	ALL: ALL
+
+Add this line to the end of the file /etc/exports
+
+	/home/lfu/nfsroot 192.168.0.111(rw,no_root_squash,async)
+
+Now restart the the NFS server:
+
+   $ sudo /etc/init.d/nfs-kernel-server restart
+
+======================================================
+Target Preparation -- serial terminal program
+======================================================
+
+Note console sessions are now available via Telnet connection to the Emerald device.
+The serial connection via RS232 interface board is still supported though. 
+
+**** VMWare Note ****:
+You will need to exit any Windows terminal programs (like HyperTerminal) in order for
+Linux to acquire the serial port while running under VMWare emulation. You may also need
+to explicitly enable VMWare's Serial COM1 port device (Settings > Hardware > Serial Port
+menu selection, or Serial Port '0101' icon on toolbar).
+
+PuTTY is pre-installed on Ubuntu 8, and may be easier to use than 'minicom' (below).
+It may be found from Ubuntu menu via 'Applications > Internet > PuTTY' when installed, and
+has GUI dialog for configuring the serial connection for /dev/ttyS0 at 115200 baud.
+ 
+This page describes using minicom, a popular serial port terminal application, in Linux. 
+If needed, minicom can be installed in Ubuntu using apt:
+
+	$ sudo apt-get install minicom
+
+First, a note about serial ports. The fist real serial port ("com1") is named /dev/ttyS0 
+and the second is /dev/ttyS1 and so on. If your serial port comes on a USB dongle, it's 
+likely at /dev/ttyUSB0. Here were assume that your serial port is /dev/ttyS0.
+
+You will need to configure minicom before using it for the first time. Run it with 'sudo' 
+in configuration mode as follows:
+
+	$ sudo minicom -s
+
+Select "serial port setup" and in the setup screen set your port to /dev/ttyS0, set your 
+baud rate (115200 8N1 is commonly used by Linux targets such as Lightning) and turn off 
+Hardware Flow Control. Now enter the "modem and dialing" screen and delete all of the 
+settings inside there. This will prevent minicom's attempts to send modem commands on 
+init and exit to the target. Now save everything using the "Save as dfl" option. You can 
+now exit Minicom by pressing control+a and then x.
+
+Now you may run minicom normally. I suggest the following options:
+
+	$ minicom -o -w -c on
+
+The -w option enables line wrap (you can toggle it with "control+a w"), -o disables 
+initialization (used for modems), and -c on turns on colors when talking to Linux targets. 
+"control+a z" gets you to a help menu. Other useful options include "control+a L", which 
+toggles logging to a text file (useful for capturing long debug output sessions, for example). 
+"control+a x" can be used to exit minicom.
+
+In Ubuntu, you can create a nice shortcut icon in a panel (ie: up top where the menus are) 
+by right-clicking an empty space, choosing "add to panel" and adding a "custom application 
+launcher". Pick a nice icon, name the launcher "minicom" and use the following for the command:
+
+	gnome-terminal --title="minicom" -e "minicom -o -w -c on"
+
+This creates an icon that runs minicom in a terminal, with the desired options.
+
+======================================================
+Target Preparation -- flashing instructions
+======================================================
+
+Flashing is performed differently on Emerald from Didj, and requires booting a special
+recovery kernel image which is available via ATAP cartridge or device hot-key sequence.
+
+A dedicated ATAP cartridge would be the simplest method to flash the device with
+all necessary payload packages onboard. 
+
+A universal ATAP cartridge makes it possible to grab payload packages from a payload
+directory on the host PC. This method requires that a valid 'lfu' user and
+'payload' directory be present for FTP transfers.
+
+http://emma.leapfrog.com/display/BRIO/Universal+ATAP
+
+======================================================
+Target Preparation -- installing ARM cross-compiler
+======================================================
+
+Your development system image will also need to have the cross-compiler
+installed for building ARM binary targets. The version used now is
+RidgeRun toolchain based on GCC 4.1 with uclibc run-time library.
+It is not binary compatible with the previous Scratchbox compiler, so you
+must recompile all binaries with it.  
+
+To deploy the compiler, untar it from root directory.
+
+	$ cd /
+	$ sudo tar -xjvf RidgeRun-toolchain-369009.tar.bz2
+	
+The resulting toolchain with be untarred in /opt/RidgeRun/arm-eabi-uclibc.
+
+The CC compiler directive in the arm-g++.py script should already be modified
+to use the explicit full path to arm-linux-g++. If you need to invoke the
+cross-compiler for non-Lightning/SCons projects, you will need to update
+your PATH environment variable:
+
+	export PATH=$PATH:/opt/RidgeRun/arm-eabi-uclibc/bin
+
+See ReleaseNotes.txt for important information about which versions of other
+software components are required on the target.
+

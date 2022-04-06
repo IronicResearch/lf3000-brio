@@ -1,0 +1,541 @@
+#ifndef LF_BRIO_STRINGTYPES_H
+#define LF_BRIO_STRINGTYPES_H
+//==============================================================================
+// $Source: $
+//
+// Copyright (c) LeapFrog Enterprises, Inc.
+//==============================================================================
+//
+// File:
+//		StringTypes.h
+//
+// Description:
+//		Defines the string types of the system.
+//
+// NOTE: On Linux, get the "libglib2.0-dev" and "libglibmm-2.4-dev" packages 
+//		using the Synaptic Package Manager to get the header files for the
+//		"Glib::CString" class.
+//
+//============================================================================== 
+
+#include <boost/scoped_ptr.hpp>
+#include <iosfwd>
+#include <string>
+#include <SystemTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
+
+//============================================================================== 
+// Character encodings
+//============================================================================== 
+
+//------------------------------------------------------------------------------
+// Type:
+//		tCharEncoding
+//
+//	Definition:
+//		Character encodings extend character and string support beyond
+//		Clib ASCII to include Windows codepages, ISO-8859 parts, and Unicode 
+//		among other common forms & standards.
+//
+//		tCharEncoding stores a character encoding value, comprised of three elements:
+//
+//			MSBit: [4 bit domain][8 bits reserved][10 bit group][10 bit tag] :LSBit
+//
+//		- the domain, which segments system, product and application encodings 
+//		- the group, which specifies the group to which the encoding belongs
+//		- the tag - a key number that identifies the specific sub-encoding 
+//			within its group
+//
+//		Application code may use any product or System-defined types, but 
+//		can only define new application types -- not product or System
+//		types.  Similarly, product code may use any System-defined types,
+//		but can only define new product types -- not application or System types.
+//------------------------------------------------------------------------------
+
+typedef tU16NumSpace	tCharEncoding;
+
+#define MakeCharEncoding(domain, group, tag) ((tCharEncoding)MakeU16NumSpace(domain, group, tag))
+
+#define kUndefinedCharEncoding ((tCharEncoding)0)
+
+//============================================================================== 
+// System-defined character encoding groups
+//============================================================================== 
+
+enum {
+	kSystemCharEncodingGroupSystem = kFirstNumSpaceGroup,		
+												// special System/LeapFrog encodings
+	kSystemCharEncodingGroupLegacy,				// legacy encodings (e.g. ASCII)
+	kSystemCharEncodingGroupISO,				// International Standards Org (ISO)
+	kSystemCharEncodingGroupWindows,			// Windows codepages
+	kSystemCharEncodingGroupMac,				// Mac encodings
+	kSystemCharEncodingGroupUnicode,			// Unicode standard
+};
+
+#define MakeFirstSystemGroupCharEncoding(group)  \
+				MakeCharEncoding(kSystemNumSpaceDomain, group, kFirstNumSpaceTag)
+
+//==============================================================================
+// System-defined character encodings
+//==============================================================================
+
+enum {
+	//------------------------------------------------------------------------------
+	// System encodings
+	//------------------------------------------------------------------------------
+	// <firstGroupEncoding>			= MakeFirstSystemGroupCharEncoding(kSystemCharEncodingGroupSystem),
+
+	//------------------------------------------------------------------------------
+	// Legacy encodings
+	//------------------------------------------------------------------------------
+	kASCIICharEncoding				= MakeFirstSystemGroupCharEncoding(kSystemCharEncodingGroupLegacy),					
+										// ISO 646-1991; standard C 7-bit encoding -- values 0-127
+
+	//------------------------------------------------------------------------------
+	// ISO encodings
+	//------------------------------------------------------------------------------
+	kISOLatin1CharEncoding			= MakeFirstSystemGroupCharEncoding(kSystemCharEncodingGroupISO),
+										// ISO 8859-1 - Western European; 8-bit encoding
+	kISOLatin2CharEncoding,				// ISO 8859-2 - Central European; 8-bit encoding
+	kISOLatin3CharEncoding,				// ISO 8859-3 - South European; 8-bit encoding
+	kISOLatin4CharEncoding,				// ISO 8859-4 - North European; 8-bit encoding
+	kISOCyrillicCharEncoding,			// ISO 8859-5 - Cyrillic; 8-bit encoding
+	kISOArabicCharEncoding,				// ISO 8859-6 - Arabic; 8-bit encoding
+	kISOGreekCharEncoding,				// ISO 8859-7 - Greek; 8-bit encoding
+	kISOHebrewCharEncoding,				// ISO 8859-8 - Hebrew; 8-bit encoding
+	kISOLatin5CharEncoding,				// ISO 8859-9 - Turkish; 8-bit encoding
+	kISOLatin6CharEncoding,				// ISO 8859-10 - Nordic; 8-bit encoding
+	kISOThaiCharEncoding,				// ISO 8859-11 - Thai; 8-bit encoding
+	kISOPart12CharEncoding,				// ISO 8859-12 - <not used>; 8-bit encoding
+	kISOLatin7CharEncoding,				// ISO 8859-13 - Baltic Rim; 8-bit encoding
+	kISOLatin8CharEncoding,				// ISO 8859-14 - Celtic; 8-bit encoding
+	kISOLatin9CharEncoding,				// ISO 8859-15 - Latin1 variant; 8-bit encoding
+	kISOLatin10CharEncoding,			// ISO 8859-16 - South-Eastern Europe; 8-bit encoding
+
+	//------------------------------------------------------------------------------
+	// Windows encodings
+	//------------------------------------------------------------------------------
+	kWindowsUSCharEncoding			= MakeFirstSystemGroupCharEncoding(kSystemCharEncodingGroupWindows),
+										// Windows code page 437 - United States; 8-bit encoding
+	kWindowsLatin2CharEncoding,			// Windows code page 1250 - Central European; 8-bit encoding							
+	kWindowsCyrillicCharEncoding,		// Windows code page 1251 - Cyrillic; 8-bit encoding
+	kWindowsLatin1CharEncoding,			// Windows code page 1252 - Western European; 8-bit encoding
+	kWindowsGreekCharEncoding,			// Windows code page 1253 - Greek; 8-bit encoding
+	kWindowsTurkishCharEncoding,		// Windows code page 1254 - Turkish; 8-bit encoding
+	kWindowsHebrewCharEncoding,			// Windows code page 1255 - Hebrew; 8-bit encoding
+	kWindowsArabicCharEncoding,			// Windows code page 1256 - Arabic; 8-bit encoding
+	kWindowsBalticRimCharEncoding,		// Windows code page 1257 - Baltic region; 8-bit encoding
+	kWindowsVietnameseCharEncoding,		// Windows code page 1258 - Vietnamese; 8-bit encoding
+	kWindowsThaiCharEncoding,			// Windows code page 874 - Thai; 8-bit encoding
+
+	//------------------------------------------------------------------------------
+	// Mac encodings
+	//------------------------------------------------------------------------------
+	kMacRomanCharEncoding			= MakeFirstSystemGroupCharEncoding(kSystemCharEncodingGroupMac),
+										// MacRoman; 8-bit encoding
+
+	//------------------------------------------------------------------------------
+	// Unicode encodings
+	//------------------------------------------------------------------------------
+	kUTF8CharEncoding				= MakeFirstSystemGroupCharEncoding(kSystemCharEncodingGroupUnicode),					
+										// Unicode: variable 8 to 32-bits/character; "8-bit safe" for use w/ Clib strxxx fcns
+	kUTF16CharEncoding,					// Unicode: mostly 16-bits/character (with some obscure exceptions); 
+										//			leading BOM ("byte order mark") value indicates endianness
+	kUTF16BECharEncoding,				// Unicode: UTF16 - guaranteed big endian
+	kUTF16LECharEncoding,				// Unicode: UTF16 - guaranteed little endian
+	kUTF32CharEncoding,					// Unicode: uniform 32-bits/character; 
+										//		leading BOM ("byte order mark") value indicates endianness
+	kUTF32BECharEncoding,				// Unicode: UTF32 - guaranteed big endian
+	kUTF32LECharEncoding,				// Unicode: UTF32 - guaranteed little endian
+};
+
+
+//==============================================================================
+// Type:
+//		tWChar
+//
+//	Definition:
+//		This 4-byte type is big enough to hold any single character regardless of  
+//		the particular text encoding.  It provides international & multi-byte  
+//		character support in lieu of the C-library wchar_t type.  We don't 
+//		use wchar_t or related Clib string functionality because the Clib 
+//		"wide character" definition can vary in size from 8 to 32 bits depending 
+//		on the compiler and library settings, and wchar_t string processing
+//		typically depends on a single text encoding scheme.
+//
+//		tWChars are related to tCharEncoding-encoded strings in that any single
+//		character, when represented outside of an encoded string, is of type tWChar.  
+//		However, within the encoded string, individual character storage size & 
+//		format is entirely determined by the character encoding.
+//
+//		tWChars themselves provide no information about their character set, 
+//		format or byte-size.  No assumptions can be made about any of these attributes.  
+//		tWChar objects must be paired with a tCharEncoding type that defines the 
+//		format of the character.
+//==============================================================================
+
+typedef U32 		tWChar;				// storage type large enough for a single character of any encoding	
+
+//==============================================================================
+// Type:
+//		tUniChar
+//
+//	Definition:
+//		FIXME/dg: fill in
+//==============================================================================
+
+typedef U8			tUTF8Char;
+typedef U16			tUTF16Char;
+typedef U32			tUTF32Char;
+
+typedef tUTF16Char	tUniChar;		
+
+
+typedef tUTF32Char	gunichar;		// FIXME: remove
+
+//==============================================================================
+// CString
+//==============================================================================
+class CString
+{
+  typedef std::string::size_type                        size_type;
+  typedef std::string::difference_type                  difference_type;
+
+  typedef gunichar                                      value_type;
+  typedef gunichar &                                    reference;
+  typedef const gunichar &                              const_reference;
+public:
+  static const size_type npos = std::string::npos;
+
+  CString();
+
+  ~CString();
+  CString(const CString& other);
+  CString& operator=(const CString& other);
+  CString(const std::string& src);
+  CString(const CString& src, size_type i, size_type n=npos);
+  CString(const char* src, size_type n);
+  CString(const char* src);
+
+  CString& operator=(const std::string& src);
+  CString& operator=(const char* src);
+  CString& operator=(gunichar uc);
+  CString& operator=(char c);
+
+  CString& operator+=(const CString& src);
+  CString& operator+=(const char* src);
+  CString& operator+=(gunichar uc);
+  CString& operator+=(char c);
+
+/*
+  CString& insert(size_type i, const CString& src);
+  CString& insert(size_type i, const CString& src, size_type i2, size_type n);
+  CString& insert(size_type i, const char* src, size_type n);
+  CString& insert(size_type i, const char* src);
+  CString& insert(size_type i, size_type n, gunichar uc);
+  CString& insert(size_type i, size_type n, char c);
+
+  iterator insert(iterator p, gunichar uc);
+  iterator insert(iterator p, char c);
+  void     insert(iterator p, size_type n, gunichar uc);
+  void     insert(iterator p, size_type n, char c);
+  template <class In> void insert(iterator p, In pbegin, In pend);
+*/
+
+  CString& replace(size_type i, size_type n, const CString& src);
+  CString& replace(size_type i, size_type n, const CString& src, size_type i2, size_type n2);
+  CString& replace(size_type i, size_type n, const char* src, size_type n2);
+  CString& replace(size_type i, size_type n, const char* src);
+  CString& replace(size_type i, size_type n, size_type n2, gunichar uc);
+  CString& replace(size_type i, size_type n, size_type n2, char c);
+
+  void clear();
+  CString& erase(size_type i, size_type n=npos);
+  CString& erase();
+
+//! @}
+//! @name Compare and collate.
+//! @{
+
+  int compare(const CString& rhs) const;
+  int compare(const char* rhs)    const;
+
+  /*! Create a unique sorting key for the UTF-8 string.  If you need to
+   * compare UTF-8 strings regularly, e.g. for sorted containers such as
+   * <tt>std::set<></tt>, you should consider creating a collate key first
+   * and compare this key instead of the actual string.
+   *
+   * The CString::compare() methods as well as the relational operators
+   * <tt>==&nbsp;!=&nbsp;<&nbsp;>&nbsp;<=&nbsp;>=</tt> are quite costly
+   * because they have to deal with %Unicode and the collation rules defined by
+   * the current locale.  Converting both operands to UCS-4 is just the first
+   * of several costly steps involved when comparing CStrings.  So be careful.
+   */
+  std::string collate_key() const;
+
+  /*! Create a unique key for the UTF-8 string that can be used for caseless
+   * sorting.  <tt>ustr.casefold_collate_key()</tt> results in the same string
+   * as <tt>ustr.casefold().collate_key()</tt>, but the former is likely more
+   * efficient.
+   */
+  std::string casefold_collate_key() const;
+
+  value_type operator[](size_type i) const;
+  value_type at(size_type i) const;
+  CString substr(size_type i=0, size_type n=npos) const;
+
+  size_type find(const CString& str, size_type i=0) const;
+  size_type find(const char* str, size_type i, size_type n) const;
+  size_type find(const char* str, size_type i=0) const;
+  size_type find(gunichar uc, size_type i=0) const;
+  size_type find(char c, size_type i=0) const;
+
+  size_type rfind(const CString& str, size_type i=npos) const;
+  size_type rfind(const char* str, size_type i, size_type n) const;
+  size_type rfind(const char* str, size_type i=npos) const;
+  size_type rfind(gunichar uc, size_type i=npos) const;
+  size_type rfind(char c, size_type i=npos) const;
+
+  size_type find_first_of(const CString& match, size_type i=0) const;
+  size_type find_first_of(const char* match, size_type i, size_type n) const;
+  size_type find_first_of(const char* match, size_type i=0) const;
+  size_type find_first_of(gunichar uc, size_type i=0) const;
+  size_type find_first_of(char c, size_type i=0) const;
+
+  size_type find_last_of(const CString& match, size_type i=npos) const;
+  size_type find_last_of(const char* match, size_type i, size_type n) const;
+  size_type find_last_of(const char* match, size_type i=npos) const;
+  size_type find_last_of(gunichar uc, size_type i=npos) const;
+  size_type find_last_of(char c, size_type i=npos) const;
+
+  size_type find_first_not_of(const CString& match, size_type i=0) const;
+  size_type find_first_not_of(const char* match, size_type i, size_type n) const;
+  size_type find_first_not_of(const char* match, size_type i=0) const;
+  size_type find_first_not_of(gunichar uc, size_type i=0) const;
+  size_type find_first_not_of(char c, size_type i=0) const;
+
+  size_type find_last_not_of(const CString& match, size_type i=npos) const;
+  size_type find_last_not_of(const char* match, size_type i, size_type n) const;
+  size_type find_last_not_of(const char* match, size_type i=npos) const;
+  size_type find_last_not_of(gunichar uc, size_type i=npos) const;
+  size_type find_last_not_of(char c, size_type i=npos) const;
+
+  bool      empty()  const;
+  size_type size()   const;
+  size_type length() const;
+  size_type bytes()  const;
+
+  void resize(size_type n, gunichar uc);
+  void resize(size_type n, char c='\0');
+
+  size_type capacity() const;
+  size_type max_size() const;
+  void reserve(size_type n=0);
+
+  inline operator std::string() const; // e.g. std::string str = CString();
+  inline const std::string& raw() const;
+
+  // Not necessarily an ASCII char*. Use g_utf8_*() where necessary.
+  const char* data()  const;
+  const char* c_str() const;
+
+  /*! Check whether the string is valid UTF-8. */
+  bool validate() const;
+
+  /*! Check whether the string is plain 7-bit ASCII. @par
+   * Unlike any other CString method, is_ascii() is safe to use on invalid
+   * UTF-8 strings.  If the string isn't valid UTF-8, it cannot be valid
+   * ASCII either, therefore is_ascii() will just return @c false then.
+   * @return Whether the string contains only ASCII characters.
+   */
+  bool is_ascii() const;
+
+  /*! "Normalize" the %Unicode character representation of the string. */
+//  CString normalize(NormalizeMode mode = NORMALIZE_DEFAULT_COMPOSE) const;
+
+//! @}
+//! @name Character case conversion.
+//! @{
+
+  /*! Returns a new UTF-8 string with all characters characters converted to
+   * their lowercase equivalent, while honoring the current locale.  The
+   * resulting string may change in the number of bytes as well as in the
+   * number of characters.  For instance, the German sharp&nbsp;s
+   * <tt>&quot;&szlig;&quot;</tt> will be replaced by two characters
+   * <tt>"SS"</tt> because there is no capital <tt>&quot;&szlig;&quot;</tt>.
+   */
+  CString uppercase() const;
+
+  /*! Returns a new UTF-8 string with all characters characters converted to
+   * their lowercase equivalent, while honoring the current locale.  The
+   * resulting string may change in the number of bytes as well as in the
+   * number of characters.
+   */
+  CString lowercase() const;
+
+  /*! Returns a caseless representation of the UTF-8 string.  The resulting
+   * string doesn't correspond to any particular case, therefore the result
+   * is only useful to compare strings and should never be displayed to the
+   * user.
+   */
+  CString casefold() const;
+
+private:
+  boost::scoped_ptr<U32>	str_;	//opaque implementation!!!
+};
+
+
+
+/**** Glib::CString -- comparison operators ********************************/
+
+/** @relates Glib::CString */
+inline bool operator==(const CString& lhs, const CString& rhs)
+  { return (lhs.compare(rhs) == 0); }
+
+/** @relates Glib::CString */
+inline bool operator==(const CString& lhs, const char* rhs)
+  { return (lhs.compare(rhs) == 0); }
+
+/** @relates Glib::CString */
+inline bool operator==(const char* lhs, const CString& rhs)
+  { return (rhs.compare(lhs) == 0); }
+
+
+/** @relates Glib::CString */
+inline bool operator!=(const CString& lhs, const CString& rhs)
+  { return (lhs.compare(rhs) != 0); }
+
+/** @relates Glib::CString */
+inline bool operator!=(const CString& lhs, const char* rhs)
+  { return (lhs.compare(rhs) != 0); }
+
+/** @relates Glib::CString */
+inline bool operator!=(const char* lhs, const CString& rhs)
+  { return (rhs.compare(lhs) != 0); }
+
+
+/** @relates Glib::CString */
+inline bool operator<(const CString& lhs, const CString& rhs)
+  { return (lhs.compare(rhs) < 0); }
+
+/** @relates Glib::CString */
+inline bool operator<(const CString& lhs, const char* rhs)
+  { return (lhs.compare(rhs) < 0); }
+
+/** @relates Glib::CString */
+inline bool operator<(const char* lhs, const CString& rhs)
+  { return (rhs.compare(lhs) > 0); }
+
+
+/** @relates Glib::CString */
+inline bool operator>(const CString& lhs, const CString& rhs)
+  { return (lhs.compare(rhs) > 0); }
+
+/** @relates Glib::CString */
+inline bool operator>(const CString& lhs, const char* rhs)
+  { return (lhs.compare(rhs) > 0); }
+
+/** @relates Glib::CString */
+inline bool operator>(const char* lhs, const CString& rhs)
+  { return (rhs.compare(lhs) < 0); }
+
+
+/** @relates Glib::CString */
+inline bool operator<=(const CString& lhs, const CString& rhs)
+  { return (lhs.compare(rhs) <= 0); }
+
+/** @relates Glib::CString */
+inline bool operator<=(const CString& lhs, const char* rhs)
+  { return (lhs.compare(rhs) <= 0); }
+
+/** @relates Glib::CString */
+inline bool operator<=(const char* lhs, const CString& rhs)
+  { return (rhs.compare(lhs) >= 0); }
+
+
+/** @relates Glib::CString */
+inline bool operator>=(const CString& lhs, const CString& rhs)
+  { return (lhs.compare(rhs) >= 0); }
+
+/** @relates Glib::CString */
+inline bool operator>=(const CString& lhs, const char* rhs)
+  { return (lhs.compare(rhs) >= 0); }
+
+/** @relates Glib::CString */
+inline bool operator>=(const char* lhs, const CString& rhs)
+  { return (rhs.compare(lhs) <= 0); }
+
+
+/**** Glib::CString -- concatenation operators *****************************/
+
+/** @relates Glib::CString */
+inline CString operator+(const CString& lhs, const CString& rhs)
+  { CString temp (lhs); temp += rhs; return temp; }
+
+/** @relates Glib::CString */
+inline CString operator+(const CString& lhs, const char* rhs)
+  { CString temp (lhs); temp += rhs; return temp; }
+
+/** @relates Glib::CString */
+inline CString operator+(const char* lhs, const CString& rhs)
+  { CString temp (lhs); temp += rhs; return temp; }
+
+/** @relates Glib::CString */
+inline CString operator+(const CString& lhs, gunichar rhs)
+  { CString temp (lhs); temp += rhs; return temp; }
+
+/** @relates Glib::CString */
+//inline CString operator+(gunichar lhs, const CString& rhs)
+//  { CString temp (1, lhs); temp += rhs; return temp; }
+
+/** @relates Glib::CString */
+inline CString operator+(const CString& lhs, char rhs)
+  { CString temp (lhs); temp += rhs; return temp; }
+
+/** @relates Glib::CString */
+//inline CString operator+(char lhs, const CString& rhs)
+//  { CString temp (1, lhs); temp += rhs; return temp; }
+
+
+
+
+//==============================================================================
+// Related types
+//==============================================================================
+typedef CString			CPath;
+typedef CString			CURI;
+	
+typedef const CString*	ConstPtrCString;
+typedef const CURI*		ConstPtrCURI;
+
+extern const CString	kNullString;
+extern const CURI		kNullURI;
+
+
+
+//==============================================================================
+// Utility functions
+//==============================================================================
+//------------------------------------------------------------------------------
+inline CString AppendPathSeparator(const CString& path)
+{
+	if( path.at(path.length()-1) != '/' )
+		return path + '/';
+	return path;
+}
+
+//------------------------------------------------------------------------------
+inline CString AppendPathSeparator(const char* pathIn)
+{
+	CString path(pathIn);
+	if( path.at(path.length()-1) != '/' )
+		path += '/';
+	return path;
+}
+
+
+LF_END_BRIO_NAMESPACE()	
+#endif	// LF_BRIO_STRINGTYPES_H
+
+// EOF

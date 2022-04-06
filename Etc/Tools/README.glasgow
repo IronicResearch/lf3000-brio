@@ -1,0 +1,22 @@
+## LF Glasgow Emulator ##
+
+  *  Set environment variable ARIA_EMU_PLATFORM=GLASGOW to get the correct 720p resolution.
+  *  Make sure you can connect a Wiimote to your development system.  The best way is to install the package "wmgui" and run the installed executable "wmgui" to verify the Wiimote can connect.
+  *  Before using the Wiimote for emulator accelerometer and buttons you will need to run the binary included "lf-input-daemon" and follow the instructions when prompted.
+  * IMPORTANT: "lf-input-daemon" may not have the correct permission to access "/dev/uinput" and "/dev/input/*".  To correct this try the following:
+	01.  Create a user group "input":  
+		sudo groupadd input
+	02.  Add yourself as a member to the group "input":
+		sudo usermod -a -G input <user-name>
+	03.  Set the udev rules for uinput.
+		a.  create file /etc/udev/rules.d/70-uinput.rules
+			sudo vim /etc/udev/rules/70-uinput.rules
+		b.  add the following lines and save:
+			KERNEL=="uinput", MODE="0666"
+			KERNEL=="uinput", GROUP="input"
+	04.  Set the udev rules for input events:
+		a.  create file /etc/udev/rules.d/70-input.rules
+			sudo vim /etc/udev/rules/70-input.rules
+		b.  add the following lines and save:
+			KERNEL=="event*", NAME="input/%k", MODE="660", GROUP="input"
+	05.  !IMPORTANT!  Reboot (there may be a better way but I can't seem to get it to work without rebooting).

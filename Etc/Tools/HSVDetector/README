@@ -1,0 +1,25 @@
+hsvDetect
+
+Revision: 1
+Original Date: 4/9/2014
+
+hsvDetect is a simple application used to determine the HSV values of the controller LEDs
+used in vision processing.  There are three pairs of inputs for this application, two sliders
+to adjust the Hue lower and uppoer bound, two sliders for the Saturation lower and upper bound
+and two sliders for the Value lower and upper bound.  There are two output display, "Video"
+which shows the live feed from the camera and "Light" which shows the binary image created
+by taking the live camera feed converting it to the HSV color space, performing an inRage 
+calculation where only the pixels that are within the HSV bounds prescribed from the input
+sliders remain and then finally creating a binary image of the pixels that ARE in the HSV
+range and the pixels that ARE NOT in the range.  
+
+This allows real-time adjustment of the HSV bounds to determine the ideal settings for 
+tracking the specific color being emmitted from the controller.
+
+This application must be used in concert with another application that enables turning
+the controller LED on and changing it between the various colors availble.
+
+Instructions for building and running:
+NOTE: Do not source the angstrom environment script before running
+$ make
+$ ./hsv_detect

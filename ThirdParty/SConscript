@@ -1,0 +1,150 @@
+#-----------------------------------------------------------------------------
+# Brio/ThirdParty Repository
+#-----------------------------------------------------------------------------
+import os.path
+import glob
+from Etc.Tools.SConsTools.Priv import CopyTree
+Import('env')
+
+targets = []
+
+#-----------------------------------------------------------------------------
+# FIXME/tp: When we hide the ustring class behind our own implementation,
+# the export glib stuff can go away.
+#-----------------------------------------------------------------------------
+def ExportHeaders(dest_dir, src_dir, file_extension):
+	
+	root_len = len(src_dir) + 1
+	def callback(arg, directory, files):
+		global targets
+		base = os.path.basename(directory)
+		if base == '.svn':
+			del files[:]	#Do not walk any further down .svn directory tree
+		else:
+			for file in files:
+				if os.path.splitext(file)[1] == file_extension:
+					full = os.path.join(directory, file)
+					subdir = os.path.dirname(full[root_len:])
+					targets += env.Install(os.path.join(dest_dir, subdir), full)
+
+	os.path.walk(src_dir, callback, None)
+
+
+#-----------------------------------------------------------------------------
+# Populate the "SDK" folders
+#-----------------------------------------------------------------------------
+
+if env['hdr_deploy_dir']:
+	ExportHeaders(env['hdr_deploy_dir'].Dir('boost').abspath,
+					Dir('boost').Dir('Include').Dir('boost').abspath, '.hpp')
+	ExportHeaders(env['hdr_deploy_dir'].Dir('boost').abspath,
+					Dir('boost').Dir('Include').Dir('boost').abspath, '.ipp')
+	ExportHeaders(env['hdr_deploy_dir'].Dir('OpenCV').abspath,
+					Dir('OpenCV').Dir('Include').abspath, '.hpp')
+	ExportHeaders(env['hdr_deploy_dir'].Dir('OpenCV').abspath,
+					Dir('OpenCV').Dir('Include').abspath, '.h')
+	ExportHeaders(env['hdr_deploy_dir'].Dir('ustring').abspath,
+					Dir('ustring').abspath, '.h')
+	ExportHeaders(env['hdr_deploy_dir'].Dir('freetype').abspath,
+					Dir('FreeType').Dir('Include').abspath, '.h')
+	ExportHeaders(env['hdr_deploy_dir'].abspath,
+					Dir('LibJPEG').Dir('Include').abspath, '.h')
+
+#Install OpenGL headers
+	dest_dir = env['hdr_deploy_dir'].Dir('OpenGL').Dir('x86').abspath
+	ExportHeaders( dest_dir, Dir('MaliEmulator').Dir('include').abspath, '.h' )
+	
+	#Normally, cpu is not set in the sdk_headers target (not sure why this worked in oe-classic)
+	dest_dir = env['hdr_deploy_dir'].Dir('OpenGL')
+	if not env['cpu']:
+		dest_dir = dest_dir.Dir('arm').abspath
+	else:
+		dest_dir = dest_dir.Dir(env['cpu']).abspath
+	if env['platform'] == 'Lightning':
+		ExportHeaders( dest_dir, Dir('MagicEyes').Dir('Include').abspath, '.h' )
+	
+#Install Libraries
+if env['install_dir']:
+	#In the SDK, we want to use the ThirdParty subdirectory, in deployment, everything goes together in lib
+	if env['is_sdk']:
+		opengl_lib_dir = env['install_dir'].Dir('ThirdParty')
+	else:
+		opengl_lib_dir = env['install_dir'].Dir('lib')
+	
+	if env['cpu'] == 'x86':
+		libs = glob.glob(os.path.join('MaliEmulator', 'bin', '*.so*'))
+	elif env['platform'] == 'Lightning':
+		libs = glob.glob(os.path.join('MagicEyes', 'Libs', env['cpu'], '*.so*'))
+	elif env['platform'] == 'LF2000' or env['platform'] == 'LF3000':
+		libs = []
+	targets += env.Install(opengl_lib_dir, libs)
+	
+	#In the SDK, Third Party libs get their own directory, in deployment, everything goes together in lib
+	if env['is_sdk']:
+		lib_install_dir = env['install_dir'].Dir('ThirdParty')
+	else:
+		lib_install_dir = env['install_dir'].Dir('lib')
+	
+	#These libs should not be installed in the device root, it gets a subset defined below
+	if env['is_sdk'] or env['cpu'] == 'x86':
+		libs = glob.glob(os.path.join('LibSndFile', 'Libs', env['cpu'], '*.so*'))
+		libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], '*.so*'))
+		libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], '*.so*'))
+		libs += glob.glob(os.path.join('Portaudio', 'Libs', env['cpu'], 'libportaudio.so'))
+		libs += glob.glob(os.path.join('LibJPEG', 'Libs', env['cpu'], '*.so*'))
+		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], '*.so*'))
+		libs += glob.glob(os.path.join('boost', 'Libs', env['cpu'], '*.so*'))
+		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], '*.so*'))
+		targets += env.Install(lib_install_dir, libs)
+
+	#These third party libs go in the SDK embedded MPI directory
+	if env['is_sdk'] and not env['cpu'] == 'x86':
+		lib_install_dir = env['install_dir'].Dir('ThirdParty')
+		libs = glob.glob(os.path.join('ustring', 'libs', env['cpu'], '*.so'))
+		libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], '*.so'))
+		libs += glob.glob(os.path.join('LibJPEG', 'Libs', env['cpu'], '*.so'))
+		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], '*.so'))
+		targets += env.Install(lib_install_dir, libs)
+
+#-----------------------------------------------------------------------------
+# Export shared libs to embedded target
+# Only specific versioned runtime libs copied to avoid duplication on target
+# 3rd-party lib deployments were meant to supplement older platforms' rootfs.
+# 3rd-party libs should already be deployed in newer platforms' rootfs.
+#-----------------------------------------------------------------------------
+if not env['cpu']=='x86' and not env['is_sdk']:
+	lib_deploy_dir = env['install_dir'].Dir('lib')
+	
+	if env['deploylibs']:
+		libs = glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libustring.so'))
+		libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libiconv.so.2'))
+		libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libintl.so.8'))
+		libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libsigc-2.0.so.0'))
+		libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], 'libfreetype.so.6'))
+		libs += glob.glob(os.path.join('LibSndFile', 'Libs', env['cpu'], 'libsndfile.so.1'))
+		libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libogg.so.0'))
+		libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libtheora.so.0'))
+		libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libvorbisidec.so.1'))
+		libs += glob.glob(os.path.join('LibJPEG', 'Libs', env['cpu'], 'libjpeg.so.8'))
+		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavcodec.so.52'))
+		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavdevice.so.52'))
+		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavformat.so.52'))
+		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavutil.so.49'))
+		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], 'libopencv_core.so.2.4'))
+		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], 'libopencv_imgproc.so.2.4'))
+		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], 'libopencv_video.so.2.4'))
+
+	if env['platform'] == 'LF2000' or env['platform'] == 'LF3000':
+		libs += glob.glob(os.path.join('OpenCV', 'Libs', env['cpu'], '*.so.2.4'))
+
+	if env['platform']=='Lightning':
+		libs += glob.glob(os.path.join('MagicEyes', 'Libs', env['cpu'], 'libopengles_lite.so'))
+		libs += glob.glob(os.path.join('Portaudio', 'Libs', env['cpu'], 'libportaudio.so'))
+	
+	targets += env.Install(lib_deploy_dir, libs)
+
+#-----------------------------------------------------------------------------
+# Export support modules to embedded or emulation target
+#-----------------------------------------------------------------------------
+
+Return('targets')

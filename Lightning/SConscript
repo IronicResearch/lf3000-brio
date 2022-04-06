@@ -1,0 +1,18 @@
+#-----------------------------------------------------------------------------
+# Brio/Lightning Repository
+#-----------------------------------------------------------------------------
+import os.path
+from Etc.Tools.SConsTools.Priv.CopyTree import *
+Import('env')
+
+#-----------------------------------------------------------------------------
+# Populate the "Publish" folder for a public release
+#-----------------------------------------------------------------------------
+targets = []
+
+targets += env.Install(env['base_dir'], 'readme.txt')
+targets += env.Install(env['base_dir'], 'ReleaseNotes.txt')
+targets += env.Install(env['base_dir'], 'TargetSetup.txt')
+
+Return("targets")
+	

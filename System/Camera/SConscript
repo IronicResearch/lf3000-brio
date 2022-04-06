@@ -1,0 +1,88 @@
+#-----------------------------------------------------------------------------
+# Brio/System/Camera
+#-----------------------------------------------------------------------------
+from Etc.Tools.SConsTools.Priv.LfUtils import *
+import os.path
+
+Import('env')
+
+common_name		= 'Camera'
+usb_module_name	= common_name + 'USB'
+vip_module_name	= common_name + 'VIP'
+nxp_module_name = common_name + 'NXP'
+emu_module_name = common_name + 'Emul'
+mpi_name		= common_name + 'MPI'
+
+#-----------------------------------------------------------------------------
+# Setup module source files and libraries
+#-----------------------------------------------------------------------------
+modsrcs		= Glob('*.cpp') + ['Platform/CameraCommon.cpp']
+usbmodsrcs	= ['Platform/CameraUSB.cpp']
+vipmodsrcs	= ['Platform/CameraVIP.cpp']
+nxpmodsrcs	= ['Platform/CameraNXP.cpp']
+emumodsrcs	= ['Platform/CameraEmul.cpp', 'PublicMPI/CameraMPI.cpp']
+mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
+modlibs		= ['Utility', 'AudioMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI',
+					 'DebugMPI', 'MicrophoneMPI', 'USBDeviceMPI', 'jpeg', 'asound', 'sndfile',
+					 'avformat', 'avcodec', 'avutil', 'png', 'z']
+nxplibs 	= ['nxv4l2', 'nxvmem', 'nxvip']
+mpilibs		= ['ModuleMPI', 'MicrophoneMPI']
+
+#-----------------------------------------------------------------------------
+# Modify the build environment and build the module
+#-----------------------------------------------------------------------------
+myenv		= env.Clone()
+
+myenv.Append(CPPDEFINES = '__STDC_CONSTANT_MACROS')
+myenv.Append(CPPFLAGS = '-Wno-deprecated-declarations')
+
+myenv.Append(CPPPATH = ['#System/Display/Include'])
+myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
+myenv.Append(CPPPATH = ['#ThirdParty/MfgData/lib'])
+myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
+
+if env['cpu'] == 'x86':
+	myenv.Append(CPPPATH = ['#ThirdParty/MaliEmulator/include'])
+	myenv.Append(LIBPATH = ['#ThirdParty/MaliEmulator/bin'])
+	
+elif env['platform'] == 'Lightning' and env['cpu_bare']:
+	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
+
+myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
+myenv.Append(LIBPATH = ['#ThirdParty/MfgData/lib/' + env['cpu']])
+
+myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
+myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
+
+myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
+myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + env['cpu']])
+
+myenv.Append(CPPPATH=['Include'])
+if not env['cpu'] == 'x86':
+	if env['platform'] == 'LF3000':
+		modlibs		+=	['MfgData']
+	usbmodule	= MakeMyModule(myenv, usb_module_name, modsrcs + usbmodsrcs, modlibs, kBuildModule)
+	vipmodule	= MakeMyModule(myenv, vip_module_name, modsrcs + vipmodsrcs, modlibs, kBuildModule)
+	nxpmodule 	= ""
+	if not env['platform'] == 'Lightning':
+		nxpmodule	= MakeMyModule(myenv, nxp_module_name, modsrcs + nxpmodsrcs, modlibs + nxplibs, kBuildModule)
+else:
+	emumodule	= MakeMyModule(myenv, emu_module_name, modsrcs + emumodsrcs, modlibs, kBuildModule)
+mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
+if not env['cpu'] == 'x86':
+	Depends(mympi, [usbmodule, vipmodule, nxpmodule])
+else:
+	Depends(mympi, [emumodule])
+targets = mympi or []
+
+#-----------------------------------------------------------------------------
+# Modify the build environment and build and run the unit tests
+#-----------------------------------------------------------------------------
+if env['buildtests']:
+	if env['cpu'] != 'x86':
+		extra_libs = ['DisplayMPI', 'EventMPI', 'AudioMPI', 'KernelMPI', 'VideoMPI','USBDeviceMPI', 'ButtonMPI', 'Utility', 'ImageIO']
+		targets.append(RunMyTests(common_name, [], mpilibs + extra_libs, myenv))
+	else:
+		print "WARNING: Camera test disabled in emulation until fixed!"
+
+Return('targets')

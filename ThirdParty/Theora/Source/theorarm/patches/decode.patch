@@ -1,0 +1,10 @@
+--- theorarm-merge-branch/lib/decode.c	2010-05-30 08:45:07.000000000 -0700
++++ theorarm-merge-branch.save4/lib/decode.c	2010-10-26 16:11:28.000000000 -0700
+@@ -39,6 +39,7 @@
+ #define oc_memzero_ptrdiff_64(B)  memset((void*)(B),0,64*sizeof(ptrdiff_t))
+ #define oc_memset_al_mult8(B,V,S) memset((void*)(B),(V),(S))
+ #endif
++#undef OC_ARM_ASM
+ 
+ /*No post-processing.*/
+ #define OC_PP_LEVEL_DISABLED  (0)

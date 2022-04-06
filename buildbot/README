@@ -1,0 +1,2 @@
+This directory contains the Buildbot configuration file for constructing Brio.
+Place master.cfg in the Brio buildmaster buildbot directory.
