@@ -31,6 +31,7 @@
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
     </ul>
@@ -59,6 +60,7 @@
       <li><a href="functions_func_e.html#index_e"><span>e</span></a></li>
       <li><a href="functions_func_f.html#index_f"><span>f</span></a></li>
       <li><a href="functions_func_g.html#index_g"><span>g</span></a></li>
+      <li><a href="functions_func_h.html#index_h"><span>h</span></a></li>
       <li class="current"><a href="functions_func_i.html#index_i"><span>i</span></a></li>
       <li><a href="functions_func_j.html#index_j"><span>j</span></a></li>
       <li><a href="functions_func_k.html#index_k"><span>k</span></a></li>
@@ -98,6 +100,9 @@
 </li>
 <li>Initialize()
 : <a class="el" href="classEmulationConfig.html#a378a4df6b2face25a1ccc7b5d5630176">EmulationConfig</a>
+, <a class="el" href="classLF_1_1Vision_1_1VNAlgorithm.html#a0c83153bf9708542780906241632ff24">LF::Vision::VNAlgorithm</a>
+, <a class="el" href="classLF_1_1Vision_1_1VNVirtualTouch.html#aa3305b384183cf97590a95797e82c553">LF::Vision::VNVirtualTouch</a>
+, <a class="el" href="classLF_1_1Vision_1_1VNWandTracker.html#a47b9c7dca307c121b812251c1d15c1fe">LF::Vision::VNWandTracker</a>
 </li>
 <li>InitMutex()
 : <a class="el" href="classCKernelMPI.html#ab0e24f7f93148a91fafab9f23cc13ec4">CKernelMPI</a>
@@ -114,6 +119,9 @@
 <li>IsAccelerometerPresent()
 : <a class="el" href="classCAccelerometerMPI.html#a213462d3ef909c50b7842a1d53d0c8d6">CAccelerometerMPI</a>
 </li>
+<li>IsAnalogStickPresent()
+: <a class="el" href="classLF_1_1Hardware_1_1HWAnalogStickMPI.html#a362551fed3aaa14a835de0fbcacc6e37">LF::Hardware::HWAnalogStickMPI</a>
+</li>
 <li>IsAudioCapturePaused()
 : <a class="el" href="classCCameraMPI.html#a79d7c3c831fdd79050e3b600990c3a44">CCameraMPI</a>
 , <a class="el" href="classCMicrophoneMPI.html#a7c185d7853747a408d53a8537a8088c9">CMicrophoneMPI</a>
@@ -127,11 +135,20 @@
 <li>IsCameraPresent()
 : <a class="el" href="classCCameraMPI.html#a18f429564ff11eb43821de675f19a1f3">CCameraMPI</a>
 </li>
+<li>IsConnected()
+: <a class="el" href="classLF_1_1Hardware_1_1HWController.html#ab72798c69183eef75c49dcf6b447ce59">LF::Hardware::HWController</a>
+</li>
 <li>IsDirectory()
 : <a class="el" href="classCKernelMPI.html#a81282b1593ab78af75042c52f1c820ee">CKernelMPI</a>
 </li>
 <li>IsMicrophonePresent()
 : <a class="el" href="classCMicrophoneMPI.html#afbe38affe39794094456a246dcd7bd36">CMicrophoneMPI</a>
+</li>
+<li>IsRunning()
+: <a class="el" href="classLF_1_1Vision_1_1VNVisionMPI.html#aba943fd8b334778d56d744dc214892fb">LF::Vision::VNVisionMPI</a>
+</li>
+<li>IsTriggered()
+: <a class="el" href="classLF_1_1Vision_1_1VNHotSpot.html#a64e44d179135b6b0570f68e95262e575">LF::Vision::VNHotSpot</a>
 </li>
 <li>IsValid()
 : <a class="el" href="classCAccelerometerMPI.html#aff9e6b648747cbb606f96c31c54ce2ec">CAccelerometerMPI</a>
@@ -151,6 +168,9 @@
 , <a class="el" href="classCWirelessMPI.html#aac51825a7525b71cdb8c1d1248d45bfc">CWirelessMPI</a>
 , <a class="el" href="classEFdWrapper.html#a4b1dcc084c10b2b61b2c77ee2a867099">EFdWrapper</a>
 , <a class="el" href="classICoreMPI.html#a6f54de740ae886d6966e90f7a14c00f6">ICoreMPI</a>
+, <a class="el" href="classLF_1_1Hardware_1_1HWAnalogStickMPI.html#a367741ffeb0e975fd03b5604dd20be49">LF::Hardware::HWAnalogStickMPI</a>
+, <a class="el" href="classLF_1_1Hardware_1_1HWControllerMPI.html#abc196823974f4ba00f1bed5a516fd77e">LF::Hardware::HWControllerMPI</a>
+, <a class="el" href="classLF_1_1Vision_1_1VNVisionMPI.html#aeba50c84db9328e861418e8ee100c7e0">LF::Vision::VNVisionMPI</a>
 </li>
 <li>IsVideoCapturePaused()
 : <a class="el" href="classCCameraMPI.html#a8e4d7ad1d6d36a37dc4fe30a0e97ef77">CCameraMPI</a>
@@ -163,6 +183,10 @@
 </li>
 <li>IsVideoPlaying()
 : <a class="el" href="classCVideoMPI.html#a55eb8881ac317c42f03432ca582675a5">CVideoMPI</a>
+</li>
+<li>IsVisible()
+: <a class="el" href="classLF_1_1Hardware_1_1HWController.html#a5134d642d850272a08afaca88a92b5d0">LF::Hardware::HWController</a>
+, <a class="el" href="classLF_1_1Vision_1_1VNWand.html#a0f23c23c87157945a3588ce1d328a2aa">LF::Vision::VNWand</a>
 </li>
 </ul>
 </div><!-- contents -->
